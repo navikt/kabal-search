@@ -26,14 +26,10 @@ class DevOnlyAdminController(
     fun resetElasticIndex() {
         try {
             adminService.recreateEsIndex()
-            //TODO: Reread from Kafka
-            //adminService.syncEsWithDb()
-            //adminService.findAndLogOutOfSyncKlagebehandlinger()
+            adminService.syncEsWithKafka()
         } catch (e: Exception) {
             logger.warn("Failed to reset ES index", e)
             throw e
         }
     }
-
-
 }

@@ -58,11 +58,47 @@ class AivenKafkaConfiguration(
     }
 
     @Bean
+    fun klageEndretKafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String> {
+        val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
+        factory.consumerFactory = klageEndretConsumerFactory()
+        factory.containerProperties.ackMode = ContainerProperties.AckMode.MANUAL
+        factory.containerProperties.idleEventInterval = 3000L
+        factory.setErrorHandler { thrownException, data ->
+            logger.error("Could not deserialize record. See secure logs for details.")
+            secureLogger.error("Could not deserialize record: $data", thrownException)
+        }
+
+        //Retry consumer/listener even if authorization fails at first
+        factory.setContainerCustomizer { container ->
+            container.containerProperties.authorizationExceptionRetryInterval = Duration.ofSeconds(10L)
+        }
+
+        return factory
+    }
+
+    @Bean
     fun egenAnsattConsumerFactory(): ConsumerFactory<String, String> {
         return DefaultKafkaConsumerFactory(egenAnsattConsumerProps())
     }
 
+    @Bean
+    fun klageEndretConsumerFactory(): ConsumerFactory<String, String> {
+        return DefaultKafkaConsumerFactory(klageEndretConsumerProps())
+    }
+
     private fun egenAnsattConsumerProps(): Map<String, Any> {
+        return mapOf(
+            ConsumerConfig.GROUP_ID_CONFIG to "kabal-search",
+            ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to false,
+            ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "earliest",
+            ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to ErrorHandlingDeserializer::class.java,
+            ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to ErrorHandlingDeserializer::class.java,
+            "spring.deserializer.key.delegate.class" to StringDeserializer::class.java,
+            "spring.deserializer.value.delegate.class" to StringDeserializer::class.java
+        ) + commonConfig()
+    }
+
+    private fun klageEndretConsumerProps(): Map<String, Any> {
         return mapOf(
             ConsumerConfig.GROUP_ID_CONFIG to "kabal-search",
             ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to false,

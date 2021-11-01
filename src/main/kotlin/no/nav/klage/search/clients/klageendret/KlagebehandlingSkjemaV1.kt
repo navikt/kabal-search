@@ -1,14 +1,13 @@
-package no.nav.klage.search.clients.kabalapi
+package no.nav.klage.search.clients.klageendret
 
 import java.time.LocalDate
 import java.time.LocalDateTime
-
 
 data class KlagebehandlingSkjemaV1(
     val id: String,
     val klager: PersonEllerOrganisasjon,
     val klagersProsessfullmektig: PersonEllerOrganisasjon?,
-    val sakenGjelder: Person,
+    val sakenGjelder: PersonEllerOrganisasjon,
     val tema: Kode,
     val type: Kode,
     val kildeReferanse: String,
@@ -24,14 +23,12 @@ data class KlagebehandlingSkjemaV1(
     val fristDato: LocalDate?,
 
     val gjeldendeTildeling: TildeltSaksbehandler?,
-    val foersteTildeling: TildeltSaksbehandler?,
     val medunderskriver: TildeltMedunderskriver?,
     val medunderskriverFlytStatus: Kode,
     val hjemler: List<Kode>,
     val opprettetTidspunkt: LocalDateTime,
     val sistEndretTidspunkt: LocalDateTime,
     val kildesystem: Kode,
-    val kommentarFraFoersteInstans: String?,
 
     val saksdokumenter: List<Dokument>,
     val vedtak: Vedtak?,
@@ -56,7 +53,7 @@ data class KlagebehandlingSkjemaV1(
         val orgnr: String,
     )
 
-    data class PersonEllerOrganisasjon private constructor(val person: Person?, val organisasjon: Organisasjon?) {
+    data class PersonEllerOrganisasjon(val person: Person?, val organisasjon: Organisasjon?) {
         constructor(person: Person) : this(person, null)
         constructor(organisasjon: Organisasjon) : this(null, organisasjon)
     }
