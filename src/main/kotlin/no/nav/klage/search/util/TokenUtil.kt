@@ -21,18 +21,6 @@ class TokenUtil(
         private val securelogger = getSecureLogger()
     }
 
-    fun getSaksbehandlersTokenWithProxyScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["proxy-onbehalfof"]
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.accessToken
-    }
-
-    fun getSaksbehandlerAccessTokenWithGraphScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["azure-onbehalfof"]
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.accessToken
-    }
-
     fun getSaksbehandlerAccessTokenWithPdlScope(): String {
         val clientProperties = clientConfigurationProperties.registration["pdl-onbehalfof"]
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
@@ -51,62 +39,20 @@ class TokenUtil(
         return response.accessToken
     }
 
-    fun getSaksbehandlerAccessTokenWithOppgaveScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["oppgave-onbehalfof"]
+    fun getAppAccessTokenWithAxsysScope(): String {
+        val clientProperties = clientConfigurationProperties.registration["axsys-maskintilmaskin"]
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
         return response.accessToken
     }
 
-    fun getSaksbehandlerAccessTokenWithSafScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["saf-onbehalfof"]
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.accessToken
-    }
-
-    fun getSaksbehandlerAccessTokenWithJoarkScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["dokarkiv-onbehalfof"]
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.accessToken
-    }
-
-    fun getSaksbehandlerAccessTokenWithKabalFileApiScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["kabal-file-api-onbehalfof"]
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.accessToken
-    }
-
-    fun getAppAccessTokenWithKabalFileApiScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["kabal-file-api-maskintilmaskin"]
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.accessToken
-    }
-
-    fun getSaksbehandlerAccessTokenWithKabalDocumentScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["kabal-document-onbehalfof"]
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.accessToken
-    }
-
-    fun getAppAccessTokenWithKabalDocumentScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["kabal-document-maskintilmaskin"]
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.accessToken
-    }
-
-    fun getAppAccessTokenWithSafScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["saf-maskintilmaskin"]
+    fun getSaksbehandlerAccessTokenWithGraphScope(): String {
+        val clientProperties = clientConfigurationProperties.registration["azure-onbehalfof"]
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
         return response.accessToken
     }
 
     fun getAppAccessTokenWithGraphScope(): String {
         val clientProperties = clientConfigurationProperties.registration["app"]
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.accessToken
-    }
-
-    fun getAppAccessTokenWithAxsysScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["axsys-maskintilmaskin"]
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
         return response.accessToken
     }

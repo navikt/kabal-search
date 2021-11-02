@@ -1,8 +1,6 @@
 package no.nav.klage.search.domain.kodeverk
 
 import io.swagger.annotations.ApiModel
-import javax.persistence.AttributeConverter
-import javax.persistence.Converter
 
 @ApiModel
 enum class SivilstandType(override val id: String, override val navn: String, override val beskrivelse: String) : Kode {
@@ -29,13 +27,3 @@ enum class SivilstandType(override val id: String, override val navn: String, ov
     }
 }
 
-
-@Converter
-class SivilstandTypeConverter : AttributeConverter<SivilstandType, String?> {
-
-    override fun convertToDatabaseColumn(entity: SivilstandType?): String? =
-        entity?.id
-
-    override fun convertToEntityAttribute(id: String?): SivilstandType? =
-        id?.let { SivilstandType.of(it) }
-}

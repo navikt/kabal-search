@@ -1,8 +1,5 @@
 package no.nav.klage.search.domain.kodeverk
 
-import javax.persistence.AttributeConverter
-import javax.persistence.Converter
-
 enum class Hjemmel(
     override val id: String,
     val lov: LovKilde,
@@ -138,13 +135,3 @@ val hjemlerPerTema: List<HjemlerPerTema> = listOf(
                 + Hjemmel.FTL + Hjemmel.MANGLER
     )
 )
-
-@Converter
-class HjemmelConverter : AttributeConverter<Hjemmel, String?> {
-
-    override fun convertToDatabaseColumn(entity: Hjemmel?): String? =
-        entity?.id
-
-    override fun convertToEntityAttribute(id: String?): Hjemmel? =
-        id?.let { Hjemmel.of(it) }
-}

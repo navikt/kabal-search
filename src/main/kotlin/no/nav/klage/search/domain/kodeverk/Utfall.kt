@@ -1,8 +1,5 @@
 package no.nav.klage.search.domain.kodeverk
 
-import javax.persistence.AttributeConverter
-import javax.persistence.Converter
-
 enum class Utfall(override val id: String, override val navn: String, override val beskrivelse: String) : Kode {
 
     TRUKKET("1", "Trukket", "Trukket"),
@@ -26,14 +23,4 @@ enum class Utfall(override val id: String, override val navn: String, override v
         }
     }
 
-}
-
-@Converter
-class UtfallConverter : AttributeConverter<Utfall, String?> {
-
-    override fun convertToDatabaseColumn(entity: Utfall?): String? =
-        entity?.id
-
-    override fun convertToEntityAttribute(id: String?): Utfall? =
-        id?.let { Utfall.of(it) }
 }

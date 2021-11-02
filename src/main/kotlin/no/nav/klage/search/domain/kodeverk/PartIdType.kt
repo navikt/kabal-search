@@ -1,8 +1,5 @@
 package no.nav.klage.search.domain.kodeverk
 
-import javax.persistence.AttributeConverter
-import javax.persistence.Converter
-
 enum class PartIdType(override val id: String, override val navn: String, override val beskrivelse: String) : Kode {
     PERSON("PERSON", "Person", "Person"),
     VIRKSOMHET("VIRKSOMHET", "Virksomhet", "Virksomhet");
@@ -18,14 +15,4 @@ enum class PartIdType(override val id: String, override val navn: String, overri
                 ?: throw IllegalArgumentException("No PartIdType with $id exists")
         }
     }
-}
-
-@Converter
-class PartIdTypeConverter : AttributeConverter<PartIdType, String?> {
-
-    override fun convertToDatabaseColumn(entity: PartIdType?): String? =
-        entity?.id
-
-    override fun convertToEntityAttribute(id: String?): PartIdType? =
-        id?.let { PartIdType.of(it) }
 }

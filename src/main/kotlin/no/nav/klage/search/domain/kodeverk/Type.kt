@@ -3,8 +3,6 @@ package no.nav.klage.search.domain.kodeverk
 import io.swagger.annotations.ApiModel
 import org.springframework.core.env.Environment
 import java.util.*
-import javax.persistence.AttributeConverter
-import javax.persistence.Converter
 
 @ApiModel
 enum class Type(override val id: String, override val navn: String, override val beskrivelse: String) : Kode {
@@ -34,20 +32,10 @@ enum class Type(override val id: String, override val navn: String, override val
 object LovligeTyper {
     private val lovligeTyperIProdGcp = EnumSet.of(Type.KLAGE)
     private val lovligeTyperIDevGcp = EnumSet.of(Type.KLAGE)
-    
+
     fun lovligeTyper(environment: Environment): EnumSet<Type> = if (environment.activeProfiles.contains("prod-gcp")) {
         lovligeTyperIProdGcp
     } else {
         lovligeTyperIDevGcp
     }
-}
-
-@Converter
-class TypeConverter : AttributeConverter<Type, String?> {
-
-    override fun convertToDatabaseColumn(entity: Type?): String? =
-        entity?.id
-
-    override fun convertToEntityAttribute(id: String?): Type? =
-        id?.let { Type.of(it) }
 }

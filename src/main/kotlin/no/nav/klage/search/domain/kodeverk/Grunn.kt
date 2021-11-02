@@ -1,8 +1,5 @@
 package no.nav.klage.search.domain.kodeverk
 
-import javax.persistence.AttributeConverter
-import javax.persistence.Converter
-
 enum class Grunn(override val id: String, override val navn: String, override val beskrivelse: String) : Kode {
 
     MANGELFULL_UTREDNING("1", "Mangelfull utredning", "Mangelfull utredning"),
@@ -40,13 +37,3 @@ val grunnerPerUtfall: List<GrunnerPerUtfall> = listOf(
     GrunnerPerUtfall(Utfall.TRUKKET, emptyList()),
     GrunnerPerUtfall(Utfall.UGUNST, emptyList())
 )
-
-@Converter
-class GrunnConverter : AttributeConverter<Grunn, String?> {
-
-    override fun convertToDatabaseColumn(entity: Grunn?): String? =
-        entity?.id
-
-    override fun convertToEntityAttribute(id: String?): Grunn? =
-        id?.let { Grunn.of(it) }
-}

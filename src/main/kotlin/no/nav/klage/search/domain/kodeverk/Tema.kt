@@ -3,8 +3,6 @@ package no.nav.klage.search.domain.kodeverk
 import io.swagger.annotations.ApiModel
 import org.springframework.core.env.Environment
 import java.util.*
-import javax.persistence.AttributeConverter
-import javax.persistence.Converter
 
 @ApiModel
 enum class Tema(override val id: String, override val navn: String, override val beskrivelse: String) : Kode {
@@ -106,14 +104,4 @@ object LovligeTemaer {
     } else {
         lovligeTemaerIDevGcp
     }
-}
-
-@Converter
-class TemaConverter : AttributeConverter<Tema, String?> {
-
-    override fun convertToDatabaseColumn(entity: Tema?): String? =
-        entity?.id
-
-    override fun convertToEntityAttribute(id: String?): Tema? =
-        id?.let { Tema.of(it) }
 }

@@ -1,8 +1,6 @@
 package no.nav.klage.search.domain.kodeverk
 
 import io.swagger.annotations.ApiModel
-import javax.persistence.AttributeConverter
-import javax.persistence.Converter
 
 @ApiModel
 enum class MedunderskriverFlyt(override val id: String, override val navn: String, override val beskrivelse: String) :
@@ -28,14 +26,4 @@ enum class MedunderskriverFlyt(override val id: String, override val navn: Strin
                 ?: throw IllegalArgumentException("No Medunderskriverflyt with $navn exists")
         }
     }
-}
-
-@Converter
-class MedunderskriverflytConverter : AttributeConverter<MedunderskriverFlyt, String?> {
-
-    override fun convertToDatabaseColumn(entity: MedunderskriverFlyt?): String? =
-        entity?.id
-
-    override fun convertToEntityAttribute(id: String?): MedunderskriverFlyt? =
-        id?.let { MedunderskriverFlyt.of(it) }
 }

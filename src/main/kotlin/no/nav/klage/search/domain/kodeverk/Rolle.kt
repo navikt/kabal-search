@@ -1,8 +1,5 @@
 package no.nav.klage.search.domain.kodeverk
 
-import javax.persistence.AttributeConverter
-import javax.persistence.Converter
-
 enum class Rolle(override val id: String, override val navn: String, override val beskrivelse: String) : Kode {
     KLAGER("1", "Klager", "Klager"),
     SAKEN_GJELDER("2", "Saken gjelder", "Den saken gjelder"),
@@ -20,14 +17,4 @@ enum class Rolle(override val id: String, override val navn: String, override va
                 ?: throw IllegalArgumentException("No Rolle with $id exists")
         }
     }
-}
-
-@Converter
-class RolleConverter : AttributeConverter<Rolle, String?> {
-
-    override fun convertToDatabaseColumn(entity: Rolle?): String? =
-        entity?.id
-
-    override fun convertToEntityAttribute(id: String?): Rolle? =
-        id?.let { Rolle.of(it) }
 }

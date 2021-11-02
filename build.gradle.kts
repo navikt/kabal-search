@@ -61,12 +61,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("javax.cache:cache-api")
     implementation("org.ehcache:ehcache")
-    implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
-
-    implementation("net.javacrumbs.shedlock:shedlock-spring:$shedlockVersion")
-    implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:$shedlockVersion")
 
     implementation("org.springframework.kafka:spring-kafka")
     implementation("io.confluent:kafka-avro-serializer:$kafkaAvroVersion") {
@@ -77,10 +72,6 @@ dependencies {
     implementation("io.springfox:springfox-boot-starter:$springFoxVersion")
 
     implementation("org.projectreactor:reactor-spring:1.0.1.RELEASE")
-
-    implementation("org.flywaydb:flyway-core")
-    implementation("com.zaxxer:HikariCP")
-    implementation("org.postgresql:postgresql")
 
     implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("io.micrometer:micrometer-registry-influx")
@@ -114,7 +105,6 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:elasticsearch:$testContainersVersion")
-    testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     testImplementation("org.springframework.kafka:spring-kafka-test")
     testImplementation("com.tngtech.archunit:archunit-junit5:$archunitVersion")
 }

@@ -1,8 +1,5 @@
 package no.nav.klage.search.domain.kodeverk
 
-import javax.persistence.AttributeConverter
-import javax.persistence.Converter
-
 enum class RaadfoertMedLege(override val id: String, override val navn: String, override val beskrivelse: String) :
     Kode {
 
@@ -33,12 +30,3 @@ enum class RaadfoertMedLege(override val id: String, override val navn: String, 
 
 }
 
-@Converter
-class RaadfoertMedLegeConverter : AttributeConverter<RaadfoertMedLege, String?> {
-
-    override fun convertToDatabaseColumn(entity: RaadfoertMedLege?): String? =
-        entity?.id
-
-    override fun convertToEntityAttribute(id: String?): RaadfoertMedLege? =
-        id?.let { RaadfoertMedLege.of(it) }
-}
