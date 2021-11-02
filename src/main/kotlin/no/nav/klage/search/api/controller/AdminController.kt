@@ -31,6 +31,7 @@ class AdminController(
         krevAdminTilgang()
         try {
             adminService.recreateEsIndex()
+            //TODO: Dette kallet fungerer vel ikke nødvendigvis, det avhenger av å treffe riktig pod..
             adminService.syncEsWithKafka()
         } catch (e: Exception) {
             logger.warn("Failed to reset ES index", e)

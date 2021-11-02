@@ -40,7 +40,7 @@ class KlageEndretKafkaConsumer(
         assignments: MutableMap<TopicPartition, Long>,
         callback: ConsumerSeekAware.ConsumerSeekCallback
     ) {
-        logger.debug("on partitions assigned")
+        logger.debug("onPartitionsAssigned. Number of assignments are ${assignments.size}")
         this.assignedTopicPartitions = assignments.map { it.key }
     }
 
@@ -53,7 +53,7 @@ class KlageEndretKafkaConsumer(
         assignments: MutableMap<TopicPartition, Long>?,
         callback: ConsumerSeekAware.ConsumerSeekCallback?
     ) {
-        logger.debug("onIdleContainer")
+        logger.debug("onIdleContainer. Number of assignments are ${assignments?.size}")
     }
 
     @KafkaListener(
