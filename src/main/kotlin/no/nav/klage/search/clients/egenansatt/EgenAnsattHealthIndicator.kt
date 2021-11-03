@@ -1,6 +1,12 @@
 package no.nav.klage.search.clients.egenansatt
 
-/*
+import no.nav.klage.search.util.getLogger
+import org.springframework.boot.actuate.health.Health
+import org.springframework.boot.actuate.health.HealthIndicator
+import org.springframework.context.event.EventListener
+import org.springframework.kafka.event.ListenerContainerIdleEvent
+import org.springframework.stereotype.Component
+
 @Component
 class EgenAnsattHealthIndicator : HealthIndicator {
 
@@ -27,4 +33,3 @@ class EgenAnsattHealthIndicator : HealthIndicator {
             Health.down().build()
         }
 }
-*/
