@@ -6,10 +6,6 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.klage.search.config.PartitionFinder
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getSecureLogger
-import org.apache.kafka.clients.consumer.ConsumerRecord
-import org.springframework.kafka.annotation.KafkaListener
-import org.springframework.kafka.annotation.PartitionOffset
-import org.springframework.kafka.annotation.TopicPartition
 import org.springframework.stereotype.Component
 
 
@@ -26,6 +22,7 @@ class EgenAnsattKafkaConsumer(
         private val mapper = ObjectMapper().registerModule(KotlinModule()).registerModule(JavaTimeModule())
     }
 
+    /*
     @KafkaListener(
         id = "klageEgenAnsattListener",
         idIsGroup = false,
@@ -47,6 +44,7 @@ class EgenAnsattKafkaConsumer(
             throw RuntimeException("Could not process egenansatt record. See more details in secure log.")
         }
     }
+    */
 
     private fun String.toEgenAnsatt() = mapper.readValue(this, EgenAnsatt::class.java)
 }
