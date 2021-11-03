@@ -1,11 +1,18 @@
 package no.nav.klage.search.clients.egenansatt
 
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.spyk
+import io.mockk.verify
+import org.apache.kafka.clients.consumer.ConsumerRecord
+import org.assertj.core.api.Assertions.assertThat
+import org.intellij.lang.annotations.Language
+import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 
 @ActiveProfiles("local")
 internal class EgenAnsattKafkaConsumerTest {
 
-    /*
     @Test
     fun `should read and cache json with skjermetTil`() {
         val egenAnsattService = spyk<EgenAnsattService>()
@@ -88,6 +95,4 @@ internal class EgenAnsattKafkaConsumerTest {
           "skjermetTil": "2020-01-01T12:00:00"
         }
     """.trimIndent()
-
-     */
 }
