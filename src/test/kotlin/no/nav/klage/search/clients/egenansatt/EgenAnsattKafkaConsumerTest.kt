@@ -88,6 +88,6 @@ internal class EgenAnsattKafkaConsumerTest {
           "skjermetTil": "2020-01-01T12:00:00"
         }
     """.trimIndent()
-    
+
      */
 }
