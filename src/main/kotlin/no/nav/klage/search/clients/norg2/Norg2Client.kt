@@ -9,6 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
 
 @Component
+// Denne er ikke i bruk per nå, men jeg beholder den i tilfelle vi trenger enhetnavn i ES i tillegg til nr..
 class Norg2Client(private val norg2WebClient: WebClient) {
 
     companion object {
