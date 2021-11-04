@@ -49,10 +49,6 @@ class SaksbehandlerRepository(
     fun getEnheterMedTemaerForSaksbehandler(ident: String): EnheterMedLovligeTemaer =
         axsysGateway.getEnheterMedTemaerForSaksbehandler(ident)
 
-    fun getAlleSaksbehandlerIdenter(): List<String> {
-        return azureGateway.getGroupMembersNavIdents(saksbehandlerRole)
-    }
-
     fun getNamesForSaksbehandlere(identer: Set<String>): Map<String, String> {
         logger.debug("Fetching names for saksbehandlere from Microsoft Graph")
 
@@ -68,28 +64,5 @@ class SaksbehandlerRepository(
         logger.debug("It took {} millis to fetch all names", measuredTimeMillis)
 
         return saksbehandlerNameCache
-    }
-
-    fun erFagansvarlig(ident: String): Boolean = getRoller(ident).hasRole(fagansvarligRole)
-
-    fun erLeder(ident: String): Boolean = getRoller(ident).hasRole(lederRole)
-
-    fun erSaksbehandler(ident: String): Boolean =
-        getRoller(ident).hasRole(saksbehandlerRole)
-                || getRoller(ident).hasRole(gosysSaksbehandlerRole)
-
-    fun kanBehandleFortrolig(ident: String): Boolean = getRoller(ident).hasRole(kanBehandleFortroligRole)
-
-    fun kanBehandleStrengtFortrolig(ident: String): Boolean =
-        getRoller(ident).hasRole(kanBehandleStrengtFortroligRole)
-
-    fun kanBehandleEgenAnsatt(ident: String): Boolean = getRoller(ident).hasRole(kanBehandleEgenAnsattRole)
-
-    private fun getRoller(ident: String): List<String> = azureGateway.getRolleIder(ident)
-
-    private fun List<String>.hasRole(role: String) = any { it.contains(role) }
-
-    fun getNameForSaksbehandler(navIdent: String): String {
-        return azureGateway.getPersonligDataOmSaksbehandlerMedIdent(navIdent).sammensattNavn
     }
 }
