@@ -23,74 +23,7 @@ interface OurOwnExceptionAdviceTrait : AdviceTrait {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
     }
-
-    @ExceptionHandler
-    fun handleOversendtKlageNotValidException(
-        ex: OversendtKlageNotValidException,
-        request: NativeWebRequest
-    ): ResponseEntity<Problem> =
-        create(Status.BAD_REQUEST, ex, request)
-
-    @ExceptionHandler
-    fun handleKlagebehandlingSamtidigEndretException(
-        ex: KlagebehandlingSamtidigEndretException,
-        request: NativeWebRequest
-    ): ResponseEntity<Problem> =
-        create(Status.CONFLICT, ex, request)
-
-    @ExceptionHandler
-    fun handleOversendtKlageReceivedBeforeException(
-        ex: OversendtKlageReceivedBeforeException,
-        request: NativeWebRequest
-    ): ResponseEntity<Problem> =
-        create(Status.CONFLICT, ex, request)
-
-    @ExceptionHandler
-    fun handleOppgaveNotFound(ex: OppgaveNotFoundException, request: NativeWebRequest): ResponseEntity<Problem> =
-        create(Status.NOT_FOUND, ex, request)
-
-    @ExceptionHandler
-    fun handleKlagebehandlingNotFound(
-        ex: KlagebehandlingNotFoundException,
-        request: NativeWebRequest
-    ): ResponseEntity<Problem> =
-        create(Status.NOT_FOUND, ex, request)
-
-    @ExceptionHandler
-    fun handleVedtakNotFound(
-        ex: VedtakNotFoundException,
-        request: NativeWebRequest
-    ): ResponseEntity<Problem> =
-        create(Status.NOT_FOUND, ex, request)
-
-    @ExceptionHandler
-    fun handleMeldingNotFound(
-        ex: MeldingNotFoundException,
-        request: NativeWebRequest
-    ): ResponseEntity<Problem> =
-        create(Status.NOT_FOUND, ex, request)
-
-    @ExceptionHandler
-    fun handleSaksdokumentNotFound(
-        ex: SaksdokumentNotFoundException,
-        request: NativeWebRequest
-    ): ResponseEntity<Problem> =
-        create(Status.NOT_FOUND, ex, request)
-
-    @ExceptionHandler
-    fun handleValidationException(
-        ex: ValidationException,
-        request: NativeWebRequest
-    ): ResponseEntity<Problem> =
-        create(Status.BAD_REQUEST, ex, request)
-
-    @ExceptionHandler
-    fun handleKlagebehandlingAvsluttetException(
-        ex: KlagebehandlingAvsluttetException,
-        request: NativeWebRequest
-    ): ResponseEntity<Problem> =
-        create(Status.FORBIDDEN, ex, request)
-
+    
     @ExceptionHandler
     fun handleMissingTilgang(ex: MissingTilgangException, request: NativeWebRequest): ResponseEntity<Problem> =
         create(Status.FORBIDDEN, ex, request)
@@ -120,31 +53,6 @@ interface OurOwnExceptionAdviceTrait : AdviceTrait {
         request: NativeWebRequest
     ): ResponseEntity<Problem> =
         create(ex, createProblem(ex), request)
-
-    @ExceptionHandler
-    fun handleDuplicateOversendelse(ex: DuplicateOversendelseException, request: NativeWebRequest): ResponseEntity<Problem> =
-        create(Status.CONFLICT, ex, request)
-
-    @ExceptionHandler
-    fun handleKlagebehandlingManglerMedunderskriverException(
-        ex: KlagebehandlingManglerMedunderskriverException,
-        request: NativeWebRequest
-    ): ResponseEntity<Problem> =
-        create(Status.BAD_REQUEST, ex, request)
-
-    @ExceptionHandler
-    fun handleKlagebehandlingFinalizedException(
-        ex: KlagebehandlingFinalizedException,
-        request: NativeWebRequest
-    ): ResponseEntity<Problem> =
-        create(Status.BAD_REQUEST, ex, request)
-
-    @ExceptionHandler
-    fun handleResultatDokumentNotFoundException(
-        ex: ResultatDokumentNotFoundException,
-        request: NativeWebRequest
-    ): ResponseEntity<Problem> =
-        create(Status.NOT_FOUND, ex, request)
 
     private fun createProblem(ex: WebClientResponseException): ThrowableProblem {
         return Problem.builder()
