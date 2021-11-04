@@ -17,7 +17,8 @@ class StatistikkController(private val elasticsearchService: ElasticsearchServic
 
     @Unprotected
     @GetMapping("/statistikk/klagebehandlinger", produces = ["application/json"])
-    fun resetElasticIndex(): KlageStatistikk {
+    fun getKlageStatistikk(): KlageStatistikk {
+        logger.debug("getKlageStatistikk called")
         return elasticsearchService.statistikkQuery()
     }
 }
