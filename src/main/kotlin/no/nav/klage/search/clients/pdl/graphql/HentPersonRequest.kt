@@ -18,12 +18,6 @@ data class FnrVariables(
     val ident: String
 )
 
-fun hentPersonerQuery(fnrList: List<String>): PersonerGraphqlQuery {
-    val query =
-        PersonGraphqlQuery::class.java.getResource("/pdl/hentPersonBolk.graphql").cleanForGraphql()
-    return PersonerGraphqlQuery(query, FnrListeVariables(fnrList))
-}
-
 fun hentPersonQuery(fnr: String): PersonGraphqlQuery {
     val query =
         PersonGraphqlQuery::class.java.getResource("/pdl/hentPerson.graphql").cleanForGraphql()

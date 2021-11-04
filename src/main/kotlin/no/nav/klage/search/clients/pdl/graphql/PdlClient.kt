@@ -22,19 +22,6 @@ class PdlClient(
         private val secureLogger = getSecureLogger()
     }
 
-    @Retryable
-    fun getPersonerInfo(fnrList: List<String>): HentPersonerResponse {
-        return runWithTiming {
-            val stsSystembrukerToken = tokenUtil.getAppAccessTokenWithPdlScope()
-            pdlWebClient.post()
-                .header(HttpHeaders.AUTHORIZATION, "Bearer $stsSystembrukerToken")
-                .bodyValue(hentPersonerQuery(fnrList))
-                .retrieve()
-                .bodyToMono<HentPersonerResponse>()
-                .block() ?: throw RuntimeException("Person not found")
-        }
-    }
-
     fun <T> runWithTiming(block: () -> T): T {
         val start = currentTimeMillis()
         try {
