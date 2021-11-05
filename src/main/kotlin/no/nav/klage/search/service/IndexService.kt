@@ -1,6 +1,5 @@
 package no.nav.klage.search.service
 
-import no.finn.unleash.Unleash
 import no.nav.klage.search.clients.klageendret.KlagebehandlingSkjemaV1
 import no.nav.klage.search.service.mapper.EsKlagebehandlingMapper
 import no.nav.klage.search.util.getLogger
@@ -11,8 +10,7 @@ import org.springframework.stereotype.Service
 @Service
 class IndexService(
     private val elasticsearchService: ElasticsearchService,
-    private val esKlagebehandlingMapper: EsKlagebehandlingMapper,
-    private val unleash: Unleash,
+    private val esKlagebehandlingMapper: EsKlagebehandlingMapper
 ) {
 
     companion object {
@@ -22,36 +20,28 @@ class IndexService(
     }
 
     fun deleteAllKlagebehandlinger() {
-        if (unleash.isEnabled("klage.indexFromSearch", false)) {
-            elasticsearchService.deleteAll()
-        }
+        elasticsearchService.deleteAll()
     }
 
     @Retryable
     fun indexKlagebehandling(klagebehandling: KlagebehandlingSkjemaV1) {
-        if (unleash.isEnabled("klage.indexFromSearch", false)) {
-            logger.debug("Skal indeksere fra kabal-search, klage med id ${klagebehandling.id}")
-            try {
-                elasticsearchService.save(
-                    esKlagebehandlingMapper.mapKlagebehandlingToEsKlagebehandling(klagebehandling)
-                )
-            } catch (e: Exception) {
-                if (e.message?.contains("version_conflict_engine_exception") == true) {
-                    logger.info("Later version already indexed, ignoring this..")
-                } else {
-                    logger.error("Unable to index klagebehandling ${klagebehandling.id}, see securelogs for details")
-                    securelogger.error("Unable to index klagebehandling ${klagebehandling.id}", e)
-                }
+        logger.debug("Skal indeksere fra kabal-search, klage med id ${klagebehandling.id}")
+        try {
+            elasticsearchService.save(
+                esKlagebehandlingMapper.mapKlagebehandlingToEsKlagebehandling(klagebehandling)
+            )
+        } catch (e: Exception) {
+            if (e.message?.contains("version_conflict_engine_exception") == true) {
+                logger.info("Later version already indexed, ignoring this..")
+            } else {
+                logger.error("Unable to index klagebehandling ${klagebehandling.id}, see securelogs for details")
+                securelogger.error("Unable to index klagebehandling ${klagebehandling.id}", e)
             }
-        } else {
-            logger.debug("Skal ikke indeksere fra kabal-search")
         }
     }
 
     fun recreateIndex() {
-        if (unleash.isEnabled("klage.indexFromSearch", false)) {
-            elasticsearchService.recreateIndex()
-        }
+        elasticsearchService.recreateIndex()
     }
 
 }

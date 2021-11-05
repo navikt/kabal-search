@@ -1,6 +1,8 @@
 package no.nav.klage.search.service
 
 import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
+import no.finn.unleash.Unleash
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.UKJENT
@@ -12,10 +14,7 @@ import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.SoftAssertions
 import org.elasticsearch.index.query.QueryBuilders
-import org.junit.jupiter.api.MethodOrderer
-import org.junit.jupiter.api.Order
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestMethodOrder
+import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration
@@ -50,6 +49,9 @@ class StatistikkInElasticsearchServiceTest {
     }
 
     @MockkBean(relaxed = true)
+    lateinit var unleash: Unleash
+
+    @MockkBean(relaxed = true)
     lateinit var innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository
 
     @Autowired
@@ -61,6 +63,11 @@ class StatistikkInElasticsearchServiceTest {
     @Autowired
     lateinit var esTemplate: ElasticsearchRestTemplate
 
+    @BeforeEach
+    fun setup() {
+        every { unleash.isEnabled(any(), false) } returns true
+    }
+    
     @Test
     @Order(1)
     fun `es is running`() {

@@ -1,5 +1,6 @@
 package no.nav.klage.search.config
 
+import no.finn.unleash.Unleash
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import no.nav.klage.search.service.ElasticsearchService
@@ -16,12 +17,14 @@ class ElasticsearchServiceConfiguration {
     fun elasticsearchService(
         elasticsearchRestTemplate: ElasticsearchRestTemplate,
         innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository,
-        esKlagebehandlingRepository: EsKlagebehandlingRepository
+        esKlagebehandlingRepository: EsKlagebehandlingRepository,
+        unleash: Unleash
     ): ElasticsearchService {
         return ElasticsearchService(
             elasticsearchRestTemplate,
             innloggetSaksbehandlerRepository,
-            esKlagebehandlingRepository
+            esKlagebehandlingRepository,
+            unleash
         )
     }
 

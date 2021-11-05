@@ -1,5 +1,6 @@
 package no.nav.klage.search.service
 
+import no.finn.unleash.Unleash
 import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
 import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria.Statuskategori.*
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
@@ -37,7 +38,8 @@ import java.time.ZoneId
 open class ElasticsearchService(
     private val esTemplate: ElasticsearchOperations,
     private val innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository,
-    private val esKlagebehandlingRepository: EsKlagebehandlingRepository
+    private val esKlagebehandlingRepository: EsKlagebehandlingRepository,
+    private val unleash: Unleash
 ) :
     ApplicationListener<ContextRefreshedEvent> {
 
@@ -50,8 +52,10 @@ open class ElasticsearchService(
     }
 
     fun recreateIndex() {
-        deleteIndex()
-        createIndex()
+        if (unleash.isEnabled("klage.indexFromSearch", false)) {
+            deleteIndex()
+            createIndex()
+        }
     }
 
     override fun onApplicationEvent(event: ContextRefreshedEvent) {
@@ -88,11 +92,17 @@ open class ElasticsearchService(
     }
 
     fun save(klagebehandlinger: List<EsKlagebehandling>) {
-        esKlagebehandlingRepository.saveAll(klagebehandlinger)
+        if (unleash.isEnabled("klage.indexFromSearch", false)) {
+            esKlagebehandlingRepository.saveAll(klagebehandlinger)
+        }
     }
 
     fun save(klagebehandling: EsKlagebehandling) {
-        esKlagebehandlingRepository.save(klagebehandling)
+        if (unleash.isEnabled("klage.indexFromSearch", false)) {
+            esKlagebehandlingRepository.save(klagebehandling)
+        } else {
+            logger.debug("Skal ikke indeksere fra kabal-search")
+        }
     }
 
     open fun findByCriteria(criteria: KlagebehandlingerSearchCriteria): SearchHits<EsKlagebehandling> {
@@ -389,7 +399,9 @@ open class ElasticsearchService(
     }
 
     fun deleteAll() {
-        esKlagebehandlingRepository.deleteAll()
+        if (unleash.isEnabled("klage.indexFromSearch", false)) {
+            esKlagebehandlingRepository.deleteAll()
+        }
     }
 
     fun findAllIdAndModified(): Map<String, LocalDateTime> {
@@ -439,7 +451,8 @@ open class ElasticsearchService(
         aapen: Boolean
     ): List<EsKlagebehandling> {
         return findWithBaseQueryAndAapen(
-            QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("saksdokumenterJournalpostId", journalpostIder)),
+            QueryBuilders.boolQuery()
+                .must(QueryBuilders.termsQuery("saksdokumenterJournalpostId", journalpostIder)),
             aapen
         )
     }
@@ -483,7 +496,8 @@ open class ElasticsearchService(
         val sumAvsluttetLastSevenDays =
             innsendtOgAvsluttetAggs.get<ParsedDateRange>("avsluttet_last7days").buckets.firstOrNull()?.docCount ?: 0
         val sumAvsluttetLastThirtyDays =
-            innsendtOgAvsluttetAggs.get<ParsedDateRange>("avsluttet_last30days").buckets.firstOrNull()?.docCount ?: 0
+            innsendtOgAvsluttetAggs.get<ParsedDateRange>("avsluttet_last30days").buckets.firstOrNull()?.docCount
+                ?: 0
 
         val baseQueryOverFrist: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQueryOverFrist.mustNot(QueryBuilders.existsQuery("avsluttetAvSaksbehandler"))
@@ -494,7 +508,8 @@ open class ElasticsearchService(
         val searchHitsOverFrist: SearchHits<EsKlagebehandling> =
             esTemplate.search(queryBuilderOverFrist.build(), EsKlagebehandling::class.java)
         val sumOverFrist =
-            searchHitsOverFrist.aggregations!!.get<ParsedDateRange>("over_frist").buckets.firstOrNull()?.docCount ?: 0
+            searchHitsOverFrist.aggregations!!.get<ParsedDateRange>("over_frist").buckets.firstOrNull()?.docCount
+                ?: 0
         searchHitsOverFrist.aggregations!!.get<ParsedDateRange>("over_frist").buckets.forEach {
             logger.debug("from clause in over_frist is ${it.from}")
             logger.debug("to clause in over_frist is ${it.to}")
