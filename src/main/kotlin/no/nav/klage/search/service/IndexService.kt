@@ -36,6 +36,7 @@ class IndexService(
             } else {
                 logger.error("Unable to index klagebehandling ${klagebehandling.id}, see securelogs for details")
                 securelogger.error("Unable to index klagebehandling ${klagebehandling.id}", e)
+                throw e
             }
         }
     }
