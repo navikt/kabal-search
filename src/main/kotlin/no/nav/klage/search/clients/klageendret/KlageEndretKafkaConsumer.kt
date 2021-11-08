@@ -7,9 +7,8 @@ import no.nav.klage.search.service.IndexService
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getSecureLogger
 import org.apache.kafka.clients.consumer.ConsumerRecord
-import org.apache.kafka.common.TopicPartition
 import org.springframework.kafka.annotation.KafkaListener
-import org.springframework.kafka.listener.ConsumerSeekAware
+import org.springframework.kafka.listener.AbstractConsumerSeekAware
 import org.springframework.kafka.support.KafkaHeaders
 import org.springframework.messaging.handler.annotation.Header
 import org.springframework.stereotype.Component
@@ -18,7 +17,7 @@ import org.springframework.stereotype.Component
 @Component
 class KlageEndretKafkaConsumer(
     private val indexService: IndexService,
-) : ConsumerSeekAware {
+) : AbstractConsumerSeekAware() {
 
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
@@ -27,42 +26,21 @@ class KlageEndretKafkaConsumer(
         private val mapper = ObjectMapper().registerModule(KotlinModule()).registerModule(JavaTimeModule())
     }
 
-    private lateinit var assignedTopicPartitions: List<TopicPartition>
-    private lateinit var consumerSeekCallback: ConsumerSeekAware.ConsumerSeekCallback
-
+    //Dokumentasjonen er her:
+    //https://docs.spring.io/spring-kafka/docs/2.5.5.RELEASE/reference/html/#seek
     fun consumeFromBeginning() {
-        logger.info("Seeking to beginning of ${assignedTopicPartitions.size} topic partitions")
-        assignedTopicPartitions.forEach { topicPartition ->
-            logger.info("Seeking to beginning of topic ${topicPartition.topic()} and partition ${topicPartition.partition()}")
-            consumerSeekCallback.seekToBeginning(topicPartition.topic(), topicPartition.partition())
+        logger.info("Seeking to beginning of topic partitions")
+        seekCallbacks.forEach { (tp, callback) ->
+            logger.info("Seeking to beginning of topic ${tp.topic()} and partition ${tp.partition()}")
+            callback.seekToBeginning(tp.topic(), tp.partition())
         }
-    }
-
-    override fun onPartitionsAssigned(
-        assignments: MutableMap<TopicPartition, Long>,
-        callback: ConsumerSeekAware.ConsumerSeekCallback
-    ) {
-        logger.debug("onPartitionsAssigned. Number of assignments are ${assignments.size}")
-        this.assignedTopicPartitions = assignments.map { it.key }
-    }
-
-    override fun registerSeekCallback(callback: ConsumerSeekAware.ConsumerSeekCallback) {
-        logger.debug("registerSeekCallback")
-        this.consumerSeekCallback = callback
-    }
-
-    override fun onIdleContainer(
-        assignments: MutableMap<TopicPartition, Long>?,
-        callback: ConsumerSeekAware.ConsumerSeekCallback?
-    ) {
-        logger.debug("onIdleContainer. Number of assignments are ${assignments?.size}")
     }
 
     @KafkaListener(
         id = "klageEndretListener",
         idIsGroup = false,
         topics = ["klage.klage-endret.v1"],
-        containerFactory = "klageEndretKafkaListenerContainerFactory",
+        containerFactory = "klageEndretKafkaListenerContainerFactory"
     )
     fun listen(
         record: ConsumerRecord<String, String>,
