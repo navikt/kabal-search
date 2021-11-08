@@ -10,6 +10,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.common.TopicPartition
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.listener.ConsumerSeekAware
+import org.springframework.kafka.support.KafkaHeaders
+import org.springframework.messaging.handler.annotation.Header
 import org.springframework.stereotype.Component
 
 
@@ -62,14 +64,20 @@ class KlageEndretKafkaConsumer(
         topics = ["klage.klage-endret.v1"],
         containerFactory = "klageEndretKafkaListenerContainerFactory",
     )
-    fun listen(record: ConsumerRecord<String, String>) {
+    fun listen(
+        record: ConsumerRecord<String, String>,
+        //ack: Acknowledgment,
+        @Header(KafkaHeaders.GROUP_ID) groupId: String
+    ) {
         runCatching {
-            logger.debug("Reading offset ${record.offset()} from partition ${record.partition()} on kafka topic ${record.topic()}")
+            logger.debug("Reading offset ${record.offset()} from partition ${record.partition()} on kafka topic ${record.topic()} using groupId $groupId")
             val klagebehandlingId = record.key()
             logger.debug("Read klagebehandling with id $klagebehandlingId")
             val klagebehandling = record.value().toKlagebehandling()
             indexService.indexKlagebehandling(klagebehandling)
             logger.debug("Successfully indexed klagebehandling with id $klagebehandlingId")
+            //logger.debug("Successfully indexed klagebehandling with id $klagebehandlingId, now acking record")
+            //ack.acknowledge()
         }.onFailure {
             secureLogger.error("Failed to process endret klage record", it)
             throw RuntimeException("Could not process endret klage record. See more details in secure log.")

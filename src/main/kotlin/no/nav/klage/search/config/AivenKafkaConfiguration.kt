@@ -14,8 +14,12 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
 import org.springframework.kafka.core.ConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
 import org.springframework.kafka.listener.ContainerProperties
+import org.springframework.kafka.listener.ContainerProperties.AckMode
+import org.springframework.kafka.listener.SeekToCurrentErrorHandler
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+import org.springframework.util.backoff.FixedBackOff
 import java.time.Duration
+
 
 @Configuration
 class AivenKafkaConfiguration(
@@ -42,11 +46,11 @@ class AivenKafkaConfiguration(
     fun egenAnsattKafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String> {
         val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
         factory.consumerFactory = egenAnsattConsumerFactory()
-        factory.containerProperties.ackMode = ContainerProperties.AckMode.MANUAL
+        factory.containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
         factory.containerProperties.idleEventInterval = 3000L
         factory.setErrorHandler { thrownException, data ->
-            logger.error("Could not deserialize record. See secure logs for details.")
-            secureLogger.error("Could not deserialize record: $data", thrownException)
+            logger.error("Could not process record. See secure logs for details.")
+            secureLogger.error("Could not process record: $data", thrownException)
         }
 
         //Retry consumer/listener even if authorization fails at first
@@ -61,12 +65,11 @@ class AivenKafkaConfiguration(
     fun klageEndretKafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String> {
         val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
         factory.consumerFactory = klageEndretConsumerFactory()
-        factory.containerProperties.ackMode = ContainerProperties.AckMode.MANUAL
+
+        factory.containerProperties.isAckOnError = false
+        factory.containerProperties.ackMode = AckMode.RECORD
+        factory.setErrorHandler(SeekToCurrentErrorHandler(FixedBackOff(1000L, 3L)))
         factory.containerProperties.idleEventInterval = 3000L
-        factory.setErrorHandler { thrownException, data ->
-            logger.error("Could not deserialize record. See secure logs for details.")
-            secureLogger.error("Could not deserialize record: $data", thrownException)
-        }
 
         //Retry consumer/listener even if authorization fails at first
         factory.setContainerCustomizer { container ->
