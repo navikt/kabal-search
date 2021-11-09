@@ -39,8 +39,6 @@ class AivenKafkaConfiguration(
         private val secureLogger = getSecureLogger()
     }
 
-    //Producer bean
-
     //Consumer beans
     @Bean
     fun egenAnsattKafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String> {

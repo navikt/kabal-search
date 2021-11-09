@@ -20,6 +20,7 @@ class DevOnlyAdminController(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
+    //TODO remember to change URL in e2e-tests
     @Unprotected
     @GetMapping("/internal/elasticadmin/nuke", produces = ["application/json"])
     @ResponseStatus(HttpStatus.OK)

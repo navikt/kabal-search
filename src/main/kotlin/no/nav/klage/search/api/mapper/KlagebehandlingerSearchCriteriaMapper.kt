@@ -1,7 +1,6 @@
 package no.nav.klage.search.api.mapper
 
 import no.nav.klage.search.api.view.KlagebehandlingerQueryParams
-import no.nav.klage.search.api.view.PersonSoekInput
 import no.nav.klage.search.api.view.SearchPersonByFnrInput
 import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
 import no.nav.klage.search.domain.kodeverk.Hjemmel
@@ -25,25 +24,6 @@ class KlagebehandlingerSearchCriteriaMapper {
         statuskategori = KlagebehandlingerSearchCriteria.Statuskategori.ALLE,
         offset = 0,
         limit = 2
-    )
-
-    fun toSearchCriteria(navIdent: String, input: PersonSoekInput) = KlagebehandlingerSearchCriteria(
-        foedselsnr = listOf(input.soekString ?: input.fnr),
-        raw = input.soekString ?: input.fnr,
-        order = if (input.rekkefoelge == PersonSoekInput.Rekkefoelge.SYNKENDE) {
-            KlagebehandlingerSearchCriteria.Order.DESC
-        } else {
-            KlagebehandlingerSearchCriteria.Order.ASC
-        },
-        offset = input.start,
-        limit = input.antall,
-        projection = input.projeksjon?.let { KlagebehandlingerSearchCriteria.Projection.valueOf(it.name) },
-        sortField = if (input.sortering == PersonSoekInput.Sortering.MOTTATT) {
-            KlagebehandlingerSearchCriteria.SortField.MOTTATT
-        } else {
-            KlagebehandlingerSearchCriteria.SortField.FRIST
-        },
-        statuskategori = KlagebehandlingerSearchCriteria.Statuskategori.ALLE
     )
 
     fun toSearchCriteria(

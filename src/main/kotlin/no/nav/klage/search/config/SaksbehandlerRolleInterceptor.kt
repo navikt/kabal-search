@@ -21,7 +21,7 @@ class SaksbehandlerRolleInterceptor(
         response: HttpServletResponse,
         handler: Any?
     ): Boolean {
-        val isSaksbehandler = innloggetSaksbehandlerRepository.erSaksbehandler()
+        val isSaksbehandler = innloggetSaksbehandlerRepository.isSaksbehandler()
         if (isSaksbehandler) {
             return true
         }
