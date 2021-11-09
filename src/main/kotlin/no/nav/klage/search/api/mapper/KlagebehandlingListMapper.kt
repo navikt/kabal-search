@@ -3,7 +3,6 @@ package no.nav.klage.search.api.mapper
 
 import no.nav.klage.search.api.view.FnrSearchResponse
 import no.nav.klage.search.api.view.KlagebehandlingListView
-import no.nav.klage.search.api.view.PersonSoekPersonView
 import no.nav.klage.search.clients.pdl.Sivilstand
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.kodeverk.MedunderskriverFlyt
@@ -16,43 +15,6 @@ import java.time.temporal.ChronoUnit
 
 @Service
 class KlagebehandlingListMapper {
-
-    //FIXME remove when not in use
-    fun mapPersonSoekResponseToPersonSoekListView(
-        personSoekResponse: List<PersonSoekResponse>,
-        viseUtvidet: Boolean,
-        saksbehandler: String?,
-        tilgangTilTemaer: List<Tema>
-    ): List<PersonSoekPersonView> {
-        return if (personSoekResponse.size == 1) {
-            personSoekResponse.map { person ->
-                val klagebehandlinger =
-                    mapEsKlagebehandlingerToListView(
-                        esKlagebehandlinger = person.klagebehandlinger,
-                        viseUtvidet = viseUtvidet,
-                        viseFullfoerte = true,
-                        saksbehandler = saksbehandler,
-                        tilgangTilTemaer = tilgangTilTemaer
-                    )
-                PersonSoekPersonView(
-                    fnr = person.fnr,
-                    navn = person.navn,
-                    foedselsdato = person.foedselsdato,
-                    klagebehandlinger = klagebehandlinger,
-                    aapneKlagebehandlinger = klagebehandlinger.filter { !it.isAvsluttetAvSaksbehandler },
-                    avsluttedeKlagebehandlinger = klagebehandlinger.filter { it.isAvsluttetAvSaksbehandler }
-                )
-            }
-        } else {
-            personSoekResponse.map { person ->
-                PersonSoekPersonView(
-                    fnr = person.fnr,
-                    navn = person.navn,
-                    foedselsdato = person.foedselsdato
-                )
-            }
-        }
-    }
 
     fun mapPersonSoekHitsToFnrSearchResponse(
         personSoekHits: List<PersonSoekResponse>,

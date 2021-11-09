@@ -29,7 +29,6 @@ class KlagebehandlingListController(
     private val klagebehandlingerSearchCriteriaMapper: KlagebehandlingerSearchCriteriaMapper,
     private val innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository,
     private val saksbehandlerService: SaksbehandlerService,
-    private val personsoekService: PersonsoekService
 ) {
 
     companion object {
@@ -92,37 +91,9 @@ class KlagebehandlingListController(
         }
     }
 
-    private fun canSeeTildelteOppgaver() = innloggetSaksbehandlerRepository.erLeder() ||
-            innloggetSaksbehandlerRepository.erFagansvarlig() || true
+    private fun canSeeTildelteOppgaver() = innloggetSaksbehandlerRepository.isLeder() ||
+            innloggetSaksbehandlerRepository.isFagansvarlig() || true
 
-    //FIXME remove when not in use anymore
-    @ApiOperation(
-        value = "Hent oppgaver som gjelder en gitt person",
-        notes = "Henter alle oppgaver som saksbehandler har tilgang til som omhandler en gitt person."
-    )
-    @PostMapping("/{navIdent}/klagebehandlinger/personsoek", produces = ["application/json"])
-    fun getOppgaverOmPerson(
-        @ApiParam(value = "NavIdent til en ansatt")
-        @PathVariable navIdent: String,
-        @RequestBody input: PersonSoekInput
-    ): KlagebehandlingerPersonSoekListRespons {
-        validateNavIdent(navIdent)
-
-        val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteria(navIdent, input)
-        val personsoekResponse = personsoekService.personsoek(searchCriteria)
-        val saksbehandler = innloggetSaksbehandlerRepository.getInnloggetIdent()
-        val valgtEnhet = enhetFromInputOrInnstillinger(input.enhet)
-
-        return KlagebehandlingerPersonSoekListRespons(
-            antallTreffTotalt = personsoekResponse.size,
-            personer = klagebehandlingListMapper.mapPersonSoekResponseToPersonSoekListView(
-                personSoekResponse = personsoekResponse,
-                viseUtvidet = searchCriteria.isProjectionUtvidet(),
-                saksbehandler = saksbehandler,
-                tilgangTilTemaer = valgtEnhet.temaer
-            )
-        )
-    }
 
     @ApiOperation(
         value = "Hent antall utildelte klagebehandlinger der fristen gått ut",
