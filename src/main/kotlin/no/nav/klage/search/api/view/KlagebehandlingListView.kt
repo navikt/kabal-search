@@ -38,17 +38,3 @@ data class KlagebehandlingListView(
         val sivilstand: String? = null
     )
 }
-
-data class KlagebehandlingerPersonSoekListRespons(
-    val antallTreffTotalt: Int,
-    val personer: List<PersonSoekPersonView>
-)
-
-data class PersonSoekPersonView(
-    val fnr: String,
-    val navn: String?,
-    val foedselsdato: LocalDate?,
-    val klagebehandlinger: List<KlagebehandlingListView> = emptyList(),
-    val aapneKlagebehandlinger: List<KlagebehandlingListView> = emptyList(),
-    val avsluttedeKlagebehandlinger: List<KlagebehandlingListView> = emptyList()
-)

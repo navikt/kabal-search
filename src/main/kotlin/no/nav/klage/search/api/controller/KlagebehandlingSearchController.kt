@@ -4,25 +4,21 @@ import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import no.nav.klage.search.api.mapper.KlagebehandlingListMapper
 import no.nav.klage.search.api.mapper.KlagebehandlingerSearchCriteriaMapper
-import no.nav.klage.search.api.view.*
-import no.nav.klage.search.clients.pdl.PdlFacade
-import no.nav.klage.search.clients.pdl.Sivilstand
+import no.nav.klage.search.api.view.FnrSearchResponse
+import no.nav.klage.search.api.view.NameSearchResponse
+import no.nav.klage.search.api.view.SearchPersonByFnrInput
+import no.nav.klage.search.api.view.SearchPersonByNameInput
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
-import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
-import no.nav.klage.search.domain.kodeverk.TemaTilgjengeligeForEktefelle
 import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeTemaer
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
-import no.nav.klage.search.service.ElasticsearchService
 import no.nav.klage.search.service.PersonsoekService
 import no.nav.klage.search.service.SaksbehandlerService
 import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
-import org.springframework.core.env.Environment
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.time.LocalDate
 
 @RestController
 @RequestMapping("/search")
@@ -34,9 +30,6 @@ class KlagebehandlingSearchController(
     private val innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository,
     private val saksbehandlerService: SaksbehandlerService,
     private val personsoekService: PersonsoekService,
-    private val environment: Environment,
-    private val pdlFacade: PdlFacade,
-    private val elasticsearchService: ElasticsearchService
 ) {
 
     companion object {
@@ -53,7 +46,7 @@ class KlagebehandlingSearchController(
         val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteria(input)
         val personSoekHits = personsoekService.fnrSearch(searchCriteria)
         val saksbehandler = innloggetSaksbehandlerRepository.getInnloggetIdent()
-        val valgtEnhet = enhetFromInputOrInnstillinger(input.enhet)
+        val valgtEnhet = getEnhetOrThrowException(input.enhet)
         return klagebehandlingListMapper.mapPersonSoekHitsToFnrSearchResponse(
             personSoekHits = personSoekHits,
             saksbehandler = saksbehandler,
@@ -78,12 +71,13 @@ class KlagebehandlingSearchController(
         )
     }
 
-    @PostMapping("/relaterte")
+    // Not in use atm
+/*    @PostMapping("/relaterte")
     fun getRelaterteKlagebehandlinger(
         @RequestBody input: SearchPersonByFnrInput
     ): KlagebehandlingerListRespons {
         //TODO: Move logic to PersonsoekService
-        val lovligeTemaer = enhetFromInputOrInnstillinger(input.enhet).temaer
+        val lovligeTemaer = getEnhetOrThrowException(input.enhet).temaer
         val sivilstand: Sivilstand? = pdlFacade.getPersonInfo(input.query).sivilstand
 
         val searchCriteria = KlagebehandlingerSearchCriteria(
@@ -113,9 +107,9 @@ class KlagebehandlingSearchController(
                 sivilstand = sivilstand
             )
         )
-    }
+    }*/
 
-    private fun enhetFromInputOrInnstillinger(enhetId: String): EnhetMedLovligeTemaer =
+    private fun getEnhetOrThrowException(enhetId: String): EnhetMedLovligeTemaer =
         saksbehandlerService.getEnheterMedTemaerForSaksbehandler().enheter.find { it.enhetId == enhetId }
             ?: throw IllegalArgumentException("Saksbehandler har ikke tilgang til angitt enhet")
 

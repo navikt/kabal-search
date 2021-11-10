@@ -26,13 +26,13 @@ class InnloggetSaksbehandlerRepository(
 
     fun getInnloggetIdent() = tokenUtil.getIdent()
 
-    fun erAdmin(): Boolean = tokenUtil.getRollerFromToken().hasRole(adminRole)
+    fun isAdmin(): Boolean = tokenUtil.getRollerFromToken().hasRole(adminRole)
 
-    fun erLeder(): Boolean = tokenUtil.getRollerFromToken().hasRole(lederRole)
+    fun isLeder(): Boolean = tokenUtil.getRollerFromToken().hasRole(lederRole)
 
-    fun erFagansvarlig(): Boolean = tokenUtil.getRollerFromToken().hasRole(fagansvarligRole)
+    fun isFagansvarlig(): Boolean = tokenUtil.getRollerFromToken().hasRole(fagansvarligRole)
 
-    fun erSaksbehandler(): Boolean =
+    fun isSaksbehandler(): Boolean =
         tokenUtil.getRollerFromToken().hasRole(saksbehandlerRole) || tokenUtil.getRollerFromToken()
             .hasRole(gosysSaksbehandlerRole)
 
