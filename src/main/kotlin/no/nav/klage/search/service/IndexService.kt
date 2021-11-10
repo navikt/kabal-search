@@ -25,7 +25,6 @@ class IndexService(
 
     @Retryable
     fun indexKlagebehandling(klagebehandling: KlagebehandlingSkjemaV1) {
-        logger.debug("Skal indeksere fra kabal-search, klage med id ${klagebehandling.id}")
         try {
             elasticsearchService.save(
                 esKlagebehandlingMapper.mapKlagebehandlingToEsKlagebehandling(klagebehandling)

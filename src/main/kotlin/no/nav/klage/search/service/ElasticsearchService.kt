@@ -99,6 +99,7 @@ open class ElasticsearchService(
 
     fun save(klagebehandling: EsKlagebehandling) {
         if (unleash.isEnabled("klage.indexFromSearch", false)) {
+            logger.debug("Skal indeksere fra kabal-search, klage med id ${klagebehandling.id}")
             esKlagebehandlingRepository.save(klagebehandling)
         } else {
             logger.debug("Skal ikke indeksere fra kabal-search")
