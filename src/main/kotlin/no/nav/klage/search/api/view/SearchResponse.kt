@@ -19,6 +19,13 @@ data class NameSearchResponse(
 ) {
     data class PersonView(
         val fnr: String,
-        val name: String
+        val name: String,
+        val navn: NavnView
     )
 }
+
+data class NavnView(
+    val fornavn: String?,
+    val mellomnavn: String?,
+    val etternavn: String?,
+)

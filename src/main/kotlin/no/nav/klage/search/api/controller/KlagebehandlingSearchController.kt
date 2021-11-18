@@ -4,10 +4,7 @@ import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import no.nav.klage.search.api.mapper.KlagebehandlingListMapper
 import no.nav.klage.search.api.mapper.KlagebehandlingerSearchCriteriaMapper
-import no.nav.klage.search.api.view.FnrSearchResponse
-import no.nav.klage.search.api.view.NameSearchResponse
-import no.nav.klage.search.api.view.SearchPersonByFnrInput
-import no.nav.klage.search.api.view.SearchPersonByNameInput
+import no.nav.klage.search.api.view.*
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeTemaer
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
@@ -65,7 +62,12 @@ class KlagebehandlingSearchController(
             people = people.map {
                 NameSearchResponse.PersonView(
                     fnr = it.fnr,
-                    name = it.name
+                    name = it.name,
+                    navn = NavnView(
+                        fornavn = it.navn.fornavn,
+                        mellomnavn = it.navn.mellomnavn,
+                        etternavn = it.navn.etternavn
+                    )
                 )
             }
         )
