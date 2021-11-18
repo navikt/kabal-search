@@ -20,7 +20,7 @@ class KlagebehandlingerSearchCriteriaMapper {
     }
 
     fun toSearchCriteria(input: SearchPersonByFnrInput) = KlagebehandlingerSearchCriteria(
-        foedselsnr = listOf(input.query),
+        foedselsnr = input.query,
         statuskategori = KlagebehandlingerSearchCriteria.Statuskategori.ALLE,
         offset = 0,
         limit = 2

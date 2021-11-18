@@ -5,7 +5,7 @@ package no.nav.klage.search.api.view
  */
 data class FnrSearchResponse(
     val fnr: String,
-    val name: String,
+    val navn: NavnView,
     val klagebehandlinger: List<KlagebehandlingListView> = emptyList(),
     val aapneKlagebehandlinger: List<KlagebehandlingListView> = emptyList(),
     val avsluttedeKlagebehandlinger: List<KlagebehandlingListView> = emptyList()
@@ -19,13 +19,12 @@ data class NameSearchResponse(
 ) {
     data class PersonView(
         val fnr: String,
-        val name: String,
         val navn: NavnView
     )
 }
 
 data class NavnView(
-    val fornavn: String?,
+    val fornavn: String,
     val mellomnavn: String?,
-    val etternavn: String?,
+    val etternavn: String,
 )

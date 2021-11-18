@@ -3,11 +3,12 @@ package no.nav.klage.search.api.mapper
 
 import no.nav.klage.search.api.view.FnrSearchResponse
 import no.nav.klage.search.api.view.KlagebehandlingListView
+import no.nav.klage.search.api.view.NavnView
 import no.nav.klage.search.clients.pdl.Sivilstand
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.kodeverk.MedunderskriverFlyt
 import no.nav.klage.search.domain.kodeverk.Tema
-import no.nav.klage.search.domain.personsoek.PersonSoekResponse
+import no.nav.klage.search.domain.personsoek.PersonSearchResponse
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -16,31 +17,30 @@ import java.time.temporal.ChronoUnit
 @Service
 class KlagebehandlingListMapper {
 
-    fun mapPersonSoekHitsToFnrSearchResponse(
-        personSoekHits: List<PersonSoekResponse>,
-        saksbehandler: String?,
+    fun mapPersonSearchHitToFnrSearchResponse(
+        personSearchResponse: PersonSearchResponse,
+        saksbehandler: String,
         tilgangTilTemaer: List<Tema>
     ): FnrSearchResponse? {
-        return if (personSoekHits.size == 1) {
-            val person = personSoekHits.first()
-            val klagebehandlinger =
-                mapEsKlagebehandlingerToListView(
-                    esKlagebehandlinger = person.klagebehandlinger,
-                    viseUtvidet = false,
-                    viseFullfoerte = true,
-                    saksbehandler = saksbehandler,
-                    tilgangTilTemaer = tilgangTilTemaer
-                )
-            FnrSearchResponse(
-                fnr = person.fnr,
-                name = person.navn ?: throw RuntimeException("name missing"),
-                klagebehandlinger = klagebehandlinger,
-                aapneKlagebehandlinger = klagebehandlinger.filter { !it.isAvsluttetAvSaksbehandler },
-                avsluttedeKlagebehandlinger = klagebehandlinger.filter { it.isAvsluttetAvSaksbehandler }
+        val klagebehandlinger =
+            mapEsKlagebehandlingerToListView(
+                esKlagebehandlinger = personSearchResponse.klagebehandlinger,
+                viseUtvidet = false,
+                viseFullfoerte = true,
+                saksbehandler = saksbehandler,
+                tilgangTilTemaer = tilgangTilTemaer
             )
-        } else {
-            throw RuntimeException("more than one hit for fnr")
-        }
+        return FnrSearchResponse(
+            fnr = personSearchResponse.fnr,
+            navn = NavnView(
+                fornavn = personSearchResponse.fornavn,
+                mellomnavn = personSearchResponse.mellomnavn,
+                etternavn = personSearchResponse.etternavn
+            ),
+            klagebehandlinger = klagebehandlinger,
+            aapneKlagebehandlinger = klagebehandlinger.filter { !it.isAvsluttetAvSaksbehandler },
+            avsluttedeKlagebehandlinger = klagebehandlinger.filter { it.isAvsluttetAvSaksbehandler }
+        )
     }
 
     fun mapEsKlagebehandlingerToListView(
