@@ -46,7 +46,7 @@ class KlagebehandlingSearchController(
         return if (personSearchResponse != null) {
             val saksbehandler = innloggetSaksbehandlerRepository.getInnloggetIdent()
             val valgtEnhet = getEnhetOrThrowException(input.enhet)
-            klagebehandlingListMapper.mapPersonSearchHitToFnrSearchResponse(
+            klagebehandlingListMapper.mapPersonSearchResponseToFnrSearchResponse(
                 personSearchResponse = personSearchResponse,
                 saksbehandler = saksbehandler,
                 tilgangTilTemaer = valgtEnhet.temaer

@@ -17,7 +17,7 @@ import java.time.temporal.ChronoUnit
 @Service
 class KlagebehandlingListMapper {
 
-    fun mapPersonSearchHitToFnrSearchResponse(
+    fun mapPersonSearchResponseToFnrSearchResponse(
         personSearchResponse: PersonSearchResponse,
         saksbehandler: String,
         tilgangTilTemaer: List<Tema>
