@@ -12,7 +12,6 @@ import no.nav.klage.search.exceptions.MissingTilgangException
 import no.nav.klage.search.exceptions.NotMatchingUserException
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import no.nav.klage.search.service.ElasticsearchService
-import no.nav.klage.search.service.PersonsoekService
 import no.nav.klage.search.service.SaksbehandlerService
 import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims

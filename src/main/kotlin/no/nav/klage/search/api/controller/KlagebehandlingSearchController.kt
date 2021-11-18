@@ -8,7 +8,7 @@ import no.nav.klage.search.api.view.*
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeTemaer
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
-import no.nav.klage.search.service.PersonsoekService
+import no.nav.klage.search.service.PersonSearchService
 import no.nav.klage.search.service.SaksbehandlerService
 import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
@@ -26,7 +26,7 @@ class KlagebehandlingSearchController(
     private val klagebehandlingerSearchCriteriaMapper: KlagebehandlingerSearchCriteriaMapper,
     private val innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository,
     private val saksbehandlerService: SaksbehandlerService,
-    private val personsoekService: PersonsoekService,
+    private val personSearchService: PersonSearchService,
 ) {
 
     companion object {
@@ -40,15 +40,20 @@ class KlagebehandlingSearchController(
     )
     @PostMapping("/fnr", produces = ["application/json"])
     fun getFnrSearchResponse(@RequestBody input: SearchPersonByFnrInput): FnrSearchResponse? {
-        val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteria(input)
-        val personSoekHits = personsoekService.fnrSearch(searchCriteria)
-        val saksbehandler = innloggetSaksbehandlerRepository.getInnloggetIdent()
-        val valgtEnhet = getEnhetOrThrowException(input.enhet)
-        return klagebehandlingListMapper.mapPersonSoekHitsToFnrSearchResponse(
-            personSoekHits = personSoekHits,
-            saksbehandler = saksbehandler,
-            tilgangTilTemaer = valgtEnhet.temaer
-        )
+        val personSearchResponse =
+            personSearchService.fnrSearch(klagebehandlingerSearchCriteriaMapper.toSearchCriteria(input))
+
+        return if (personSearchResponse != null) {
+            val saksbehandler = innloggetSaksbehandlerRepository.getInnloggetIdent()
+            val valgtEnhet = getEnhetOrThrowException(input.enhet)
+            klagebehandlingListMapper.mapPersonSearchResponseToFnrSearchResponse(
+                personSearchResponse = personSearchResponse,
+                saksbehandler = saksbehandler,
+                tilgangTilTemaer = valgtEnhet.temaer
+            )
+        } else {
+            null
+        }
     }
 
     @ApiOperation(
@@ -57,12 +62,11 @@ class KlagebehandlingSearchController(
     )
     @PostMapping("/name", produces = ["application/json"])
     fun getNameSearchResponse(@RequestBody input: SearchPersonByNameInput): NameSearchResponse {
-        val people = personsoekService.nameSearch(input.query)
+        val people = personSearchService.nameSearch(input.query)
         return NameSearchResponse(
             people = people.map {
                 NameSearchResponse.PersonView(
                     fnr = it.fnr,
-                    name = it.name,
                     navn = NavnView(
                         fornavn = it.navn.fornavn,
                         mellomnavn = it.navn.mellomnavn,

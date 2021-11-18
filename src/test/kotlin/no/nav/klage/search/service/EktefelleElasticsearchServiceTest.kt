@@ -203,7 +203,7 @@ class EktefelleElasticsearchServiceTest {
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
                     temaer = listOf(Tema.OMS),
-                    foedselsnr = listOf("123"),
+                    foedselsnr = "123",
                     offset = 0,
                     limit = 10
                 )
@@ -219,7 +219,7 @@ class EktefelleElasticsearchServiceTest {
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
                     temaer = listOf(Tema.MOB),
-                    foedselsnr = listOf("123"),
+                    foedselsnr = "123",
                     extraPersonAndTema = KlagebehandlingerSearchCriteria.ExtraPersonAndTema(
                         foedselsnr = "456",
                         temaer = listOf(Tema.SYK)
@@ -239,7 +239,7 @@ class EktefelleElasticsearchServiceTest {
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
                     temaer = listOf(Tema.SYK),
-                    foedselsnr = listOf("123"),
+                    foedselsnr = "123",
                     extraPersonAndTema = KlagebehandlingerSearchCriteria.ExtraPersonAndTema(
                         foedselsnr = "456",
                         temaer = listOf(Tema.SYK)

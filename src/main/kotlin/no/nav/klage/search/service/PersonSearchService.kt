@@ -6,13 +6,13 @@ import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.personsoek.Navn
 import no.nav.klage.search.domain.personsoek.Person
-import no.nav.klage.search.domain.personsoek.PersonSoekResponse
+import no.nav.klage.search.domain.personsoek.PersonSearchResponse
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getSecureLogger
 import org.springframework.stereotype.Service
 
 @Service
-class PersonsoekService(
+class PersonSearchService(
     private val pdlClient: PdlClient, //TODO: Burde bruke PdlFacade ?
     private val elasticsearchService: ElasticsearchService
 ) {
@@ -22,18 +22,28 @@ class PersonsoekService(
         private val secureLogger = getSecureLogger()
     }
 
-    fun fnrSearch(input: KlagebehandlingerSearchCriteria): List<PersonSoekResponse> {
-        val searchHits = esSoek(input)
-        logger.debug("Personsøk with fnr: Got ${searchHits.size} hits from ES")
-        val listOfPersonSoekResponse = searchHits.groupBy { it.sakenGjelderFnr }.map { (key, value) ->
-            PersonSoekResponse(
-                fnr = key!!,
-                navn = value.first().sakenGjelderNavn,
-                foedselsdato = null,
-                klagebehandlinger = value
+    fun fnrSearch(input: KlagebehandlingerSearchCriteria): PersonSearchResponse? {
+        val searchHitsInES = esSoek(input)
+        logger.debug("fnrSearch: Got ${searchHitsInES.size} hits from ES")
+        val listOfPersonSoekResponse = searchHitsInES.groupBy { it.sakenGjelderFnr }.map { (fnr, klagebehandlinger) ->
+            PersonSearchResponse(
+                fnr = fnr!!,
+                fornavn = klagebehandlinger.first().sakenGjelderFornavn
+                    ?: throw RuntimeException("fornavn missing"),
+                mellomnavn = klagebehandlinger.first().sakenGjelderMellomnavn,
+                etternavn = klagebehandlinger.first().sakenGjelderEtternavn
+                    ?: throw RuntimeException("etternavn missing"),
+                klagebehandlinger = klagebehandlinger
             )
         }
-        return listOfPersonSoekResponse
+        return if (listOfPersonSoekResponse.size == 1) {
+            listOfPersonSoekResponse.first()
+        } else if (listOfPersonSoekResponse.isEmpty()) {
+            null
+        } else {
+            secureLogger.error("More than one hit for fnr {}.", input.foedselsnr)
+            throw RuntimeException("More than one hit for fnr.")
+        }
     }
 
     fun nameSearch(name: String): List<Person> {
@@ -44,7 +54,6 @@ class PersonsoekService(
         val people = pdlResponse.data?.sokPerson?.hits?.map { personHit ->
             Person(
                 fnr = personHit.person.folkeregisteridentifikator.first().identifikasjonsnummer,
-                name = personHit.person.navn.first().toString(),
                 navn = Navn(
                     fornavn = personHit.person.navn.first().fornavn,
                     mellomnavn = personHit.person.navn.first().mellomnavn,

@@ -1,11 +1,11 @@
 package no.nav.klage.search.domain.personsoek
 
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
-import java.time.LocalDate
 
-data class PersonSoekResponse(
+data class PersonSearchResponse(
     val fnr: String,
-    val navn: String?,
-    val foedselsdato: LocalDate?,
+    val fornavn: String,
+    val mellomnavn: String?,
+    val etternavn: String,
     val klagebehandlinger: List<EsKlagebehandling>
 )

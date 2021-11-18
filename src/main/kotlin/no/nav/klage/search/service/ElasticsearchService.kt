@@ -208,7 +208,7 @@ open class ElasticsearchService(
 
         val innerQueryFnr = QueryBuilders.boolQuery()
         innerFnrAndTemaQuery.must(innerQueryFnr)
-        foedselsnr.forEach {
+        foedselsnr?.let {
             innerQueryFnr.should(QueryBuilders.termQuery("sakenGjelderFnr", it))
         }
 
