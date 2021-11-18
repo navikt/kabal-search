@@ -4,6 +4,7 @@ import no.nav.klage.search.clients.pdl.graphql.PdlClient
 import no.nav.klage.search.clients.pdl.graphql.SoekPersonResponse
 import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
+import no.nav.klage.search.domain.personsoek.Navn
 import no.nav.klage.search.domain.personsoek.Person
 import no.nav.klage.search.domain.personsoek.PersonSoekResponse
 import no.nav.klage.search.util.getLogger
@@ -43,7 +44,12 @@ class PersonsoekService(
         val people = pdlResponse.data?.sokPerson?.hits?.map { personHit ->
             Person(
                 fnr = personHit.person.folkeregisteridentifikator.first().identifikasjonsnummer,
-                name = personHit.person.navn.first().toString()
+                name = personHit.person.navn.first().toString(),
+                navn = Navn(
+                    fornavn = personHit.person.navn.first().fornavn,
+                    mellomnavn = personHit.person.navn.first().mellomnavn,
+                    etternavn = personHit.person.navn.first().etternavn
+                )
             )
         }
         return people ?: emptyList()
