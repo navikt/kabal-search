@@ -200,27 +200,30 @@ open class ElasticsearchService(
 
         addSecurityFilters(baseQuery)
 
-        val combinedInnerFnrAndTemaQuery = QueryBuilders.boolQuery()
-        baseQuery.must(combinedInnerFnrAndTemaQuery)
+        val combinedInnerFnrAndTemaOrYtelseQuery = QueryBuilders.boolQuery()
+        baseQuery.must(combinedInnerFnrAndTemaOrYtelseQuery)
 
-        val innerFnrAndTemaQuery = QueryBuilders.boolQuery()
-        combinedInnerFnrAndTemaQuery.should(innerFnrAndTemaQuery)
+        val innerFnrAndTemaOrYtelseQuery = QueryBuilders.boolQuery()
+        combinedInnerFnrAndTemaOrYtelseQuery.should(innerFnrAndTemaOrYtelseQuery)
 
         val innerQueryFnr = QueryBuilders.boolQuery()
-        innerFnrAndTemaQuery.must(innerQueryFnr)
+        innerFnrAndTemaOrYtelseQuery.must(innerQueryFnr)
         foedselsnr?.let {
             innerQueryFnr.should(QueryBuilders.termQuery("sakenGjelderFnr", it))
         }
 
-        val innerQueryTema = QueryBuilders.boolQuery()
-        innerFnrAndTemaQuery.must(innerQueryTema)
+        val innerQueryTemaOrYtelse = QueryBuilders.boolQuery()
+        innerFnrAndTemaOrYtelseQuery.must(innerQueryTemaOrYtelse)
         temaer.forEach {
-            innerQueryTema.should(QueryBuilders.termQuery("tema", it.id))
+            innerQueryTemaOrYtelse.should(QueryBuilders.termQuery("tema", it.id))
+        }
+        ytelser.forEach {
+            innerQueryTemaOrYtelse.should(QueryBuilders.termQuery("ytelseId", it.id))
         }
 
         extraPersonAndTema?.let { extraPerson ->
             val innerFnrAndTemaEktefelleQuery = QueryBuilders.boolQuery()
-            combinedInnerFnrAndTemaQuery.should(innerFnrAndTemaEktefelleQuery)
+            combinedInnerFnrAndTemaOrYtelseQuery.should(innerFnrAndTemaEktefelleQuery)
 
             innerFnrAndTemaEktefelleQuery.must(QueryBuilders.termQuery("sakenGjelderFnr", extraPerson.foedselsnr))
 

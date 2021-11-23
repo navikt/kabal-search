@@ -10,6 +10,7 @@ import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.IKKE_TI
 import no.nav.klage.search.domain.kodeverk.MedunderskriverFlyt
 import no.nav.klage.search.domain.kodeverk.Tema
 import no.nav.klage.search.domain.kodeverk.Type
+import no.nav.klage.search.domain.kodeverk.Ytelse
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import org.assertj.core.api.Assertions.assertThat
@@ -91,6 +92,7 @@ class ElasticsearchServiceTest {
             id = "1001L",
             tildeltEnhet = "4219",
             tema = Tema.OMS.id,
+            ytelseId = Ytelse.OMS_OMP.id,
             type = Type.KLAGE.id,
             tildeltSaksbehandlerident = null,
             innsendt = LocalDate.of(2019, 10, 1),
@@ -101,8 +103,6 @@ class ElasticsearchServiceTest {
             created = LocalDateTime.now(),
             modified = LocalDateTime.now(),
             kilde = "K9",
-            temaNavn = Tema.OMS.name,
-            typeNavn = Type.KLAGE.name,
             status = IKKE_TILDELT,
             medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
         )
@@ -111,6 +111,7 @@ class ElasticsearchServiceTest {
                 id = "1002L",
                 tildeltEnhet = "4219",
                 tema = Tema.SYK.id,
+                ytelseId = Ytelse.OMS_OMP.id,
                 type = Type.KLAGE.id,
                 tildeltSaksbehandlerident = null,
                 innsendt = LocalDate.of(2018, 10, 1),
@@ -121,8 +122,6 @@ class ElasticsearchServiceTest {
                 created = LocalDateTime.now(),
                 modified = LocalDateTime.now(),
                 kilde = "K9",
-                temaNavn = Tema.SYK.name,
-                typeNavn = Type.KLAGE.name,
                 status = IKKE_TILDELT,
                 medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
             )

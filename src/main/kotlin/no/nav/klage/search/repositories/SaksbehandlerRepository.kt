@@ -1,7 +1,11 @@
 package no.nav.klage.search.repositories
 
 import no.nav.klage.search.domain.kodeverk.Tema
+import no.nav.klage.search.domain.kodeverk.Ytelse
+import no.nav.klage.search.domain.saksbehandler.Enhet
+import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeYtelser
 import no.nav.klage.search.domain.saksbehandler.EnheterMedLovligeTemaer
+import no.nav.klage.search.domain.saksbehandler.EnheterMedLovligeYtelser
 import no.nav.klage.search.gateway.AxsysGateway
 import no.nav.klage.search.gateway.AzureGateway
 import no.nav.klage.search.util.getLogger
@@ -48,6 +52,28 @@ class SaksbehandlerRepository(
 
     fun getEnheterMedTemaerForSaksbehandler(ident: String): EnheterMedLovligeTemaer =
         axsysGateway.getEnheterMedTemaerForSaksbehandler(ident)
+
+    fun getEnheterMedYtelserForSaksbehandler(ident: String): EnheterMedLovligeYtelser =
+        axsysGateway.getEnheterForSaksbehandler(ident).berikMedYtelser()
+
+    private fun List<Enhet>.berikMedYtelser(): EnheterMedLovligeYtelser {
+        return EnheterMedLovligeYtelser(this.map {
+            EnhetMedLovligeYtelser(
+                enhet = it,
+                ytelser = getYtelserForEnhet(it)
+            )
+        })
+    }
+
+    private fun getYtelserForEnhet(enhet: Enhet): List<Ytelse> =
+        if (ytelserPerEnhet.containsKey(enhet.enhetId)) {
+            ytelserPerEnhet[enhet.enhetId]!!
+        } else {
+            logger.error("Fant ikke noen ytelse for enhet $enhet. Dette må legges til i kodebasen sporenstraks!")
+            emptyList()
+        }
+
+
 
     fun getNamesForSaksbehandlere(identer: Set<String>): Map<String, String> {
         logger.debug("Fetching names for saksbehandlere from Microsoft Graph")

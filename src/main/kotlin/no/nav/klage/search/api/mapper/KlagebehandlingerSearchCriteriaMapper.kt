@@ -6,6 +6,7 @@ import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
 import no.nav.klage.search.domain.kodeverk.Hjemmel
 import no.nav.klage.search.domain.kodeverk.Tema
 import no.nav.klage.search.domain.kodeverk.Type
+import no.nav.klage.search.domain.kodeverk.Ytelse
 import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeTemaer
 import no.nav.klage.search.util.getLogger
 import org.springframework.stereotype.Service
@@ -33,6 +34,7 @@ class KlagebehandlingerSearchCriteriaMapper {
     ) = KlagebehandlingerSearchCriteria(
         enhetId = if (queryParams.erTildeltSaksbehandler == true && queryParams.tildeltSaksbehandler == null) enhet?.enhetId else null,
         typer = queryParams.typer.map { Type.of(it) },
+        ytelser = queryParams.ytelser.map { Ytelse.of(it) },
         temaer = queryParams.temaer.map { Tema.of(it) },
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
         order = if (queryParams.rekkefoelge == KlagebehandlingerQueryParams.Rekkefoelge.SYNKENDE) {

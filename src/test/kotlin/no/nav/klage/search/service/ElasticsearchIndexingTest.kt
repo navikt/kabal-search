@@ -6,10 +6,7 @@ import no.finn.unleash.Unleash
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.IKKE_TILDELT
-import no.nav.klage.search.domain.kodeverk.Hjemmel
-import no.nav.klage.search.domain.kodeverk.MedunderskriverFlyt
-import no.nav.klage.search.domain.kodeverk.Tema
-import no.nav.klage.search.domain.kodeverk.Type
+import no.nav.klage.search.domain.kodeverk.*
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import org.assertj.core.api.Assertions.assertThat
@@ -129,6 +126,7 @@ class ElasticsearchIndexingTest {
             kildeReferanse = saksreferanse,
             tildeltEnhet = "",
             tema = Tema.OMS.id,
+            ytelseId = Ytelse.OMS_OMP.id,
             type = Type.KLAGE.id,
             tildeltSaksbehandlerident = null,
             innsendt = null,
@@ -142,12 +140,9 @@ class ElasticsearchIndexingTest {
             sakenGjelderNavn = null,
             egenAnsatt = false,
             fortrolig = false,
-            strengtFortrolig = false,
             created = LocalDateTime.now(),
             modified = LocalDateTime.now(),
             kilde = "K9",
-            temaNavn = Tema.OMS.name,
-            typeNavn = Type.KLAGE.name,
             status = IKKE_TILDELT,
             medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
         )

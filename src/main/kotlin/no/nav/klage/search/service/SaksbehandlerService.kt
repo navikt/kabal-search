@@ -1,6 +1,7 @@
 package no.nav.klage.search.service
 
 import no.nav.klage.search.domain.saksbehandler.EnheterMedLovligeTemaer
+import no.nav.klage.search.domain.saksbehandler.EnheterMedLovligeYtelser
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import no.nav.klage.search.repositories.SaksbehandlerRepository
 import org.springframework.stereotype.Service
@@ -12,6 +13,9 @@ class SaksbehandlerService(
 ) {
     fun getEnheterMedTemaerForSaksbehandler(): EnheterMedLovligeTemaer =
         innloggetSaksbehandlerRepository.getEnheterMedTemaerForSaksbehandler()
+
+    fun getEnheterMedYtelserForSaksbehandler(): EnheterMedLovligeYtelser =
+        innloggetSaksbehandlerRepository.getEnheterMedYtelserForSaksbehandler()
     
     fun getNamesForSaksbehandlere(idents: Set<String>): Map<String, String> =
         saksbehandlerRepository.getNamesForSaksbehandlere(idents)

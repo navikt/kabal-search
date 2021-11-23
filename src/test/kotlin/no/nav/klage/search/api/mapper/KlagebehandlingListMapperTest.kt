@@ -4,6 +4,7 @@ import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.kodeverk.MedunderskriverFlyt
 import no.nav.klage.search.domain.kodeverk.Tema
 import no.nav.klage.search.domain.kodeverk.Type
+import no.nav.klage.search.domain.kodeverk.Ytelse
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -17,6 +18,7 @@ internal class KlagebehandlingListMapperTest {
         sakenGjelderFnr = fnr1,
         tildeltEnhet = "4219",
         tema = Tema.OMS.id,
+        ytelseId = Ytelse.OMS_OMP.id,
         type = Type.KLAGE.id,
         innsendt = LocalDate.of(2019, 10, 1),
         mottattFoersteinstans = LocalDate.of(2019, 11, 1),
@@ -26,8 +28,6 @@ internal class KlagebehandlingListMapperTest {
         created = LocalDateTime.now(),
         modified = LocalDateTime.now(),
         kilde = "K9",
-        temaNavn = Tema.OMS.name,
-        typeNavn = Type.KLAGE.name,
         status = EsKlagebehandling.Status.IKKE_TILDELT,
         medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
     )
@@ -37,6 +37,7 @@ internal class KlagebehandlingListMapperTest {
             sakenGjelderFnr = fnr1,
             tildeltEnhet = "4219",
             tema = Tema.SYK.id,
+            ytelseId = Ytelse.OMS_OMP.id,
             type = Type.KLAGE.id,
             tildeltSaksbehandlerident = null,
             innsendt = LocalDate.of(2018, 10, 1),
@@ -47,8 +48,6 @@ internal class KlagebehandlingListMapperTest {
             created = LocalDateTime.now(),
             modified = LocalDateTime.now(),
             kilde = "K9",
-            temaNavn = Tema.SYK.name,
-            typeNavn = Type.KLAGE.name,
             status = EsKlagebehandling.Status.IKKE_TILDELT,
             medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
         )
@@ -58,6 +57,7 @@ internal class KlagebehandlingListMapperTest {
             sakenGjelderFnr = fnr2,
             tildeltEnhet = "4219",
             tema = Tema.SYK.id,
+            ytelseId = Ytelse.OMS_OMP.id,
             type = Type.KLAGE.id,
             tildeltSaksbehandlerident = null,
             innsendt = LocalDate.of(2018, 10, 1),
@@ -68,8 +68,6 @@ internal class KlagebehandlingListMapperTest {
             created = LocalDateTime.now(),
             modified = LocalDateTime.now(),
             kilde = "K9",
-            temaNavn = Tema.SYK.name,
-            typeNavn = Type.KLAGE.name,
             status = EsKlagebehandling.Status.IKKE_TILDELT,
             medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
         )

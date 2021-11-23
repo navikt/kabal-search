@@ -3,12 +3,14 @@ package no.nav.klage.search.domain
 import no.nav.klage.search.domain.kodeverk.Hjemmel
 import no.nav.klage.search.domain.kodeverk.Tema
 import no.nav.klage.search.domain.kodeverk.Type
+import no.nav.klage.search.domain.kodeverk.Ytelse
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class KlagebehandlingerSearchCriteria(
     val typer: List<Type> = emptyList(),
     val temaer: List<Tema> = emptyList(),
+    val ytelser: List<Ytelse> = emptyList(),
     val hjemler: List<Hjemmel> = emptyList(),
     val statuskategori: Statuskategori = Statuskategori.AAPEN,
 

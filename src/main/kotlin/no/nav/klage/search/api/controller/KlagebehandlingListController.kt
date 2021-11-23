@@ -54,7 +54,8 @@ class KlagebehandlingListController(
         val searchCriteria = if (queryParams.temaer.isEmpty()) {
             klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
                 navIdent,
-                queryParams.copy(temaer = valgtEnhet.temaer.map { it.id }),
+                queryParams.copy(
+                    temaer = valgtEnhet.temaer.map { it.id }),
                 valgtEnhet
             )
         } else {
