@@ -6,7 +6,7 @@ import no.nav.klage.search.api.mapper.KlagebehandlingListMapper
 import no.nav.klage.search.api.mapper.KlagebehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.*
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
-import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeTemaer
+import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeYtelser
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import no.nav.klage.search.service.PersonSearchService
 import no.nav.klage.search.service.SaksbehandlerService
@@ -49,7 +49,7 @@ class KlagebehandlingSearchController(
             klagebehandlingListMapper.mapPersonSearchResponseToFnrSearchResponse(
                 personSearchResponse = personSearchResponse,
                 saksbehandler = saksbehandler,
-                tilgangTilTemaer = valgtEnhet.temaer
+                tilgangTilYtelser = valgtEnhet.ytelser
             )
         } else {
             null
@@ -115,8 +115,8 @@ class KlagebehandlingSearchController(
         )
     }*/
 
-    private fun getEnhetOrThrowException(enhetId: String): EnhetMedLovligeTemaer =
-        saksbehandlerService.getEnheterMedTemaerForSaksbehandler().enheter.find { it.enhetId == enhetId }
+    private fun getEnhetOrThrowException(enhetId: String): EnhetMedLovligeYtelser =
+        saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter.find { it.enhet.enhetId == enhetId }
             ?: throw IllegalArgumentException("Saksbehandler har ikke tilgang til angitt enhet")
 
 }

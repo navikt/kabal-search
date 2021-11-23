@@ -34,7 +34,7 @@ data class KlagebehandlingerSearchCriteria(
     val sortField: SortField? = null
 ) {
 
-    data class ExtraPersonAndTema(val foedselsnr: String, val temaer: List<Tema>)
+    data class ExtraPersonAndTema(val foedselsnr: String, val temaer: List<Tema>, val ytelser: List<Ytelse>)
 
     enum class SortField {
         FRIST, MOTTATT

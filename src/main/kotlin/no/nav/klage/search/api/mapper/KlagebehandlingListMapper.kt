@@ -7,7 +7,7 @@ import no.nav.klage.search.api.view.NavnView
 import no.nav.klage.search.clients.pdl.Sivilstand
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.kodeverk.MedunderskriverFlyt
-import no.nav.klage.search.domain.kodeverk.Tema
+import no.nav.klage.search.domain.kodeverk.Ytelse
 import no.nav.klage.search.domain.personsoek.PersonSearchResponse
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -20,7 +20,7 @@ class KlagebehandlingListMapper {
     fun mapPersonSearchResponseToFnrSearchResponse(
         personSearchResponse: PersonSearchResponse,
         saksbehandler: String,
-        tilgangTilTemaer: List<Tema>
+        tilgangTilYtelser: List<Ytelse>
     ): FnrSearchResponse? {
         val klagebehandlinger =
             mapEsKlagebehandlingerToListView(
@@ -28,7 +28,7 @@ class KlagebehandlingListMapper {
                 viseUtvidet = false,
                 viseFullfoerte = true,
                 saksbehandler = saksbehandler,
-                tilgangTilTemaer = tilgangTilTemaer
+                tilgangTilYtelser = tilgangTilYtelser
             )
         return FnrSearchResponse(
             fnr = personSearchResponse.fnr,
@@ -48,7 +48,7 @@ class KlagebehandlingListMapper {
         viseUtvidet: Boolean,
         viseFullfoerte: Boolean,
         saksbehandler: String?,
-        tilgangTilTemaer: List<Tema>,
+        tilgangTilYtelser: List<Ytelse>,
         sivilstand: Sivilstand? = null
     ): List<KlagebehandlingListView> {
         return esKlagebehandlinger.map { esKlagebehandling ->
@@ -65,6 +65,7 @@ class KlagebehandlingListMapper {
                 },
                 type = esKlagebehandling.type,
                 tema = esKlagebehandling.tema,
+                ytelse = esKlagebehandling.ytelseId,
                 hjemmel = esKlagebehandling.hjemler.firstOrNull(),
                 frist = esKlagebehandling.frist,
                 mottatt = esKlagebehandling.mottattKlageinstans.toLocalDate(),
@@ -86,7 +87,9 @@ class KlagebehandlingListMapper {
                     null
                 },
                 isAvsluttetAvSaksbehandler = esKlagebehandling.avsluttetAvSaksbehandler?.toLocalDate() != null,
-                saksbehandlerHarTilgang = tilgangTilTemaer.contains(Tema.of(esKlagebehandling.tema)),
+                //TODO: Burde vi defaulte til true eller false hvis ytelseId == null?
+                saksbehandlerHarTilgang = esKlagebehandling.ytelseId == null
+                        || tilgangTilYtelser.contains(Ytelse.of(esKlagebehandling.ytelseId)),
                 egenAnsatt = esKlagebehandling.egenAnsatt,
                 fortrolig = esKlagebehandling.fortrolig,
                 strengtFortrolig = esKlagebehandling.strengtFortrolig,
