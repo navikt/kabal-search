@@ -248,7 +248,7 @@ class EktefelleElasticsearchServiceTest {
                 KlagebehandlingerSearchCriteria(
                     temaer = listOf(Tema.MOB),
                     foedselsnr = "123",
-                    extraPersonAndTema = KlagebehandlingerSearchCriteria.ExtraPersonAndTema(
+                    extraPersonAndTema = KlagebehandlingerSearchCriteria.ExtraPersonAndTemaOrYtelse(
                         foedselsnr = "456",
                         temaer = listOf(Tema.SYK),
                         ytelser = emptyList()
@@ -269,7 +269,7 @@ class EktefelleElasticsearchServiceTest {
                 KlagebehandlingerSearchCriteria(
                     temaer = listOf(Tema.MOB),
                     foedselsnr = "123",
-                    extraPersonAndTema = KlagebehandlingerSearchCriteria.ExtraPersonAndTema(
+                    extraPersonAndTema = KlagebehandlingerSearchCriteria.ExtraPersonAndTemaOrYtelse(
                         foedselsnr = "456",
                         temaer = emptyList(),
                         ytelser = listOf(Ytelse.SYK_SYK)
@@ -290,7 +290,7 @@ class EktefelleElasticsearchServiceTest {
                 KlagebehandlingerSearchCriteria(
                     temaer = listOf(Tema.SYK),
                     foedselsnr = "123",
-                    extraPersonAndTema = KlagebehandlingerSearchCriteria.ExtraPersonAndTema(
+                    extraPersonAndTema = KlagebehandlingerSearchCriteria.ExtraPersonAndTemaOrYtelse(
                         foedselsnr = "456",
                         temaer = listOf(Tema.SYK),
                         ytelser = emptyList()
@@ -311,7 +311,7 @@ class EktefelleElasticsearchServiceTest {
                 KlagebehandlingerSearchCriteria(
                     temaer = listOf(Tema.SYK),
                     foedselsnr = "123",
-                    extraPersonAndTema = KlagebehandlingerSearchCriteria.ExtraPersonAndTema(
+                    extraPersonAndTema = KlagebehandlingerSearchCriteria.ExtraPersonAndTemaOrYtelse(
                         foedselsnr = "456",
                         temaer = emptyList(),
                         ytelser = listOf(Ytelse.SYK_SYK)
