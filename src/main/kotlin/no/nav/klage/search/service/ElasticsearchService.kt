@@ -222,15 +222,23 @@ open class ElasticsearchService(
         }
 
         extraPersonAndTema?.let { extraPerson ->
-            val innerFnrAndTemaEktefelleQuery = QueryBuilders.boolQuery()
-            combinedInnerFnrAndTemaOrYtelseQuery.should(innerFnrAndTemaEktefelleQuery)
+            val innerFnrAndTemaOrYtelseEktefelleQuery = QueryBuilders.boolQuery()
+            combinedInnerFnrAndTemaOrYtelseQuery.should(innerFnrAndTemaOrYtelseEktefelleQuery)
 
-            innerFnrAndTemaEktefelleQuery.must(QueryBuilders.termQuery("sakenGjelderFnr", extraPerson.foedselsnr))
+            innerFnrAndTemaOrYtelseEktefelleQuery.must(
+                QueryBuilders.termQuery(
+                    "sakenGjelderFnr",
+                    extraPerson.foedselsnr
+                )
+            )
 
             val innerTemaEktefelleQuery = QueryBuilders.boolQuery()
-            innerFnrAndTemaEktefelleQuery.must(innerTemaEktefelleQuery)
+            innerFnrAndTemaOrYtelseEktefelleQuery.must(innerTemaEktefelleQuery)
             extraPerson.temaer.forEach { tema ->
                 innerTemaEktefelleQuery.should(QueryBuilders.termQuery("tema", tema.id))
+            }
+            extraPerson.ytelser.forEach { ytelse ->
+                innerTemaEktefelleQuery.should(QueryBuilders.termQuery("ytelseId", ytelse.id))
             }
         }
 
@@ -419,22 +427,17 @@ open class ElasticsearchService(
     open fun findRelatedKlagebehandlinger(
         fnr: String,
         saksreferanse: String,
-        journalpostIder: List<String>
     ): RelatedKlagebehandlinger {
         val aapneByFnr = klagebehandlingerMedFoedselsnummer(fnr, true)
         val aapneBySaksreferanse = klagebehandlingerMedSaksreferanse(saksreferanse, true)
-        val aapneByJournalpostid = klagebehandlingerMedJournalpostId(journalpostIder, true)
         val avsluttedeByFnr = klagebehandlingerMedFoedselsnummer(fnr, false)
         val avsluttedeBySaksreferanse = klagebehandlingerMedSaksreferanse(saksreferanse, false)
-        val avsluttedeByJournalpostid = klagebehandlingerMedJournalpostId(journalpostIder, false)
         //TODO: Vi trenger vel neppe returnere hele klagebehandlingen.. Hva trenger vi å vise i gui?
         return RelatedKlagebehandlinger(
             aapneByFnr,
             avsluttedeByFnr,
             aapneBySaksreferanse,
             avsluttedeBySaksreferanse,
-            aapneByJournalpostid,
-            avsluttedeByJournalpostid
         )
     }
 
@@ -447,17 +450,6 @@ open class ElasticsearchService(
     private fun klagebehandlingerMedSaksreferanse(saksreferanse: String, aapen: Boolean): List<EsKlagebehandling> {
         return findWithBaseQueryAndAapen(
             QueryBuilders.boolQuery().must(QueryBuilders.termQuery("kildeReferanse", saksreferanse)), aapen
-        )
-    }
-
-    private fun klagebehandlingerMedJournalpostId(
-        journalpostIder: List<String>,
-        aapen: Boolean
-    ): List<EsKlagebehandling> {
-        return findWithBaseQueryAndAapen(
-            QueryBuilders.boolQuery()
-                .must(QueryBuilders.termsQuery("saksdokumenterJournalpostId", journalpostIder)),
-            aapen
         )
     }
 

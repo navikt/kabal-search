@@ -1,10 +1,9 @@
 package no.nav.klage.search.repositories
 
-import no.nav.klage.search.domain.kodeverk.Tema
 import no.nav.klage.search.domain.kodeverk.Ytelse
+import no.nav.klage.search.domain.kodeverk.ytelserPerEnhet
 import no.nav.klage.search.domain.saksbehandler.Enhet
 import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeYtelser
-import no.nav.klage.search.domain.saksbehandler.EnheterMedLovligeTemaer
 import no.nav.klage.search.domain.saksbehandler.EnheterMedLovligeYtelser
 import no.nav.klage.search.gateway.AxsysGateway
 import no.nav.klage.search.gateway.AzureGateway
@@ -36,22 +35,19 @@ class SaksbehandlerRepository(
         const val MAX_AMOUNT_IDENTS_IN_GRAPH_QUERY = 15
     }
 
-    fun harTilgangTilEnhetOgTema(ident: String, enhetId: String, tema: Tema): Boolean {
-        return getEnheterMedTemaerForSaksbehandler(ident).enheter.firstOrNull { it.enhetId == enhetId }?.temaer?.contains(
-            tema
+    fun harTilgangTilEnhetOgYtelse(ident: String, enhetId: String, ytelse: Ytelse): Boolean {
+        return getEnheterMedYtelserForSaksbehandler(ident).enheter.firstOrNull { it.enhet.enhetId == enhetId }?.ytelser?.contains(
+            ytelse
         ) ?: false
     }
 
     fun harTilgangTilEnhet(ident: String, enhetId: String): Boolean {
-        return getEnheterMedTemaerForSaksbehandler(ident).enheter.firstOrNull { it.enhetId == enhetId } != null
+        return getEnheterMedYtelserForSaksbehandler(ident).enheter.firstOrNull { it.enhet.enhetId == enhetId } != null
     }
 
-    fun harTilgangTilTema(ident: String, tema: Tema): Boolean {
-        return getEnheterMedTemaerForSaksbehandler(ident).enheter.flatMap { it.temaer }.contains(tema)
+    fun harTilgangTilYtelse(ident: String, ytelse: Ytelse): Boolean {
+        return getEnheterMedYtelserForSaksbehandler(ident).enheter.flatMap { it.ytelser }.contains(ytelse)
     }
-
-    fun getEnheterMedTemaerForSaksbehandler(ident: String): EnheterMedLovligeTemaer =
-        axsysGateway.getEnheterMedTemaerForSaksbehandler(ident)
 
     fun getEnheterMedYtelserForSaksbehandler(ident: String): EnheterMedLovligeYtelser =
         axsysGateway.getEnheterForSaksbehandler(ident).berikMedYtelser()
@@ -72,7 +68,6 @@ class SaksbehandlerRepository(
             logger.error("Fant ikke noen ytelse for enhet $enhet. Dette må legges til i kodebasen sporenstraks!")
             emptyList()
         }
-
 
 
     fun getNamesForSaksbehandlere(identer: Set<String>): Map<String, String> {

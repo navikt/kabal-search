@@ -9,12 +9,12 @@ enum class Ytelse(override val id: String, override val navn: String, override v
     OMS_PSB("3", "Pleiepenger sykt barn", "Pleiepenger sykt barn"),
     OMS_PLS("4", "Pleiepenger i livets sluttfase", "Pleiepenger i livets sluttfase"),
     SYK_SYK("5", "Sykepenger", "Sykepenger"),
+
     //TODO: Koordiner disse med andre apper som bruker dette kodeverket.
     FOR_FOR("6", "Foreldrepenger", "Foreldrepenger"),
     FOR_ENG("7", "Engangsstønad", "Engangsstønad"),
     FOR_SVA("8", "Svangerskapspenger", "Svangerskapspenger"),
     ;
-
 
     companion object {
         fun of(id: String): Ytelse {
@@ -24,7 +24,7 @@ enum class Ytelse(override val id: String, override val navn: String, override v
     }
 
     fun toTema(): Tema {
-        return when(this) {
+        return when (this) {
             OMS_OMP, OMS_OLP, OMS_PSB, OMS_PLS -> Tema.OMS
             SYK_SYK -> Tema.SYK
             FOR_FOR, FOR_ENG, FOR_SVA -> Tema.FOR
@@ -34,13 +34,15 @@ enum class Ytelse(override val id: String, override val navn: String, override v
 
 object LovligeYtelser {
     private val lovligeYtelserIProdGcp = EnumSet.of(Ytelse.OMS_OMP, Ytelse.OMS_OLP, Ytelse.OMS_PSB, Ytelse.OMS_PLS)
-    private val lovligeYtelserIDevGcp = EnumSet.of(Ytelse.OMS_OMP, Ytelse.OMS_OLP, Ytelse.OMS_PSB, Ytelse.OMS_PLS, Ytelse.SYK_SYK)
+    private val lovligeYtelserIDevGcp =
+        EnumSet.of(Ytelse.OMS_OMP, Ytelse.OMS_OLP, Ytelse.OMS_PSB, Ytelse.OMS_PLS, Ytelse.SYK_SYK)
 
-    fun lovligeYtelser(environment: Environment): EnumSet<Ytelse> = if (environment.activeProfiles.contains("prod-gcp")) {
-        lovligeYtelserIProdGcp
-    } else {
-        lovligeYtelserIDevGcp
-    }
+    fun lovligeYtelser(environment: Environment): EnumSet<Ytelse> =
+        if (environment.activeProfiles.contains("prod-gcp")) {
+            lovligeYtelserIProdGcp
+        } else {
+            lovligeYtelserIDevGcp
+        }
 }
 
 val ytelserPerEnhet = mapOf(

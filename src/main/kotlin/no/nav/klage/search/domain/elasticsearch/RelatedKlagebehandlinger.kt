@@ -5,6 +5,4 @@ data class RelatedKlagebehandlinger(
     val avsluttedeByFnr: List<EsKlagebehandling>,
     val aapneBySaksreferanse: List<EsKlagebehandling>,
     val avsluttedeBySaksreferanse: List<EsKlagebehandling>,
-    val aapneByJournalpostid: List<EsKlagebehandling>,
-    val avsluttedeByJournalpostid: List<EsKlagebehandling>
 )
