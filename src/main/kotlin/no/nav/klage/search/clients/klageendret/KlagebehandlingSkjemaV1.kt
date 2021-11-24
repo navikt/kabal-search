@@ -9,6 +9,7 @@ data class KlagebehandlingSkjemaV1(
     val klagersProsessfullmektig: PersonEllerOrganisasjon?,
     val sakenGjelder: PersonEllerOrganisasjon,
     val tema: Kode,
+    val ytelse: Kode?,
     val type: Kode,
     val kildeReferanse: String,
     val sakFagsystem: Kode?,

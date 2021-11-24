@@ -45,13 +45,10 @@
     "tema": {
       "type": "keyword"
     },
-    "temaNavn": {
+    "ytelseId": {
       "type": "keyword"
     },
     "type": {
-      "type": "keyword"
-    },
-    "typeNavn": {
       "type": "keyword"
     },
     "kildeReferanse": {

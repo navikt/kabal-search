@@ -1,7 +1,10 @@
 package no.nav.klage.search.repositories
 
-import no.nav.klage.search.domain.kodeverk.Tema
-import no.nav.klage.search.domain.saksbehandler.EnheterMedLovligeTemaer
+import no.nav.klage.search.domain.kodeverk.Ytelse
+import no.nav.klage.search.domain.kodeverk.ytelserPerEnhet
+import no.nav.klage.search.domain.saksbehandler.Enhet
+import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeYtelser
+import no.nav.klage.search.domain.saksbehandler.EnheterMedLovligeYtelser
 import no.nav.klage.search.gateway.AxsysGateway
 import no.nav.klage.search.gateway.AzureGateway
 import no.nav.klage.search.util.getLogger
@@ -32,22 +35,40 @@ class SaksbehandlerRepository(
         const val MAX_AMOUNT_IDENTS_IN_GRAPH_QUERY = 15
     }
 
-    fun harTilgangTilEnhetOgTema(ident: String, enhetId: String, tema: Tema): Boolean {
-        return getEnheterMedTemaerForSaksbehandler(ident).enheter.firstOrNull { it.enhetId == enhetId }?.temaer?.contains(
-            tema
+    fun harTilgangTilEnhetOgYtelse(ident: String, enhetId: String, ytelse: Ytelse): Boolean {
+        return getEnheterMedYtelserForSaksbehandler(ident).enheter.firstOrNull { it.enhet.enhetId == enhetId }?.ytelser?.contains(
+            ytelse
         ) ?: false
     }
 
     fun harTilgangTilEnhet(ident: String, enhetId: String): Boolean {
-        return getEnheterMedTemaerForSaksbehandler(ident).enheter.firstOrNull { it.enhetId == enhetId } != null
+        return getEnheterMedYtelserForSaksbehandler(ident).enheter.firstOrNull { it.enhet.enhetId == enhetId } != null
     }
 
-    fun harTilgangTilTema(ident: String, tema: Tema): Boolean {
-        return getEnheterMedTemaerForSaksbehandler(ident).enheter.flatMap { it.temaer }.contains(tema)
+    fun harTilgangTilYtelse(ident: String, ytelse: Ytelse): Boolean {
+        return getEnheterMedYtelserForSaksbehandler(ident).enheter.flatMap { it.ytelser }.contains(ytelse)
     }
 
-    fun getEnheterMedTemaerForSaksbehandler(ident: String): EnheterMedLovligeTemaer =
-        axsysGateway.getEnheterMedTemaerForSaksbehandler(ident)
+    fun getEnheterMedYtelserForSaksbehandler(ident: String): EnheterMedLovligeYtelser =
+        axsysGateway.getEnheterForSaksbehandler(ident).berikMedYtelser()
+
+    private fun List<Enhet>.berikMedYtelser(): EnheterMedLovligeYtelser {
+        return EnheterMedLovligeYtelser(this.map {
+            EnhetMedLovligeYtelser(
+                enhet = it,
+                ytelser = getYtelserForEnhet(it)
+            )
+        })
+    }
+
+    private fun getYtelserForEnhet(enhet: Enhet): List<Ytelse> =
+        if (ytelserPerEnhet.containsKey(enhet.enhetId)) {
+            ytelserPerEnhet[enhet.enhetId]!!
+        } else {
+            logger.error("Fant ikke noen ytelse for enhet $enhet. Dette må legges til i kodebasen sporenstraks!")
+            emptyList()
+        }
+
 
     fun getNamesForSaksbehandlere(identer: Set<String>): Map<String, String> {
         logger.debug("Fetching names for saksbehandlere from Microsoft Graph")

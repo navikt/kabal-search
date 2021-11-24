@@ -200,34 +200,45 @@ open class ElasticsearchService(
 
         addSecurityFilters(baseQuery)
 
-        val combinedInnerFnrAndTemaQuery = QueryBuilders.boolQuery()
-        baseQuery.must(combinedInnerFnrAndTemaQuery)
+        val combinedInnerFnrAndTemaOrYtelseQuery = QueryBuilders.boolQuery()
+        baseQuery.must(combinedInnerFnrAndTemaOrYtelseQuery)
 
-        val innerFnrAndTemaQuery = QueryBuilders.boolQuery()
-        combinedInnerFnrAndTemaQuery.should(innerFnrAndTemaQuery)
+        val innerFnrAndTemaOrYtelseQuery = QueryBuilders.boolQuery()
+        combinedInnerFnrAndTemaOrYtelseQuery.should(innerFnrAndTemaOrYtelseQuery)
 
         val innerQueryFnr = QueryBuilders.boolQuery()
-        innerFnrAndTemaQuery.must(innerQueryFnr)
+        innerFnrAndTemaOrYtelseQuery.must(innerQueryFnr)
         foedselsnr?.let {
             innerQueryFnr.should(QueryBuilders.termQuery("sakenGjelderFnr", it))
         }
 
-        val innerQueryTema = QueryBuilders.boolQuery()
-        innerFnrAndTemaQuery.must(innerQueryTema)
+        val innerQueryTemaOrYtelse = QueryBuilders.boolQuery()
+        innerFnrAndTemaOrYtelseQuery.must(innerQueryTemaOrYtelse)
         temaer.forEach {
-            innerQueryTema.should(QueryBuilders.termQuery("tema", it.id))
+            innerQueryTemaOrYtelse.should(QueryBuilders.termQuery("tema", it.id))
+        }
+        ytelser.forEach {
+            innerQueryTemaOrYtelse.should(QueryBuilders.termQuery("ytelseId", it.id))
         }
 
         extraPersonAndTema?.let { extraPerson ->
-            val innerFnrAndTemaEktefelleQuery = QueryBuilders.boolQuery()
-            combinedInnerFnrAndTemaQuery.should(innerFnrAndTemaEktefelleQuery)
+            val innerFnrAndTemaOrYtelseEktefelleQuery = QueryBuilders.boolQuery()
+            combinedInnerFnrAndTemaOrYtelseQuery.should(innerFnrAndTemaOrYtelseEktefelleQuery)
 
-            innerFnrAndTemaEktefelleQuery.must(QueryBuilders.termQuery("sakenGjelderFnr", extraPerson.foedselsnr))
+            innerFnrAndTemaOrYtelseEktefelleQuery.must(
+                QueryBuilders.termQuery(
+                    "sakenGjelderFnr",
+                    extraPerson.foedselsnr
+                )
+            )
 
             val innerTemaEktefelleQuery = QueryBuilders.boolQuery()
-            innerFnrAndTemaEktefelleQuery.must(innerTemaEktefelleQuery)
+            innerFnrAndTemaOrYtelseEktefelleQuery.must(innerTemaEktefelleQuery)
             extraPerson.temaer.forEach { tema ->
                 innerTemaEktefelleQuery.should(QueryBuilders.termQuery("tema", tema.id))
+            }
+            extraPerson.ytelser.forEach { ytelse ->
+                innerTemaEktefelleQuery.should(QueryBuilders.termQuery("ytelseId", ytelse.id))
             }
         }
 
@@ -416,22 +427,17 @@ open class ElasticsearchService(
     open fun findRelatedKlagebehandlinger(
         fnr: String,
         saksreferanse: String,
-        journalpostIder: List<String>
     ): RelatedKlagebehandlinger {
         val aapneByFnr = klagebehandlingerMedFoedselsnummer(fnr, true)
         val aapneBySaksreferanse = klagebehandlingerMedSaksreferanse(saksreferanse, true)
-        val aapneByJournalpostid = klagebehandlingerMedJournalpostId(journalpostIder, true)
         val avsluttedeByFnr = klagebehandlingerMedFoedselsnummer(fnr, false)
         val avsluttedeBySaksreferanse = klagebehandlingerMedSaksreferanse(saksreferanse, false)
-        val avsluttedeByJournalpostid = klagebehandlingerMedJournalpostId(journalpostIder, false)
         //TODO: Vi trenger vel neppe returnere hele klagebehandlingen.. Hva trenger vi å vise i gui?
         return RelatedKlagebehandlinger(
             aapneByFnr,
             avsluttedeByFnr,
             aapneBySaksreferanse,
             avsluttedeBySaksreferanse,
-            aapneByJournalpostid,
-            avsluttedeByJournalpostid
         )
     }
 
@@ -444,17 +450,6 @@ open class ElasticsearchService(
     private fun klagebehandlingerMedSaksreferanse(saksreferanse: String, aapen: Boolean): List<EsKlagebehandling> {
         return findWithBaseQueryAndAapen(
             QueryBuilders.boolQuery().must(QueryBuilders.termQuery("kildeReferanse", saksreferanse)), aapen
-        )
-    }
-
-    private fun klagebehandlingerMedJournalpostId(
-        journalpostIder: List<String>,
-        aapen: Boolean
-    ): List<EsKlagebehandling> {
-        return findWithBaseQueryAndAapen(
-            QueryBuilders.boolQuery()
-                .must(QueryBuilders.termsQuery("saksdokumenterJournalpostId", journalpostIder)),
-            aapen
         )
     }
 

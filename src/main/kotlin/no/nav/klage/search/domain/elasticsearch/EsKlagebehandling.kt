@@ -49,11 +49,9 @@ data class EsKlagebehandling(
     @Field(type = FieldType.Keyword)
     val tema: String,
     @Field(type = FieldType.Keyword)
-    val temaNavn: String,
+    val ytelseId: String?,
     @Field(type = FieldType.Keyword)
     val type: String,
-    @Field(type = FieldType.Keyword)
-    val typeNavn: String,
 
     @Field(type = FieldType.Keyword)
     val kildeReferanse: String? = null,

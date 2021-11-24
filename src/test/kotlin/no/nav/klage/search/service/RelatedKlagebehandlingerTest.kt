@@ -10,9 +10,11 @@ import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.UKJENT
 import no.nav.klage.search.domain.kodeverk.MedunderskriverFlyt
 import no.nav.klage.search.domain.kodeverk.Tema
 import no.nav.klage.search.domain.kodeverk.Type
+import no.nav.klage.search.domain.kodeverk.Ytelse
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.SoftAssertions
 import org.elasticsearch.index.query.QueryBuilders
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -87,13 +89,13 @@ class RelatedKlagebehandlingerTest {
         id: Long,
         fnr: String,
         saksreferanse: String?,
-        journalpostIder: List<String>,
         aapen: Boolean
     ) =
         EsKlagebehandling(
             id = id.toString(),
             tildeltEnhet = "4219",
             tema = Tema.OMS.id,
+            ytelseId = Ytelse.OMS_OMP.id,
             type = Type.KLAGE.id,
             tildeltSaksbehandlerident = null,
             innsendt = LocalDate.now(),
@@ -116,9 +118,6 @@ class RelatedKlagebehandlingerTest {
             created = LocalDateTime.now(),
             modified = LocalDateTime.now(),
             kilde = "K9",
-            saksdokumenterJournalpostId = journalpostIder,
-            temaNavn = Tema.OMS.name,
-            typeNavn = Type.KLAGE.name,
             status = UKJENT,
             medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
         )
@@ -128,12 +127,12 @@ class RelatedKlagebehandlingerTest {
     fun `saving klagebehandlinger for later tests`() {
 
         val klagebehandlinger = listOf(
-            klagebehandling(1001L, "01019012345", "AAA123", listOf(), true),
-            klagebehandling(1002L, "02019012345", "AAA123", listOf(), false),
-            klagebehandling(1003L, "03019012345", "BBB123", listOf(), true),
-            klagebehandling(1004L, "01019012345", "BBB123", listOf(), false),
-            klagebehandling(1005L, "02019012345", "CCC123", listOf("111222", "333444"), true),
-            klagebehandling(1006L, "03019012345", "CCC123", listOf("333444", "555666"), false)
+            klagebehandling(1001L, "01019012345", "AAA123", true),
+            klagebehandling(1002L, "02019012345", "AAA123", false),
+            klagebehandling(1003L, "03019012345", "BBB123", true),
+            klagebehandling(1004L, "01019012345", "BBB123", false),
+            klagebehandling(1005L, "02019012345", "CCC123", true),
+            klagebehandling(1006L, "03019012345", "CCC123", false)
         )
         repo.saveAll(klagebehandlinger)
 
@@ -147,13 +146,13 @@ class RelatedKlagebehandlingerTest {
     @Test
     @Order(4)
     fun `related klagebehandlinger gives correct answer`() {
-        val related = service.findRelatedKlagebehandlinger("01019012345", "AAA123", listOf("333444", "777888"))
-        assertThat(related.aapneByFnr.map { it.id }).containsExactly("1001")
-        assertThat(related.avsluttedeByFnr.map { it.id }).containsExactly("1004")
-        assertThat(related.aapneBySaksreferanse.map { it.id }).containsExactly("1001")
-        assertThat(related.avsluttedeBySaksreferanse.map { it.id }).containsExactly("1002")
-        assertThat(related.aapneByJournalpostid.map { it.id }).containsExactly("1005")
-        assertThat(related.avsluttedeByJournalpostid.map { it.id }).containsExactly("1006")
+        val related = service.findRelatedKlagebehandlinger("01019012345", "AAA123")
+        val softly = SoftAssertions()
+        softly.assertThat(related.aapneByFnr.map { it.id }).containsExactly("1001")
+        softly.assertThat(related.avsluttedeByFnr.map { it.id }).containsExactly("1004")
+        softly.assertThat(related.aapneBySaksreferanse.map { it.id }).containsExactly("1001")
+        softly.assertThat(related.avsluttedeBySaksreferanse.map { it.id }).containsExactly("1002")
+        softly.assertAll()
     }
 
     @Test

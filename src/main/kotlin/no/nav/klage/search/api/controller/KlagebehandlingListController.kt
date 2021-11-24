@@ -5,9 +5,11 @@ import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
 import no.nav.klage.search.api.mapper.KlagebehandlingListMapper
 import no.nav.klage.search.api.mapper.KlagebehandlingerSearchCriteriaMapper
-import no.nav.klage.search.api.view.*
+import no.nav.klage.search.api.view.AntallUtgaatteFristerResponse
+import no.nav.klage.search.api.view.KlagebehandlingerListRespons
+import no.nav.klage.search.api.view.KlagebehandlingerQueryParams
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
-import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeTemaer
+import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeYtelser
 import no.nav.klage.search.exceptions.MissingTilgangException
 import no.nav.klage.search.exceptions.NotMatchingUserException
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
@@ -15,7 +17,10 @@ import no.nav.klage.search.service.ElasticsearchService
 import no.nav.klage.search.service.SaksbehandlerService
 import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @Api(tags = ["kabal-search"])
@@ -50,15 +55,16 @@ class KlagebehandlingListController(
 
         validateRettigheter(queryParams, navIdent)
 
-        val valgtEnhet = enhetFromInputOrInnstillinger(queryParams.enhet)
+        val valgtEnhet = getEnhetOrThrowException(queryParams.enhet)
         val searchCriteria = if (queryParams.temaer.isEmpty()) {
             klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
                 navIdent,
-                queryParams.copy(temaer = valgtEnhet.temaer.map { it.id }),
-                valgtEnhet
+                queryParams.copy(
+                    ytelser = valgtEnhet.ytelser.map { it.id }),
+                valgtEnhet.enhet
             )
         } else {
-            klagebehandlingerSearchCriteriaMapper.toSearchCriteria(navIdent, queryParams, valgtEnhet)
+            klagebehandlingerSearchCriteriaMapper.toSearchCriteria(navIdent, queryParams, valgtEnhet.enhet)
         }
 
         val esResponse = elasticsearchService.findByCriteria(searchCriteria)
@@ -69,7 +75,7 @@ class KlagebehandlingListController(
                 searchCriteria.isProjectionUtvidet(),
                 searchCriteria.ferdigstiltFom != null,
                 searchCriteria.saksbehandler,
-                valgtEnhet.temaer
+                valgtEnhet.ytelser
             )
         )
     }
@@ -126,8 +132,8 @@ class KlagebehandlingListController(
         }
     }
 
-    private fun enhetFromInputOrInnstillinger(enhetId: String): EnhetMedLovligeTemaer =
-        saksbehandlerService.getEnheterMedTemaerForSaksbehandler().enheter.find { it.enhetId == enhetId }
+    private fun getEnhetOrThrowException(enhetId: String): EnhetMedLovligeYtelser =
+        saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter.find { it.enhet.enhetId == enhetId }
             ?: throw IllegalArgumentException("Saksbehandler har ikke tilgang til angitt enhet")
 }
 

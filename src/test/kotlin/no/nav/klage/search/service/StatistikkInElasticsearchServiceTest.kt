@@ -9,6 +9,7 @@ import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.UKJENT
 import no.nav.klage.search.domain.kodeverk.MedunderskriverFlyt
 import no.nav.klage.search.domain.kodeverk.Tema
 import no.nav.klage.search.domain.kodeverk.Type
+import no.nav.klage.search.domain.kodeverk.Ytelse
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import org.assertj.core.api.Assertions.assertThat
@@ -88,6 +89,7 @@ class StatistikkInElasticsearchServiceTest {
             id = id.toString(),
             tildeltEnhet = "4219",
             tema = Tema.OMS.id,
+            ytelseId = Ytelse.OMS_OMP.id,
             type = Type.KLAGE.id,
             tildeltSaksbehandlerident = null,
             innsendt = innsendt,
@@ -100,8 +102,6 @@ class StatistikkInElasticsearchServiceTest {
             created = LocalDateTime.now(),
             modified = LocalDateTime.now(),
             kilde = "K9",
-            temaNavn = Tema.OMS.name,
-            typeNavn = Type.KLAGE.name,
             status = UKJENT,
             medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
         )
