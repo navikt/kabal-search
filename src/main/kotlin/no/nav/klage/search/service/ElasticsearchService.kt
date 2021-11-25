@@ -200,45 +200,39 @@ open class ElasticsearchService(
 
         addSecurityFilters(baseQuery)
 
-        val combinedInnerFnrAndTemaOrYtelseQuery = QueryBuilders.boolQuery()
-        baseQuery.must(combinedInnerFnrAndTemaOrYtelseQuery)
+        val combinedInnerFnrAndYtelseQuery = QueryBuilders.boolQuery()
+        baseQuery.must(combinedInnerFnrAndYtelseQuery)
 
-        val innerFnrAndTemaOrYtelseQuery = QueryBuilders.boolQuery()
-        combinedInnerFnrAndTemaOrYtelseQuery.should(innerFnrAndTemaOrYtelseQuery)
+        val innerFnrAndYtelseQuery = QueryBuilders.boolQuery()
+        combinedInnerFnrAndYtelseQuery.should(innerFnrAndYtelseQuery)
 
         val innerQueryFnr = QueryBuilders.boolQuery()
-        innerFnrAndTemaOrYtelseQuery.must(innerQueryFnr)
+        innerFnrAndYtelseQuery.must(innerQueryFnr)
         foedselsnr?.let {
             innerQueryFnr.should(QueryBuilders.termQuery("sakenGjelderFnr", it))
         }
 
-        val innerQueryTemaOrYtelse = QueryBuilders.boolQuery()
-        innerFnrAndTemaOrYtelseQuery.must(innerQueryTemaOrYtelse)
-        temaer.forEach {
-            innerQueryTemaOrYtelse.should(QueryBuilders.termQuery("tema", it.id))
-        }
+        val innerQueryYtelse = QueryBuilders.boolQuery()
+        innerFnrAndYtelseQuery.must(innerQueryYtelse)
         ytelser.forEach {
-            innerQueryTemaOrYtelse.should(QueryBuilders.termQuery("ytelseId", it.id))
+            innerQueryYtelse.should(QueryBuilders.termQuery("ytelseId", it.id))
         }
 
-        extraPersonAndTema?.let { extraPerson ->
-            val innerFnrAndTemaOrYtelseEktefelleQuery = QueryBuilders.boolQuery()
-            combinedInnerFnrAndTemaOrYtelseQuery.should(innerFnrAndTemaOrYtelseEktefelleQuery)
+        extraPersonWithYtelser?.let { extraPerson ->
+            val innerFnrAndYtelseEktefelleQuery = QueryBuilders.boolQuery()
+            combinedInnerFnrAndYtelseQuery.should(innerFnrAndYtelseEktefelleQuery)
 
-            innerFnrAndTemaOrYtelseEktefelleQuery.must(
+            innerFnrAndYtelseEktefelleQuery.must(
                 QueryBuilders.termQuery(
                     "sakenGjelderFnr",
                     extraPerson.foedselsnr
                 )
             )
 
-            val innerTemaEktefelleQuery = QueryBuilders.boolQuery()
-            innerFnrAndTemaOrYtelseEktefelleQuery.must(innerTemaEktefelleQuery)
-            extraPerson.temaer.forEach { tema ->
-                innerTemaEktefelleQuery.should(QueryBuilders.termQuery("tema", tema.id))
-            }
+            val innerYtelseEktefelleQuery = QueryBuilders.boolQuery()
+            innerFnrAndYtelseEktefelleQuery.must(innerYtelseEktefelleQuery)
             extraPerson.ytelser.forEach { ytelse ->
-                innerTemaEktefelleQuery.should(QueryBuilders.termQuery("ytelseId", ytelse.id))
+                innerYtelseEktefelleQuery.should(QueryBuilders.termQuery("ytelseId", ytelse.id))
             }
         }
 

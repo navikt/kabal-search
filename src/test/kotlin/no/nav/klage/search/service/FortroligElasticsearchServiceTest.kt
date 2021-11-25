@@ -248,7 +248,7 @@ class FortroligElasticsearchServiceTest {
         val klagebehandlinger: List<EsKlagebehandling> =
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
-                    temaer = listOf(Tema.OMS),
+                    ytelser = listOf(Ytelse.OMS_OMP),
                     offset = 0,
                     limit = 10
                 )
@@ -265,7 +265,7 @@ class FortroligElasticsearchServiceTest {
         val klagebehandlinger: List<EsKlagebehandling> =
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
-                    temaer = listOf(Tema.OMS),
+                    ytelser = listOf(Ytelse.OMS_OMP),
                     offset = 0,
                     limit = 10
                 )
@@ -282,7 +282,7 @@ class FortroligElasticsearchServiceTest {
         val klagebehandlinger: List<EsKlagebehandling> =
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
-                    temaer = listOf(Tema.OMS),
+                    ytelser = listOf(Ytelse.OMS_OMP),
                     offset = 0,
                     limit = 10
                 )
@@ -302,7 +302,7 @@ class FortroligElasticsearchServiceTest {
         val klagebehandlinger: List<EsKlagebehandling> =
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
-                    temaer = listOf(Tema.OMS),
+                    ytelser = listOf(Ytelse.OMS_OMP),
                     offset = 0,
                     limit = 10
                 )
@@ -322,7 +322,7 @@ class FortroligElasticsearchServiceTest {
         val klagebehandlinger: List<EsKlagebehandling> =
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
-                    temaer = listOf(Tema.OMS),
+                    ytelser = listOf(Ytelse.OMS_OMP),
                     offset = 0,
                     limit = 10
                 )
@@ -341,7 +341,7 @@ class FortroligElasticsearchServiceTest {
         val klagebehandlinger: List<EsKlagebehandling> =
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
-                    temaer = listOf(Tema.OMS),
+                    ytelser = listOf(Ytelse.OMS_OMP),
                     offset = 0,
                     limit = 10
                 )
@@ -361,7 +361,7 @@ class FortroligElasticsearchServiceTest {
         val klagebehandlinger: List<EsKlagebehandling> =
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
-                    temaer = listOf(Tema.OMS),
+                    ytelser = listOf(Ytelse.OMS_OMP),
                     offset = 0,
                     limit = 10
                 )
@@ -383,7 +383,7 @@ class FortroligElasticsearchServiceTest {
         val klagebehandlinger: List<EsKlagebehandling> =
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
-                    temaer = listOf(Tema.OMS),
+                    ytelser = listOf(Ytelse.OMS_OMP),
                     offset = 0,
                     limit = 10
                 )

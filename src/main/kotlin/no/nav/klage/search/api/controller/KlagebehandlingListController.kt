@@ -56,7 +56,7 @@ class KlagebehandlingListController(
         validateRettigheter(queryParams, navIdent)
 
         val valgtEnhet = getEnhetOrThrowException(queryParams.enhet)
-        val searchCriteria = if (queryParams.temaer.isEmpty()) {
+        val searchCriteria = if (queryParams.ytelser.isEmpty()) {
             klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
                 navIdent,
                 queryParams.copy(

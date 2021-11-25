@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
 import org.springframework.kafka.core.ConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
-import org.springframework.kafka.listener.ContainerProperties
 import org.springframework.kafka.listener.ContainerProperties.AckMode
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
@@ -44,7 +43,7 @@ class AivenKafkaConfiguration(
     fun egenAnsattKafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String> {
         val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
         factory.consumerFactory = egenAnsattConsumerFactory()
-        factory.containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
+        factory.containerProperties.ackMode = AckMode.MANUAL_IMMEDIATE
         factory.containerProperties.idleEventInterval = 3000L
         factory.setErrorHandler { thrownException, data ->
             logger.error("Could not process record. See secure logs for details.")
