@@ -45,7 +45,7 @@ class KlagebehandlingerSearchCriteriaMapper {
         offset = queryParams.start,
         limit = queryParams.antall,
         erTildeltSaksbehandler = queryParams.erTildeltSaksbehandler,
-        saksbehandler = queryParams.tildeltSaksbehandler,
+        saksbehandlere = queryParams.tildeltSaksbehandler,
         projection = queryParams.projeksjon?.let { KlagebehandlingerSearchCriteria.Projection.valueOf(it.name) },
         sortField = if (queryParams.sortering == KlagebehandlingerQueryParams.Sortering.MOTTATT) {
             KlagebehandlingerSearchCriteria.SortField.MOTTATT
