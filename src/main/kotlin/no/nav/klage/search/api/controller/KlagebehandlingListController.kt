@@ -86,7 +86,7 @@ class KlagebehandlingListController(
         value = "Hent saksbehandlere i gitt enhet",
         notes = "Henter alle saksbehandlere fra aktive saker i gitt enhet."
     )
-    @GetMapping("/{navIdent}/enhet/{enhet}/saksbehandlere", produces = ["application/json"])
+    @GetMapping("/{navIdent}/enheter/{enhet}/saksbehandlere", produces = ["application/json"])
     fun getSaksbehandlereForEnhet(
         @ApiParam(value = "NavIdent til en ansatt")
         @PathVariable navIdent: String,
