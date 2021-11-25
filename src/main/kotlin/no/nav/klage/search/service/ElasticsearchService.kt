@@ -125,6 +125,7 @@ open class ElasticsearchService(
             .build()
         val searchHits: SearchHits<EsKlagebehandling> = esTemplate.search(query, EsKlagebehandling::class.java)
 
+        //Sort results by etternavn
         return searchHits.map {
             (it.content.tildeltSaksbehandlerident
                 ?: throw RuntimeException("tildeltSaksbehandlerident is null. Can't happen")) to
