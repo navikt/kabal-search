@@ -214,7 +214,7 @@ open class ElasticsearchService(
         addSecurityFilters(baseQuery)
 
         baseQuery.mustNot(QueryBuilders.existsQuery("avsluttetAvSaksbehandler"))
-        baseQuery.must(QueryBuilders.termQuery("tildeltEnhet", enhetId))
+        baseQuery.must(QueryBuilders.termQuery("tildeltEnhet", enhet))
         baseQuery.must(QueryBuilders.existsQuery("tildeltSaksbehandlerident"))
 
         logger.debug("Making search request with query {}", baseQuery.toString())

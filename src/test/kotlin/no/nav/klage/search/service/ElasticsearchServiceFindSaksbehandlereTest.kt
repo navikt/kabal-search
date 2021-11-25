@@ -107,7 +107,7 @@ class ElasticsearchServiceFindSaksbehandlereTest {
         val saksbehandlere =
             service.findSaksbehandlereByEnhetCriteria(
                 SaksbehandlereByEnhetSearchCriteria(
-                    enhetId = "4219"
+                    enhet = "4219"
                 )
             )
         assertThat(saksbehandlere.size).isEqualTo(4L)

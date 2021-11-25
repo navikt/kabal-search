@@ -102,7 +102,7 @@ class KlagebehandlingListController(
 
         val esResponse = elasticsearchService.findSaksbehandlereByEnhetCriteria(
             SaksbehandlereByEnhetSearchCriteria(
-                enhetId = enhet,
+                enhet = enhet,
             )
         )
         return SaksbehandlereListResponse(
