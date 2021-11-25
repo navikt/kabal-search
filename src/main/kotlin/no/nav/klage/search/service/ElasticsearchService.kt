@@ -3,6 +3,7 @@ package no.nav.klage.search.service
 import no.finn.unleash.Unleash
 import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
 import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria.Statuskategori.*
+import no.nav.klage.search.domain.SaksbehandlereByEnhetSearchCriteria
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.*
 import no.nav.klage.search.domain.elasticsearch.KlageStatistikk
@@ -33,6 +34,7 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import org.springframework.data.elasticsearch.core.query.Query
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.util.*
 
 
 open class ElasticsearchService(
@@ -117,6 +119,19 @@ open class ElasticsearchService(
         return searchHits
     }
 
+    open fun findSaksbehandlereByEnhetCriteria(criteria: SaksbehandlereByEnhetSearchCriteria): SortedSet<Pair<String, String>> {
+        val query: Query = NativeSearchQueryBuilder()
+            .withQuery(criteria.toEsQuery())
+            .build()
+        val searchHits: SearchHits<EsKlagebehandling> = esTemplate.search(query, EsKlagebehandling::class.java)
+
+        return searchHits.map {
+            (it.content.tildeltSaksbehandlerident
+                ?: throw RuntimeException("tildeltSaksbehandlerident is null. Can't happen")) to
+                    (it.content.tildeltSaksbehandlernavn ?: "Navn mangler")
+        }.toSortedSet(compareBy<Pair<String, String>> { it.second.split(" ").last() })
+    }
+
     open fun countIkkeTildelt(): Long {
         return countByStatus(IKKE_TILDELT)
     }
@@ -191,6 +206,19 @@ open class ElasticsearchService(
         val page: Int = (criteria.offset / criteria.limit)
         val size: Int = criteria.limit
         return PageRequest.of(page, size)
+    }
+
+    private fun SaksbehandlereByEnhetSearchCriteria.toEsQuery(): QueryBuilder {
+        logger.debug("Search criteria: {}", this)
+        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
+        addSecurityFilters(baseQuery)
+
+        baseQuery.mustNot(QueryBuilders.existsQuery("avsluttetAvSaksbehandler"))
+        baseQuery.must(QueryBuilders.termQuery("tildeltEnhet", enhetId))
+        baseQuery.must(QueryBuilders.existsQuery("tildeltSaksbehandlerident"))
+
+        logger.debug("Making search request with query {}", baseQuery.toString())
+        return baseQuery
     }
 
     private fun KlagebehandlingerSearchCriteria.toEsQuery(): QueryBuilder {

@@ -8,7 +8,9 @@ import no.nav.klage.search.api.mapper.KlagebehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.AntallUtgaatteFristerResponse
 import no.nav.klage.search.api.view.KlagebehandlingerListRespons
 import no.nav.klage.search.api.view.KlagebehandlingerQueryParams
+import no.nav.klage.search.api.view.SaksbehandlereListResponse
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
+import no.nav.klage.search.domain.SaksbehandlereByEnhetSearchCriteria
 import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeYtelser
 import no.nav.klage.search.exceptions.MissingTilgangException
 import no.nav.klage.search.exceptions.NotMatchingUserException
@@ -80,6 +82,39 @@ class KlagebehandlingListController(
         )
     }
 
+    @ApiOperation(
+        value = "Hent saksbehandlere i gitt enhet",
+        notes = "Henter alle saksbehandlere fra aktive saker i gitt enhet."
+    )
+    @GetMapping("/{navIdent}/enhet/{enhet}/saksbehandlere", produces = ["application/json"])
+    fun getSaksbehandlereForEnhet(
+        @ApiParam(value = "NavIdent til en ansatt")
+        @PathVariable navIdent: String,
+        @ApiParam(value = "Enhet")
+        @PathVariable enhet: String
+    ): SaksbehandlereListResponse {
+        logger.debug("getSaksbehandlereForEnhet")
+        validateNavIdent(navIdent)
+
+        if (!saksbehandlerService.hasSaksbehandlerAccessToEnhet(enhet)) {
+            throw MissingTilgangException("Saksbehandler $navIdent does not have access to enhet $enhet")
+        }
+
+        val esResponse = elasticsearchService.findSaksbehandlereByEnhetCriteria(
+            SaksbehandlereByEnhetSearchCriteria(
+                enhetId = enhet,
+            )
+        )
+        return SaksbehandlereListResponse(
+            saksbehandlere = esResponse.map {
+                SaksbehandlereListResponse.SaksbehandlerView(
+                    navIdent = it.first,
+                    navn = it.second
+                )
+            }
+        )
+    }
+
     /*
         Does user have the rights to get all tildelte oppgaver?
      */
@@ -96,6 +131,7 @@ class KlagebehandlingListController(
         }
     }
 
+    //TODO Denne burde sees på ved anledning
     private fun canSeeTildelteOppgaver() = innloggetSaksbehandlerRepository.isLeder() ||
             innloggetSaksbehandlerRepository.isFagansvarlig() || true
 
