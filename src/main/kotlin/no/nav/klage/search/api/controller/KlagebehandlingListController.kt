@@ -8,7 +8,9 @@ import no.nav.klage.search.api.mapper.KlagebehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.AntallUtgaatteFristerResponse
 import no.nav.klage.search.api.view.KlagebehandlingerListRespons
 import no.nav.klage.search.api.view.KlagebehandlingerQueryParams
+import no.nav.klage.search.api.view.SaksbehandlereListResponse
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
+import no.nav.klage.search.domain.SaksbehandlereByEnhetSearchCriteria
 import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeYtelser
 import no.nav.klage.search.exceptions.MissingTilgangException
 import no.nav.klage.search.exceptions.NotMatchingUserException
@@ -96,6 +98,7 @@ class KlagebehandlingListController(
         }
     }
 
+    //TODO Denne burde sees på ved anledning
     private fun canSeeTildelteOppgaver() = innloggetSaksbehandlerRepository.isLeder() ||
             innloggetSaksbehandlerRepository.isFagansvarlig() || true
 
