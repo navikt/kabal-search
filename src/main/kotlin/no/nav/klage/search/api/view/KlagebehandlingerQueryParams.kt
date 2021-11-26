@@ -14,7 +14,7 @@ data class KlagebehandlingerQueryParams(
     val antall: Int,
     val projeksjon: Projeksjon? = null,
     val erTildeltSaksbehandler: Boolean? = null,
-    val tildeltSaksbehandler: List<String> = emptyList(),
+    var tildeltSaksbehandler: List<String> = emptyList(),
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     val ferdigstiltFom: LocalDate? = null,
     val ferdigstiltDaysAgo: Long? = null,
