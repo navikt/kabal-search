@@ -27,7 +27,7 @@ class KlagebehandlingListMapper {
                 esKlagebehandlinger = personSearchResponse.klagebehandlinger,
                 viseUtvidet = false,
                 viseFullfoerte = true,
-                saksbehandler = saksbehandler,
+                saksbehandlere = listOf(saksbehandler),
                 tilgangTilYtelser = tilgangTilYtelser
             )
         return FnrSearchResponse(
@@ -47,7 +47,7 @@ class KlagebehandlingListMapper {
         esKlagebehandlinger: List<EsKlagebehandling>,
         viseUtvidet: Boolean,
         viseFullfoerte: Boolean,
-        saksbehandler: String?,
+        saksbehandlere: List<String>,
         tilgangTilYtelser: List<Ytelse>,
         sivilstand: Sivilstand? = null
     ): List<KlagebehandlingListView> {
@@ -70,7 +70,7 @@ class KlagebehandlingListMapper {
                 frist = esKlagebehandling.frist,
                 mottatt = esKlagebehandling.mottattKlageinstans.toLocalDate(),
                 harMedunderskriver = esKlagebehandling.medunderskriverident != null,
-                erMedunderskriver = esKlagebehandling.medunderskriverident != null && esKlagebehandling.medunderskriverident == saksbehandler,
+                erMedunderskriver = esKlagebehandling.medunderskriverident != null && esKlagebehandling.medunderskriverident in saksbehandlere,
                 medunderskriverident = esKlagebehandling.medunderskriverident,
                 medunderskriverFlyt = MedunderskriverFlyt.valueOf(esKlagebehandling.medunderskriverFlyt),
                 erTildelt = esKlagebehandling.tildeltSaksbehandlerident != null,

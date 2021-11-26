@@ -301,20 +301,24 @@ open class ElasticsearchService(
                 baseQuery.mustNot(QueryBuilders.existsQuery("tildeltSaksbehandlerident"))
             }
         }
-        saksbehandler?.let {
+        if (saksbehandlere.isNotEmpty()) {
             val innerQuerySaksbehandler = QueryBuilders.boolQuery()
-            innerQuerySaksbehandler.should(QueryBuilders.termQuery("tildeltSaksbehandlerident", saksbehandler))
+            saksbehandlere.forEach {
+                innerQuerySaksbehandler.should(QueryBuilders.termQuery("tildeltSaksbehandlerident", it))
+            }
 
             if (statuskategori == AAPEN) {
-                val innerMedunderskriverQuery = QueryBuilders.boolQuery()
-                innerMedunderskriverQuery.must(QueryBuilders.termQuery("medunderskriverident", saksbehandler))
-                innerMedunderskriverQuery.must(
-                    QueryBuilders.termQuery(
-                        "medunderskriverFlyt",
-                        MedunderskriverFlyt.OVERSENDT_TIL_MEDUNDERSKRIVER.name
+                saksbehandlere.forEach {
+                    val innerMedunderskriverQuery = QueryBuilders.boolQuery()
+                    innerMedunderskriverQuery.must(QueryBuilders.termQuery("medunderskriverident", it))
+                    innerMedunderskriverQuery.must(
+                        QueryBuilders.termQuery(
+                            "medunderskriverFlyt",
+                            MedunderskriverFlyt.OVERSENDT_TIL_MEDUNDERSKRIVER.name
+                        )
                     )
-                )
-                innerQuerySaksbehandler.should(innerMedunderskriverQuery)
+                    innerQuerySaksbehandler.should(innerMedunderskriverQuery)
+                }
             }
 
             baseQuery.must(innerQuerySaksbehandler)

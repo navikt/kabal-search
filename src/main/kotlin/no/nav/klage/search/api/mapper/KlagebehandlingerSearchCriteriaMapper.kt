@@ -30,9 +30,9 @@ class KlagebehandlingerSearchCriteriaMapper {
     fun toSearchCriteria(
         navIdent: String,
         queryParams: KlagebehandlingerQueryParams,
-        enhet: Enhet? = null
+        enhet: Enhet
     ) = KlagebehandlingerSearchCriteria(
-        enhetId = if (queryParams.erTildeltSaksbehandler == true && queryParams.tildeltSaksbehandler == null) enhet?.enhetId else null,
+        enhetId = if (queryParams.erTildeltSaksbehandler == true && queryParams.tildeltSaksbehandler.isEmpty()) enhet.enhetId else null,
         typer = queryParams.typer.map { Type.of(it) },
         ytelser = queryParams.ytelser.map { Ytelse.of(it) },
         temaer = queryParams.temaer.map { Tema.of(it) },
@@ -45,7 +45,7 @@ class KlagebehandlingerSearchCriteriaMapper {
         offset = queryParams.start,
         limit = queryParams.antall,
         erTildeltSaksbehandler = queryParams.erTildeltSaksbehandler,
-        saksbehandler = queryParams.tildeltSaksbehandler,
+        saksbehandlere = queryParams.tildeltSaksbehandler,
         projection = queryParams.projeksjon?.let { KlagebehandlingerSearchCriteria.Projection.valueOf(it.name) },
         sortField = if (queryParams.sortering == KlagebehandlingerQueryParams.Sortering.MOTTATT) {
             KlagebehandlingerSearchCriteria.SortField.MOTTATT

@@ -8,9 +8,7 @@ import no.nav.klage.search.api.mapper.KlagebehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.AntallUtgaatteFristerResponse
 import no.nav.klage.search.api.view.KlagebehandlingerListRespons
 import no.nav.klage.search.api.view.KlagebehandlingerQueryParams
-import no.nav.klage.search.api.view.SaksbehandlereListResponse
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
-import no.nav.klage.search.domain.SaksbehandlereByEnhetSearchCriteria
 import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeYtelser
 import no.nav.klage.search.exceptions.MissingTilgangException
 import no.nav.klage.search.exceptions.NotMatchingUserException
@@ -58,7 +56,7 @@ class KlagebehandlingListController(
         validateRettigheter(queryParams, navIdent)
 
         val valgtEnhet = getEnhetOrThrowException(queryParams.enhet)
-        val searchCriteria = if (queryParams.temaer.isEmpty()) {
+        val searchCriteria = if (queryParams.ytelser.isEmpty()) {
             klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
                 navIdent,
                 queryParams.copy(
@@ -76,7 +74,7 @@ class KlagebehandlingListController(
                 esResponse.searchHits.map { it.content },
                 searchCriteria.isProjectionUtvidet(),
                 searchCriteria.ferdigstiltFom != null,
-                searchCriteria.saksbehandler,
+                searchCriteria.saksbehandlere,
                 valgtEnhet.ytelser
             )
         )
