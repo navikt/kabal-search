@@ -3,12 +3,14 @@ package no.nav.klage.search.service
 import no.finn.unleash.Unleash
 import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
 import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria.Statuskategori.*
+import no.nav.klage.search.domain.SaksbehandlereByEnhetSearchCriteria
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.*
 import no.nav.klage.search.domain.elasticsearch.KlageStatistikk
 import no.nav.klage.search.domain.elasticsearch.RelatedKlagebehandlinger
 import no.nav.klage.search.domain.kodeverk.MedunderskriverFlyt
 import no.nav.klage.search.domain.kodeverk.Type
+import no.nav.klage.search.domain.saksbehandler.Saksbehandler
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import no.nav.klage.search.util.getLogger
@@ -33,6 +35,7 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import org.springframework.data.elasticsearch.core.query.Query
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.util.*
 
 
 open class ElasticsearchService(
@@ -117,6 +120,22 @@ open class ElasticsearchService(
         return searchHits
     }
 
+    open fun findSaksbehandlereByEnhetCriteria(criteria: SaksbehandlereByEnhetSearchCriteria): SortedSet<Saksbehandler> {
+        val query: Query = NativeSearchQueryBuilder()
+            .withQuery(criteria.toEsQuery())
+            .build()
+        val searchHits: SearchHits<EsKlagebehandling> = esTemplate.search(query, EsKlagebehandling::class.java)
+
+        //Sort results by etternavn
+        return searchHits.map {
+            Saksbehandler(
+                navIdent = it.content.tildeltSaksbehandlerident
+                    ?: throw RuntimeException("tildeltSaksbehandlerident is null. Can't happen"),
+                navn = it.content.tildeltSaksbehandlernavn ?: "Navn mangler"
+            )
+        }.toSortedSet(compareBy<Saksbehandler> { it.navn.split(" ").last() })
+    }
+
     open fun countIkkeTildelt(): Long {
         return countByStatus(IKKE_TILDELT)
     }
@@ -193,6 +212,19 @@ open class ElasticsearchService(
         return PageRequest.of(page, size)
     }
 
+    private fun SaksbehandlereByEnhetSearchCriteria.toEsQuery(): QueryBuilder {
+        logger.debug("Search criteria: {}", this)
+        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
+        addSecurityFilters(baseQuery)
+
+        baseQuery.mustNot(QueryBuilders.existsQuery("avsluttetAvSaksbehandler"))
+        baseQuery.must(QueryBuilders.termQuery("tildeltEnhet", enhet))
+        baseQuery.must(QueryBuilders.existsQuery("tildeltSaksbehandlerident"))
+
+        logger.debug("Making search request with query {}", baseQuery.toString())
+        return baseQuery
+    }
+
     private fun KlagebehandlingerSearchCriteria.toEsQuery(): QueryBuilder {
 
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
@@ -263,20 +295,24 @@ open class ElasticsearchService(
                 baseQuery.mustNot(QueryBuilders.existsQuery("tildeltSaksbehandlerident"))
             }
         }
-        saksbehandler?.let {
+        if (saksbehandlere.isNotEmpty()) {
             val innerQuerySaksbehandler = QueryBuilders.boolQuery()
-            innerQuerySaksbehandler.should(QueryBuilders.termQuery("tildeltSaksbehandlerident", saksbehandler))
+            saksbehandlere.forEach {
+                innerQuerySaksbehandler.should(QueryBuilders.termQuery("tildeltSaksbehandlerident", it))
+            }
 
             if (statuskategori == AAPEN) {
-                val innerMedunderskriverQuery = QueryBuilders.boolQuery()
-                innerMedunderskriverQuery.must(QueryBuilders.termQuery("medunderskriverident", saksbehandler))
-                innerMedunderskriverQuery.must(
-                    QueryBuilders.termQuery(
-                        "medunderskriverFlyt",
-                        MedunderskriverFlyt.OVERSENDT_TIL_MEDUNDERSKRIVER.name
+                saksbehandlere.forEach {
+                    val innerMedunderskriverQuery = QueryBuilders.boolQuery()
+                    innerMedunderskriverQuery.must(QueryBuilders.termQuery("medunderskriverident", it))
+                    innerMedunderskriverQuery.must(
+                        QueryBuilders.termQuery(
+                            "medunderskriverFlyt",
+                            MedunderskriverFlyt.OVERSENDT_TIL_MEDUNDERSKRIVER.name
+                        )
                     )
-                )
-                innerQuerySaksbehandler.should(innerMedunderskriverQuery)
+                    innerQuerySaksbehandler.should(innerMedunderskriverQuery)
+                }
             }
 
             baseQuery.must(innerQuerySaksbehandler)

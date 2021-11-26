@@ -74,7 +74,7 @@ class KlagebehandlingListController(
                 esResponse.searchHits.map { it.content },
                 searchCriteria.isProjectionUtvidet(),
                 searchCriteria.ferdigstiltFom != null,
-                searchCriteria.saksbehandler,
+                searchCriteria.saksbehandlere,
                 valgtEnhet.ytelser
             )
         )
@@ -96,6 +96,7 @@ class KlagebehandlingListController(
         }
     }
 
+    //TODO Denne burde sees på ved anledning
     private fun canSeeTildelteOppgaver() = innloggetSaksbehandlerRepository.isLeder() ||
             innloggetSaksbehandlerRepository.isFagansvarlig() || true
 

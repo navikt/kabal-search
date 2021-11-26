@@ -16,5 +16,8 @@ class SaksbehandlerService(
     fun getNamesForSaksbehandlere(idents: Set<String>): Map<String, String> =
         saksbehandlerRepository.getNamesForSaksbehandlere(idents)
 
+    fun hasSaksbehandlerAccessToEnhet(enhet: String): Boolean =
+        innloggetSaksbehandlerRepository.harTilgangTilEnhet(enhet)
+
 
 }
