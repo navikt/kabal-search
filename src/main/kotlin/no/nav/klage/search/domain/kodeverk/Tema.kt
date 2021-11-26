@@ -1,8 +1,6 @@
 package no.nav.klage.search.domain.kodeverk
 
 import io.swagger.annotations.ApiModel
-import org.springframework.core.env.Environment
-import java.util.*
 
 @ApiModel
 enum class Tema(override val id: String, override val navn: String, override val beskrivelse: String) : Kode {
@@ -80,28 +78,5 @@ enum class Tema(override val id: String, override val navn: String, override val
             return values().firstOrNull { it.navn == navn }
                 ?: throw IllegalArgumentException("No Tema with $navn exists")
         }
-    }
-}
-
-object TemaTilgjengeligeForEktefelle {
-    private val ektefelleTemaerIProdGcp = EnumSet.of(Tema.OMS)
-    private val ektefelleTemaerIDevGcp = EnumSet.of(Tema.OMS)
-
-    fun temaerTilgjengeligForEktefelle(environment: Environment): EnumSet<Tema> =
-        if (environment.activeProfiles.contains("prod-gcp")) {
-            ektefelleTemaerIProdGcp
-        } else {
-            ektefelleTemaerIDevGcp
-        }
-}
-
-object LovligeTemaer {
-    private val lovligeTemaerIProdGcp = EnumSet.of(Tema.OMS)
-    private val lovligeTemaerIDevGcp = EnumSet.of(Tema.OMS, Tema.SYK)
-
-    fun lovligeTemaer(environment: Environment): EnumSet<Tema> = if (environment.activeProfiles.contains("prod-gcp")) {
-        lovligeTemaerIProdGcp
-    } else {
-        lovligeTemaerIDevGcp
     }
 }

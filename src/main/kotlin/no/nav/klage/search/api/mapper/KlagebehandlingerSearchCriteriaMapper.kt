@@ -4,7 +4,6 @@ import no.nav.klage.search.api.view.KlagebehandlingerQueryParams
 import no.nav.klage.search.api.view.SearchPersonByFnrInput
 import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
 import no.nav.klage.search.domain.kodeverk.Hjemmel
-import no.nav.klage.search.domain.kodeverk.Tema
 import no.nav.klage.search.domain.kodeverk.Type
 import no.nav.klage.search.domain.kodeverk.Ytelse
 import no.nav.klage.search.domain.saksbehandler.Enhet
@@ -35,7 +34,6 @@ class KlagebehandlingerSearchCriteriaMapper {
         enhetId = if (queryParams.erTildeltSaksbehandler == true && queryParams.tildeltSaksbehandler.isEmpty()) enhet.enhetId else null,
         typer = queryParams.typer.map { Type.of(it) },
         ytelser = queryParams.ytelser.map { Ytelse.of(it) },
-        temaer = queryParams.temaer.map { Tema.of(it) },
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
         order = if (queryParams.rekkefoelge == KlagebehandlingerQueryParams.Rekkefoelge.SYNKENDE) {
             KlagebehandlingerSearchCriteria.Order.DESC
@@ -71,7 +69,6 @@ class KlagebehandlingerSearchCriteriaMapper {
     fun toFristUtgaattIkkeTildeltSearchCriteria(navIdent: String, queryParams: KlagebehandlingerQueryParams) =
         KlagebehandlingerSearchCriteria(
             typer = queryParams.typer.map { Type.of(it) },
-            temaer = queryParams.temaer.map { Tema.of(it) },
             hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
             offset = 0,
             limit = 1,

@@ -111,7 +111,7 @@ class ElasticsearchServiceTest {
                 id = "1002L",
                 tildeltEnhet = "4219",
                 tema = Tema.SYK.id,
-                ytelseId = Ytelse.OMS_OMP.id,
+                ytelseId = Ytelse.SYK_SYK.id,
                 type = Type.KLAGE.id,
                 tildeltSaksbehandlerident = null,
                 innsendt = LocalDate.of(2018, 10, 1),
@@ -137,11 +137,11 @@ class ElasticsearchServiceTest {
 
     @Test
     @Order(4)
-    fun `Klagebehandling can be searched for by tema`() {
+    fun `Klagebehandling can be searched for by ytelse`() {
         val klagebehandlinger: List<EsKlagebehandling> =
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
-                    temaer = listOf(Tema.OMS),
+                    ytelser = listOf(Ytelse.OMS_OMP),
                     offset = 0,
                     limit = 10
                 )

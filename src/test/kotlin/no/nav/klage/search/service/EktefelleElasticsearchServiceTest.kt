@@ -180,11 +180,11 @@ class EktefelleElasticsearchServiceTest {
 
     @Test
     @Order(4)
-    fun `Klagebehandling can be searched for by tema`() {
+    fun `Klagebehandling can be searched for by ytelser`() {
         val klagebehandlinger: List<EsKlagebehandling> =
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
-                    temaer = listOf(Tema.OMS),
+                    ytelser = listOf(Ytelse.OMS_OMP),
                     offset = 0,
                     limit = 10
                 )
@@ -195,38 +195,7 @@ class EktefelleElasticsearchServiceTest {
 
     @Test
     @Order(5)
-    fun `Klagebehandling can be searched for by ytelse`() {
-        val klagebehandlinger: List<EsKlagebehandling> =
-            service.findByCriteria(
-                KlagebehandlingerSearchCriteria(
-                    ytelser = listOf(Ytelse.OMS_OMP),
-                    offset = 0,
-                    limit = 10
-                )
-            ).searchHits.map { it.content }
-        assertThat(klagebehandlinger.size).isEqualTo(2L)
-        assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder("1001L", "1004L")
-    }
-
-    @Test
-    @Order(6)
-    fun `Klagebehandling can be searched for by fnr and tema`() {
-        val klagebehandlinger: List<EsKlagebehandling> =
-            service.findByCriteria(
-                KlagebehandlingerSearchCriteria(
-                    temaer = listOf(Tema.OMS),
-                    foedselsnr = "123",
-                    offset = 0,
-                    limit = 10
-                )
-            ).searchHits.map { it.content }
-        assertThat(klagebehandlinger.size).isEqualTo(1L)
-        assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder("1001L")
-    }
-
-    @Test
-    @Order(6)
-    fun `Klagebehandling can be searched for by fnr and ytelse`() {
+    fun `Klagebehandling can be searched for by fnr and ytelser`() {
         val klagebehandlinger: List<EsKlagebehandling> =
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
@@ -238,62 +207,59 @@ class EktefelleElasticsearchServiceTest {
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.size).isEqualTo(1L)
         assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder("1001L")
+    }
+
+    @Test
+    @Order(6)
+    fun `Klagebehandling can be searched for by fnr and ytelser and ektefelle with fnr and ytelser - only hit for ektefelle`() {
+        val klagebehandlinger: List<EsKlagebehandling> =
+            service.findByCriteria(
+                KlagebehandlingerSearchCriteria(
+                    ytelser = listOf(Ytelse.FOR_FOR),
+                    foedselsnr = "123",
+                    extraPersonWithYtelser = KlagebehandlingerSearchCriteria.ExtraPersonWithYtelser(
+                        foedselsnr = "456",
+                        ytelser = listOf(Ytelse.SYK_SYK),
+                    ),
+                    offset = 0,
+                    limit = 10
+                )
+            ).searchHits.map { it.content }
+        assertThat(klagebehandlinger.size).isEqualTo(1L)
+        assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder("1002L")
     }
 
     @Test
     @Order(7)
-    fun `Klagebehandling can be searched for by ektefelle`() {
+    fun `Klagebehandling can be searched for by fnr and ytelser and ektefelle with fnr and ytelser - only hit for main person`() {
         val klagebehandlinger: List<EsKlagebehandling> =
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
-                    temaer = listOf(Tema.MOB),
+                    ytelser = listOf(Ytelse.SYK_SYK),
                     foedselsnr = "123",
-                    extraPersonAndTema = KlagebehandlingerSearchCriteria.ExtraPersonAndTemaOrYtelse(
+                    extraPersonWithYtelser = KlagebehandlingerSearchCriteria.ExtraPersonWithYtelser(
                         foedselsnr = "456",
-                        temaer = listOf(Tema.SYK),
-                        ytelser = emptyList()
+                        ytelser = listOf(Ytelse.FOR_FOR),
                     ),
                     offset = 0,
                     limit = 10
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.size).isEqualTo(1L)
-        assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder("1002L")
+        assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder("1003L")
     }
 
     @Test
     @Order(8)
-    fun `Klagebehandling can be searched for by ektefelle med ytelse`() {
+    fun `Klagebehandling can be searched for by fnr and ytelser and ektefelle with fnr and ytelser - hit for both`() {
         val klagebehandlinger: List<EsKlagebehandling> =
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
-                    temaer = listOf(Tema.MOB),
+                    ytelser = listOf(Ytelse.SYK_SYK),
                     foedselsnr = "123",
-                    extraPersonAndTema = KlagebehandlingerSearchCriteria.ExtraPersonAndTemaOrYtelse(
+                    extraPersonWithYtelser = KlagebehandlingerSearchCriteria.ExtraPersonWithYtelser(
                         foedselsnr = "456",
-                        temaer = emptyList(),
-                        ytelser = listOf(Ytelse.SYK_SYK)
-                    ),
-                    offset = 0,
-                    limit = 10
-                )
-            ).searchHits.map { it.content }
-        assertThat(klagebehandlinger.size).isEqualTo(1L)
-        assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder("1002L")
-    }
-
-    @Test
-    @Order(9)
-    fun `Klagebehandling can be searched for by fnr and ektefelle`() {
-        val klagebehandlinger: List<EsKlagebehandling> =
-            service.findByCriteria(
-                KlagebehandlingerSearchCriteria(
-                    temaer = listOf(Tema.SYK),
-                    foedselsnr = "123",
-                    extraPersonAndTema = KlagebehandlingerSearchCriteria.ExtraPersonAndTemaOrYtelse(
-                        foedselsnr = "456",
-                        temaer = listOf(Tema.SYK),
-                        ytelser = emptyList()
+                        ytelser = listOf(Ytelse.SYK_SYK),
                     ),
                     offset = 0,
                     limit = 10
@@ -302,26 +268,4 @@ class EktefelleElasticsearchServiceTest {
         assertThat(klagebehandlinger.size).isEqualTo(2L)
         assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder("1002L", "1003L")
     }
-
-    @Test
-    @Order(10)
-    fun `Klagebehandling can be searched for by fnr and ektefelle med ytelse`() {
-        val klagebehandlinger: List<EsKlagebehandling> =
-            service.findByCriteria(
-                KlagebehandlingerSearchCriteria(
-                    temaer = listOf(Tema.SYK),
-                    foedselsnr = "123",
-                    extraPersonAndTema = KlagebehandlingerSearchCriteria.ExtraPersonAndTemaOrYtelse(
-                        foedselsnr = "456",
-                        temaer = emptyList(),
-                        ytelser = listOf(Ytelse.SYK_SYK)
-                    ),
-                    offset = 0,
-                    limit = 10
-                )
-            ).searchHits.map { it.content }
-        assertThat(klagebehandlinger.size).isEqualTo(2L)
-        assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder("1002L", "1003L")
-    }
-
 }

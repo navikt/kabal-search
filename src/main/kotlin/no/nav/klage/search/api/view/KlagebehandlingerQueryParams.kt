@@ -5,7 +5,6 @@ import java.time.LocalDate
 
 data class KlagebehandlingerQueryParams(
     var typer: List<String> = emptyList(),
-    var temaer: List<String> = emptyList(),
     var ytelser: List<String> = emptyList(),
     var hjemler: List<String> = emptyList(),
     val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
