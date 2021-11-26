@@ -45,6 +45,18 @@ object LovligeYtelser {
         }
 }
 
+object YtelserTilgjengeligeForEktefelle {
+    private val ektefelleYtelserIProdGcp = EnumSet.of(Ytelse.OMS_OMP, Ytelse.OMS_OLP, Ytelse.OMS_PLS, Ytelse.OMS_PSB)
+    private val ektefelleYtelserIDevGcp = EnumSet.of(Ytelse.OMS_OMP, Ytelse.OMS_OLP, Ytelse.OMS_PLS, Ytelse.OMS_PSB, Ytelse.SYK_SYK)
+
+    fun ytelserTilgjengeligForEktefelle(environment: Environment): EnumSet<Ytelse> =
+        if (environment.activeProfiles.contains("prod-gcp")) {
+            ektefelleYtelserIProdGcp
+        } else {
+            ektefelleYtelserIDevGcp
+        }
+}
+
 val ytelserPerEnhet = mapOf(
     "4291" to listOf(Ytelse.SYK_SYK),
     "4292" to listOf(Ytelse.FOR_FOR, Ytelse.FOR_ENG, Ytelse.FOR_SVA, Ytelse.SYK_SYK),
