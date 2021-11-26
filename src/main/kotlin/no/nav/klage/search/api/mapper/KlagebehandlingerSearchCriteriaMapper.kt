@@ -30,9 +30,9 @@ class KlagebehandlingerSearchCriteriaMapper {
     fun toSearchCriteria(
         navIdent: String,
         queryParams: KlagebehandlingerQueryParams,
-        enhet: Enhet? = null
+        enhet: Enhet
     ) = KlagebehandlingerSearchCriteria(
-        enhetId = if (queryParams.erTildeltSaksbehandler == true && queryParams.tildeltSaksbehandler == null) enhet?.enhetId else null,
+        enhetId = if (queryParams.erTildeltSaksbehandler == true && queryParams.tildeltSaksbehandler.isEmpty()) enhet.enhetId else null,
         typer = queryParams.typer.map { Type.of(it) },
         ytelser = queryParams.ytelser.map { Ytelse.of(it) },
         temaer = queryParams.temaer.map { Tema.of(it) },
