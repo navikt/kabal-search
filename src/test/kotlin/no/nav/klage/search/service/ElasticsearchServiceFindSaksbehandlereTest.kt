@@ -86,13 +86,69 @@ class ElasticsearchServiceFindSaksbehandlereTest {
     @Test
     @Order(3)
     fun `lagrer tre oppgaver for senere tester`() {
-        repo.save(createEsKlagebehandling(id = "1001", enhet = "4219", saksbehandlerIdent = "Z223", saksbehandlerNavn = "Kalle Bnka", avsluttetAvSaksbehandler = null))
-        repo.save(createEsKlagebehandling(id = "1002", enhet = "4219", saksbehandlerIdent = "Z223", saksbehandlerNavn = "Kalle Bnka", avsluttetAvSaksbehandler = null))
-        repo.save(createEsKlagebehandling(id = "1003", enhet = "4219", saksbehandlerIdent = "Z123", saksbehandlerNavn = "Kalle Anka", avsluttetAvSaksbehandler = null))
-        repo.save(createEsKlagebehandling(id = "1004", enhet = "4219", saksbehandlerIdent = "Z423", saksbehandlerNavn = "Kalle Dnka", avsluttetAvSaksbehandler = null))
-        repo.save(createEsKlagebehandling(id = "1005", enhet = "4219", saksbehandlerIdent = "Z323", saksbehandlerNavn = "Kalle Cnka", avsluttetAvSaksbehandler = null))
-        repo.save(createEsKlagebehandling(id = "1006", enhet = "4219", saksbehandlerIdent = "Z523", saksbehandlerNavn = "Kalle Enka", avsluttetAvSaksbehandler = LocalDateTime.now()))
-        repo.save(createEsKlagebehandling(id = "1007", enhet = "4220", saksbehandlerIdent = "Z623", saksbehandlerNavn = "Kalle Fnka", avsluttetAvSaksbehandler = null))
+        repo.save(
+            createEsKlagebehandling(
+                id = "1001",
+                enhet = "4219",
+                saksbehandlerIdent = "Z223",
+                saksbehandlerNavn = "Kalle Bnka",
+                avsluttetAvSaksbehandler = null
+            )
+        )
+        repo.save(
+            createEsKlagebehandling(
+                id = "1002",
+                enhet = "4219",
+                saksbehandlerIdent = "Z223",
+                saksbehandlerNavn = "Kalle Bnka",
+                avsluttetAvSaksbehandler = null
+            )
+        )
+        repo.save(
+            createEsKlagebehandling(
+                id = "1003",
+                enhet = "4219",
+                saksbehandlerIdent = "Z123",
+                saksbehandlerNavn = "Kalle Anka",
+                avsluttetAvSaksbehandler = null
+            )
+        )
+        repo.save(
+            createEsKlagebehandling(
+                id = "1004",
+                enhet = "4219",
+                saksbehandlerIdent = "Z423",
+                saksbehandlerNavn = "Kalle Dnka",
+                avsluttetAvSaksbehandler = null
+            )
+        )
+        repo.save(
+            createEsKlagebehandling(
+                id = "1005",
+                enhet = "4219",
+                saksbehandlerIdent = "Z323",
+                saksbehandlerNavn = "Kalle Cnka",
+                avsluttetAvSaksbehandler = null
+            )
+        )
+        repo.save(
+            createEsKlagebehandling(
+                id = "1006",
+                enhet = "4219",
+                saksbehandlerIdent = "Z523",
+                saksbehandlerNavn = "Kalle Enka",
+                avsluttetAvSaksbehandler = LocalDateTime.now()
+            )
+        )
+        repo.save(
+            createEsKlagebehandling(
+                id = "1007",
+                enhet = "4220",
+                saksbehandlerIdent = "Z623",
+                saksbehandlerNavn = "Kalle Fnka",
+                avsluttetAvSaksbehandler = null
+            )
+        )
 
         val query: Query = NativeSearchQueryBuilder()
             .withQuery(QueryBuilders.matchAllQuery())
@@ -111,8 +167,8 @@ class ElasticsearchServiceFindSaksbehandlereTest {
                 )
             )
         assertThat(saksbehandlere.size).isEqualTo(4L)
-        assertThat(saksbehandlere.first().second).isEqualTo("Kalle Anka")
-        assertThat(saksbehandlere.last().second).isEqualTo("Kalle Dnka")
+        assertThat(saksbehandlere.first().navn).isEqualTo("Kalle Anka")
+        assertThat(saksbehandlere.last().navn).isEqualTo("Kalle Dnka")
     }
 
     private fun createEsKlagebehandling(

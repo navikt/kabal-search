@@ -10,6 +10,7 @@ import no.nav.klage.search.domain.elasticsearch.KlageStatistikk
 import no.nav.klage.search.domain.elasticsearch.RelatedKlagebehandlinger
 import no.nav.klage.search.domain.kodeverk.MedunderskriverFlyt
 import no.nav.klage.search.domain.kodeverk.Type
+import no.nav.klage.search.domain.saksbehandler.Saksbehandler
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import no.nav.klage.search.util.getLogger
@@ -119,7 +120,7 @@ open class ElasticsearchService(
         return searchHits
     }
 
-    open fun findSaksbehandlereByEnhetCriteria(criteria: SaksbehandlereByEnhetSearchCriteria): SortedSet<Pair<String, String>> {
+    open fun findSaksbehandlereByEnhetCriteria(criteria: SaksbehandlereByEnhetSearchCriteria): SortedSet<Saksbehandler> {
         val query: Query = NativeSearchQueryBuilder()
             .withQuery(criteria.toEsQuery())
             .build()
@@ -127,10 +128,12 @@ open class ElasticsearchService(
 
         //Sort results by etternavn
         return searchHits.map {
-            (it.content.tildeltSaksbehandlerident
-                ?: throw RuntimeException("tildeltSaksbehandlerident is null. Can't happen")) to
-                    (it.content.tildeltSaksbehandlernavn ?: "Navn mangler")
-        }.toSortedSet(compareBy<Pair<String, String>> { it.second.split(" ").last() })
+            Saksbehandler(
+                navIdent = it.content.tildeltSaksbehandlerident
+                    ?: throw RuntimeException("tildeltSaksbehandlerident is null. Can't happen"),
+                navn = it.content.tildeltSaksbehandlernavn ?: "Navn mangler"
+            )
+        }.toSortedSet(compareBy<Saksbehandler> { it.navn.split(" ").last() })
     }
 
     open fun countIkkeTildelt(): Long {
