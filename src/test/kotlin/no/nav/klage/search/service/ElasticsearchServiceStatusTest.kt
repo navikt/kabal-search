@@ -6,10 +6,10 @@ import no.finn.unleash.Unleash
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.*
-import no.nav.klage.search.domain.kodeverk.MedunderskriverFlyt
-import no.nav.klage.search.domain.kodeverk.Tema
-import no.nav.klage.search.domain.kodeverk.Type
-import no.nav.klage.search.domain.kodeverk.Ytelse
+import no.nav.klage.kodeverk.MedunderskriverFlyt
+import no.nav.klage.kodeverk.Tema
+import no.nav.klage.kodeverk.Type
+import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import org.assertj.core.api.Assertions.assertThat

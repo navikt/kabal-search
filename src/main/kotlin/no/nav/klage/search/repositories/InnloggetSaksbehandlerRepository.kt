@@ -1,6 +1,6 @@
 package no.nav.klage.search.repositories
 
-import no.nav.klage.search.domain.kodeverk.Ytelse
+import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.domain.saksbehandler.EnheterMedLovligeYtelser
 import no.nav.klage.search.util.TokenUtil
 import org.springframework.beans.factory.annotation.Value

@@ -6,8 +6,8 @@ import no.nav.klage.search.api.view.KlagebehandlingListView
 import no.nav.klage.search.api.view.NavnView
 import no.nav.klage.search.clients.pdl.Sivilstand
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
-import no.nav.klage.search.domain.kodeverk.MedunderskriverFlyt
-import no.nav.klage.search.domain.kodeverk.Ytelse
+import no.nav.klage.kodeverk.MedunderskriverFlyt
+import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.domain.personsoek.PersonSearchResponse
 import org.springframework.stereotype.Service
 import java.time.LocalDate
