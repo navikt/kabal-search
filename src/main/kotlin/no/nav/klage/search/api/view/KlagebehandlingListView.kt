@@ -1,6 +1,6 @@
 package no.nav.klage.search.api.view
 
-import no.nav.klage.search.domain.kodeverk.MedunderskriverFlyt
+import no.nav.klage.kodeverk.MedunderskriverFlyt
 import java.time.LocalDate
 
 data class KlagebehandlingerListRespons(

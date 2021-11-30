@@ -6,7 +6,7 @@ import no.finn.unleash.Unleash
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.IKKE_TILDELT
-import no.nav.klage.search.domain.kodeverk.*
+import no.nav.klage.kodeverk.*
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import org.assertj.core.api.Assertions.assertThat

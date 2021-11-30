@@ -2,7 +2,7 @@ package no.nav.klage.search.repositories
 
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.klage.search.domain.kodeverk.Ytelse
+import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.domain.saksbehandler.Enhet
 import no.nav.klage.search.gateway.AxsysGateway
 import no.nav.klage.search.gateway.AzureGateway

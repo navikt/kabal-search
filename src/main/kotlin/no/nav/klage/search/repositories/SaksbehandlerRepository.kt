@@ -1,7 +1,7 @@
 package no.nav.klage.search.repositories
 
-import no.nav.klage.search.domain.kodeverk.Ytelse
-import no.nav.klage.search.domain.kodeverk.ytelserPerEnhet
+import no.nav.klage.kodeverk.Ytelse
+import no.nav.klage.kodeverk.ytelserPerEnhet
 import no.nav.klage.search.domain.saksbehandler.Enhet
 import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeYtelser
 import no.nav.klage.search.domain.saksbehandler.EnheterMedLovligeYtelser

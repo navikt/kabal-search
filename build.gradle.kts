@@ -35,13 +35,14 @@ repositories {
     }
     jcenter()
     maven("https://packages.confluent.io/maven/")
+    maven("https://jitpack.io")
 }
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.4.10"
+    id("org.jetbrains.kotlin.jvm") version "1.5.31"
     id("org.springframework.boot") version "2.4.2"
-    id("org.jetbrains.kotlin.plugin.spring") version "1.4.21"
-    id("org.jetbrains.kotlin.plugin.jpa") version "1.4.21"
+    id("org.jetbrains.kotlin.plugin.spring") version "1.5.31"
+    id("org.jetbrains.kotlin.plugin.jpa") version "1.5.31"
     idea
 }
 
@@ -86,6 +87,7 @@ dependencies {
     implementation("no.nav.security:token-validation-spring:$tokenValidationVersion")
     implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
 
+    implementation("com.github.navikt:kabal-kodeverk:2021.11.30-13.39.e1352e11bbb3")
     implementation("no.nav.slackposter:simple-slack-poster:5")
     implementation("org.springframework.retry:spring-retry:$springRetryVersion")
     implementation("no.finn.unleash:unleash-client-java:$unleashVersion")

@@ -1,8 +1,8 @@
 package no.nav.klage.search.domain
 
-import no.nav.klage.search.domain.kodeverk.Hjemmel
-import no.nav.klage.search.domain.kodeverk.Type
-import no.nav.klage.search.domain.kodeverk.Ytelse
+import no.nav.klage.kodeverk.Hjemmel
+import no.nav.klage.kodeverk.Type
+import no.nav.klage.kodeverk.Ytelse
 import java.time.LocalDate
 import java.time.LocalDateTime
 

@@ -8,8 +8,8 @@ import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.*
 import no.nav.klage.search.domain.elasticsearch.KlageStatistikk
 import no.nav.klage.search.domain.elasticsearch.RelatedKlagebehandlinger
-import no.nav.klage.search.domain.kodeverk.MedunderskriverFlyt
-import no.nav.klage.search.domain.kodeverk.Type
+import no.nav.klage.kodeverk.MedunderskriverFlyt
+import no.nav.klage.kodeverk.Type
 import no.nav.klage.search.domain.saksbehandler.Saksbehandler
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
