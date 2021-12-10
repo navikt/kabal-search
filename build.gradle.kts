@@ -63,6 +63,7 @@ dependencies {
     implementation("javax.cache:cache-api")
     implementation("org.ehcache:ehcache")
     implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
+    implementation("org.jolokia:jolokia-core")
 
     implementation("org.springframework.kafka:spring-kafka")
     implementation("io.confluent:kafka-avro-serializer:$kafkaAvroVersion") {

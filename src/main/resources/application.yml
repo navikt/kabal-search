@@ -48,11 +48,14 @@ management:
     elasticsearch:
       enabled: false
   endpoint:
+    jolokia:
+      config:
+        - debug: true
     health:
       show-details: always
   endpoints.web:
     exposure:
-      include: info, health, metrics, prometheus
+      include: info, health, metrics, prometheus, jolokia
     base-path: "/internal"
   metrics:
     export:
