@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service
 class InnloggetSaksbehandlerRepository(
     private val saksbehandlerRepository: SaksbehandlerRepository,
     private val tokenUtil: TokenUtil,
-    @Value("\${ROLE_GOSYS_OPPGAVE_BEHANDLER}") private val gosysSaksbehandlerRole: String,
     @Value("\${ROLE_KLAGE_SAKSBEHANDLER}") private val saksbehandlerRole: String,
     @Value("\${ROLE_KLAGE_FAGANSVARLIG}") private val fagansvarligRole: String,
     @Value("\${ROLE_KLAGE_LEDER}") private val lederRole: String,
@@ -31,9 +30,7 @@ class InnloggetSaksbehandlerRepository(
 
     fun isFagansvarlig(): Boolean = tokenUtil.getRollerFromToken().hasRole(fagansvarligRole)
 
-    fun isSaksbehandler(): Boolean =
-        tokenUtil.getRollerFromToken().hasRole(saksbehandlerRole) || tokenUtil.getRollerFromToken()
-            .hasRole(gosysSaksbehandlerRole)
+    fun isSaksbehandler(): Boolean = tokenUtil.getRollerFromToken().hasRole(saksbehandlerRole)
 
     fun kanBehandleFortrolig(): Boolean = tokenUtil.getRollerFromToken().hasRole(kanBehandleFortroligRole)
 
