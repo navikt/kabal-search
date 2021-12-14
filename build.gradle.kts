@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val mockkVersion = "1.10.5"
+val mockkVersion = "1.12.1"
 val h2Version = "1.4.200"
 val tokenValidationVersion = "1.3.2"
 val logstashVersion = "6.6"
@@ -23,6 +23,8 @@ val verapdfVersion = "1.18.8"
 val githubUser: String by project
 val githubPassword: String by project
 
+java.sourceCompatibility = JavaVersion.VERSION_17
+
 repositories {
     mavenCentral()
     maven("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
@@ -39,19 +41,20 @@ repositories {
 }
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.5.31"
     id("org.springframework.boot") version "2.4.2"
-    id("org.jetbrains.kotlin.plugin.spring") version "1.5.31"
-    id("org.jetbrains.kotlin.plugin.jpa") version "1.5.31"
+    id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    kotlin("jvm") version "1.6.0"
+    kotlin("plugin.spring") version "1.6.0"
     idea
 }
 
-apply(plugin = "io.spring.dependency-management")
-
 dependencies {
-    implementation(kotlin("stdlib"))
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     //temporary fix:
+    //Without updated ByteBuddy a lot of mockking doesnt work..
+    implementation("net.bytebuddy:byte-buddy:1.12.3")
     implementation("com.nimbusds:nimbus-jose-jwt:$nimbusVersion")
     implementation("org.threeten:threeten-extra:$threeTenExtraVersion")
 
@@ -66,9 +69,6 @@ dependencies {
     implementation("org.jolokia:jolokia-core")
 
     implementation("org.springframework.kafka:spring-kafka")
-    implementation("io.confluent:kafka-avro-serializer:$kafkaAvroVersion") {
-        exclude(group = "org.slf4j", module = "slf4j-log4j12")
-    }
 
     implementation("org.springframework.cloud:spring-cloud-starter-sleuth:$springSleuthVersion")
     implementation("io.springfox:springfox-boot-starter:$springFoxVersion")
@@ -119,7 +119,10 @@ idea {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions {
+        freeCompilerArgs = listOf("-Xjsr305=strict")
+        jvmTarget = "17"
+    }
 }
 
 tasks.withType<Test> {
@@ -132,11 +135,3 @@ tasks.withType<Test> {
 tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
     this.archiveFileName.set("app.jar")
 }
-
-
-
-kotlin.sourceSets["main"].kotlin.srcDirs("src/main/kotlin")
-kotlin.sourceSets["test"].kotlin.srcDirs("src/test/kotlin")
-
-sourceSets["main"].resources.srcDirs("src/main/resources")
-sourceSets["test"].resources.srcDirs("src/test/resources")
