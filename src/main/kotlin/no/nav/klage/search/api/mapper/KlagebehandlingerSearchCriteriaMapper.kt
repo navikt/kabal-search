@@ -51,7 +51,7 @@ class KlagebehandlingerSearchCriteriaMapper {
             KlagebehandlingerSearchCriteria.SortField.FRIST
         },
         ferdigstiltFom = getFerdigstiltFom(queryParams),
-        statuskategori = if (queryParams.ferdigstiltFom != null) {
+        statuskategori = if (queryParams.ferdigstiltFom != null || queryParams.ferdigstiltDaysAgo != null) {
             KlagebehandlingerSearchCriteria.Statuskategori.AVSLUTTET
         } else {
             KlagebehandlingerSearchCriteria.Statuskategori.AAPEN
