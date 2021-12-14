@@ -87,7 +87,7 @@ class KlagebehandlingListController(
         queryParams: KlagebehandlingerQueryParams,
         navIdent: String
     ) {
-        if (queryParams.erTildeltSaksbehandler == true && queryParams.tildeltSaksbehandler == null) {
+        if (queryParams.erTildeltSaksbehandler == true && queryParams.tildeltSaksbehandler.isEmpty()) {
             if (!canSeeTildelteOppgaver()) {
                 val message = "$navIdent har ikke tilgang til å se alle tildelte oppgaver."
                 logger.warn(message)

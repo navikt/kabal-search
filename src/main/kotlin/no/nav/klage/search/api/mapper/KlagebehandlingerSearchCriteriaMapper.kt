@@ -1,11 +1,11 @@
 package no.nav.klage.search.api.mapper
 
+import no.nav.klage.kodeverk.Type
+import no.nav.klage.kodeverk.Ytelse
+import no.nav.klage.kodeverk.hjemmel.Hjemmel
 import no.nav.klage.search.api.view.KlagebehandlingerQueryParams
 import no.nav.klage.search.api.view.SearchPersonByFnrInput
 import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
-import no.nav.klage.kodeverk.Hjemmel
-import no.nav.klage.kodeverk.Type
-import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.domain.saksbehandler.Enhet
 import no.nav.klage.search.util.getLogger
 import org.springframework.stereotype.Service
