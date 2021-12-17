@@ -139,7 +139,7 @@ class ElasticsearchIndexingTest {
             frist = null,
             tildelt = null,
             avsluttet = null,
-            hjemler = listOf(Hjemmel.FTL_8_35.id),
+            hjemler = listOf(Hjemmel.FTRL_8_35.id),
             sakenGjelderFnr = null,
             sakenGjelderNavn = null,
             egenAnsatt = false,
