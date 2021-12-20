@@ -73,7 +73,7 @@ class SaveService(
             //TODO: Make json from klagebehandling
             val jsonString = mapper.writeValueAsString(klagebehandling)
             request.source(createJson(klagebehandling))
-            request.request.refreshPolicy = refreshPolicy
+            request.refreshPolicy = refreshPolicy
             request.version(klagebehandling.modified.toEpochSecond(ZoneOffset.UTC))
             request.versionType(VersionType.EXTERNAL)
             //request.opType(DocWriteRequest.OpType.INDEX)
