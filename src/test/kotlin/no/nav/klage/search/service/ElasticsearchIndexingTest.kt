@@ -11,8 +11,8 @@ import no.nav.klage.kodeverk.hjemmel.Hjemmel
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.IKKE_TILDELT
-import no.nav.klage.search.repositories.EsKlagebehandlingRepository
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
+import no.nav.klage.search.service.elasticsearch.EsKlagebehandlingRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.elasticsearch.index.query.QueryBuilders
 import org.junit.jupiter.api.*

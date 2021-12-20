@@ -1,6 +1,8 @@
 package no.nav.klage.search.service
 
 import no.finn.unleash.Unleash
+import no.nav.klage.kodeverk.MedunderskriverFlyt
+import no.nav.klage.kodeverk.Type
 import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
 import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria.Statuskategori.*
 import no.nav.klage.search.domain.SaksbehandlereByEnhetSearchCriteria
@@ -8,11 +10,10 @@ import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.*
 import no.nav.klage.search.domain.elasticsearch.KlageStatistikk
 import no.nav.klage.search.domain.elasticsearch.RelatedKlagebehandlinger
-import no.nav.klage.kodeverk.MedunderskriverFlyt
-import no.nav.klage.kodeverk.Type
 import no.nav.klage.search.domain.saksbehandler.Saksbehandler
-import no.nav.klage.search.repositories.EsKlagebehandlingRepository
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
+import no.nav.klage.search.service.elasticsearch.CreateIndexService
+import no.nav.klage.search.service.elasticsearch.SaveService
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getMedian
 import org.elasticsearch.index.query.BoolQueryBuilder
@@ -24,12 +25,10 @@ import org.elasticsearch.search.sort.SortBuilders
 import org.elasticsearch.search.sort.SortOrder
 import org.springframework.context.ApplicationListener
 import org.springframework.context.event.ContextRefreshedEvent
-import org.springframework.core.io.ClassPathResource
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations
 import org.springframework.data.elasticsearch.core.SearchHits
-import org.springframework.data.elasticsearch.core.document.Document
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder
 import org.springframework.data.elasticsearch.core.query.Query
@@ -41,7 +40,8 @@ import java.util.*
 open class ElasticsearchService(
     private val esTemplate: ElasticsearchOperations,
     private val innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository,
-    private val esKlagebehandlingRepository: EsKlagebehandlingRepository,
+    private val createIndexService: CreateIndexService,
+    private val saveService: SaveService,
     private val unleash: Unleash
 ) :
     ApplicationListener<ContextRefreshedEvent> {
@@ -56,57 +56,47 @@ open class ElasticsearchService(
 
     fun recreateIndex() {
         if (unleash.isEnabled("klage.indexFromSearch", false)) {
-            deleteIndex()
-            createIndex()
+            createIndexService.recreateIndex()
         }
     }
 
     override fun onApplicationEvent(event: ContextRefreshedEvent) {
         try {
-            createIndex()
+            createIndexService.createIndex()
         } catch (e: Exception) {
             logger.error("Unable to initialize Elasticsearch", e)
         }
     }
 
     fun createIndex() {
-        logger.info("Trying to initialize Elasticsearch")
-        val indexOps = esTemplate.indexOps(IndexCoordinates.of("klagebehandling"))
-        logger.info("Does klagebehandling exist in Elasticsearch?")
-        if (!indexOps.exists()) {
-            logger.info("klagebehandling does not exist in Elasticsearch")
-            indexOps.create(readFromfile("settings.json"))
-            indexOps.putMapping(readFromfile("mapping.json"))
-        } else {
-            logger.info("klagebehandling does exist in Elasticsearch")
-        }
+        createIndexService.createIndex()
     }
 
     fun deleteIndex() {
-        logger.info("Deleting index klagebehandling")
-        val indexOps = esTemplate.indexOps(IndexCoordinates.of("klagebehandling"))
-        indexOps.delete()
-    }
-
-    private fun readFromfile(filename: String): Document {
-        val text: String =
-            ClassPathResource("elasticsearch/${filename}").inputStream.bufferedReader(Charsets.UTF_8).readText()
-        return Document.parse(text)
+        createIndexService.deleteIndex()
     }
 
     fun save(klagebehandlinger: List<EsKlagebehandling>) {
         if (unleash.isEnabled("klage.indexFromSearch", false)) {
-            esKlagebehandlingRepository.saveAll(klagebehandlinger)
+            saveService.save(klagebehandlinger)
         }
     }
 
     fun save(klagebehandling: EsKlagebehandling) {
         if (unleash.isEnabled("klage.indexFromSearch", false)) {
             logger.debug("Skal indeksere fra kabal-search, klage med id ${klagebehandling.id}")
-            esKlagebehandlingRepository.save(klagebehandling)
+            saveService.save(klagebehandling)
         } else {
             logger.debug("Skal ikke indeksere fra kabal-search")
         }
+    }
+
+    fun refresh() {
+        saveService.refreshIndex()
+    }
+
+    fun deleteAll() {
+        saveService.deleteAll()
     }
 
     open fun findByCriteria(criteria: KlagebehandlingerSearchCriteria): SearchHits<EsKlagebehandling> {
@@ -433,16 +423,6 @@ open class ElasticsearchService(
                 filterQuery.mustNot(QueryBuilders.termQuery("fortrolig", true))
                 filterQuery.mustNot(QueryBuilders.termQuery("egenAnsatt", true))
             }
-        }
-    }
-
-    fun refresh() {
-        esTemplate.indexOps(IndexCoordinates.of("klagebehandling")).refresh()
-    }
-
-    fun deleteAll() {
-        if (unleash.isEnabled("klage.indexFromSearch", false)) {
-            esKlagebehandlingRepository.deleteAll()
         }
     }
 
