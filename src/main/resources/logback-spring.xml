@@ -63,6 +63,10 @@
             <appender-ref ref="secureJson"/>
         </logger>
 
+        <logger name="org.springframework.data.elasticsearch.client.WIRE" level="trace" additivity="false">
+            <appender-ref ref="secureJson"/>
+        </logger>
+
         <logger name="org.springframework.data.convert.CustomConversions" level="error"/>
 
         <logger name="no.nav.security.token.support.spring.validation.interceptor.JwtTokenHandlerInterceptor"
