@@ -87,14 +87,6 @@ open class ElasticsearchService(
         }
     }
 
-    fun refresh() {
-        esKlagebehandlingRepository.refreshIndex()
-    }
-
-    fun deleteAll() {
-        esKlagebehandlingRepository.deleteAll()
-    }
-
     open fun findByCriteria(criteria: KlagebehandlingerSearchCriteria): KlagebehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
@@ -405,6 +397,14 @@ open class ElasticsearchService(
                 filterQuery.mustNot(QueryBuilders.termQuery("egenAnsatt", true))
             }
         }
+    }
+
+    fun refresh() {
+        esKlagebehandlingRepository.refreshIndex()
+    }
+
+    fun deleteAll() {
+        esKlagebehandlingRepository.deleteAll()
     }
 
     fun findAllIdAndModified(): Map<String, LocalDateTime> {

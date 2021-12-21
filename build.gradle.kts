@@ -66,8 +66,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("javax.cache:cache-api")
     implementation("org.ehcache:ehcache")
-    //implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
-    // https://mvnrepository.com/artifact/org.elasticsearch.client/elasticsearch-rest-high-level-client
     implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.10.2")
     implementation("org.jolokia:jolokia-core")
 
