@@ -1,24 +1,21 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val mockkVersion = "1.12.1"
-val h2Version = "1.4.200"
-val tokenValidationVersion = "1.3.2"
-val logstashVersion = "6.6"
-val springSleuthVersion = "3.0.0"
-val unleashVersion = "3.3.3"
-val problemSpringWebStartVersion = "0.26.2"
-val kafkaAvroVersion = "5.5.2"
-val pdfboxVersion = "2.0.19"
+val h2Version = "2.0.202"
+val tokenValidationVersion = "1.3.9"
+val logstashVersion = "7.0"
+val springSleuthVersion = "3.0.4"
+val unleashVersion = "4.4.1"
+val problemSpringWebStartVersion = "0.27.0"
 val springRetryVersion = "1.3.1"
 val springMockkVersion = "3.0.1"
 val springFoxVersion = "3.0.0"
-val testContainersVersion = "1.15.1"
-val tikaVersion = "1.24.1"
+val testContainersVersion = "1.16.2"
 val nimbusVersion = "8.20.1"
-val threeTenExtraVersion = "1.6.0"
+val threeTenExtraVersion = "1.7.0"
 val shedlockVersion = "4.23.0"
-val archunitVersion = "0.19.0"
-val verapdfVersion = "1.18.8"
+val archunitVersion = "0.22.0"
+
 
 val githubUser: String by project
 val githubPassword: String by project
@@ -42,10 +39,10 @@ repositories {
 }
 
 plugins {
-    id("org.springframework.boot") version "2.4.2"
+    id("org.springframework.boot") version "2.5.8"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    kotlin("jvm") version "1.6.0"
-    kotlin("plugin.spring") version "1.6.0"
+    kotlin("jvm") version "1.6.10"
+    kotlin("plugin.spring") version "1.6.10"
     idea
 }
 
@@ -55,8 +52,8 @@ dependencies {
 
     //temporary fix:
     //Without updated ByteBuddy a lot of mockking doesnt work..
-    implementation("net.bytebuddy:byte-buddy:1.12.3")
-    implementation("com.nimbusds:nimbus-jose-jwt:$nimbusVersion")
+    //implementation("net.bytebuddy:byte-buddy:1.12.3")
+    //implementation("com.nimbusds:nimbus-jose-jwt:$nimbusVersion")
     implementation("org.threeten:threeten-extra:$threeTenExtraVersion")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -94,10 +91,6 @@ dependencies {
     implementation("org.springframework.retry:spring-retry:$springRetryVersion")
     implementation("no.finn.unleash:unleash-client-java:$unleashVersion")
     implementation("org.zalando:problem-spring-web-starter:$problemSpringWebStartVersion")
-
-    implementation("org.verapdf:validation-model:$verapdfVersion")
-    implementation("org.apache.pdfbox:pdfbox:$pdfboxVersion")
-    implementation("org.apache.tika:tika-core:$tikaVersion")
 
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
