@@ -12,19 +12,21 @@ import org.elasticsearch.ElasticsearchException
 import org.elasticsearch.action.DocWriteResponse
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest
-import org.elasticsearch.action.admin.indices.refresh.RefreshResponse
 import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.action.index.IndexResponse
 import org.elasticsearch.action.search.SearchRequest
+import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.support.WriteRequest
+import org.elasticsearch.action.support.broadcast.BroadcastResponse
 import org.elasticsearch.action.support.master.AcknowledgedResponse
+import org.elasticsearch.action.support.replication.ReplicationResponse
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.client.core.CountRequest
+import org.elasticsearch.client.core.CountResponse
 import org.elasticsearch.client.indices.CreateIndexRequest
 import org.elasticsearch.client.indices.CreateIndexResponse
 import org.elasticsearch.client.indices.GetIndexRequest
-import org.elasticsearch.common.unit.TimeValue
 import org.elasticsearch.common.xcontent.NamedXContentRegistry
 import org.elasticsearch.common.xcontent.XContentType
 import org.elasticsearch.index.VersionType
@@ -36,7 +38,6 @@ import org.elasticsearch.rest.RestStatus
 import org.elasticsearch.search.aggregations.AggregationBuilder
 import org.elasticsearch.search.aggregations.Aggregations
 import org.elasticsearch.search.builder.SearchSourceBuilder
-import java.util.concurrent.TimeUnit
 
 
 class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
@@ -49,10 +50,11 @@ class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
             ObjectMapper().registerModule(KotlinModule()).registerModule(JavaTimeModule())
         const val SETTINGS_CONFIG = "/elasticsearch/settings.json"
         const val MAPPING_CONFIG = "/elasticsearch/mapping.json"
+        const val KLAGEBEHANDLING_INDEX = "klagebehandling"
     }
 
     fun indexExists(): Boolean {
-        val request = GetIndexRequest("klagebehandling")
+        val request = GetIndexRequest(KLAGEBEHANDLING_INDEX)
         return client.indices().exists(request, RequestOptions.DEFAULT)
     }
 
@@ -67,7 +69,7 @@ class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
 
         if (!indexExists()) {
             logger.info("klagebehandling does not exist in Elasticsearch")
-            val request = CreateIndexRequest("klagebehandling")
+            val request = CreateIndexRequest(KLAGEBEHANDLING_INDEX)
             request.settings(settings())
             request.mapping(mapping())
             val createIndexResponse: CreateIndexResponse = client.indices().create(request, RequestOptions.DEFAULT)
@@ -79,16 +81,16 @@ class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
 
     fun deleteIndex() {
         logger.info("Deleting index klagebehandling")
-        val request = DeleteIndexRequest("klagebehandling")
+        val request = DeleteIndexRequest(KLAGEBEHANDLING_INDEX)
         val deleteIndexResponse: AcknowledgedResponse = client.indices().delete(request, RequestOptions.DEFAULT)
         logger.info("Deletion of ES index klagebehandling is acknowledged: ${deleteIndexResponse.isAcknowledged}")
     }
 
     fun refreshIndex() {
         try {
-            val request = RefreshRequest("klagebehandling")
+            val request = RefreshRequest(KLAGEBEHANDLING_INDEX)
             val refreshResponse = client.indices().refresh(request, RequestOptions.DEFAULT)
-            logRefreshStatus(refreshResponse)
+            logResponseShardInfo(refreshResponse)
         } catch (exception: ElasticsearchException) {
             if (exception.status() === RestStatus.NOT_FOUND) {
                 logger.error("Unable to refresh ES index, index not found")
@@ -108,18 +110,16 @@ class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
         refreshPolicy: WriteRequest.RefreshPolicy = WriteRequest.RefreshPolicy.IMMEDIATE
     ) {
         try {
-            val request = IndexRequest("klagebehandling")
+            val request = IndexRequest(KLAGEBEHANDLING_INDEX)
             request.id(klagebehandling.id)
-            //TODO: Make json from klagebehandling
             val jsonString = mapper.writeValueAsString(klagebehandling)
-            println(jsonString)
             request.source(jsonString, XContentType.JSON)
             request.refreshPolicy = refreshPolicy
-            //request.version(klagebehandling.modified.toEpochSecond(ZoneOffset.UTC))
             request.versionType(VersionType.INTERNAL)
+            //request.version(klagebehandling.modified.toEpochSecond(ZoneOffset.UTC))
             //request.opType(DocWriteRequest.OpType.INDEX)
             val indexResponse: IndexResponse = client.index(request, RequestOptions.DEFAULT)
-            logSaveStatus(indexResponse)
+            logIndexResponse(indexResponse)
 
         } catch (e: ElasticsearchException) {
             if (e.status() == RestStatus.CONFLICT) {
@@ -131,47 +131,11 @@ class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
         }
     }
 
-    private fun logSaveStatus(indexResponse: IndexResponse) {
-        val index = indexResponse.index
-        val id = indexResponse.id
-        if (indexResponse.result == DocWriteResponse.Result.CREATED) {
-            logger.info("Created klagebehandling in ES index $index with id $id")
-        } else if (indexResponse.result == DocWriteResponse.Result.UPDATED) {
-            logger.info("Updated klagebehandling in ES index $index with id $id")
-        }
-
-        val shardInfo = indexResponse.shardInfo
-        logger.info("Refreshed index, totalshards: ${shardInfo.total}, successfulshards: ${shardInfo.successful}")
-
-        if (shardInfo.failed > 0) {
-            logger.warn("Failure during save to ES; reason: , totalshards: ${shardInfo.total}, failedshards: ${shardInfo.failed}")
-            for (failure in shardInfo.failures) {
-                val reason = failure.reason()
-                logger.warn("Reason for failure: $reason")
-            }
-        }
-    }
-
-    private fun logRefreshStatus(refreshResponse: RefreshResponse) {
-        val totalShards = refreshResponse.totalShards
-        val successfulShards = refreshResponse.successfulShards
-        val failedShards = refreshResponse.failedShards
-        val failures = refreshResponse.shardFailures
-        logger.info("Refreshed index, totalshards: $totalShards, successfulshards: $successfulShards")
-        if (failedShards > 0) {
-            logger.warn("Failure during refresh of ES, totalshards: $totalShards, failedshards: $failedShards")
-            for (failure in failures) {
-                val reason = failure.reason()
-                logger.warn("Reason for failure: $reason")
-            }
-        }
-    }
-
     fun deleteAll() {
-        val request = DeleteByQueryRequest("klagebehandling")
+        val request = DeleteByQueryRequest(KLAGEBEHANDLING_INDEX)
         request.setQuery(QueryBuilders.matchAllQuery())
         val response: BulkByScrollResponse = client.deleteByQuery(request, RequestOptions.DEFAULT)
-        //TODO: Log response?
+        logBulkResponse(response)
     }
 
     fun saveAll(klagebehandlinger: List<EsKlagebehandling>) {
@@ -182,12 +146,12 @@ class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
         searchSourceBuilder: SearchSourceBuilder,
         aggregationBuilders: List<AggregationBuilder>
     ): KlagebehandlingerSearchHits {
-        val searchRequest = SearchRequest("klagebehandling")
+        val searchRequest = SearchRequest(KLAGEBEHANDLING_INDEX)
         searchRequest.source(searchSourceBuilder)
 
         aggregationBuilders.forEach { searchSourceBuilder.aggregation(it) }
-        val searchResponse = client.search(searchRequest, RequestOptions.DEFAULT)
-        //TODO: Log all the same here as elsewhere
+        val searchResponse: SearchResponse = client.search(searchRequest, RequestOptions.DEFAULT)
+        logSearchResponseShardInfo(searchResponse)
         return KlagebehandlingerSearchHits(
             totalHits = searchResponse.hits.totalHits!!.value,
             totalHitsRelation = searchResponse.hits.totalHits!!.relation,
@@ -207,23 +171,16 @@ class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
         queryBuilder: QueryBuilder,
         aggregationBuilders: List<AggregationBuilder> = emptyList()
     ): KlagebehandlingerSearchHits {
-
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(queryBuilder)
-        searchSourceBuilder.from(0)
-        searchSourceBuilder.size(5)
-        searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
-
-        //searchSourceBuilder.sort(FieldSortBuilder("id").order(SortOrder.ASC));
         return search(searchSourceBuilder, aggregationBuilders)
     }
 
     fun count(baseQuery: QueryBuilder): Long {
-        val countRequest = CountRequest("klagebehandling")
+        val countRequest = CountRequest(KLAGEBEHANDLING_INDEX)
         countRequest.query(baseQuery)
-        val countResponse = client
-            .count(countRequest, RequestOptions.DEFAULT)
-        //TODO: Log all the same here as elsewhere
+        val countResponse: CountResponse = client.count(countRequest, RequestOptions.DEFAULT)
+        logCountResponseShardInfo(countResponse)
         return countResponse.count
     }
 
@@ -241,6 +198,83 @@ class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
             EsKlagebehandlingRepository::class.java.getResourceAsStream(MAPPING_CONFIG)
         )
         return parser.map()
+    }
+
+    private fun logIndexResponse(indexResponse: IndexResponse) {
+        val index = indexResponse.index
+        val id = indexResponse.id
+        if (indexResponse.result == DocWriteResponse.Result.CREATED) {
+            logger.info("Created klagebehandling in ES index $index with id $id")
+        } else if (indexResponse.result == DocWriteResponse.Result.UPDATED) {
+            logger.info("Updated klagebehandling in ES index $index with id $id")
+        }
+        logIndexResponseShardInfo(indexResponse.shardInfo)
+    }
+
+    private fun logBulkResponse(response: BulkByScrollResponse) {
+        if (response.bulkFailures.size > 0) {
+            logger.warn("Failures in bulk response")
+            response.bulkFailures.forEach {
+                logger.warn("Details about failure; status: ${it.status}, message: ${it.message}", it.cause)
+            }
+        }
+    }
+
+    private fun logSearchResponseShardInfo(response: SearchResponse) {
+        val totalShards = response.totalShards
+        val successfulShards = response.successfulShards
+        val failedShards = response.failedShards
+        val failures = response.shardFailures
+        logger.debug("Response result; totalshards: $totalShards, successfulshards: $successfulShards")
+        if (failedShards > 0) {
+            logger.warn("Failures in response result, totalshards: $totalShards, failedshards: $failedShards")
+            for (failure in failures) {
+                val reason = failure.reason()
+                logger.warn("Reason for failure: $reason")
+            }
+        }
+    }
+
+    private fun logIndexResponseShardInfo(shardInfo: ReplicationResponse.ShardInfo) {
+        val totalShards = shardInfo.total
+        val successfulShards = shardInfo.successful
+        val failedShards = shardInfo.failed
+        val failures = shardInfo.failures
+        logger.debug("Response result; totalshards: $totalShards, successfulshards: $successfulShards")
+        if (failedShards > 0) {
+            logger.warn("Failures in response result, totalshards: $totalShards, failedshards: $failedShards")
+            for (failure in failures) {
+                val reason = failure.reason()
+                logger.warn("Reason for failure: $reason")
+            }
+        }
+    }
+
+    private fun logCountResponseShardInfo(response: CountResponse) {
+        val totalShards = response.totalShards
+        val successfulShards = response.successfulShards
+        val failedShards = response.failedShards
+        val failures = response.shardFailures
+        logger.debug("Response result; totalshards: $totalShards, successfulshards: $successfulShards")
+        if (failedShards > 0) {
+            logger.warn("Failures in response result, totalshards: $totalShards, failedshards: $failedShards")
+            for (failure in failures) {
+                val reason = failure.reason()
+                logger.warn("Reason for failure: $reason")
+            }
+        }
+    }
+
+    private fun logResponseShardInfo(response: BroadcastResponse) {
+        val totalShards = response.totalShards
+        val successfulShards = response.successfulShards
+        val failedShards = response.failedShards
+        val failures = response.shardFailures
+        logger.debug("Response result; totalshards: $totalShards, successfulshards: $successfulShards")
+        if (failedShards > 0) {
+            logger.warn("Failures in response result, totalshards: $totalShards, failedshards: $failedShards")
+            failures.forEach { logger.warn("Reason for failure: ${it.reason()}") }
+        }
     }
 }
 

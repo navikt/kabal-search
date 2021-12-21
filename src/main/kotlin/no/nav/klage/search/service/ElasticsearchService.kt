@@ -64,14 +64,6 @@ open class ElasticsearchService(
         }
     }
 
-    fun createIndex() {
-        esKlagebehandlingRepository.createIndex()
-    }
-
-    fun deleteIndex() {
-        esKlagebehandlingRepository.deleteIndex()
-    }
-
     fun save(klagebehandlinger: List<EsKlagebehandling>) {
         if (unleash.isEnabled("klage.indexFromSearch", false)) {
             esKlagebehandlingRepository.save(klagebehandlinger)
@@ -97,7 +89,7 @@ open class ElasticsearchService(
 
         val searchHits =
             esKlagebehandlingRepository.search(criteria.toEsQuery())
-        println("ANTALL TREFF: ${searchHits.totalHits}")
+        logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
         return searchHits
     }
 
@@ -324,10 +316,6 @@ open class ElasticsearchService(
         return baseQuery
     }
 
-    private fun noop() {
-        //DO NOTHING
-    }
-
     private fun addSecurityFilters(baseQuery: BoolQueryBuilder) {
         val filterQuery = QueryBuilders.boolQuery()
         baseQuery.filter(filterQuery)
@@ -398,11 +386,7 @@ open class ElasticsearchService(
             }
         }
     }
-
-    fun refresh() {
-        esKlagebehandlingRepository.refreshIndex()
-    }
-
+    
     fun deleteAll() {
         esKlagebehandlingRepository.deleteAll()
     }
