@@ -20,11 +20,11 @@ class ByEnhetStrategy(private val axsysGateway: AxsysGateway) : Strategy {
         return "byEnhet"
     }
 
-    override fun isEnabled(parameters: Map<String, String>): Boolean {
+    override fun isEnabled(parameters: MutableMap<String, String>): Boolean {
         return false
     }
 
-    override fun isEnabled(parameters: Map<String, String>, unleashContext: UnleashContext): Boolean =
+    override fun isEnabled(parameters: MutableMap<String, String>, unleashContext: UnleashContext): Boolean =
         try {
             unleashContext.userId.map {
                 val saksbehandlersEnheter: List<String> = getSaksbehandlersEnheter(unleashContext)

@@ -63,7 +63,6 @@ class AivenKafkaConfiguration(
         val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
         factory.consumerFactory = klageEndretConsumerFactory()
 
-        factory.containerProperties.isAckOnError = false
         factory.containerProperties.ackMode = AckMode.RECORD
         factory.setErrorHandler(SeekToCurrentErrorHandler(FixedBackOff(1000L, 3L)))
         factory.containerProperties.idleEventInterval = 3000L
