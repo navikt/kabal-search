@@ -38,9 +38,11 @@ class ElasticsearchServiceConfiguration(
         credentialsProvider.setCredentials(AuthScope.ANY, UsernamePasswordCredentials(username, password))
 
         return RestHighLevelClient(
-            RestClient.builder(
-                HttpHost(hostname, port, scheme)
-            ).setHttpClientConfigCallback { it.setDefaultCredentialsProvider(credentialsProvider) }
+            RestClient.builder(HttpHost(hostname, port, scheme))
+                .setRequestConfigCallback {
+                    it.setConnectionRequestTimeout(5000).setConnectTimeout(10000).setSocketTimeout(20000)
+                }
+                .setHttpClientConfigCallback { it.setDefaultCredentialsProvider(credentialsProvider) }
         )
     }
 

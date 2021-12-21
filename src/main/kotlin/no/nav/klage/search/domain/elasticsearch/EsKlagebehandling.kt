@@ -1,9 +1,11 @@
 package no.nav.klage.search.domain.elasticsearch
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class EsKlagebehandling(
     val id: String,
 

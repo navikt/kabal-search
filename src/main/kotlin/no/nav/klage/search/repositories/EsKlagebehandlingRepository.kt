@@ -99,6 +99,7 @@ class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
     }
 
     fun save(klagebehandlinger: List<EsKlagebehandling>) {
+        //TODO Kunne kanskje med fordel vært håndtert med en BulkRequest, ref https://github.com/navikt/pam-kandidatsok-es/blob/master/src/main/java/no/nav/arbeid/kandidatsok/es/client/EsIndexerHttpService.java
         klagebehandlinger.forEach {
             save(it, WriteRequest.RefreshPolicy.NONE)
         }
