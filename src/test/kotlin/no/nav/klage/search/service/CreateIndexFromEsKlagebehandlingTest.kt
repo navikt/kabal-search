@@ -5,7 +5,6 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import no.finn.unleash.Unleash
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
-import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import org.apache.http.util.EntityUtils
 import org.assertj.core.api.Assertions.assertThat
@@ -13,11 +12,7 @@ import org.elasticsearch.client.Request
 import org.elasticsearch.client.RestHighLevelClient
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration
-import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate
 import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -27,10 +22,6 @@ import org.testcontainers.junit.jupiter.Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @Testcontainers
 @SpringBootTest(classes = [ElasticsearchServiceConfiguration::class])
-@ImportAutoConfiguration(
-    ElasticsearchRestClientAutoConfiguration::class,
-    ElasticsearchDataAutoConfiguration::class
-)
 class CreateIndexFromEsKlagebehandlingTest {
 
     companion object {
@@ -44,9 +35,6 @@ class CreateIndexFromEsKlagebehandlingTest {
 
     @MockkBean(relaxed = true)
     lateinit var innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository
-
-    @Autowired
-    lateinit var esTemplate: ElasticsearchRestTemplate
 
     @Autowired
     lateinit var client: RestHighLevelClient
@@ -81,6 +69,7 @@ class CreateIndexFromEsKlagebehandlingTest {
         EntityUtils.toString(mappingResponse.entity)
     }
 
+    /*
     @Test
     @Order(3)
     fun `denne vil printe ut mapping generert fra EsKlagebehandling`() {
@@ -88,4 +77,6 @@ class CreateIndexFromEsKlagebehandlingTest {
         val mappingDocument = indexOps.createMapping(EsKlagebehandling::class.java)
         println(mappingDocument.toJson())
     }
+    */
+
 }

@@ -1,6 +1,8 @@
 package no.nav.klage.search.service
 
 import no.finn.unleash.Unleash
+import no.nav.klage.kodeverk.MedunderskriverFlyt
+import no.nav.klage.kodeverk.Type
 import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
 import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria.Statuskategori.*
 import no.nav.klage.search.domain.SaksbehandlereByEnhetSearchCriteria
@@ -8,38 +10,32 @@ import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.*
 import no.nav.klage.search.domain.elasticsearch.KlageStatistikk
 import no.nav.klage.search.domain.elasticsearch.RelatedKlagebehandlinger
-import no.nav.klage.kodeverk.MedunderskriverFlyt
-import no.nav.klage.kodeverk.Type
 import no.nav.klage.search.domain.saksbehandler.Saksbehandler
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
+import no.nav.klage.search.repositories.KlagebehandlingerSearchHits
+import no.nav.klage.search.repositories.SearchHits
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getMedian
+import org.elasticsearch.common.unit.TimeValue
 import org.elasticsearch.index.query.BoolQueryBuilder
 import org.elasticsearch.index.query.QueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
+import org.elasticsearch.search.aggregations.AggregationBuilder
 import org.elasticsearch.search.aggregations.AggregationBuilders
 import org.elasticsearch.search.aggregations.bucket.range.ParsedDateRange
+import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.elasticsearch.search.sort.SortBuilders
 import org.elasticsearch.search.sort.SortOrder
 import org.springframework.context.ApplicationListener
 import org.springframework.context.event.ContextRefreshedEvent
-import org.springframework.core.io.ClassPathResource
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations
-import org.springframework.data.elasticsearch.core.SearchHits
-import org.springframework.data.elasticsearch.core.document.Document
-import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder
-import org.springframework.data.elasticsearch.core.query.Query
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 open class ElasticsearchService(
-    private val esTemplate: ElasticsearchOperations,
     private val innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository,
     private val esKlagebehandlingRepository: EsKlagebehandlingRepository,
     private val unleash: Unleash
@@ -56,47 +52,21 @@ open class ElasticsearchService(
 
     fun recreateIndex() {
         if (unleash.isEnabled("klage.indexFromSearch", false)) {
-            deleteIndex()
-            createIndex()
+            esKlagebehandlingRepository.recreateIndex()
         }
     }
 
     override fun onApplicationEvent(event: ContextRefreshedEvent) {
         try {
-            createIndex()
+            esKlagebehandlingRepository.createIndex()
         } catch (e: Exception) {
             logger.error("Unable to initialize Elasticsearch", e)
         }
     }
 
-    fun createIndex() {
-        logger.info("Trying to initialize Elasticsearch")
-        val indexOps = esTemplate.indexOps(IndexCoordinates.of("klagebehandling"))
-        logger.info("Does klagebehandling exist in Elasticsearch?")
-        if (!indexOps.exists()) {
-            logger.info("klagebehandling does not exist in Elasticsearch")
-            indexOps.create(readFromfile("settings.json"))
-            indexOps.putMapping(readFromfile("mapping.json"))
-        } else {
-            logger.info("klagebehandling does exist in Elasticsearch")
-        }
-    }
-
-    fun deleteIndex() {
-        logger.info("Deleting index klagebehandling")
-        val indexOps = esTemplate.indexOps(IndexCoordinates.of("klagebehandling"))
-        indexOps.delete()
-    }
-
-    private fun readFromfile(filename: String): Document {
-        val text: String =
-            ClassPathResource("elasticsearch/${filename}").inputStream.bufferedReader(Charsets.UTF_8).readText()
-        return Document.parse(text)
-    }
-
     fun save(klagebehandlinger: List<EsKlagebehandling>) {
         if (unleash.isEnabled("klage.indexFromSearch", false)) {
-            esKlagebehandlingRepository.saveAll(klagebehandlinger)
+            esKlagebehandlingRepository.save(klagebehandlinger)
         }
     }
 
@@ -109,22 +79,22 @@ open class ElasticsearchService(
         }
     }
 
-    open fun findByCriteria(criteria: KlagebehandlingerSearchCriteria): SearchHits<EsKlagebehandling> {
-        val query: Query = NativeSearchQueryBuilder()
-            .withPageable(toPageable(criteria))
-            .withSort(SortBuilders.fieldSort(sortField(criteria)).order(mapOrder(criteria.order)))
-            .withQuery(criteria.toEsQuery())
-            .build()
-        val searchHits: SearchHits<EsKlagebehandling> = esTemplate.search(query, EsKlagebehandling::class.java)
-        println("ANTALL TREFF: ${searchHits.totalHits}")
+    open fun findByCriteria(criteria: KlagebehandlingerSearchCriteria): KlagebehandlingerSearchHits {
+        val searchSourceBuilder = SearchSourceBuilder()
+        searchSourceBuilder.query(criteria.toEsQuery())
+        searchSourceBuilder.from(criteria.offset)
+        searchSourceBuilder.size(criteria.limit)
+        searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
+        searchSourceBuilder.sort(SortBuilders.fieldSort(sortField(criteria)).order(mapOrder(criteria.order)));
+
+        val searchHits =
+            esKlagebehandlingRepository.search(criteria.toEsQuery())
+        logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
         return searchHits
     }
 
     open fun findSaksbehandlereByEnhetCriteria(criteria: SaksbehandlereByEnhetSearchCriteria): SortedSet<Saksbehandler> {
-        val query: Query = NativeSearchQueryBuilder()
-            .withQuery(criteria.toEsQuery())
-            .build()
-        val searchHits: SearchHits<EsKlagebehandling> = esTemplate.search(query, EsKlagebehandling::class.java)
+        val searchHits: SearchHits<EsKlagebehandling> = esKlagebehandlingRepository.search(criteria.toEsQuery())
 
         //Sort results by etternavn
         return searchHits.map {
@@ -163,19 +133,13 @@ open class ElasticsearchService(
     private fun countByStatus(status: EsKlagebehandling.Status): Long {
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.must(QueryBuilders.termQuery("status", status))
-        val query = NativeSearchQueryBuilder()
-            .withQuery(baseQuery)
-            .build()
-        return esTemplate.count(query, IndexCoordinates.of("klagebehandling"))
+        return esKlagebehandlingRepository.count(baseQuery)
     }
 
     open fun countAntallSaksdokumenterIAvsluttedeBehandlingerMedian(): Double {
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.should(QueryBuilders.termQuery("status", FULLFOERT))
-        val query = NativeSearchQueryBuilder()
-            .withQuery(baseQuery)
-            .build()
-        val searchHits: SearchHits<EsKlagebehandling> = esTemplate.search(query, EsKlagebehandling::class.java)
+        val searchHits = esKlagebehandlingRepository.search(baseQuery)
         val saksdokumenterPerAvsluttetBehandling = searchHits.map { e -> e.content }
             .map { e -> e.saksdokumenter.size }.toList()
 
@@ -183,10 +147,7 @@ open class ElasticsearchService(
     }
 
     open fun countByCriteria(criteria: KlagebehandlingerSearchCriteria): Int {
-        val query = NativeSearchQueryBuilder()
-            .withQuery(criteria.toEsQuery())
-            .build()
-        return esTemplate.count(query, IndexCoordinates.of("klagebehandling")).toInt()
+        return esKlagebehandlingRepository.count(criteria.toEsQuery()).toInt()
     }
 
     private fun sortField(criteria: KlagebehandlingerSearchCriteria): String =
@@ -204,12 +165,6 @@ open class ElasticsearchService(
                 KlagebehandlingerSearchCriteria.Order.DESC -> SortOrder.DESC
             }
         }
-    }
-
-    private fun toPageable(criteria: KlagebehandlingerSearchCriteria): Pageable {
-        val page: Int = (criteria.offset / criteria.limit)
-        val size: Int = criteria.limit
-        return PageRequest.of(page, size)
     }
 
     private fun SaksbehandlereByEnhetSearchCriteria.toEsQuery(): QueryBuilder {
@@ -361,10 +316,6 @@ open class ElasticsearchService(
         return baseQuery
     }
 
-    private fun noop() {
-        //DO NOTHING
-    }
-
     private fun addSecurityFilters(baseQuery: BoolQueryBuilder) {
         val filterQuery = QueryBuilders.boolQuery()
         baseQuery.filter(filterQuery)
@@ -435,23 +386,14 @@ open class ElasticsearchService(
             }
         }
     }
-
-    fun refresh() {
-        esTemplate.indexOps(IndexCoordinates.of("klagebehandling")).refresh()
-    }
-
+    
     fun deleteAll() {
-        if (unleash.isEnabled("klage.indexFromSearch", false)) {
-            esKlagebehandlingRepository.deleteAll()
-        }
+        esKlagebehandlingRepository.deleteAll()
     }
 
     fun findAllIdAndModified(): Map<String, LocalDateTime> {
-        val allQuery: Query = NativeSearchQueryBuilder()
-            .withQuery(QueryBuilders.matchAllQuery())
-            .build()
-        val searchHits: SearchHits<EsKlagebehandling> = esTemplate.search(allQuery, EsKlagebehandling::class.java)
-        return searchHits.searchHits.map { it.id!! to it.content.modified }.toMap()
+        val searchHits = esKlagebehandlingRepository.search(QueryBuilders.matchAllQuery())
+        return searchHits.map { it.id to it.content.modified }.toMap()
     }
 
     open fun findRelatedKlagebehandlinger(
@@ -490,10 +432,8 @@ open class ElasticsearchService(
             baseQuery.must(QueryBuilders.existsQuery("avsluttetAvSaksbehandler"))
         }
         return try {
-            esTemplate.search(
-                NativeSearchQueryBuilder().withQuery(baseQuery).build(),
-                EsKlagebehandling::class.java
-            ).searchHits.map { it.content }
+            esKlagebehandlingRepository.search(baseQuery)
+                .searchHits.map { it.content }
         } catch (e: Exception) {
             logger.error("Failed to search ES for related klagebehandlinger", e)
             emptyList()
@@ -503,16 +443,14 @@ open class ElasticsearchService(
     open fun statistikkQuery(): KlageStatistikk {
 
         val baseQueryInnsendtOgAvsluttet: QueryBuilder = QueryBuilders.matchAllQuery()
-        val queryBuilderInnsendtOgAvsluttet: NativeSearchQueryBuilder = NativeSearchQueryBuilder()
-            .withQuery(baseQueryInnsendtOgAvsluttet)
-        addAggregationsForInnsendtAndAvsluttet(queryBuilderInnsendtOgAvsluttet)
+        val aggregationsForInnsendtAndAvsluttet = addAggregationsForInnsendtAndAvsluttet()
 
-        val searchHitsInnsendtOgAvsluttet: SearchHits<EsKlagebehandling> =
-            esTemplate.search(queryBuilderInnsendtOgAvsluttet.build(), EsKlagebehandling::class.java)
+        val searchHitsInnsendtOgAvsluttet =
+            esKlagebehandlingRepository.search(baseQueryInnsendtOgAvsluttet, aggregationsForInnsendtAndAvsluttet)
 
-        val innsendtOgAvsluttetAggs = searchHitsInnsendtOgAvsluttet.aggregations!!
+        val innsendtOgAvsluttetAggs = searchHitsInnsendtOgAvsluttet.aggregations
         val sumInnsendtYesterday =
-            innsendtOgAvsluttetAggs.get<ParsedDateRange>("innsendt_yesterday").buckets.firstOrNull()?.docCount ?: 0
+            innsendtOgAvsluttetAggs!!.get<ParsedDateRange>("innsendt_yesterday").buckets.firstOrNull()?.docCount ?: 0
         val sumInnsendtLastSevenDays =
             innsendtOgAvsluttetAggs.get<ParsedDateRange>("innsendt_last7days").buckets.firstOrNull()?.docCount ?: 0
         val sumInnsendtLastThirtyDays =
@@ -527,16 +465,14 @@ open class ElasticsearchService(
 
         val baseQueryOverFrist: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQueryOverFrist.mustNot(QueryBuilders.existsQuery("avsluttetAvSaksbehandler"))
-        val queryBuilderOverFrist: NativeSearchQueryBuilder = NativeSearchQueryBuilder()
-            .withQuery(baseQueryOverFrist)
-        addAggregationsForOverFrist(queryBuilderOverFrist)
+        val aggregationsForOverFrist = addAggregationsForOverFrist()
 
-        val searchHitsOverFrist: SearchHits<EsKlagebehandling> =
-            esTemplate.search(queryBuilderOverFrist.build(), EsKlagebehandling::class.java)
+        val searchHitsOverFrist =
+            esKlagebehandlingRepository.search(baseQueryOverFrist, aggregationsForOverFrist)
         val sumOverFrist =
             searchHitsOverFrist.aggregations!!.get<ParsedDateRange>("over_frist").buckets.firstOrNull()?.docCount
                 ?: 0
-        searchHitsOverFrist.aggregations!!.get<ParsedDateRange>("over_frist").buckets.forEach {
+        searchHitsOverFrist.aggregations.get<ParsedDateRange>("over_frist").buckets.forEach {
             logger.debug("from clause in over_frist is ${it.from}")
             logger.debug("to clause in over_frist is ${it.to}")
         }
@@ -553,53 +489,41 @@ open class ElasticsearchService(
         )
     }
 
-    private fun addAggregationsForOverFrist(querybuilder: NativeSearchQueryBuilder) {
-        querybuilder
-            .addAggregation(
-                AggregationBuilders.dateRange("over_frist").field("frist")
-                    .timeZone(ZoneId.of(ZONEID_UTC))
-                    .addUnboundedTo("now/d")
-                    .format(ISO8601)
-            )
+    private fun addAggregationsForOverFrist(): List<AggregationBuilder> {
+        return listOf(
+            AggregationBuilders.dateRange("over_frist").field("frist")
+                .timeZone(ZoneId.of(ZONEID_UTC))
+                .addUnboundedTo("now/d")
+                .format(ISO8601)
+        )
     }
 
-    private fun addAggregationsForInnsendtAndAvsluttet(querybuilder: NativeSearchQueryBuilder) {
-        querybuilder
-            .addAggregation(
-                AggregationBuilders.dateRange("innsendt_yesterday").field("innsendt")
-                    .timeZone(ZoneId.of(ZONEID_UTC))
-                    .addRange("now-1d/d", "now/d")
-                    .format(ISO8601)
-            )
-            .addAggregation(
-                AggregationBuilders.dateRange("innsendt_last7days").field("innsendt")
-                    .timeZone(ZoneId.of(ZONEID_UTC))
-                    .addRange("now-7d/d", "now/d")
-                    .format(ISO8601)
-            )
-            .addAggregation(
-                AggregationBuilders.dateRange("innsendt_last30days").field("innsendt")
-                    .timeZone(ZoneId.of(ZONEID_UTC))
-                    .addRange("now-30d/d", "now/d")
-                    .format(ISO8601)
-            )
-            .addAggregation(
-                AggregationBuilders.dateRange("avsluttet_yesterday").field("avsluttetAvSaksbehandler")
-                    .timeZone(ZoneId.of(ZONEID_UTC))
-                    .addRange("now-1d/d", "now/d")
-                    .format(ISO8601)
-            )
-            .addAggregation(
-                AggregationBuilders.dateRange("avsluttet_last7days").field("avsluttetAvSaksbehandler")
-                    .timeZone(ZoneId.of(ZONEID_UTC))
-                    .addRange("now-7d/d", "now/d")
-                    .format(ISO8601)
-            )
-            .addAggregation(
-                AggregationBuilders.dateRange("avsluttet_last30days").field("avsluttetAvSaksbehandler")
-                    .timeZone(ZoneId.of(ZONEID_UTC))
-                    .addRange("now-30d/d", "now/d")
-                    .format(ISO8601)
-            )
+    private fun addAggregationsForInnsendtAndAvsluttet(): List<AggregationBuilder> {
+        return listOf(
+            AggregationBuilders.dateRange("innsendt_yesterday").field("innsendt")
+                .timeZone(ZoneId.of(ZONEID_UTC))
+                .addRange("now-1d/d", "now/d")
+                .format(ISO8601),
+            AggregationBuilders.dateRange("innsendt_last7days").field("innsendt")
+                .timeZone(ZoneId.of(ZONEID_UTC))
+                .addRange("now-7d/d", "now/d")
+                .format(ISO8601),
+            AggregationBuilders.dateRange("innsendt_last30days").field("innsendt")
+                .timeZone(ZoneId.of(ZONEID_UTC))
+                .addRange("now-30d/d", "now/d")
+                .format(ISO8601),
+            AggregationBuilders.dateRange("avsluttet_yesterday").field("avsluttetAvSaksbehandler")
+                .timeZone(ZoneId.of(ZONEID_UTC))
+                .addRange("now-1d/d", "now/d")
+                .format(ISO8601),
+            AggregationBuilders.dateRange("avsluttet_last7days").field("avsluttetAvSaksbehandler")
+                .timeZone(ZoneId.of(ZONEID_UTC))
+                .addRange("now-7d/d", "now/d")
+                .format(ISO8601),
+            AggregationBuilders.dateRange("avsluttet_last30days").field("avsluttetAvSaksbehandler")
+                .timeZone(ZoneId.of(ZONEID_UTC))
+                .addRange("now-30d/d", "now/d")
+                .format(ISO8601)
+        )
     }
 }
