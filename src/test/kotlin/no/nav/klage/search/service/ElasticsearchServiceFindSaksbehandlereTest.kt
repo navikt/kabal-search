@@ -11,21 +11,14 @@ import no.nav.klage.search.config.ElasticsearchServiceConfiguration
 import no.nav.klage.search.domain.SaksbehandlereByEnhetSearchCriteria
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.IKKE_TILDELT
+import no.nav.klage.search.repositories.EsKlagebehandlingRepository
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
-import no.nav.klage.search.service.elasticsearch.EsKlagebehandlingRepository
+import no.nav.klage.search.repositories.SearchHits
 import org.assertj.core.api.Assertions.assertThat
 import org.elasticsearch.index.query.QueryBuilders
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration
-import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate
-import org.springframework.data.elasticsearch.core.SearchHits
-import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder
-import org.springframework.data.elasticsearch.core.query.Query
 import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -37,10 +30,6 @@ import java.time.LocalDateTime
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @Testcontainers
 @SpringBootTest(classes = [ElasticsearchServiceConfiguration::class])
-@ImportAutoConfiguration(
-    ElasticsearchRestClientAutoConfiguration::class,
-    ElasticsearchDataAutoConfiguration::class
-)
 class ElasticsearchServiceFindSaksbehandlereTest {
 
     companion object {
@@ -57,9 +46,6 @@ class ElasticsearchServiceFindSaksbehandlereTest {
 
     @Autowired
     lateinit var service: ElasticsearchService
-
-    @Autowired
-    lateinit var esTemplate: ElasticsearchRestTemplate
 
     @Autowired
     lateinit var repo: EsKlagebehandlingRepository
@@ -79,8 +65,7 @@ class ElasticsearchServiceFindSaksbehandlereTest {
     @Test
     @Order(2)
     fun `index has been created by service`() {
-        val indexOps = esTemplate.indexOps(IndexCoordinates.of("klagebehandling"))
-        assertThat(indexOps.exists()).isTrue
+        assertThat(repo.indexExists()).isTrue
     }
 
     @Test
@@ -150,10 +135,8 @@ class ElasticsearchServiceFindSaksbehandlereTest {
             )
         )
 
-        val query: Query = NativeSearchQueryBuilder()
-            .withQuery(QueryBuilders.matchAllQuery())
-            .build()
-        val searchHits: SearchHits<EsKlagebehandling> = esTemplate.search(query, EsKlagebehandling::class.java)
+        val query = QueryBuilders.matchAllQuery()
+        val searchHits: SearchHits<EsKlagebehandling> = repo.search(query)
         assertThat(searchHits.totalHits).isEqualTo(7L)
     }
 

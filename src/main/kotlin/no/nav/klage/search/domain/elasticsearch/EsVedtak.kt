@@ -1,26 +1,18 @@
 package no.nav.klage.search.domain.elasticsearch
 
-import org.springframework.data.elasticsearch.annotations.*
+import com.fasterxml.jackson.annotation.JsonFormat
 import java.time.LocalDateTime
 
 data class EsVedtak(
-    @Field(type = FieldType.Keyword)
+
     val utfall: String?,
-    @Field(type = FieldType.Keyword)
     val grunn: String?,
-    @MultiField(
-        mainField = Field(type = FieldType.Keyword),
-        otherFields = [InnerField(type = FieldType.Text, suffix = "text")]
-    )
     val hjemler: List<String>,
-    @Field(type = FieldType.Keyword)
     val brevmottakerFnr: List<String>,
-    @Field(type = FieldType.Keyword)
     val brevmottakerOrgnr: List<String>,
-    @Field(type = FieldType.Keyword)
     val journalpostId: String?,
-    @Field(type = FieldType.Date, format = DateFormat.date_time)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     val created: LocalDateTime,
-    @Field(type = FieldType.Date, format = DateFormat.date_time)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     val modified: LocalDateTime,
 )
