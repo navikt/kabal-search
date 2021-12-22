@@ -51,16 +51,18 @@ class PersonSearchService(
         secureLogger.debug("Fetched data from PDL søk: $pdlResponse")
         verifyPdlResponse(pdlResponse)
 
-        val people = pdlResponse.data?.sokPerson?.hits?.map { personHit ->
-            Person(
-                fnr = personHit.person.folkeregisteridentifikator.first().identifikasjonsnummer,
-                navn = Navn(
-                    fornavn = personHit.person.navn.first().fornavn,
-                    mellomnavn = personHit.person.navn.first().mellomnavn,
-                    etternavn = personHit.person.navn.first().etternavn
+        val people = pdlResponse.data?.sokPerson?.hits
+            ?.filter { personHit -> personHit.person.folkeregisteridentifikator.isNotEmpty() }
+            ?.map { personHit ->
+                Person(
+                    fnr = personHit.person.folkeregisteridentifikator.first().identifikasjonsnummer,
+                    navn = Navn(
+                        fornavn = personHit.person.navn.first().fornavn,
+                        mellomnavn = personHit.person.navn.firstOrNull()?.mellomnavn,
+                        etternavn = personHit.person.navn.first().etternavn
+                    )
                 )
-            )
-        }
+            }
         return people ?: emptyList()
     }
 
