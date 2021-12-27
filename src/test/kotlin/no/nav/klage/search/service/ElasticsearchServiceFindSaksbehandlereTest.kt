@@ -12,7 +12,6 @@ import no.nav.klage.search.domain.SaksbehandlereByEnhetSearchCriteria
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.IKKE_TILDELT
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
-import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import no.nav.klage.search.repositories.SearchHits
 import org.assertj.core.api.Assertions.assertThat
 import org.elasticsearch.index.query.QueryBuilders
@@ -40,9 +39,6 @@ class ElasticsearchServiceFindSaksbehandlereTest {
 
     @MockkBean(relaxed = true)
     lateinit var unleash: Unleash
-
-    @MockkBean(relaxed = true)
-    lateinit var innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository
 
     @Autowired
     lateinit var service: ElasticsearchService
@@ -146,7 +142,10 @@ class ElasticsearchServiceFindSaksbehandlereTest {
         val saksbehandlere =
             service.findSaksbehandlereByEnhetCriteria(
                 SaksbehandlereByEnhetSearchCriteria(
-                    enhet = "4219"
+                    enhet = "4219",
+                    kanBehandleEgenAnsatt = false,
+                    kanBehandleFortrolig = false,
+                    kanBehandleStrengtFortrolig = false,
                 )
             )
         assertThat(saksbehandlere.size).isEqualTo(4L)

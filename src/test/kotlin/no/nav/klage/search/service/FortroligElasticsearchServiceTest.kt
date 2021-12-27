@@ -224,15 +224,15 @@ class FortroligElasticsearchServiceTest {
     @Test
     @Order(4)
     fun `Saksbehandler with no special rights will only see normal klagebehandlinger`() {
-        every { innloggetSaksbehandlerRepository.kanBehandleEgenAnsatt() } returns false
-        every { innloggetSaksbehandlerRepository.kanBehandleFortrolig() } returns false
-        every { innloggetSaksbehandlerRepository.kanBehandleStrengtFortrolig() } returns false
         val klagebehandlinger: List<EsKlagebehandling> =
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
                     offset = 0,
-                    limit = 10
+                    limit = 10,
+                    kanBehandleEgenAnsatt = false,
+                    kanBehandleFortrolig = false,
+                    kanBehandleStrengtFortrolig = false,
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder(idNormal)
@@ -241,15 +241,15 @@ class FortroligElasticsearchServiceTest {
     @Test
     @Order(5)
     fun `Saksbehandler with egen ansatt rights will only see normal klagebehandlinger and those for egen ansatte, but not egen ansatte that are fortrolig or strengt fortrolig`() {
-        every { innloggetSaksbehandlerRepository.kanBehandleEgenAnsatt() } returns true
-        every { innloggetSaksbehandlerRepository.kanBehandleFortrolig() } returns false
-        every { innloggetSaksbehandlerRepository.kanBehandleStrengtFortrolig() } returns false
         val klagebehandlinger: List<EsKlagebehandling> =
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
                     offset = 0,
-                    limit = 10
+                    limit = 10,
+                    kanBehandleEgenAnsatt = true,
+                    kanBehandleFortrolig = false,
+                    kanBehandleStrengtFortrolig = false,
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder(idNormal, idEgenAnsatt)
@@ -258,15 +258,15 @@ class FortroligElasticsearchServiceTest {
     @Test
     @Order(6)
     fun `Saksbehandler with fortrolig rights will see normale klagebehandlinger and fortrolige klagebehandlinger, including the combo fortrolig and egen ansatt`() {
-        every { innloggetSaksbehandlerRepository.kanBehandleEgenAnsatt() } returns false
-        every { innloggetSaksbehandlerRepository.kanBehandleFortrolig() } returns true
-        every { innloggetSaksbehandlerRepository.kanBehandleStrengtFortrolig() } returns false
         val klagebehandlinger: List<EsKlagebehandling> =
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
                     offset = 0,
-                    limit = 10
+                    limit = 10,
+                    kanBehandleEgenAnsatt = false,
+                    kanBehandleFortrolig = true,
+                    kanBehandleStrengtFortrolig = false,
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder(
@@ -278,15 +278,15 @@ class FortroligElasticsearchServiceTest {
     @Test
     @Order(7)
     fun `Saksbehandler with fortrolig rights and egen ansatt rights will see normale klagebehandling, fortrolige klagebehandlinger and egen ansatt klagebehandlinger`() {
-        every { innloggetSaksbehandlerRepository.kanBehandleEgenAnsatt() } returns true
-        every { innloggetSaksbehandlerRepository.kanBehandleFortrolig() } returns true
-        every { innloggetSaksbehandlerRepository.kanBehandleStrengtFortrolig() } returns false
         val klagebehandlinger: List<EsKlagebehandling> =
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
                     offset = 0,
-                    limit = 10
+                    limit = 10,
+                    kanBehandleEgenAnsatt = true,
+                    kanBehandleFortrolig = true,
+                    kanBehandleStrengtFortrolig = false,
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder(
@@ -298,15 +298,15 @@ class FortroligElasticsearchServiceTest {
     @Test
     @Order(8)
     fun `Saksbehandler with strengt fortrolig rights and egen ansatt rights will see strengt fortrolige klagebehandlinger, including the combo strengt fortrolig and egen ansatt`() {
-        every { innloggetSaksbehandlerRepository.kanBehandleEgenAnsatt() } returns true
-        every { innloggetSaksbehandlerRepository.kanBehandleFortrolig() } returns false
-        every { innloggetSaksbehandlerRepository.kanBehandleStrengtFortrolig() } returns true
         val klagebehandlinger: List<EsKlagebehandling> =
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
                     offset = 0,
-                    limit = 10
+                    limit = 10,
+                    kanBehandleEgenAnsatt = true,
+                    kanBehandleFortrolig = false,
+                    kanBehandleStrengtFortrolig = true,
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder(
@@ -317,15 +317,15 @@ class FortroligElasticsearchServiceTest {
     @Test
     @Order(9)
     fun `Saksbehandler with strengt fortrolig rights without egen ansatt rights will only see strengt fortrolige klagebehandlinger, including the combo strengt fortrolig and egen ansatt`() {
-        every { innloggetSaksbehandlerRepository.kanBehandleEgenAnsatt() } returns false
-        every { innloggetSaksbehandlerRepository.kanBehandleFortrolig() } returns false
-        every { innloggetSaksbehandlerRepository.kanBehandleStrengtFortrolig() } returns true
         val klagebehandlinger: List<EsKlagebehandling> =
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
                     offset = 0,
-                    limit = 10
+                    limit = 10,
+                    kanBehandleEgenAnsatt = false,
+                    kanBehandleFortrolig = false,
+                    kanBehandleStrengtFortrolig = true,
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder(
@@ -337,15 +337,15 @@ class FortroligElasticsearchServiceTest {
     @Test
     @Order(10)
     fun `Saksbehandler with fortrolig and strengt fortrolig rights will only see strengt fortrolige and fortrolige klagebehandlinger, including those that also are egen ansatte`() {
-        every { innloggetSaksbehandlerRepository.kanBehandleEgenAnsatt() } returns false
-        every { innloggetSaksbehandlerRepository.kanBehandleFortrolig() } returns true
-        every { innloggetSaksbehandlerRepository.kanBehandleStrengtFortrolig() } returns true
         val klagebehandlinger: List<EsKlagebehandling> =
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
                     offset = 0,
-                    limit = 10
+                    limit = 10,
+                    kanBehandleEgenAnsatt = false,
+                    kanBehandleFortrolig = true,
+                    kanBehandleStrengtFortrolig = true,
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder(
@@ -359,15 +359,15 @@ class FortroligElasticsearchServiceTest {
     @Test
     @Order(11)
     fun `Saksbehandler with fortrolig and strengt fortrolig and egen ansatt rights will only see strengt fortrolige and fortrolige klagebehandlinger, including those that also are egen ansatte`() {
-        every { innloggetSaksbehandlerRepository.kanBehandleEgenAnsatt() } returns true
-        every { innloggetSaksbehandlerRepository.kanBehandleFortrolig() } returns true
-        every { innloggetSaksbehandlerRepository.kanBehandleStrengtFortrolig() } returns true
         val klagebehandlinger: List<EsKlagebehandling> =
             service.findByCriteria(
                 KlagebehandlingerSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
                     offset = 0,
-                    limit = 10
+                    limit = 10,
+                    kanBehandleEgenAnsatt = true,
+                    kanBehandleFortrolig = true,
+                    kanBehandleStrengtFortrolig = true,
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder(

@@ -2,7 +2,6 @@ package no.nav.klage.search.config
 
 import no.finn.unleash.Unleash
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
-import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import no.nav.klage.search.service.ElasticsearchService
 import org.apache.http.HttpHost
 import org.apache.http.auth.AuthScope
@@ -53,11 +52,9 @@ class ElasticsearchServiceConfiguration(
 
     @Bean
     fun elasticsearchService(
-        innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository,
         unleash: Unleash
     ): ElasticsearchService {
         return ElasticsearchService(
-            innloggetSaksbehandlerRepository,
             esKlagebehandlingRepository(),
             unleash
         )
