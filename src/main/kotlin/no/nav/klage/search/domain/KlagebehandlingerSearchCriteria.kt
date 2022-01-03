@@ -48,14 +48,6 @@ data class KlagebehandlingerSearchCriteria(
         AAPEN, AVSLUTTET, ALLE
     }
 
-
-    enum class Projection {
-        UTVIDET
-    }
-
-    fun isProjectionUtvidet(): Boolean = true // Projection.UTVIDET == projection
-
-
     fun isFnrSoek() = raw.isNumeric()
 
     private fun String.isNumeric() = toLongOrNull() != null

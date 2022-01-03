@@ -8,6 +8,7 @@ import no.nav.klage.search.api.mapper.KlagebehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.AntallUtgaatteFristerResponse
 import no.nav.klage.search.api.view.KlagebehandlingerListRespons
 import no.nav.klage.search.api.view.KlagebehandlingerQueryParams
+import no.nav.klage.search.api.view.Projeksjon
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeYtelser
 import no.nav.klage.search.exceptions.MissingTilgangException
@@ -72,7 +73,7 @@ class KlagebehandlingListController(
             antallTreffTotalt = esResponse.totalHits.toInt(),
             klagebehandlinger = klagebehandlingListMapper.mapEsKlagebehandlingerToListView(
                 esResponse.searchHits.map { it.content },
-                searchCriteria.isProjectionUtvidet(),
+                queryParams.projeksjon == Projeksjon.UTVIDET,
                 searchCriteria.saksbehandlere,
                 valgtEnhet.ytelser
             )
