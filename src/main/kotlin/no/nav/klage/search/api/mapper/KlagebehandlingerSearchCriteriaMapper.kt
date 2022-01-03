@@ -78,7 +78,7 @@ class KlagebehandlingerSearchCriteriaMapper(
     )
 
     fun toSearchCriteria(
-        queryParams: EnhetensLedigeOppgaverQueryParams,
+        queryParams: MineLedigeOppgaverQueryParams,
     ) = KlagebehandlingerSearchCriteria(
         enhetId = null,
         typer = queryParams.typer.map { Type.of(it) },

@@ -42,8 +42,8 @@ class OppgaverListController(
         notes = "Henter alle ledige oppgaver saksbehandler har tilgang til."
     )
     @GetMapping("/ansatte/{navIdent}/oppgaver/ledige", produces = ["application/json"])
-    fun getEnhetensLedigeOppgaver(
-        queryParams: EnhetensLedigeOppgaverQueryParams
+    fun getMineLedigeOppgaver(
+        queryParams: MineLedigeOppgaverQueryParams
     ): KlagebehandlingerListRespons {
         logger.debug("Params: {}", queryParams)
 

@@ -15,7 +15,7 @@ data class KlagebehandlingerQueryParams(
     val erTildeltSaksbehandler: Boolean? = null,
     var tildeltSaksbehandler: List<String> = emptyList(),
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    override val ferdigstiltFom: LocalDate? = null,
+    val ferdigstiltFom: LocalDate? = null,
     override val ferdigstiltDaysAgo: Long? = null,
     val enhet: String
 ) : CommonOppgaverQueryParams, FerdigstilteOppgaverQueryParams
@@ -31,7 +31,6 @@ interface CommonOppgaverQueryParams {
 }
 
 interface FerdigstilteOppgaverQueryParams {
-    val ferdigstiltFom: LocalDate?
     val ferdigstiltDaysAgo: Long?
 }
 
@@ -43,8 +42,6 @@ data class MineFerdigstilteOppgaverQueryParams(
     override val sortering: Sortering? = Sortering.FRIST,
     override val start: Int,
     override val antall: Int,
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    override val ferdigstiltFom: LocalDate? = null,
     override val ferdigstiltDaysAgo: Long? = null,
 ) : CommonOppgaverQueryParams, FerdigstilteOppgaverQueryParams
 
@@ -58,7 +55,7 @@ data class MineUferdigeOppgaverQueryParams(
     override val antall: Int,
 ) : CommonOppgaverQueryParams
 
-data class EnhetensLedigeOppgaverQueryParams(
+data class MineLedigeOppgaverQueryParams(
     override var typer: List<String> = emptyList(),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
@@ -76,8 +73,6 @@ data class EnhetensFerdigstilteOppgaverQueryParams(
     override val sortering: Sortering? = Sortering.FRIST,
     override val start: Int,
     override val antall: Int,
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    override val ferdigstiltFom: LocalDate? = null,
     override val ferdigstiltDaysAgo: Long? = null,
     var tildelteSaksbehandlere: List<String> = emptyList(),
 ) : CommonOppgaverQueryParams, FerdigstilteOppgaverQueryParams
