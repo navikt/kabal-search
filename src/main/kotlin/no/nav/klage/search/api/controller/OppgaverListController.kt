@@ -209,10 +209,8 @@ class OppgaverListController(
         value = "Hent antall utildelte klagebehandlinger for enheten der fristen gått ut",
         notes = "Teller opp alle utildelte klagebehandlinger for enheten der fristen gått ut."
     )
-    @GetMapping("/ansatte/{navIdent}/antallklagebehandlingermedutgaattefrister", produces = ["application/json"])
+    @GetMapping("/ansatte/{navIdent}/antalloppgavermedutgaattefrister", produces = ["application/json"])
     fun getAntallUtgaatteFrister(
-        @ApiParam(value = "EnhetId til enheten den ansatte jobber i")
-        @PathVariable enhetId: String,
         @ApiParam(value = "NavIdent til en ansatt")
         @PathVariable navIdent: String,
         queryParams: KlagebehandlingerQueryParams
@@ -220,9 +218,10 @@ class OppgaverListController(
         logger.debug("Params: {}", queryParams)
         validateNavIdent(navIdent)
 
-        val valgtEnhet = getEnhetOrThrowException(enhetId)
-        //TODO: Denne matcher ikke sånn vi gjør når vi henter ut oppgavene, bør vel samkjøres
-        val ytelser = lovligeValgteYtelser(queryParams = queryParams, valgteEnheter = listOf(valgtEnhet))
+        val ytelser = lovligeValgteYtelser(
+            queryParams = queryParams,
+            valgteEnheter = saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
+        )
         val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         return AntallUtgaatteFristerResponse(
             antall = elasticsearchService.countByCriteria(
