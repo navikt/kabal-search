@@ -209,18 +209,42 @@ class KlagebehandlingerSearchCriteriaMapper(
         LocalDate.now().minusDays(queryParams.ferdigstiltDaysAgo)
 
 
-    fun toFristUtgaattIkkeTildeltSearchCriteria(navIdent: String, queryParams: KlagebehandlingerQueryParams) =
+    fun toSearchCriteriaForLedigeMedUtgaattFrist(navIdent: String, queryParams: MineLedigeOppgaverQueryParams) =
         KlagebehandlingerSearchCriteria(
+            enhetId = null,
             typer = queryParams.typer.map { Type.of(it) },
+            ytelser = queryParams.ytelser.map { Ytelse.of(it) },
             hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
-            offset = 0,
-            limit = 1,
             erTildeltSaksbehandler = false,
+            saksbehandlere = emptyList(),
+            ferdigstiltFom = null,
+            statuskategori = KlagebehandlingerSearchCriteria.Statuskategori.AAPEN,
             fristFom = LocalDate.now().minusYears(15),
             fristTom = LocalDate.now().minusDays(1),
-            kanBehandleEgenAnsatt = innloggetSaksbehandlerRepository.kanBehandleEgenAnsatt(),
-            kanBehandleFortrolig = innloggetSaksbehandlerRepository.kanBehandleFortrolig(),
-            kanBehandleStrengtFortrolig = innloggetSaksbehandlerRepository.kanBehandleStrengtFortrolig(),
+            offset = 0,
+            limit = 1,
+            kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
+            kanBehandleFortrolig = kanBehandleFortrolig(),
+            kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+        )
+
+    fun toFristUtgaattIkkeTildeltSearchCriteria(navIdent: String, queryParams: KlagebehandlingerQueryParams) =
+        KlagebehandlingerSearchCriteria(
+            enhetId = null,
+            typer = queryParams.typer.map { Type.of(it) },
+            ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+            hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+            erTildeltSaksbehandler = false,
+            saksbehandlere = emptyList(),
+            ferdigstiltFom = null,
+            statuskategori = KlagebehandlingerSearchCriteria.Statuskategori.AAPEN,
+            fristFom = LocalDate.now().minusYears(15),
+            fristTom = LocalDate.now().minusDays(1),
+            offset = 0,
+            limit = 1,
+            kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
+            kanBehandleFortrolig = kanBehandleFortrolig(),
+            kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
         )
 }
 

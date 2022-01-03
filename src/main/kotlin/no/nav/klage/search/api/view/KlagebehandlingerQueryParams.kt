@@ -17,7 +17,7 @@ data class KlagebehandlingerQueryParams(
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     val ferdigstiltFom: LocalDate? = null,
     val ferdigstiltDaysAgo: Long? = null,
-    val enhet: String
+    val enhet: String,
 ) : CommonOppgaverQueryParams
 
 interface CommonOppgaverQueryParams {

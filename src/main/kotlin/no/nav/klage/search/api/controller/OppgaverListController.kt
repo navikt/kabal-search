@@ -213,7 +213,7 @@ class OppgaverListController(
     fun getAntallUtgaatteFrister(
         @ApiParam(value = "NavIdent til en ansatt")
         @PathVariable navIdent: String,
-        queryParams: KlagebehandlingerQueryParams
+        queryParams: MineLedigeOppgaverQueryParams
     ): AntallUtgaatteFristerResponse {
         logger.debug("Params: {}", queryParams)
         validateNavIdent(navIdent)
@@ -225,7 +225,7 @@ class OppgaverListController(
         val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         return AntallUtgaatteFristerResponse(
             antall = elasticsearchService.countByCriteria(
-                criteria = klagebehandlingerSearchCriteriaMapper.toFristUtgaattIkkeTildeltSearchCriteria(
+                criteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteriaForLedigeMedUtgaattFrist(
                     navIdent = navIdent,
                     queryParams = queryParams.copy(ytelser = ytelser, hjemler = hjemler),
                 )
