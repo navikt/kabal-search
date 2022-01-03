@@ -8,7 +8,7 @@ import no.nav.klage.search.api.mapper.KlagebehandlingListMapper
 import no.nav.klage.search.api.mapper.KlagebehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.*
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
-import no.nav.klage.search.domain.kodeverk.ytelseTilHjemler
+import no.nav.klage.search.domain.kodeverk.ytelseTilSoekehjemler
 import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeYtelser
 import no.nav.klage.search.exceptions.MissingTilgangException
 import no.nav.klage.search.exceptions.NotMatchingUserException
@@ -19,13 +19,11 @@ import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @Api(tags = ["kabal-search"])
 @ProtectedWithClaims(issuer = ISSUER_AAD)
-@RequestMapping("/enhet/{enhetId}")
 class OppgaverListController(
     private val klagebehandlingListMapper: KlagebehandlingListMapper,
     private val elasticsearchService: ElasticsearchService,
@@ -40,13 +38,42 @@ class OppgaverListController(
     }
 
     @ApiOperation(
+        value = "Hent ledige oppgaver for en saksbehandler",
+        notes = "Henter alle ledige oppgaver saksbehandler har tilgang til."
+    )
+    @GetMapping("/ansatte/{navIdent}/oppgaver/ledige", produces = ["application/json"])
+    fun getEnhetensLedigeOppgaver(
+        queryParams: EnhetensLedigeOppgaverQueryParams
+    ): KlagebehandlingerListRespons {
+        logger.debug("Params: {}", queryParams)
+
+        val ytelser = lovligeValgteYtelser(
+            queryParams = queryParams,
+            valgteEnheter = saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
+        )
+        val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
+        val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
+            queryParams = queryParams.copy(ytelser = ytelser, hjemler = hjemler),
+        )
+
+        val esResponse = elasticsearchService.findByCriteria(searchCriteria)
+        return KlagebehandlingerListRespons(
+            antallTreffTotalt = esResponse.totalHits.toInt(),
+            klagebehandlinger = klagebehandlingListMapper.mapEsKlagebehandlingerToListView(
+                esKlagebehandlinger = esResponse.searchHits.map { it.content },
+                visePersonData = false,
+                saksbehandlere = searchCriteria.saksbehandlere,
+                tilgangTilYtelser = getAlleYtelserInnloggetSaksbehandlerKanBehandle()
+            )
+        )
+    }
+
+    @ApiOperation(
         value = "Hent ferdigstilte oppgaver for en ansatt",
         notes = "Henter alle ferdigstilte oppgaver som saksbehandler har tilgang til."
     )
     @GetMapping("/ansatte/{navIdent}/oppgaver/ferdigstilte", produces = ["application/json"])
     fun getMineFerdigstilteOppgaver(
-        @ApiParam(value = "EnhetId til enheten den ansatte jobber i")
-        @PathVariable enhetId: String,
         @ApiParam(value = "NavIdent til en ansatt")
         @PathVariable navIdent: String,
         queryParams: MineFerdigstilteOppgaverQueryParams
@@ -54,24 +81,24 @@ class OppgaverListController(
         logger.debug("Params: {}", queryParams)
         validateNavIdent(navIdent)
 
-        val valgtEnhet = getEnhetOrThrowException(enhetId)
-        val ytelser =
-            lovligeValgteYtelser(queryParams, saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter)
-        val hjemler: List<String> = lovligeValgteHjemler(queryParams, ytelser)
+        val ytelser = lovligeValgteYtelser(
+            queryParams = queryParams,
+            valgteEnheter = saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
+        )
+        val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
-            navIdent,
-            queryParams.copy(ytelser = ytelser, hjemler = hjemler),
+            navIdent = navIdent,
+            queryParams = queryParams.copy(ytelser = ytelser, hjemler = hjemler),
         )
 
         val esResponse = elasticsearchService.findByCriteria(searchCriteria)
         return KlagebehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
             klagebehandlinger = klagebehandlingListMapper.mapEsKlagebehandlingerToListView(
-                esResponse.searchHits.map { it.content },
-                searchCriteria.isProjectionUtvidet(),
-                searchCriteria.ferdigstiltFom != null,
-                searchCriteria.saksbehandlere,
-                getAlleYtelserInnloggetSaksbehandlerKanBehandle()
+                esKlagebehandlinger = esResponse.searchHits.map { it.content },
+                visePersonData = true,
+                saksbehandlere = searchCriteria.saksbehandlere,
+                tilgangTilYtelser = getAlleYtelserInnloggetSaksbehandlerKanBehandle()
             )
         )
     }
@@ -82,8 +109,6 @@ class OppgaverListController(
     )
     @GetMapping("/ansatte/{navIdent}/oppgaver/uferdige", produces = ["application/json"])
     fun getMineUferdigeOppgaver(
-        @ApiParam(value = "EnhetId til enheten den ansatte jobber i")
-        @PathVariable enhetId: String,
         @ApiParam(value = "NavIdent til en ansatt")
         @PathVariable navIdent: String,
         queryParams: MineUferdigeOppgaverQueryParams
@@ -91,24 +116,24 @@ class OppgaverListController(
         logger.debug("Params: {}", queryParams)
         validateNavIdent(navIdent)
 
-        val valgtEnhet = getEnhetOrThrowException(enhetId)
-        val ytelser =
-            lovligeValgteYtelser(queryParams, saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter)
-        val hjemler: List<String> = lovligeValgteHjemler(queryParams, ytelser)
+        val ytelser = lovligeValgteYtelser(
+            queryParams = queryParams,
+            valgteEnheter = saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
+        )
+        val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
-            navIdent,
-            queryParams.copy(ytelser = ytelser, hjemler = hjemler),
+            navIdent = navIdent,
+            queryParams = queryParams.copy(ytelser = ytelser, hjemler = hjemler),
         )
 
         val esResponse = elasticsearchService.findByCriteria(searchCriteria)
         return KlagebehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
             klagebehandlinger = klagebehandlingListMapper.mapEsKlagebehandlingerToListView(
-                esResponse.searchHits.map { it.content },
-                searchCriteria.isProjectionUtvidet(),
-                searchCriteria.ferdigstiltFom != null,
-                searchCriteria.saksbehandlere,
-                getAlleYtelserInnloggetSaksbehandlerKanBehandle()
+                esKlagebehandlinger = esResponse.searchHits.map { it.content },
+                visePersonData = true,
+                saksbehandlere = searchCriteria.saksbehandlere,
+                tilgangTilYtelser = getAlleYtelserInnloggetSaksbehandlerKanBehandle()
             )
         )
     }
@@ -117,7 +142,7 @@ class OppgaverListController(
         value = "Hent enhetens ferdigstilte oppgaver",
         notes = "Henter alle ferdigstilte oppgaver for enheten som saksbehandler har tilgang til."
     )
-    @GetMapping("/oppgaver/tildelte/ferdigstilte", produces = ["application/json"])
+    @GetMapping("/enhet/{enhetId}/oppgaver/tildelte/ferdigstilte", produces = ["application/json"])
     fun getEnhetensFerdigstilteOppgaver(
         @ApiParam(value = "EnhetId til enheten den ansatte jobber i")
         @PathVariable enhetId: String,
@@ -127,22 +152,21 @@ class OppgaverListController(
         validateRettigheterForEnhetensTildelteOppgaver()
 
         val valgtEnhet = getEnhetOrThrowException(enhetId)
-        val ytelser = lovligeValgteYtelser(queryParams, listOf(valgtEnhet))
-        val hjemler: List<String> = lovligeValgteHjemler(queryParams, ytelser)
+        val ytelser = lovligeValgteYtelser(queryParams = queryParams, valgteEnheter = listOf(valgtEnhet))
+        val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
-            enhetId,
-            queryParams.copy(ytelser = ytelser, hjemler = hjemler),
+            enhetId = enhetId,
+            queryParams = queryParams.copy(ytelser = ytelser, hjemler = hjemler),
         )
 
         val esResponse = elasticsearchService.findByCriteria(searchCriteria)
         return KlagebehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
             klagebehandlinger = klagebehandlingListMapper.mapEsKlagebehandlingerToListView(
-                esResponse.searchHits.map { it.content },
-                searchCriteria.isProjectionUtvidet(),
-                searchCriteria.ferdigstiltFom != null,
-                searchCriteria.saksbehandlere,
-                getAlleYtelserInnloggetSaksbehandlerKanBehandle()
+                esKlagebehandlinger = esResponse.searchHits.map { it.content },
+                visePersonData = false,
+                saksbehandlere = searchCriteria.saksbehandlere,
+                tilgangTilYtelser = getAlleYtelserInnloggetSaksbehandlerKanBehandle()
             )
         )
     }
@@ -151,7 +175,7 @@ class OppgaverListController(
         value = "Hent uferdige oppgaver for en enhet",
         notes = "Henter alle uferdige oppgaver i enheten som saksbehandler har tilgang til."
     )
-    @GetMapping("/oppgaver/tildelte/uferdige", produces = ["application/json"])
+    @GetMapping("/enhet/{enhetId}/oppgaver/tildelte/uferdige", produces = ["application/json"])
     fun getEnhetensUferdigeOppgaver(
         @ApiParam(value = "EnhetId til enheten den ansatte jobber i")
         @PathVariable enhetId: String,
@@ -161,58 +185,25 @@ class OppgaverListController(
         validateRettigheterForEnhetensTildelteOppgaver()
 
         val valgtEnhet = getEnhetOrThrowException(enhetId)
-        val ytelser = lovligeValgteYtelser(queryParams, listOf(valgtEnhet))
-        val hjemler: List<String> = lovligeValgteHjemler(queryParams, ytelser)
+        val ytelser = lovligeValgteYtelser(queryParams = queryParams, valgteEnheter = listOf(valgtEnhet))
+        val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
-            enhetId,
-            queryParams.copy(ytelser = ytelser, hjemler = hjemler),
+            enhetId = enhetId,
+            queryParams = queryParams.copy(ytelser = ytelser, hjemler = hjemler),
         )
 
         val esResponse = elasticsearchService.findByCriteria(searchCriteria)
         return KlagebehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
             klagebehandlinger = klagebehandlingListMapper.mapEsKlagebehandlingerToListView(
-                esResponse.searchHits.map { it.content },
-                searchCriteria.isProjectionUtvidet(),
-                searchCriteria.ferdigstiltFom != null,
-                searchCriteria.saksbehandlere,
-                getAlleYtelserInnloggetSaksbehandlerKanBehandle()
+                esKlagebehandlinger = esResponse.searchHits.map { it.content },
+                visePersonData = false,
+                saksbehandlere = searchCriteria.saksbehandlere,
+                tilgangTilYtelser = getAlleYtelserInnloggetSaksbehandlerKanBehandle()
             )
         )
     }
 
-    @ApiOperation(
-        value = "Hent ledige oppgaver for en enhet",
-        notes = "Henter alle ledige oppgaver i enheten som saksbehandler har tilgang til."
-    )
-    @GetMapping("/oppgaver/tildelte/uferdige", produces = ["application/json"])
-    fun getEnhetensLedigeOppgaver(
-        @ApiParam(value = "EnhetId til enheten den ansatte jobber i")
-        @PathVariable enhetId: String,
-        queryParams: EnhetensLedigeOppgaverQueryParams
-    ): KlagebehandlingerListRespons {
-        logger.debug("Params: {}", queryParams)
-
-        val valgtEnhet = getEnhetOrThrowException(enhetId)
-        val ytelser = lovligeValgteYtelser(queryParams, listOf(valgtEnhet))
-        val hjemler: List<String> = lovligeValgteHjemler(queryParams, ytelser)
-        val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
-            enhetId,
-            queryParams.copy(ytelser = ytelser, hjemler = hjemler),
-        )
-
-        val esResponse = elasticsearchService.findByCriteria(searchCriteria)
-        return KlagebehandlingerListRespons(
-            antallTreffTotalt = esResponse.totalHits.toInt(),
-            klagebehandlinger = klagebehandlingListMapper.mapEsKlagebehandlingerToListView(
-                esResponse.searchHits.map { it.content },
-                searchCriteria.isProjectionUtvidet(),
-                searchCriteria.ferdigstiltFom != null,
-                searchCriteria.saksbehandlere,
-                getAlleYtelserInnloggetSaksbehandlerKanBehandle()
-            )
-        )
-    }
 
     @ApiOperation(
         value = "Hent antall utildelte klagebehandlinger for enheten der fristen gått ut",
@@ -231,13 +222,13 @@ class OppgaverListController(
 
         val valgtEnhet = getEnhetOrThrowException(enhetId)
         //TODO: Denne matcher ikke sånn vi gjør når vi henter ut oppgavene, bør vel samkjøres
-        val ytelser = lovligeValgteYtelser(queryParams, listOf(valgtEnhet))
-        val hjemler: List<String> = lovligeValgteHjemler(queryParams, ytelser)
+        val ytelser = lovligeValgteYtelser(queryParams = queryParams, valgteEnheter = listOf(valgtEnhet))
+        val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         return AntallUtgaatteFristerResponse(
             antall = elasticsearchService.countByCriteria(
-                klagebehandlingerSearchCriteriaMapper.toFristUtgaattIkkeTildeltSearchCriteria(
-                    navIdent,
-                    queryParams.copy(ytelser = ytelser, hjemler = hjemler),
+                criteria = klagebehandlingerSearchCriteriaMapper.toFristUtgaattIkkeTildeltSearchCriteria(
+                    navIdent = navIdent,
+                    queryParams = queryParams.copy(ytelser = ytelser, hjemler = hjemler),
                 )
             )
         )
@@ -278,9 +269,9 @@ class OppgaverListController(
 
     private fun lovligeValgteHjemler(queryParams: CommonOppgaverQueryParams, ytelser: List<String>) =
         if (queryParams.hjemler.isEmpty()) {
-            ytelser.mapNotNull { ytelseTilHjemler.get(Ytelse.of(it)) }.flatten().map { it.id }
+            ytelser.mapNotNull { ytelseTilSoekehjemler.get(Ytelse.of(it)) }.flatten().map { it.id }
         } else {
-            ytelser.mapNotNull { ytelseTilHjemler.get(Ytelse.of(it)) }.flatten().map { it.id }
+            ytelser.mapNotNull { ytelseTilSoekehjemler.get(Ytelse.of(it)) }.flatten().map { it.id }
                 .intersect(queryParams.hjemler).toList()
         }
 

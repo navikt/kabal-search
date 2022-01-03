@@ -9,3 +9,5 @@ class NoSaksbehandlerRoleException(msg: String) : RuntimeException(msg)
 class NotOwnEnhetException(msg: String) : RuntimeException(msg)
 
 class MissingTilgangException(msg: String) : RuntimeException(msg)
+
+class PersonNotFoundException(msg: String) : RuntimeException(msg)

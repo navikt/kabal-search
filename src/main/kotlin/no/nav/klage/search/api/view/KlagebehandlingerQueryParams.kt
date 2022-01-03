@@ -79,7 +79,7 @@ data class EnhetensFerdigstilteOppgaverQueryParams(
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     override val ferdigstiltFom: LocalDate? = null,
     override val ferdigstiltDaysAgo: Long? = null,
-    var tildelteSaksbehandler: List<String> = emptyList(),
+    var tildelteSaksbehandlere: List<String> = emptyList(),
 ) : CommonOppgaverQueryParams, FerdigstilteOppgaverQueryParams
 
 data class EnhetensUferdigeOppgaverQueryParams(
@@ -90,7 +90,7 @@ data class EnhetensUferdigeOppgaverQueryParams(
     override val sortering: Sortering? = Sortering.FRIST,
     override val start: Int,
     override val antall: Int,
-    var tildelteSaksbehandler: List<String> = emptyList(),
+    var tildelteSaksbehandlere: List<String> = emptyList(),
 ) : CommonOppgaverQueryParams
 
 enum class Rekkefoelge {

@@ -78,10 +78,9 @@ class KlagebehandlingerSearchCriteriaMapper(
     )
 
     fun toSearchCriteria(
-        enhetId: String,
         queryParams: EnhetensLedigeOppgaverQueryParams,
     ) = KlagebehandlingerSearchCriteria(
-        enhetId = enhetId,
+        enhetId = null,
         typer = queryParams.typer.map { Type.of(it) },
         ytelser = queryParams.ytelser.map { Ytelse.of(it) },
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
@@ -110,7 +109,7 @@ class KlagebehandlingerSearchCriteriaMapper(
         offset = queryParams.start,
         limit = queryParams.antall,
         erTildeltSaksbehandler = true,
-        saksbehandlere = queryParams.tildelteSaksbehandler,
+        saksbehandlere = queryParams.tildelteSaksbehandlere,
         sortField = mapSortField(queryParams.sortering),
         ferdigstiltFom = null,
         statuskategori = KlagebehandlingerSearchCriteria.Statuskategori.AAPEN,
@@ -131,7 +130,7 @@ class KlagebehandlingerSearchCriteriaMapper(
         offset = queryParams.start,
         limit = queryParams.antall,
         erTildeltSaksbehandler = true,
-        saksbehandlere = queryParams.tildelteSaksbehandler,
+        saksbehandlere = queryParams.tildelteSaksbehandlere,
         sortField = mapSortField(queryParams.sortering),
         ferdigstiltFom = mapFerdigstiltFom(queryParams),
         statuskategori = KlagebehandlingerSearchCriteria.Statuskategori.AVSLUTTET,

@@ -4,9 +4,33 @@ import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.kodeverk.hjemmel.Hjemmel
 import no.nav.klage.kodeverk.hjemmel.Hjemmel.*
 
-//TODO: Litt usikker på om denne bør være i kodeverket eller ikke. Den brukes vel bare her?
-//TODO: Denne må kvalitetssikres
-val ytelseTilHjemler: Map<Ytelse, List<Hjemmel>> = mapOf(
+//TODO: Denne bør nok flyttes til felles kodeverk
+val ytelseTilSoekehjemler: Map<Ytelse, List<Hjemmel>> = mapOf(
+    Ytelse.OMS_PSB to listOf(
+        FTRL_9_2,
+        FTRL_9_3,
+        FTRL_9_10,
+        FTRL_9_11,
+        FTRL_9_13,
+        FTRL_9_15,
+        FTRL_9_16,
+        FTRL_8_13,
+        FTRL_22_3,
+        FTRL_22_13,
+        FTRL_22_15,
+        MANGLER,
+    ),
+    Ytelse.OMS_OLP to listOf(
+        FTRL_9_2,
+        FTRL_9_3,
+        FTRL_9_14,
+        FTRL_9_15,
+        FTRL_9_16,
+        FTRL_22_3,
+        FTRL_22_13,
+        FTRL_22_15,
+        MANGLER,
+    ),
     Ytelse.OMS_OMP to listOf(
         FTRL_9_2,
         FTRL_9_3,
@@ -14,18 +38,20 @@ val ytelseTilHjemler: Map<Ytelse, List<Hjemmel>> = mapOf(
         FTRL_9_6,
         FTRL_9_8,
         FTRL_9_9,
-        FTRL_9_10,
-        FTRL_9_11,
-        FTRL_9_13,
-        FTRL_9_14,
-        FTRL_9_15,
-        FTRL_9_16,
-        FTL_9,
         FTRL_22_3,
-        FTRL_22_12,
         FTRL_22_13,
         FTRL_22_15,
-        FTL,
+        MANGLER,
+    ),
+    Ytelse.OMS_PLS to listOf(
+        FTRL_9_2,
+        FTRL_9_3,
+        FTRL_9_13,
+        FTRL_9_15,
+        FTRL_9_16,
+        FTRL_22_3,
+        FTRL_22_13,
+        FTRL_22_15,
         MANGLER,
     ),
     Ytelse.SYK_SYK to listOf(
@@ -34,12 +60,12 @@ val ytelseTilHjemler: Map<Ytelse, List<Hjemmel>> = mapOf(
         FTRL_8_4,
         FTRL_8_7,
         FTRL_8_8,
+        FTRL_8_12,
         FTRL_8_13,
         FTRL_8_15,
         FTRL_8_20,
         FTRL_8_28,
         FTRL_8_29,
-        FTRL_8_12,
         FTRL_8_30,
         FTRL_8_34,
         FTRL_8_35,
@@ -57,7 +83,6 @@ val ytelseTilHjemler: Map<Ytelse, List<Hjemmel>> = mapOf(
         FTRL_22_12,
         FTRL_22_13,
         FTRL_22_15,
-        FTL,
         MANGLER,
     ),
     Ytelse.SUP_PEN to listOf(
@@ -86,5 +111,5 @@ val ytelseTilHjemler: Map<Ytelse, List<Hjemmel>> = mapOf(
         SUP_ST_L_13,
         SUP_ST_L_18,
         MANGLER,
-    )
+    ),
 )
