@@ -6,7 +6,9 @@ import no.nav.klage.search.api.mapper.KlagebehandlingListMapper
 import no.nav.klage.search.api.mapper.KlagebehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.*
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
+import no.nav.klage.search.domain.personsoek.PersonSearchResponse
 import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeYtelser
+import no.nav.klage.search.exceptions.PersonNotFoundException
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import no.nav.klage.search.service.PersonSearchService
 import no.nav.klage.search.service.SaksbehandlerService
@@ -45,15 +47,31 @@ class KlagebehandlingSearchController(
 
         return if (personSearchResponse != null) {
             val saksbehandler = innloggetSaksbehandlerRepository.getInnloggetIdent()
-            val valgtEnhet = getEnhetOrThrowException(input.enhet)
             klagebehandlingListMapper.mapPersonSearchResponseToFnrSearchResponse(
                 personSearchResponse = personSearchResponse,
                 saksbehandler = saksbehandler,
-                tilgangTilYtelser = valgtEnhet.ytelser
+                tilgangTilYtelser = saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter.flatMap { it.ytelser }
             )
         } else {
             null
         }
+    }
+
+    @ApiOperation(
+        value = "Søk oppgaver som gjelder en gitt person",
+        notes = "Finner alle oppgaver som saksbehandler har tilgang til som omhandler en gitt person."
+    )
+    @PostMapping("/personogoppgaver", produces = ["application/json"])
+    fun getPersonOgOppgaver(@RequestBody input: SearchPersonByFnrInput): FnrSearchResponse {
+        val personSearchResponse: PersonSearchResponse =
+            personSearchService.fnrSearch(klagebehandlingerSearchCriteriaMapper.toSearchCriteria(input))
+                ?: throw PersonNotFoundException("Person med fnr ${input.query} ikke funnet")
+        val saksbehandler = innloggetSaksbehandlerRepository.getInnloggetIdent()
+        return klagebehandlingListMapper.mapPersonSearchResponseToFnrSearchResponse(
+            personSearchResponse = personSearchResponse,
+            saksbehandler = saksbehandler,
+            tilgangTilYtelser = saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter.flatMap { it.ytelser }
+        )
     }
 
     @ApiOperation(

@@ -23,7 +23,7 @@ interface OurOwnExceptionAdviceTrait : AdviceTrait {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
     }
-    
+
     @ExceptionHandler
     fun handleMissingTilgang(ex: MissingTilgangException, request: NativeWebRequest): ResponseEntity<Problem> =
         create(Status.FORBIDDEN, ex, request)
@@ -46,6 +46,11 @@ interface OurOwnExceptionAdviceTrait : AdviceTrait {
     @ExceptionHandler
     fun handleNotOwnEnhet(ex: NotOwnEnhetException, request: NativeWebRequest): ResponseEntity<Problem> =
         create(Status.FORBIDDEN, ex, request)
+
+    @ExceptionHandler
+    fun handlePersonNotFound(ex: PersonNotFoundException, request: NativeWebRequest): ResponseEntity<Problem> =
+        create(Status.NOT_FOUND, ex, request)
+
 
     @ExceptionHandler
     fun handleResponseStatusException(

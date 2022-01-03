@@ -48,6 +48,9 @@ class SaksbehandlerController(
         val esResponse = elasticsearchService.findSaksbehandlereByEnhetCriteria(
             SaksbehandlereByEnhetSearchCriteria(
                 enhet = enhet,
+                kanBehandleEgenAnsatt = innloggetSaksbehandlerRepository.kanBehandleEgenAnsatt(),
+                kanBehandleFortrolig = innloggetSaksbehandlerRepository.kanBehandleFortrolig(),
+                kanBehandleStrengtFortrolig = innloggetSaksbehandlerRepository.kanBehandleStrengtFortrolig(),
             )
         )
         return SaksbehandlereListResponse(

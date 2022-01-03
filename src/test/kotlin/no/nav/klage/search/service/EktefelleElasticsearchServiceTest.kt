@@ -12,7 +12,6 @@ import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.IKKE_TILDELT
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
-import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.elasticsearch.index.query.QueryBuilders
 import org.junit.jupiter.api.*
@@ -39,9 +38,6 @@ class EktefelleElasticsearchServiceTest {
 
     @MockkBean(relaxed = true)
     lateinit var unleash: Unleash
-
-    @MockkBean(relaxed = true)
-    lateinit var innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository
 
     @Autowired
     lateinit var service: ElasticsearchService
@@ -166,7 +162,10 @@ class EktefelleElasticsearchServiceTest {
                 KlagebehandlingerSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
                     offset = 0,
-                    limit = 10
+                    limit = 10,
+                    kanBehandleEgenAnsatt = false,
+                    kanBehandleFortrolig = false,
+                    kanBehandleStrengtFortrolig = false,
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.size).isEqualTo(2L)
@@ -182,7 +181,10 @@ class EktefelleElasticsearchServiceTest {
                     ytelser = listOf(Ytelse.OMS_OMP),
                     foedselsnr = "123",
                     offset = 0,
-                    limit = 10
+                    limit = 10,
+                    kanBehandleEgenAnsatt = false,
+                    kanBehandleFortrolig = false,
+                    kanBehandleStrengtFortrolig = false,
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.size).isEqualTo(1L)
@@ -202,7 +204,10 @@ class EktefelleElasticsearchServiceTest {
                         ytelser = listOf(Ytelse.SYK_SYK),
                     ),
                     offset = 0,
-                    limit = 10
+                    limit = 10,
+                    kanBehandleEgenAnsatt = false,
+                    kanBehandleFortrolig = false,
+                    kanBehandleStrengtFortrolig = false,
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.size).isEqualTo(1L)
@@ -222,7 +227,10 @@ class EktefelleElasticsearchServiceTest {
                         ytelser = listOf(Ytelse.FOR_FOR),
                     ),
                     offset = 0,
-                    limit = 10
+                    limit = 10,
+                    kanBehandleEgenAnsatt = false,
+                    kanBehandleFortrolig = false,
+                    kanBehandleStrengtFortrolig = false,
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.size).isEqualTo(1L)
@@ -242,7 +250,10 @@ class EktefelleElasticsearchServiceTest {
                         ytelser = listOf(Ytelse.SYK_SYK),
                     ),
                     offset = 0,
-                    limit = 10
+                    limit = 10,
+                    kanBehandleEgenAnsatt = false,
+                    kanBehandleFortrolig = false,
+                    kanBehandleStrengtFortrolig = false,
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.size).isEqualTo(2L)

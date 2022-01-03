@@ -12,7 +12,6 @@ import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.UKJENT
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
-import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import no.nav.klage.search.repositories.SearchHits
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.SoftAssertions
@@ -41,9 +40,6 @@ class RelatedKlagebehandlingerTest {
 
     @MockkBean(relaxed = true)
     lateinit var unleash: Unleash
-
-    @MockkBean(relaxed = true)
-    lateinit var innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository
 
     @Autowired
     lateinit var service: ElasticsearchService
@@ -145,7 +141,10 @@ class RelatedKlagebehandlingerTest {
             ferdigstiltFom = LocalDate.now(),
             offset = 0,
             limit = 10,
-            statuskategori = KlagebehandlingerSearchCriteria.Statuskategori.AVSLUTTET
+            statuskategori = KlagebehandlingerSearchCriteria.Statuskategori.AVSLUTTET,
+            kanBehandleEgenAnsatt = false,
+            kanBehandleFortrolig = false,
+            kanBehandleStrengtFortrolig = false,
         )
 
         val results = service.findByCriteria(searchCriteria)

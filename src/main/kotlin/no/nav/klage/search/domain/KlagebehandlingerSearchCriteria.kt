@@ -28,8 +28,10 @@ data class KlagebehandlingerSearchCriteria(
     val erTildeltSaksbehandler: Boolean? = null,
     val saksbehandlere: List<String> = emptyList(),
     val enhetId: String? = null,
-    val projection: Projection? = null,
-    val sortField: SortField? = null
+    val sortField: SortField? = null,
+    val kanBehandleEgenAnsatt: Boolean,
+    val kanBehandleFortrolig: Boolean,
+    val kanBehandleStrengtFortrolig: Boolean,
 ) {
 
     data class ExtraPersonWithYtelser(val foedselsnr: String, val ytelser: List<Ytelse>)
@@ -45,14 +47,6 @@ data class KlagebehandlingerSearchCriteria(
     enum class Statuskategori {
         AAPEN, AVSLUTTET, ALLE
     }
-
-
-    enum class Projection {
-        UTVIDET
-    }
-
-    fun isProjectionUtvidet(): Boolean = Projection.UTVIDET == projection
-
 
     fun isFnrSoek() = raw.isNumeric()
 

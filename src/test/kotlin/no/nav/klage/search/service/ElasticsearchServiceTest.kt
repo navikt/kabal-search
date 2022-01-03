@@ -12,7 +12,6 @@ import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.IKKE_TILDELT
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
-import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import no.nav.klage.search.repositories.SearchHits
 import org.assertj.core.api.Assertions.assertThat
 import org.elasticsearch.index.query.QueryBuilders
@@ -40,9 +39,6 @@ class ElasticsearchServiceTest {
 
     @MockkBean(relaxed = true)
     lateinit var unleash: Unleash
-
-    @MockkBean(relaxed = true)
-    lateinit var innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository
 
     @Autowired
     lateinit var service: ElasticsearchService
@@ -125,7 +121,10 @@ class ElasticsearchServiceTest {
                 KlagebehandlingerSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
                     offset = 0,
-                    limit = 10
+                    limit = 10,
+                    kanBehandleEgenAnsatt = false,
+                    kanBehandleFortrolig = false,
+                    kanBehandleStrengtFortrolig = false,
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.size).isEqualTo(1L)
@@ -140,7 +139,10 @@ class ElasticsearchServiceTest {
                 KlagebehandlingerSearchCriteria(
                     fristFom = LocalDate.of(2020, 12, 1),
                     offset = 0,
-                    limit = 10
+                    limit = 10,
+                    kanBehandleEgenAnsatt = false,
+                    kanBehandleFortrolig = false,
+                    kanBehandleStrengtFortrolig = false,
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.size).isEqualTo(1L)

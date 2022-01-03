@@ -1,13 +1,13 @@
 package no.nav.klage.search.api.mapper
 
 
+import no.nav.klage.kodeverk.MedunderskriverFlyt
+import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.api.view.FnrSearchResponse
 import no.nav.klage.search.api.view.KlagebehandlingListView
 import no.nav.klage.search.api.view.NavnView
 import no.nav.klage.search.clients.pdl.Sivilstand
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
-import no.nav.klage.kodeverk.MedunderskriverFlyt
-import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.domain.personsoek.PersonSearchResponse
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -21,12 +21,11 @@ class KlagebehandlingListMapper {
         personSearchResponse: PersonSearchResponse,
         saksbehandler: String,
         tilgangTilYtelser: List<Ytelse>
-    ): FnrSearchResponse? {
+    ): FnrSearchResponse {
         val klagebehandlinger =
             mapEsKlagebehandlingerToListView(
                 esKlagebehandlinger = personSearchResponse.klagebehandlinger,
-                viseUtvidet = false,
-                viseFullfoerte = true,
+                visePersonData = false,
                 saksbehandlere = listOf(saksbehandler),
                 tilgangTilYtelser = tilgangTilYtelser
             )
@@ -45,8 +44,7 @@ class KlagebehandlingListMapper {
 
     fun mapEsKlagebehandlingerToListView(
         esKlagebehandlinger: List<EsKlagebehandling>,
-        viseUtvidet: Boolean,
-        viseFullfoerte: Boolean,
+        visePersonData: Boolean,
         saksbehandlere: List<String>,
         tilgangTilYtelser: List<Ytelse>,
         sivilstand: Sivilstand? = null
@@ -54,7 +52,7 @@ class KlagebehandlingListMapper {
         return esKlagebehandlinger.map { esKlagebehandling ->
             KlagebehandlingListView(
                 id = esKlagebehandling.id,
-                person = if (viseUtvidet) {
+                person = if (visePersonData) {
                     KlagebehandlingListView.Person(
                         esKlagebehandling.sakenGjelderFnr,
                         esKlagebehandling.sakenGjelderNavn,
@@ -76,20 +74,11 @@ class KlagebehandlingListMapper {
                 erTildelt = esKlagebehandling.tildeltSaksbehandlerident != null,
                 tildeltSaksbehandlerident = esKlagebehandling.tildeltSaksbehandlerident,
                 tildeltSaksbehandlerNavn = esKlagebehandling.tildeltSaksbehandlernavn,
-                utfall = if (viseFullfoerte) {
-                    esKlagebehandling.vedtakUtfall
-                } else {
-                    null
-                },
-                avsluttetAvSaksbehandlerDate = if (viseFullfoerte) {
-                    esKlagebehandling.avsluttetAvSaksbehandler?.toLocalDate()
-                } else {
-                    null
-                },
+                utfall = esKlagebehandling.vedtakUtfall,
+                avsluttetAvSaksbehandlerDate = esKlagebehandling.avsluttetAvSaksbehandler?.toLocalDate(),
                 isAvsluttetAvSaksbehandler = esKlagebehandling.avsluttetAvSaksbehandler?.toLocalDate() != null,
-                //TODO: Burde vi defaulte til true eller false hvis ytelseId == null?
-                saksbehandlerHarTilgang = esKlagebehandling.ytelseId == null
-                        || tilgangTilYtelser.contains(Ytelse.of(esKlagebehandling.ytelseId)),
+                saksbehandlerHarTilgang = esKlagebehandling.ytelseId != null
+                        && Ytelse.of(esKlagebehandling.ytelseId) in tilgangTilYtelser,
                 egenAnsatt = esKlagebehandling.egenAnsatt,
                 fortrolig = esKlagebehandling.fortrolig,
                 strengtFortrolig = esKlagebehandling.strengtFortrolig,

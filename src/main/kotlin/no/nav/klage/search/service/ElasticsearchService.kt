@@ -12,7 +12,6 @@ import no.nav.klage.search.domain.elasticsearch.KlageStatistikk
 import no.nav.klage.search.domain.elasticsearch.RelatedKlagebehandlinger
 import no.nav.klage.search.domain.saksbehandler.Saksbehandler
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
-import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import no.nav.klage.search.repositories.KlagebehandlingerSearchHits
 import no.nav.klage.search.repositories.SearchHits
 import no.nav.klage.search.util.getLogger
@@ -36,7 +35,6 @@ import java.util.concurrent.TimeUnit
 
 
 open class ElasticsearchService(
-    private val innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository,
     private val esKlagebehandlingRepository: EsKlagebehandlingRepository,
     private val unleash: Unleash
 ) :
@@ -170,7 +168,12 @@ open class ElasticsearchService(
     private fun SaksbehandlereByEnhetSearchCriteria.toEsQuery(): QueryBuilder {
         logger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
-        addSecurityFilters(baseQuery)
+        addSecurityFilters(
+            baseQuery = baseQuery,
+            kanBehandleEgenAnsatt = kanBehandleEgenAnsatt,
+            kanBehandleFortrolig = kanBehandleFortrolig,
+            kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig
+        )
 
         baseQuery.mustNot(QueryBuilders.existsQuery("avsluttetAvSaksbehandler"))
         baseQuery.must(QueryBuilders.termQuery("tildeltEnhet", enhet))
@@ -185,7 +188,12 @@ open class ElasticsearchService(
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         logger.debug("Search criteria: {}", this)
 
-        addSecurityFilters(baseQuery)
+        addSecurityFilters(
+            baseQuery = baseQuery,
+            kanBehandleEgenAnsatt = kanBehandleEgenAnsatt,
+            kanBehandleFortrolig = kanBehandleFortrolig,
+            kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig
+        )
 
         val combinedInnerFnrAndYtelseQuery = QueryBuilders.boolQuery()
         baseQuery.must(combinedInnerFnrAndYtelseQuery)
@@ -316,13 +324,14 @@ open class ElasticsearchService(
         return baseQuery
     }
 
-    private fun addSecurityFilters(baseQuery: BoolQueryBuilder) {
+    private fun addSecurityFilters(
+        baseQuery: BoolQueryBuilder,
+        kanBehandleEgenAnsatt: Boolean,
+        kanBehandleFortrolig: Boolean,
+        kanBehandleStrengtFortrolig: Boolean
+    ) {
         val filterQuery = QueryBuilders.boolQuery()
         baseQuery.filter(filterQuery)
-
-        val kanBehandleEgenAnsatt = innloggetSaksbehandlerRepository.kanBehandleEgenAnsatt()
-        val kanBehandleFortrolig = innloggetSaksbehandlerRepository.kanBehandleFortrolig()
-        val kanBehandleStrengtFortrolig = innloggetSaksbehandlerRepository.kanBehandleStrengtFortrolig()
 
         when {
             kanBehandleEgenAnsatt && kanBehandleFortrolig && kanBehandleStrengtFortrolig -> {
@@ -386,7 +395,7 @@ open class ElasticsearchService(
             }
         }
     }
-    
+
     fun deleteAll() {
         esKlagebehandlingRepository.deleteAll()
     }
