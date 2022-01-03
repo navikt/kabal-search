@@ -197,13 +197,17 @@ class KlagebehandlingerSearchCriteriaMapper(
         kanBehandleStrengtFortrolig = innloggetSaksbehandlerRepository.kanBehandleStrengtFortrolig(),
     )
 
-    private fun mapFerdigstiltFom(queryParams: FerdigstilteOppgaverQueryParams): LocalDate? {
+    private fun mapFerdigstiltFom(queryParams: KlagebehandlingerQueryParams): LocalDate? {
         return if (queryParams.ferdigstiltDaysAgo != null) {
             LocalDate.now().minusDays(queryParams.ferdigstiltDaysAgo!!.toLong())
         } else {
             queryParams.ferdigstiltFom
         }
     }
+
+    private fun mapFerdigstiltFom(queryParams: FerdigstilteOppgaverQueryParams): LocalDate? =
+        LocalDate.now().minusDays(queryParams.ferdigstiltDaysAgo)
+
 
     fun toFristUtgaattIkkeTildeltSearchCriteria(navIdent: String, queryParams: KlagebehandlingerQueryParams) =
         KlagebehandlingerSearchCriteria(
