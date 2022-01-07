@@ -23,11 +23,29 @@ class MicrosoftGraphClient(
         private val secureLogger = getSecureLogger()
 
         private const val userSelect =
-            "onPremisesSamAccountName,displayName,givenName,surname,mail,officeLocation,userPrincipalName,id,jobTitle"
+            "onPremisesSamAccountName,displayName,givenName,surname,mail,officeLocation,userPrincipalName,id,jobTitle,streetAddress"
 
         private const val slimUserSelect = "userPrincipalName,onPremisesSamAccountName,displayName"
 
         private const val groupMemberSelect = "id,mail,onPremisesSamAccountName,displayName"
+    }
+
+    @Retryable
+    fun getInnloggetSaksbehandler(): AzureUser {
+        logger.debug("Fetching data about authenticated user from Microsoft Graph")
+
+        return microsoftGraphWebClient.get()
+            .uri { uriBuilder ->
+                uriBuilder
+                    .path("/me")
+                    .queryParam("\$select", userSelect)
+                    .build()
+            }.header("Authorization", "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithGraphScope()}")
+
+            .retrieve()
+            .bodyToMono<AzureUser>()
+            .block().let { secureLogger.debug("me: $it"); it }
+            ?: throw RuntimeException("AzureAD data about authenticated user could not be fetched")
     }
 
     @Retryable
