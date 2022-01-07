@@ -11,3 +11,5 @@ class NotOwnEnhetException(msg: String) : RuntimeException(msg)
 class MissingTilgangException(msg: String) : RuntimeException(msg)
 
 class PersonNotFoundException(msg: String) : RuntimeException(msg)
+
+class EnhetNotFoundForSaksbehandlerException(msg: String) : RuntimeException(msg)

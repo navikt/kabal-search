@@ -12,7 +12,7 @@ val springFoxVersion = "3.0.0"
 val testContainersVersion = "1.16.2"
 val threeTenExtraVersion = "1.7.0"
 val archunitVersion = "0.22.0"
-val kabalKodeverkVersion = "2021.12.21-16.31.d66f428a8949"
+val kabalKodeverkVersion = "2022.01.07-07.15.3ce71c11b311"
 val elasticsearchRestClientVersion = "7.10.2"
 val reactorSpringVersion = "1.0.1.RELEASE"
 

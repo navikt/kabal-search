@@ -51,6 +51,12 @@ interface OurOwnExceptionAdviceTrait : AdviceTrait {
     fun handlePersonNotFound(ex: PersonNotFoundException, request: NativeWebRequest): ResponseEntity<Problem> =
         create(Status.NOT_FOUND, ex, request)
 
+    @ExceptionHandler
+    fun handleEnhetNotFoundForSaksbehandlerException(
+        ex: EnhetNotFoundForSaksbehandlerException,
+        request: NativeWebRequest
+    ): ResponseEntity<Problem> =
+        create(Status.INTERNAL_SERVER_ERROR, ex, request)
 
     @ExceptionHandler
     fun handleResponseStatusException(
