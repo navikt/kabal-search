@@ -31,6 +31,9 @@ spec:
   elastic:
     access: admin
     instance: oppgave-es
+  openSearch:
+    access: admin
+    instance: oppgave-es
   kafka:
     pool: {{kafka_pool}}
   port: 7081

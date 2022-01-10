@@ -15,12 +15,9 @@ AXSYS_APIKEY: 357
 nais:
   cluster:
     name: local
-AIVEN_ES_SCHEME: http
-AIVEN_ES_HOST: localhost
-AIVEN_ES_PORT: 9200
-AIVEN_ES_USE_SSL: false
 ELASTIC_USERNAME: elasticsearch
 ELASTIC_PASSWORD: password
+ELASTIC_URI: "http://localhost:9200"
 
 AXSYS_URL: https://axsys.dev.adeo.no/v1
 

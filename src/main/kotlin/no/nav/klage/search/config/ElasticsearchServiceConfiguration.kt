@@ -19,11 +19,9 @@ import org.springframework.context.event.ContextStoppedEvent
 
 @Configuration
 class ElasticsearchServiceConfiguration(
-    @Value("\${AIVEN_ES_SCHEME}") private val scheme: String,
-    @Value("\${AIVEN_ES_HOST}") private val hostname: String,
-    @Value("\${AIVEN_ES_PORT}") private val port: Int,
     @Value("\${ELASTIC_USERNAME}") private val username: String,
     @Value("\${ELASTIC_PASSWORD}") private val password: String,
+    @Value("\${ELASTIC_URI}") private val uri: String,
 ) :
     ApplicationListener<ContextStoppedEvent> {
 
@@ -37,9 +35,9 @@ class ElasticsearchServiceConfiguration(
         credentialsProvider.setCredentials(AuthScope.ANY, UsernamePasswordCredentials(username, password))
 
         return RestHighLevelClient(
-            RestClient.builder(HttpHost(hostname, port, scheme))
+            RestClient.builder(HttpHost.create(uri))
                 .setRequestConfigCallback {
-                    it.setConnectionRequestTimeout(5000).setConnectTimeout(10000).setSocketTimeout(20000)
+                    it.setConnectionRequestTimeout(5000).setConnectTimeout(10000).setSocketTimeout(10000)
                 }
                 .setHttpClientConfigCallback { it.setDefaultCredentialsProvider(credentialsProvider) }
         )

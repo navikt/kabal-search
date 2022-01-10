@@ -6,7 +6,7 @@ class TestElasticsearchContainer private constructor() :
     ElasticsearchContainer(IMAGE_VERSION) {
 
     companion object {
-        private const val IMAGE_VERSION = "docker.elastic.co/elasticsearch/elasticsearch:7.9.3"
+        private const val IMAGE_VERSION = "docker.elastic.co/elasticsearch/elasticsearch:7.10.2"
 
         private val CONTAINER: TestElasticsearchContainer = TestElasticsearchContainer()
 
@@ -18,12 +18,9 @@ class TestElasticsearchContainer private constructor() :
 
     override fun start() {
         super.start()
-        System.setProperty("AIVEN_ES_HOST", CONTAINER.host)
-        System.setProperty("AIVEN_ES_PORT", CONTAINER.firstMappedPort.toString())
         System.setProperty("ELASTIC_USERNAME", "elastic")
         System.setProperty("ELASTIC_PASSWORD", "changeme")
-        System.setProperty("AIVEN_ES_SCHEME", "http")
-        System.setProperty("AIVEN_ES_USE_SSL", "false")
+        System.setProperty("ELASTIC_URI", "http://${CONTAINER.host}:${CONTAINER.firstMappedPort}")
     }
 
     override fun stop() {
