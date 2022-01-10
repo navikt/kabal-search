@@ -86,7 +86,7 @@ open class ElasticsearchService(
         searchSourceBuilder.sort(SortBuilders.fieldSort(sortField(criteria)).order(mapOrder(criteria.order)));
 
         val searchHits =
-            esKlagebehandlingRepository.search(criteria.toEsQuery())
+            esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
         logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
         return searchHits
     }
