@@ -33,7 +33,7 @@ spec:
     instance: oppgave-es
   openSearch:
     access: admin
-    instance: oppgave-os
+    instance: oppgave
   kafka:
     pool: {{kafka_pool}}
   port: 7081
