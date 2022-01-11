@@ -1,6 +1,5 @@
 package no.nav.klage.search.config
 
-import no.finn.unleash.Unleash
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
 import no.nav.klage.search.service.ElasticsearchService
 import org.apache.http.HttpHost
@@ -19,9 +18,9 @@ import org.springframework.context.event.ContextStoppedEvent
 
 @Configuration
 class ElasticsearchServiceConfiguration(
-    @Value("\${ELASTIC_USERNAME}") private val username: String,
-    @Value("\${ELASTIC_PASSWORD}") private val password: String,
-    @Value("\${ELASTIC_URI}") private val uri: String,
+    @Value("\${OPEN_SEARCH_USERNAME}") private val username: String,
+    @Value("\${OPEN_SEARCH_PASSWORD}") private val password: String,
+    @Value("\${OPEN_SEARCH_URI}") private val uri: String,
 ) :
     ApplicationListener<ContextStoppedEvent> {
 
@@ -49,13 +48,8 @@ class ElasticsearchServiceConfiguration(
     }
 
     @Bean
-    fun elasticsearchService(
-        unleash: Unleash
-    ): ElasticsearchService {
-        return ElasticsearchService(
-            esKlagebehandlingRepository(),
-            unleash
-        )
+    fun elasticsearchService(): ElasticsearchService {
+        return ElasticsearchService(esKlagebehandlingRepository())
     }
 
 

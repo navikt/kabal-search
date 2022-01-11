@@ -15,9 +15,9 @@ AXSYS_APIKEY: 357
 nais:
   cluster:
     name: local
-ELASTIC_USERNAME: elasticsearch
-ELASTIC_PASSWORD: password
-ELASTIC_URI: "http://localhost:9200"
+OPEN_SEARCH_USERNAME: whatever
+OPEN_SEARCH_PASSWORD: password
+OPEN_SEARCH_URI: "http://localhost:9200"
 
 AXSYS_URL: https://axsys.dev.adeo.no/v1
 
