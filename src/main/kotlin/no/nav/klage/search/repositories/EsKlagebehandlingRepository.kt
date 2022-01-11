@@ -8,36 +8,36 @@ import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getSecureLogger
 import org.apache.lucene.search.TotalHits
-import org.elasticsearch.ElasticsearchException
-import org.elasticsearch.action.DocWriteResponse
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest
-import org.elasticsearch.action.admin.indices.refresh.RefreshRequest
-import org.elasticsearch.action.index.IndexRequest
-import org.elasticsearch.action.index.IndexResponse
-import org.elasticsearch.action.search.SearchRequest
-import org.elasticsearch.action.search.SearchResponse
-import org.elasticsearch.action.support.WriteRequest
-import org.elasticsearch.action.support.broadcast.BroadcastResponse
-import org.elasticsearch.action.support.master.AcknowledgedResponse
-import org.elasticsearch.action.support.replication.ReplicationResponse
-import org.elasticsearch.client.RequestOptions
-import org.elasticsearch.client.RestHighLevelClient
-import org.elasticsearch.client.core.CountRequest
-import org.elasticsearch.client.core.CountResponse
-import org.elasticsearch.client.indices.CreateIndexRequest
-import org.elasticsearch.client.indices.CreateIndexResponse
-import org.elasticsearch.client.indices.GetIndexRequest
-import org.elasticsearch.common.xcontent.NamedXContentRegistry
-import org.elasticsearch.common.xcontent.XContentType
-import org.elasticsearch.index.VersionType
-import org.elasticsearch.index.query.QueryBuilder
-import org.elasticsearch.index.query.QueryBuilders
-import org.elasticsearch.index.reindex.BulkByScrollResponse
-import org.elasticsearch.index.reindex.DeleteByQueryRequest
-import org.elasticsearch.rest.RestStatus
-import org.elasticsearch.search.aggregations.AggregationBuilder
-import org.elasticsearch.search.aggregations.Aggregations
-import org.elasticsearch.search.builder.SearchSourceBuilder
+import org.opensearch.OpenSearchException
+import org.opensearch.action.DocWriteResponse
+import org.opensearch.action.admin.indices.delete.DeleteIndexRequest
+import org.opensearch.action.admin.indices.refresh.RefreshRequest
+import org.opensearch.action.index.IndexRequest
+import org.opensearch.action.index.IndexResponse
+import org.opensearch.action.search.SearchRequest
+import org.opensearch.action.search.SearchResponse
+import org.opensearch.action.support.WriteRequest
+import org.opensearch.action.support.broadcast.BroadcastResponse
+import org.opensearch.action.support.master.AcknowledgedResponse
+import org.opensearch.action.support.replication.ReplicationResponse
+import org.opensearch.client.RequestOptions
+import org.opensearch.client.RestHighLevelClient
+import org.opensearch.client.core.CountRequest
+import org.opensearch.client.core.CountResponse
+import org.opensearch.client.indices.CreateIndexRequest
+import org.opensearch.client.indices.CreateIndexResponse
+import org.opensearch.client.indices.GetIndexRequest
+import org.opensearch.common.xcontent.NamedXContentRegistry
+import org.opensearch.common.xcontent.XContentType
+import org.opensearch.index.VersionType
+import org.opensearch.index.query.QueryBuilder
+import org.opensearch.index.query.QueryBuilders
+import org.opensearch.index.reindex.BulkByScrollResponse
+import org.opensearch.index.reindex.DeleteByQueryRequest
+import org.opensearch.rest.RestStatus
+import org.opensearch.search.aggregations.AggregationBuilder
+import org.opensearch.search.aggregations.Aggregations
+import org.opensearch.search.builder.SearchSourceBuilder
 
 
 class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
@@ -91,7 +91,7 @@ class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
             val request = RefreshRequest(KLAGEBEHANDLING_INDEX)
             val refreshResponse = client.indices().refresh(request, RequestOptions.DEFAULT)
             logResponseShardInfo(refreshResponse)
-        } catch (exception: ElasticsearchException) {
+        } catch (exception: OpenSearchException) {
             if (exception.status() === RestStatus.NOT_FOUND) {
                 logger.error("Unable to refresh ES index, index not found")
             }
@@ -122,7 +122,7 @@ class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
             val indexResponse: IndexResponse = client.index(request, RequestOptions.DEFAULT)
             logIndexResponse(indexResponse)
 
-        } catch (e: ElasticsearchException) {
+        } catch (e: OpenSearchException) {
             if (e.status() == RestStatus.CONFLICT) {
                 logger.info("Conflict when saving to ES, ignoring and moving on..")
                 logger.debug("Failed to save klagebehandling to ES: ${e.detailedMessage}", e)

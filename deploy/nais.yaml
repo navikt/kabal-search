@@ -28,9 +28,6 @@ spec:
           {{/if}}
         extra:
           - NAVident
-  elastic:
-    access: admin
-    instance: oppgave-es
   openSearch:
     access: admin
     instance: oppgaver

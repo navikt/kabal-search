@@ -15,8 +15,8 @@ import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import no.nav.klage.search.repositories.SearchHits
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.SoftAssertions
-import org.elasticsearch.index.query.QueryBuilders
 import org.junit.jupiter.api.*
+import org.opensearch.index.query.QueryBuilders
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles

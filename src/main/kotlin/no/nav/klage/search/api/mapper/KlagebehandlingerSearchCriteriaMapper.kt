@@ -199,7 +199,7 @@ class KlagebehandlingerSearchCriteriaMapper(
 
     private fun mapFerdigstiltFom(queryParams: KlagebehandlingerQueryParams): LocalDate? {
         return if (queryParams.ferdigstiltDaysAgo != null) {
-            LocalDate.now().minusDays(queryParams.ferdigstiltDaysAgo!!.toLong())
+            LocalDate.now().minusDays(queryParams.ferdigstiltDaysAgo.toLong())
         } else {
             queryParams.ferdigstiltFom
         }
