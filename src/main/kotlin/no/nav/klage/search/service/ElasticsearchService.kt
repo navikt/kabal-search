@@ -1,6 +1,5 @@
 package no.nav.klage.search.service
 
-import no.finn.unleash.Unleash
 import no.nav.klage.kodeverk.MedunderskriverFlyt
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
@@ -36,7 +35,6 @@ import java.util.concurrent.TimeUnit
 
 open class ElasticsearchService(
     private val esKlagebehandlingRepository: EsKlagebehandlingRepository,
-    private val unleash: Unleash
 ) :
     ApplicationListener<ContextRefreshedEvent> {
 
@@ -49,32 +47,24 @@ open class ElasticsearchService(
     }
 
     fun recreateIndex() {
-        if (unleash.isEnabled("klage.indexFromSearch", false)) {
-            esKlagebehandlingRepository.recreateIndex()
-        }
+        esKlagebehandlingRepository.recreateIndex()
     }
 
     override fun onApplicationEvent(event: ContextRefreshedEvent) {
         try {
             esKlagebehandlingRepository.createIndex()
         } catch (e: Exception) {
-            logger.error("Unable to initialize Elasticsearch", e)
+            logger.error("Unable to initialize OpenSearch", e)
         }
     }
 
     fun save(klagebehandlinger: List<EsKlagebehandling>) {
-        if (unleash.isEnabled("klage.indexFromSearch", false)) {
-            esKlagebehandlingRepository.save(klagebehandlinger)
-        }
+        esKlagebehandlingRepository.save(klagebehandlinger)
     }
 
     fun save(klagebehandling: EsKlagebehandling) {
-        if (unleash.isEnabled("klage.indexFromSearch", false)) {
-            logger.debug("Skal indeksere fra kabal-search, klage med id ${klagebehandling.id}")
-            esKlagebehandlingRepository.save(klagebehandling)
-        } else {
-            logger.debug("Skal ikke indeksere fra kabal-search")
-        }
+        logger.debug("Skal indeksere fra kabal-search, klage med id ${klagebehandling.id}")
+        esKlagebehandlingRepository.save(klagebehandling)
     }
 
     open fun findByCriteria(criteria: KlagebehandlingerSearchCriteria): KlagebehandlingerSearchHits {

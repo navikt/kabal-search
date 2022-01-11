@@ -35,7 +35,7 @@ class FortroligElasticsearchServiceTest {
     companion object {
         @Container
         @JvmField
-        val esContainer: TestElasticsearchContainer = TestElasticsearchContainer.instance
+        val esContainer: TestOpenSearchContainer = TestOpenSearchContainer.instance
     }
 
     @MockkBean(relaxed = true)
