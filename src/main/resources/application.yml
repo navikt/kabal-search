@@ -16,23 +16,6 @@ spring:
       add-mappings: false
   mvc:
     throw-exception-if-no-handler-found: true
-  elasticsearch:
-    rest:
-      uris: "${AIVEN_ES_SCHEME}://${AIVEN_ES_HOST}:${AIVEN_ES_PORT}"
-      read-timeout: "10s"
-      username: "${ELASTIC_USERNAME}"
-      password: "${ELASTIC_PASSWORD}"
-  data:
-    elasticsearch:
-      client:
-        reactive:
-          endpoints: "${AIVEN_ES_HOST}:${AIVEN_ES_PORT}"
-          use-ssl: ${AIVEN_ES_USE_SSL}
-          socket-timeout: "10s"
-          username: "${ELASTIC_USERNAME}"
-          password: "${ELASTIC_PASSWORD}"
-      repositories:
-        enabled: false
   lifecycle:
     timeout-per-shutdown-phase: 20s
 
