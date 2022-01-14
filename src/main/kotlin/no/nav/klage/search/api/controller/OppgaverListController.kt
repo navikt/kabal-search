@@ -90,10 +90,6 @@ class OppgaverListController(
             queryParams = queryParams,
             valgteEnheter = saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
         )
-        //TODO: Dette hadde vært bedre å håndtere i ElasticsearchService enn her
-        if (ytelser.isEmpty()) {
-            return emptyResponse()
-        }
 
         val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
 
@@ -134,10 +130,6 @@ class OppgaverListController(
             queryParams = queryParams,
             valgteEnheter = saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
         )
-        //TODO: Dette hadde vært bedre å håndtere i ElasticsearchService enn her
-        if (ytelser.isEmpty()) {
-            return emptyResponse()
-        }
 
         val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
