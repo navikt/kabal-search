@@ -13,7 +13,7 @@ val testContainersVersion = "1.16.2"
 val threeTenExtraVersion = "1.7.0"
 val archunitVersion = "0.22.0"
 val kabalKodeverkVersion = "2022.01.07-07.15.3ce71c11b311"
-val elasticsearchRestClientVersion = "7.10.2"
+val opensearchVersion = "1.1.0"
 val reactorSpringVersion = "1.0.1.RELEASE"
 
 
@@ -66,7 +66,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     //Not managed by Spring:
-    implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:$elasticsearchRestClientVersion")
+    implementation("org.opensearch.client:opensearch-rest-high-level-client:$opensearchVersion")
     implementation("org.threeten:threeten-extra:$threeTenExtraVersion")
     implementation("org.springframework.cloud:spring-cloud-starter-sleuth:$springSleuthVersion")
     implementation("io.springfox:springfox-boot-starter:$springFoxVersion")

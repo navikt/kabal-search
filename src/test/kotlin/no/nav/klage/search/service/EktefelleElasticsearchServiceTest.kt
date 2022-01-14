@@ -13,8 +13,8 @@ import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.IKKE_TILDELT
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
 import org.assertj.core.api.Assertions.assertThat
-import org.elasticsearch.index.query.QueryBuilders
 import org.junit.jupiter.api.*
+import org.opensearch.index.query.QueryBuilders
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles

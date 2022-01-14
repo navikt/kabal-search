@@ -8,9 +8,9 @@ import no.nav.klage.search.config.ElasticsearchServiceConfiguration
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import org.apache.http.util.EntityUtils
 import org.assertj.core.api.Assertions.assertThat
-import org.elasticsearch.client.Request
-import org.elasticsearch.client.RestHighLevelClient
 import org.junit.jupiter.api.*
+import org.opensearch.client.Request
+import org.opensearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
