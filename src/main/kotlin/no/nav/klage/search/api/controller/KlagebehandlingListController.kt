@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController
 @ProtectedWithClaims(issuer = ISSUER_AAD)
 //TODO: Er det litt merkelig med "ansatte" på rot i path her?
 @RequestMapping("/ansatte")
+@Deprecated("Erstattet av OppgaverListController")
 class KlagebehandlingListController(
     private val klagebehandlingListMapper: KlagebehandlingListMapper,
     private val elasticsearchService: ElasticsearchService,
@@ -52,6 +53,7 @@ class KlagebehandlingListController(
         queryParams: KlagebehandlingerQueryParams
     ): KlagebehandlingerListRespons {
         logger.debug("Params: {}", queryParams)
+        logger.info("Deprecated endepunkt /ansatte/{navIdent}/klagebehandlinger kalt")
         validateNavIdent(navIdent)
 
         validateRettigheter(queryParams, navIdent)
@@ -112,6 +114,7 @@ class KlagebehandlingListController(
         queryParams: KlagebehandlingerQueryParams
     ): AntallUtgaatteFristerResponse {
         logger.debug("Params: {}", queryParams)
+        logger.info("Deprecated endepunkt /ansatte/{navIdent}/antallklagebehandlingermedutgaattefrister kalt")
         validateNavIdent(navIdent)
         return AntallUtgaatteFristerResponse(
             antall = elasticsearchService.countByCriteria(

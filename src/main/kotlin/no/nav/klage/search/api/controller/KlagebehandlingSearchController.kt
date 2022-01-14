@@ -40,8 +40,10 @@ class KlagebehandlingSearchController(
         value = "Søk oppgaver som gjelder en gitt person",
         notes = "Finner alle oppgaver som saksbehandler har tilgang til som omhandler en gitt person."
     )
+    @Deprecated("Erstattet av getPersonOgOppgaver")
     @PostMapping("/fnr", produces = ["application/json"])
     fun getFnrSearchResponse(@RequestBody input: SearchPersonByFnrInput): FnrSearchResponse? {
+        logger.info("Deprecated endepunkt /search/fnr kalt")
         val personSearchResponse =
             personSearchService.fnrSearch(klagebehandlingerSearchCriteriaMapper.toSearchCriteria(input))
 
