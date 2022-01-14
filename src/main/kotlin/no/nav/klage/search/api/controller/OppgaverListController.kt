@@ -51,6 +51,11 @@ class OppgaverListController(
             queryParams = queryParams,
             valgteEnheter = saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
         )
+        //TODO: Dette hadde vært bedre å håndtere i ElasticsearchService enn her
+        if (ytelser.isEmpty()) {
+            return emptyResponse()
+        }
+
         val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
             queryParams = queryParams.copy(ytelser = ytelser, hjemler = hjemler),
@@ -85,7 +90,13 @@ class OppgaverListController(
             queryParams = queryParams,
             valgteEnheter = saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
         )
+        //TODO: Dette hadde vært bedre å håndtere i ElasticsearchService enn her
+        if (ytelser.isEmpty()) {
+            return emptyResponse()
+        }
+
         val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
+
         val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
             navIdent = navIdent,
             queryParams = queryParams.copy(ytelser = ytelser, hjemler = hjemler),
@@ -102,6 +113,9 @@ class OppgaverListController(
             )
         )
     }
+
+    private fun emptyResponse(): KlagebehandlingerListRespons =
+        KlagebehandlingerListRespons(antallTreffTotalt = 0, klagebehandlinger = emptyList())
 
     @ApiOperation(
         value = "Hent uferdige oppgaver for en ansatt",
@@ -120,6 +134,11 @@ class OppgaverListController(
             queryParams = queryParams,
             valgteEnheter = saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
         )
+        //TODO: Dette hadde vært bedre å håndtere i ElasticsearchService enn her
+        if (ytelser.isEmpty()) {
+            return emptyResponse()
+        }
+
         val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
             navIdent = navIdent,
@@ -186,6 +205,11 @@ class OppgaverListController(
 
         val valgtEnhet = getEnhetOrThrowException(enhetId)
         val ytelser = lovligeValgteYtelser(queryParams = queryParams, valgteEnheter = listOf(valgtEnhet))
+        //TODO: Dette hadde vært bedre å håndtere i ElasticsearchService enn her
+        if (ytelser.isEmpty()) {
+            return emptyResponse()
+        }
+
         val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
             enhetId = enhetId,
@@ -222,6 +246,10 @@ class OppgaverListController(
             queryParams = queryParams,
             valgteEnheter = saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
         )
+        //TODO: Dette hadde vært bedre å håndtere i ElasticsearchService enn her
+        if (ytelser.isEmpty()) {
+            return AntallUtgaatteFristerResponse(0)
+        }
         val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         return AntallUtgaatteFristerResponse(
             antall = elasticsearchService.countByCriteria(
