@@ -49,7 +49,8 @@ class SaksbehandlerRepository(
     }
 
     fun getEnheterMedYtelserForSaksbehandler(ident: String): EnheterMedLovligeYtelser =
-        listOf(azureGateway.getDataOmInnloggetSaksbehandler().enhet).berikMedYtelser()
+        axsysGateway.getEnheterForSaksbehandler(ident).berikMedYtelser()
+    //listOf(azureGateway.getDataOmInnloggetSaksbehandler().enhet).berikMedYtelser()
 
     private fun List<Enhet>.berikMedYtelser(): EnheterMedLovligeYtelser {
         return EnheterMedLovligeYtelser(this.map {

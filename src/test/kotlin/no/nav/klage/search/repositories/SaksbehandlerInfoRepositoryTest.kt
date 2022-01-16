@@ -30,6 +30,8 @@ internal class SaksbehandlerInfoRepositoryTest {
 
     @Test
     fun harTilgangTilEnhetOgYtelse() {
+        every { axsysGateway.getEnheterForSaksbehandler("01010112345") } returns
+                listOf(Enhet("4294", "KA Vest"), Enhet("4295", "KA Nord"))
         every { msClient.getDataOmInnloggetSaksbehandler() } returns personligInfo()
 
         val softly = SoftAssertions()
@@ -44,6 +46,8 @@ internal class SaksbehandlerInfoRepositoryTest {
 
     @Test
     fun harTilgangTilEnhet() {
+        every { axsysGateway.getEnheterForSaksbehandler("01010112345") } returns
+                listOf(Enhet("4294", "KA Vest"), Enhet("4295", "KA Sør"))
         every { msClient.getDataOmInnloggetSaksbehandler() } returns personligInfo()
 
         val softly = SoftAssertions()
@@ -54,8 +58,10 @@ internal class SaksbehandlerInfoRepositoryTest {
 
     @Test
     fun harTilgangTilYtelse() {
+        every { axsysGateway.getEnheterForSaksbehandler("01010112345") } returns
+                listOf(Enhet("4295", "KA Nord"))
         every { msClient.getDataOmInnloggetSaksbehandler() } returns personligInfo()
-        
+
         val softly = SoftAssertions()
         softly.assertThat(repo.harTilgangTilYtelse("01010112345", Ytelse.SYK_SYK)).isEqualTo(false)
         softly.assertThat(repo.harTilgangTilYtelse("01010112345", Ytelse.OMS_OLP)).isEqualTo(true)
