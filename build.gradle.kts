@@ -73,7 +73,9 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
     implementation("no.nav.security:token-validation-spring:$tokenValidationVersion")
     implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
-    implementation("com.github.navikt:kabal-kodeverk:$kabalKodeverkVersion")
+    implementation("com.github.navikt:kabal-kodeverk:$kabalKodeverkVersion") {
+        exclude(group = "jakarta.persistence")
+    }
     implementation("org.springframework.retry:spring-retry:$springRetryVersion")
     implementation("no.finn.unleash:unleash-client-java:$unleashVersion")
     implementation("org.zalando:problem-spring-web-starter:$problemSpringWebStartVersion")
