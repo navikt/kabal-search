@@ -103,7 +103,7 @@ class OppgaverListController(
             klagebehandlinger = klagebehandlingListMapper.mapEsKlagebehandlingerToListView(
                 esKlagebehandlinger = esResponse.searchHits.map { it.content },
                 visePersonData = true,
-                saksbehandlere = searchCriteria.saksbehandlere,
+                saksbehandlere = listOf(searchCriteria.saksbehandler),
                 tilgangTilYtelser = getAlleYtelserInnloggetSaksbehandlerKanBehandle()
             )
         )

@@ -215,8 +215,7 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
         baseQuery.must(beAvsluttetAvSaksbehandler())
-        baseQuery.must(beTildeltSaksbehandler())
-        baseQuery.must(beTildeltSaksbehandler(saksbehandlere))
+        baseQuery.must(beTildeltSaksbehandler(saksbehandler))
         baseQuery.must(beAvsluttetAvSaksbehandlerEtter(ferdigstiltFom))
 
         logger.debug("Making search request with query {}", baseQuery.toString())
@@ -609,5 +608,8 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
         }
         return innerQuerySaksbehandler
     }
+
+    private fun beTildeltSaksbehandler(navIdent: String) =
+        QueryBuilders.termQuery("tildeltSaksbehandlerident", navIdent)
 
 }

@@ -79,7 +79,7 @@ data class SaksbehandlersFerdigstilteOppgaverSearchCriteria(
     override val ytelser: List<Ytelse>,
     override val hjemler: List<Hjemmel>,
 
-    val saksbehandlere: List<String>,
+    val saksbehandler: String,
     val ferdigstiltFom: LocalDate,
 
     override val sortField: SortField,

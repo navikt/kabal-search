@@ -42,7 +42,7 @@ class KlagebehandlingerSearchCriteriaMapper(
         typer = queryParams.typer.map { Type.of(it) },
         ytelser = queryParams.ytelser.map { Ytelse.of(it) },
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
-        saksbehandlere = listOf(navIdent),
+        saksbehandler = navIdent,
         ferdigstiltFom = mapFerdigstiltFom(queryParams),
         sortField = mapSortField(queryParams.sortering),
         order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
