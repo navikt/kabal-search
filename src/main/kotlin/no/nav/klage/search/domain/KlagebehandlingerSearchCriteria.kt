@@ -74,15 +74,33 @@ interface SecuritySearchCriteria {
     val kanBehandleStrengtFortrolig: Boolean
 }
 
-data class LedigeOppgaverSearchCriteria(
-    override val typer: List<Type> = listOf(Type.KLAGE),
-    override val ytelser: List<Ytelse> = emptyList(),
-    override val hjemler: List<Hjemmel> = emptyList(),
+data class SaksbehandlersFerdigstilteOppgaverSearchCriteria(
+    override val typer: List<Type>,
+    override val ytelser: List<Ytelse>,
+    override val hjemler: List<Hjemmel>,
 
-    override val order: Order = Order.ASC,
+    val saksbehandler: String,
+    val ferdigstiltFom: LocalDate,
+
+    override val sortField: SortField,
+    override val order: Order,
     override val offset: Int,
     override val limit: Int,
-    override val sortField: SortField = SortField.FRIST,
+
+    override val kanBehandleEgenAnsatt: Boolean,
+    override val kanBehandleFortrolig: Boolean,
+    override val kanBehandleStrengtFortrolig: Boolean,
+) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria
+
+data class LedigeOppgaverSearchCriteria(
+    override val typer: List<Type>,
+    override val ytelser: List<Ytelse>,
+    override val hjemler: List<Hjemmel>,
+
+    override val sortField: SortField,
+    override val order: Order,
+    override val offset: Int,
+    override val limit: Int,
 
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,

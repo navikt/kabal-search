@@ -35,22 +35,19 @@ class KlagebehandlingerSearchCriteriaMapper(
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
     )
 
-    fun toSearchCriteria(
+    fun toSaksbehandlersFerdigstilteOppgaverSearchCriteria(
         navIdent: String,
         queryParams: MineFerdigstilteOppgaverQueryParams,
-    ) = KlagebehandlingerSearchCriteria(
-        enhetId = null,
+    ) = SaksbehandlersFerdigstilteOppgaverSearchCriteria(
         typer = queryParams.typer.map { Type.of(it) },
         ytelser = queryParams.ytelser.map { Ytelse.of(it) },
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+        saksbehandler = navIdent,
+        ferdigstiltFom = mapFerdigstiltFom(queryParams),
+        sortField = mapSortField(queryParams.sortering),
         order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
         offset = queryParams.start,
         limit = queryParams.antall,
-        erTildeltSaksbehandler = true,
-        saksbehandlere = listOf(navIdent),
-        sortField = mapSortField(queryParams.sortering),
-        ferdigstiltFom = mapFerdigstiltFom(queryParams),
-        statuskategori = Statuskategori.AVSLUTTET,
         kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
         kanBehandleFortrolig = kanBehandleFortrolig(),
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
@@ -199,7 +196,7 @@ class KlagebehandlingerSearchCriteriaMapper(
         }
     }
 
-    private fun mapFerdigstiltFom(queryParams: FerdigstilteOppgaverQueryParams): LocalDate? =
+    private fun mapFerdigstiltFom(queryParams: FerdigstilteOppgaverQueryParams): LocalDate =
         LocalDate.now().minusDays(queryParams.ferdigstiltDaysAgo)
 
 

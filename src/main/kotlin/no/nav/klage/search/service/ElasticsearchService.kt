@@ -25,6 +25,7 @@ import org.opensearch.search.sort.SortBuilders
 import org.opensearch.search.sort.SortOrder
 import org.springframework.context.ApplicationListener
 import org.springframework.context.event.ContextRefreshedEvent
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
@@ -64,6 +65,19 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
     }
 
     open fun findLedigeOppgaverByCriteria(criteria: LedigeOppgaverSearchCriteria): KlagebehandlingerSearchHits {
+        val searchSourceBuilder = SearchSourceBuilder()
+        searchSourceBuilder.query(criteria.toEsQuery())
+        searchSourceBuilder.addPaging(criteria)
+        searchSourceBuilder.addSorting(criteria)
+        searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
+
+        val searchHits =
+            esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
+        logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
+        return searchHits
+    }
+
+    open fun findSaksbehandlersFerdigstilteOppgaverByCriteria(criteria: SaksbehandlersFerdigstilteOppgaverSearchCriteria): KlagebehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
@@ -176,9 +190,9 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
 
-        baseQuery.mustNot(erAvsluttetAvSaksbehandler())
+        baseQuery.mustNot(beAvsluttetAvSaksbehandler())
         baseQuery.must(QueryBuilders.termQuery("tildeltEnhet", enhet))
-        baseQuery.must(erTildeltSaksbehandler())
+        baseQuery.must(beTildeltSaksbehandler())
 
         logger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -189,8 +203,21 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
-        baseQuery.mustNot(erAvsluttetAvSaksbehandler())
-        baseQuery.mustNot(erTildeltSaksbehandler())
+        baseQuery.mustNot(beAvsluttetAvSaksbehandler())
+        baseQuery.mustNot(beTildeltSaksbehandler())
+        logger.debug("Making search request with query {}", baseQuery.toString())
+        return baseQuery
+    }
+
+    private fun SaksbehandlersFerdigstilteOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
+        logger.debug("Search criteria: {}", this)
+        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
+        baseQuery.addSecurityFilters(this)
+        baseQuery.addBasicFilters(this)
+        baseQuery.must(beAvsluttetAvSaksbehandler())
+        baseQuery.must(beTildeltSaksbehandler(saksbehandler))
+        baseQuery.must(beAvsluttetAvSaksbehandlerEtter(ferdigstiltFom))
+
         logger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
@@ -239,8 +266,8 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
         }
 
         when (statuskategori) {
-            Statuskategori.AAPEN -> baseQuery.mustNot(erAvsluttetAvSaksbehandler())
-            Statuskategori.AVSLUTTET -> baseQuery.must(erAvsluttetAvSaksbehandler())
+            Statuskategori.AAPEN -> baseQuery.mustNot(beAvsluttetAvSaksbehandler())
+            Statuskategori.AVSLUTTET -> baseQuery.must(beAvsluttetAvSaksbehandler())
             Statuskategori.ALLE -> Unit
         }
 
@@ -260,9 +287,9 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
 
         erTildeltSaksbehandler?.let {
             if (erTildeltSaksbehandler) {
-                baseQuery.must(erTildeltSaksbehandler())
+                baseQuery.must(beTildeltSaksbehandler())
             } else {
-                baseQuery.mustNot(erTildeltSaksbehandler())
+                baseQuery.mustNot(beTildeltSaksbehandler())
             }
         }
         if (saksbehandlere.isNotEmpty()) {
@@ -467,9 +494,9 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
 
     private fun findWithBaseQueryAndAapen(baseQuery: BoolQueryBuilder, aapen: Boolean): List<EsKlagebehandling> {
         if (aapen) {
-            baseQuery.mustNot(erAvsluttetAvSaksbehandler())
+            baseQuery.mustNot(beAvsluttetAvSaksbehandler())
         } else {
-            baseQuery.must(erAvsluttetAvSaksbehandler())
+            baseQuery.must(beAvsluttetAvSaksbehandler())
         }
         return try {
             esKlagebehandlingRepository.search(baseQuery)
@@ -504,7 +531,7 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
                 ?: 0
 
         val baseQueryOverFrist: BoolQueryBuilder = QueryBuilders.boolQuery()
-        baseQueryOverFrist.mustNot(erAvsluttetAvSaksbehandler())
+        baseQueryOverFrist.mustNot(beAvsluttetAvSaksbehandler())
         val aggregationsForOverFrist = addAggregationsForOverFrist()
 
         val searchHitsOverFrist =
@@ -567,7 +594,22 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
         )
     }
 
-    private fun erAvsluttetAvSaksbehandler() = QueryBuilders.existsQuery("avsluttetAvSaksbehandler")
+    private fun beAvsluttetAvSaksbehandler() = QueryBuilders.existsQuery("avsluttetAvSaksbehandler")
 
-    private fun erTildeltSaksbehandler() = QueryBuilders.existsQuery("tildeltSaksbehandlerident")
+    private fun beTildeltSaksbehandler() = QueryBuilders.existsQuery("tildeltSaksbehandlerident")
+
+    private fun beAvsluttetAvSaksbehandlerEtter(ferdigstiltFom: LocalDate) =
+        QueryBuilders.rangeQuery("avsluttetAvSaksbehandler").gte(ferdigstiltFom).format(ISO8601).timeZone(ZONEID_UTC)
+
+    private fun beTildeltSaksbehandler(saksbehandlere: List<String>): BoolQueryBuilder {
+        val innerQuerySaksbehandler = QueryBuilders.boolQuery()
+        saksbehandlere.forEach {
+            innerQuerySaksbehandler.should(QueryBuilders.termQuery("tildeltSaksbehandlerident", it))
+        }
+        return innerQuerySaksbehandler
+    }
+
+    private fun beTildeltSaksbehandler(navIdent: String) =
+        QueryBuilders.termQuery("tildeltSaksbehandlerident", navIdent)
+
 }
