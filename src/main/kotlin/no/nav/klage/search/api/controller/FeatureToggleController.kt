@@ -16,7 +16,7 @@ import springfox.documentation.annotations.ApiIgnore
 @ApiIgnore
 class FeatureToggleController(
     private val unleash: Unleash,
-    private val OAuthTokenService: OAuthTokenService
+    private val oAuthTokenService: OAuthTokenService
 ) {
 
     companion object {
@@ -41,7 +41,7 @@ class FeatureToggleController(
         UnleashContext.builder().userId(getIdent()).build()
 
     private fun getIdent() = try {
-        OAuthTokenService.getInnloggetIdent()
+        oAuthTokenService.getInnloggetIdent()
     } catch (e: Exception) {
         logger.info("Not able to retrieve token", e)
         "UINNLOGGET"

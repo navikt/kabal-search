@@ -5,7 +5,7 @@ import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import org.springframework.stereotype.Component
 
 @Component
-class ByUserStrategy(private val OAuthTokenService: OAuthTokenService) : Strategy {
+class ByUserStrategy(private val oAuthTokenService: OAuthTokenService) : Strategy {
 
     companion object {
         const val PARAM = "user"
@@ -20,7 +20,7 @@ class ByUserStrategy(private val OAuthTokenService: OAuthTokenService) : Strateg
         parameters.get(PARAM)?.split(',')
 
     private fun isCurrentUserEnabled(ident: String): Boolean {
-        return ident == OAuthTokenService.getInnloggetIdent()
+        return ident == oAuthTokenService.getInnloggetIdent()
     }
 
 }

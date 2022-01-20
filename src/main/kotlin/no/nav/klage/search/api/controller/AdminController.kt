@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 @ProtectedWithClaims(issuer = SecurityConfiguration.ISSUER_AAD)
 class AdminController(
     private val adminService: AdminService,
-    private val OAuthTokenService: OAuthTokenService,
+    private val oAuthTokenService: OAuthTokenService,
 ) {
 
     companion object {
@@ -39,7 +39,7 @@ class AdminController(
     }
 
     private fun validateUserIsAdmin() {
-        if (!OAuthTokenService.isAdmin()) {
+        if (!oAuthTokenService.isAdmin()) {
             throw MissingTilgangException("Not an admin")
         }
     }
