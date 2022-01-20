@@ -1,6 +1,6 @@
 package no.nav.klage.search.config
 
-import no.nav.klage.search.api.controller.KlagebehandlingListController
+import no.nav.klage.search.api.controller.OppgaverListController
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.ResponseEntity
@@ -16,7 +16,7 @@ class OpenApiConfig {
     fun apiInternal(): Docket {
         return Docket(DocumentationType.OAS_30)
             .select()
-            .apis(RequestHandlerSelectors.basePackage(KlagebehandlingListController::class.java.packageName))
+            .apis(RequestHandlerSelectors.basePackage(OppgaverListController::class.java.packageName))
             .build()
             .pathMapping("/")
             .groupName("internal")
