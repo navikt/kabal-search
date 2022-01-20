@@ -1,4 +1,4 @@
-package no.nav.klage.search.api
+package no.nav.klage.search.api.controller
 
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
@@ -30,11 +30,11 @@ class FeatureToggleControllerTest {
     lateinit var unleash: Unleash
 
     @MockkBean
-    lateinit var OAuthTokenService: OAuthTokenService
+    lateinit var oAuthTokenService: OAuthTokenService
 
     @BeforeEach
     fun setup() {
-        every { OAuthTokenService.getInnloggetIdent() } returns "H149390"
+        every { oAuthTokenService.getInnloggetIdent() } returns "H149390"
         every { unleash.isEnabled(any(), any<UnleashContext>()) } returns true
     }
 

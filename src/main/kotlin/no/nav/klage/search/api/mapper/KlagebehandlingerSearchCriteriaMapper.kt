@@ -13,7 +13,7 @@ import java.time.LocalDate
 
 @Service
 class KlagebehandlingerSearchCriteriaMapper(
-    private val OAuthTokenService: OAuthTokenService,
+    private val oAuthTokenService: OAuthTokenService,
 ) {
 
     companion object {
@@ -21,9 +21,9 @@ class KlagebehandlingerSearchCriteriaMapper(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    fun kanBehandleEgenAnsatt() = OAuthTokenService.kanBehandleEgenAnsatt()
-    fun kanBehandleFortrolig() = OAuthTokenService.kanBehandleFortrolig()
-    fun kanBehandleStrengtFortrolig() = OAuthTokenService.kanBehandleStrengtFortrolig()
+    fun kanBehandleEgenAnsatt() = oAuthTokenService.kanBehandleEgenAnsatt()
+    fun kanBehandleFortrolig() = oAuthTokenService.kanBehandleFortrolig()
+    fun kanBehandleStrengtFortrolig() = oAuthTokenService.kanBehandleStrengtFortrolig()
 
     fun toSearchCriteria(input: SearchPersonByFnrInput) = KlagebehandlingerSearchCriteria(
         foedselsnr = input.query,
@@ -183,9 +183,9 @@ class KlagebehandlingerSearchCriteriaMapper(
         } else {
             Statuskategori.AAPEN
         },
-        kanBehandleEgenAnsatt = OAuthTokenService.kanBehandleEgenAnsatt(),
-        kanBehandleFortrolig = OAuthTokenService.kanBehandleFortrolig(),
-        kanBehandleStrengtFortrolig = OAuthTokenService.kanBehandleStrengtFortrolig(),
+        kanBehandleEgenAnsatt = oAuthTokenService.kanBehandleEgenAnsatt(),
+        kanBehandleFortrolig = oAuthTokenService.kanBehandleFortrolig(),
+        kanBehandleStrengtFortrolig = oAuthTokenService.kanBehandleStrengtFortrolig(),
     )
 
     private fun mapFerdigstiltFom(queryParams: KlagebehandlingerQueryParams): LocalDate? {

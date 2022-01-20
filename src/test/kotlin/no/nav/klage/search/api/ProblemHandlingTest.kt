@@ -42,7 +42,7 @@ class ProblemHandlingTest {
     lateinit var unleash: Unleash
 
     @MockkBean
-    lateinit var OAuthTokenService: OAuthTokenService
+    lateinit var oAuthTokenService: OAuthTokenService
 
     @BeforeEach
     fun setup() {

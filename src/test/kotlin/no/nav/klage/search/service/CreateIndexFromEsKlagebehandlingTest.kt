@@ -1,14 +1,13 @@
 package no.nav.klage.search.service
 
 
-import com.ninjasquad.springmockk.MockkBean
-import io.mockk.every
-import no.finn.unleash.Unleash
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
-import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import org.apache.http.util.EntityUtils
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.MethodOrderer
+import org.junit.jupiter.api.Order
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestMethodOrder
 import org.opensearch.client.Request
 import org.opensearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Autowired
@@ -30,22 +29,11 @@ class CreateIndexFromEsKlagebehandlingTest {
         val esContainer: TestOpenSearchContainer = TestOpenSearchContainer.instance
     }
 
-    @MockkBean(relaxed = true)
-    lateinit var unleash: Unleash
-
-    @MockkBean(relaxed = true)
-    lateinit var OAuthTokenService: OAuthTokenService
-
     @Autowired
     lateinit var client: RestHighLevelClient
 
     @Autowired
     lateinit var service: ElasticsearchService
-
-    @BeforeEach
-    fun setup() {
-        every { unleash.isEnabled(any(), false) } returns true
-    }
 
     @Test
     @Order(1)
