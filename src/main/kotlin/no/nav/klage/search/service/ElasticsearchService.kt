@@ -2,9 +2,7 @@ package no.nav.klage.search.service
 
 import no.nav.klage.kodeverk.MedunderskriverFlyt
 import no.nav.klage.kodeverk.Type
-import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
-import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria.Statuskategori.*
-import no.nav.klage.search.domain.SaksbehandlereByEnhetSearchCriteria
+import no.nav.klage.search.domain.*
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.*
 import no.nav.klage.search.domain.elasticsearch.KlageStatistikk
@@ -33,9 +31,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 
-open class ElasticsearchService(
-    private val esKlagebehandlingRepository: EsKlagebehandlingRepository,
-) :
+open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlagebehandlingRepository) :
     ApplicationListener<ContextRefreshedEvent> {
 
     companion object {
@@ -67,13 +63,25 @@ open class ElasticsearchService(
         esKlagebehandlingRepository.save(klagebehandling)
     }
 
+    open fun findLedigeOppgaverByCriteria(criteria: LedigeOppgaverSearchCriteria): KlagebehandlingerSearchHits {
+        val searchSourceBuilder = SearchSourceBuilder()
+        searchSourceBuilder.query(criteria.toEsQuery())
+        searchSourceBuilder.addPaging(criteria)
+        searchSourceBuilder.addSorting(criteria)
+        searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
+
+        val searchHits =
+            esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
+        logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
+        return searchHits
+    }
+
     open fun findByCriteria(criteria: KlagebehandlingerSearchCriteria): KlagebehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
-        searchSourceBuilder.from(criteria.offset)
-        searchSourceBuilder.size(criteria.limit)
+        searchSourceBuilder.addPaging(criteria)
+        searchSourceBuilder.addSorting(criteria)
         searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
-        searchSourceBuilder.sort(SortBuilders.fieldSort(sortField(criteria)).order(mapOrder(criteria.order)));
 
         val searchHits =
             esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
@@ -138,37 +146,51 @@ open class ElasticsearchService(
         return esKlagebehandlingRepository.count(criteria.toEsQuery()).toInt()
     }
 
-    private fun sortField(criteria: KlagebehandlingerSearchCriteria): String =
-        if (criteria.sortField == KlagebehandlingerSearchCriteria.SortField.MOTTATT) {
-            "mottattKlageinstans"
-        } else {
-            "frist"
-        }
+    private fun SearchSourceBuilder.addSorting(criteria: SortableSearchCriteria) {
+        fun sortField(criteria: SortableSearchCriteria): String =
+            if (criteria.sortField == SortField.MOTTATT) {
+                "mottattKlageinstans"
+            } else {
+                "frist"
+            }
 
-    private fun mapOrder(order: KlagebehandlingerSearchCriteria.Order?): SortOrder {
-        return order.let {
-            when (it) {
-                null -> SortOrder.ASC
-                KlagebehandlingerSearchCriteria.Order.ASC -> SortOrder.ASC
-                KlagebehandlingerSearchCriteria.Order.DESC -> SortOrder.DESC
+        fun mapOrder(criteria: SortableSearchCriteria): SortOrder {
+            return criteria.order.let {
+                when (it) {
+                    Order.ASC -> SortOrder.ASC
+                    Order.DESC -> SortOrder.DESC
+                }
             }
         }
+
+        this.sort(SortBuilders.fieldSort(sortField(criteria)).order(mapOrder(criteria)))
+    }
+
+    private fun SearchSourceBuilder.addPaging(criteria: PageableSearchCriteria) {
+        this.from(criteria.offset)
+        this.size(criteria.limit)
     }
 
     private fun SaksbehandlereByEnhetSearchCriteria.toEsQuery(): QueryBuilder {
         logger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
-        addSecurityFilters(
-            baseQuery = baseQuery,
-            kanBehandleEgenAnsatt = kanBehandleEgenAnsatt,
-            kanBehandleFortrolig = kanBehandleFortrolig,
-            kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig
-        )
+        baseQuery.addSecurityFilters(this)
 
-        baseQuery.mustNot(QueryBuilders.existsQuery("avsluttetAvSaksbehandler"))
+        baseQuery.mustNot(erAvsluttetAvSaksbehandler())
         baseQuery.must(QueryBuilders.termQuery("tildeltEnhet", enhet))
-        baseQuery.must(QueryBuilders.existsQuery("tildeltSaksbehandlerident"))
+        baseQuery.must(erTildeltSaksbehandler())
 
+        logger.debug("Making search request with query {}", baseQuery.toString())
+        return baseQuery
+    }
+
+    private fun LedigeOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
+        logger.debug("Search criteria: {}", this)
+        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
+        baseQuery.addSecurityFilters(this)
+        baseQuery.addBasicFilters(this)
+        baseQuery.mustNot(erAvsluttetAvSaksbehandler())
+        baseQuery.mustNot(erTildeltSaksbehandler())
         logger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
@@ -178,12 +200,7 @@ open class ElasticsearchService(
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         logger.debug("Search criteria: {}", this)
 
-        addSecurityFilters(
-            baseQuery = baseQuery,
-            kanBehandleEgenAnsatt = kanBehandleEgenAnsatt,
-            kanBehandleFortrolig = kanBehandleFortrolig,
-            kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig
-        )
+        baseQuery.addSecurityFilters(this)
 
         val combinedInnerFnrAndYtelseQuery = QueryBuilders.boolQuery()
         baseQuery.must(combinedInnerFnrAndYtelseQuery)
@@ -222,9 +239,9 @@ open class ElasticsearchService(
         }
 
         when (statuskategori) {
-            AAPEN -> baseQuery.mustNot(QueryBuilders.existsQuery("avsluttetAvSaksbehandler"))
-            AVSLUTTET -> baseQuery.must(QueryBuilders.existsQuery("avsluttetAvSaksbehandler"))
-            ALLE -> Unit
+            Statuskategori.AAPEN -> baseQuery.mustNot(erAvsluttetAvSaksbehandler())
+            Statuskategori.AVSLUTTET -> baseQuery.must(erAvsluttetAvSaksbehandler())
+            Statuskategori.ALLE -> Unit
         }
 
         enhetId?.let {
@@ -243,9 +260,9 @@ open class ElasticsearchService(
 
         erTildeltSaksbehandler?.let {
             if (erTildeltSaksbehandler) {
-                baseQuery.must(QueryBuilders.existsQuery("tildeltSaksbehandlerident"))
+                baseQuery.must(erTildeltSaksbehandler())
             } else {
-                baseQuery.mustNot(QueryBuilders.existsQuery("tildeltSaksbehandlerident"))
+                baseQuery.mustNot(erTildeltSaksbehandler())
             }
         }
         if (saksbehandlere.isNotEmpty()) {
@@ -254,7 +271,7 @@ open class ElasticsearchService(
                 innerQuerySaksbehandler.should(QueryBuilders.termQuery("tildeltSaksbehandlerident", it))
             }
 
-            if (statuskategori == AAPEN) {
+            if (statuskategori == Statuskategori.AAPEN) {
                 saksbehandlere.forEach {
                     val innerMedunderskriverQuery = QueryBuilders.boolQuery()
                     innerMedunderskriverQuery.must(QueryBuilders.termQuery("medunderskriverident", it))
@@ -314,15 +331,39 @@ open class ElasticsearchService(
         return baseQuery
     }
 
-    private fun addSecurityFilters(
-        baseQuery: BoolQueryBuilder,
-        kanBehandleEgenAnsatt: Boolean,
-        kanBehandleFortrolig: Boolean,
-        kanBehandleStrengtFortrolig: Boolean
-    ) {
-        val filterQuery = QueryBuilders.boolQuery()
-        baseQuery.filter(filterQuery)
+    private fun BoolQueryBuilder.addBasicFilters(basicSearchCriteria: BasicSearchCriteria) {
+        if (basicSearchCriteria.typer.isNotEmpty()) {
+            val innerQueryType = QueryBuilders.boolQuery()
+            this.must(innerQueryType)
+            basicSearchCriteria.typer.forEach {
+                innerQueryType.should(QueryBuilders.termQuery("type", it.id))
+            }
+        }
 
+        if (basicSearchCriteria.ytelser.isNotEmpty()) {
+            val innerQueryYtelse = QueryBuilders.boolQuery()
+            this.must(innerQueryYtelse)
+            basicSearchCriteria.ytelser.forEach {
+                innerQueryYtelse.should(QueryBuilders.termQuery("ytelseId", it.id))
+            }
+        }
+
+        if (basicSearchCriteria.hjemler.isNotEmpty()) {
+            val innerQueryHjemler = QueryBuilders.boolQuery()
+            this.must(innerQueryHjemler)
+            basicSearchCriteria.hjemler.forEach {
+                innerQueryHjemler.should(QueryBuilders.termQuery("hjemler", it.id))
+            }
+        }
+    }
+
+    private fun BoolQueryBuilder.addSecurityFilters(securitySearchCriteria: SecuritySearchCriteria) {
+        val filterQuery = QueryBuilders.boolQuery()
+        this.filter(filterQuery)
+
+        val kanBehandleEgenAnsatt = securitySearchCriteria.kanBehandleEgenAnsatt
+        val kanBehandleFortrolig = securitySearchCriteria.kanBehandleFortrolig
+        val kanBehandleStrengtFortrolig = securitySearchCriteria.kanBehandleStrengtFortrolig
         when {
             kanBehandleEgenAnsatt && kanBehandleFortrolig && kanBehandleStrengtFortrolig -> {
                 //Case 1
@@ -426,9 +467,9 @@ open class ElasticsearchService(
 
     private fun findWithBaseQueryAndAapen(baseQuery: BoolQueryBuilder, aapen: Boolean): List<EsKlagebehandling> {
         if (aapen) {
-            baseQuery.mustNot(QueryBuilders.existsQuery("avsluttetAvSaksbehandler"))
+            baseQuery.mustNot(erAvsluttetAvSaksbehandler())
         } else {
-            baseQuery.must(QueryBuilders.existsQuery("avsluttetAvSaksbehandler"))
+            baseQuery.must(erAvsluttetAvSaksbehandler())
         }
         return try {
             esKlagebehandlingRepository.search(baseQuery)
@@ -463,7 +504,7 @@ open class ElasticsearchService(
                 ?: 0
 
         val baseQueryOverFrist: BoolQueryBuilder = QueryBuilders.boolQuery()
-        baseQueryOverFrist.mustNot(QueryBuilders.existsQuery("avsluttetAvSaksbehandler"))
+        baseQueryOverFrist.mustNot(erAvsluttetAvSaksbehandler())
         val aggregationsForOverFrist = addAggregationsForOverFrist()
 
         val searchHitsOverFrist =
@@ -525,4 +566,8 @@ open class ElasticsearchService(
                 .format(ISO8601)
         )
     }
+
+    private fun erAvsluttetAvSaksbehandler() = QueryBuilders.existsQuery("avsluttetAvSaksbehandler")
+
+    private fun erTildeltSaksbehandler() = QueryBuilders.existsQuery("tildeltSaksbehandlerident")
 }
