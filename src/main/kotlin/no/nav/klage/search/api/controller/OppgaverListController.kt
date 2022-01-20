@@ -58,7 +58,7 @@ class OppgaverListController(
 
         //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         val searchCriteria = klagebehandlingerSearchCriteriaMapper.toLedigeOppgaverSearchCriteria(
-            queryParams = queryParams.copy(ytelser = ytelser), //, hjemler = hjemler),
+            queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
         )
 
         val esResponse = elasticsearchService.findLedigeOppgaverByCriteria(searchCriteria)
@@ -91,11 +91,10 @@ class OppgaverListController(
             valgteEnheter = saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
         )
 
-        val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
-
+        //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
             navIdent = navIdent,
-            queryParams = queryParams.copy(ytelser = ytelser, hjemler = hjemler),
+            queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
         )
 
         val esResponse = elasticsearchService.findByCriteria(searchCriteria)
@@ -131,10 +130,10 @@ class OppgaverListController(
             valgteEnheter = saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
         )
 
-        val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
+        //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
             navIdent = navIdent,
-            queryParams = queryParams.copy(ytelser = ytelser, hjemler = hjemler),
+            queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
         )
 
         val esResponse = elasticsearchService.findByCriteria(searchCriteria)
@@ -164,10 +163,10 @@ class OppgaverListController(
 
         val valgtEnhet = getEnhetOrThrowException(enhetId)
         val ytelser = lovligeValgteYtelser(queryParams = queryParams, valgteEnheter = listOf(valgtEnhet))
-        val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
+        //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
             enhetId = enhetId,
-            queryParams = queryParams.copy(ytelser = ytelser, hjemler = hjemler),
+            queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
         )
 
         val esResponse = elasticsearchService.findByCriteria(searchCriteria)
@@ -202,10 +201,10 @@ class OppgaverListController(
             return emptyResponse()
         }
 
-        val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
+        //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
             enhetId = enhetId,
-            queryParams = queryParams.copy(ytelser = ytelser, hjemler = hjemler),
+            queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
         )
 
         val esResponse = elasticsearchService.findByCriteria(searchCriteria)
@@ -242,12 +241,12 @@ class OppgaverListController(
         if (ytelser.isEmpty()) {
             return AntallUtgaatteFristerResponse(0)
         }
-        val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
+        //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         return AntallUtgaatteFristerResponse(
             antall = elasticsearchService.countByCriteria(
                 criteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteriaForLedigeMedUtgaattFrist(
                     navIdent = navIdent,
-                    queryParams = queryParams.copy(ytelser = ytelser, hjemler = hjemler),
+                    queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
                 )
             )
         )
