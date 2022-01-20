@@ -40,29 +40,6 @@ class KlagebehandlingSearchController(
         value = "Søk oppgaver som gjelder en gitt person",
         notes = "Finner alle oppgaver som saksbehandler har tilgang til som omhandler en gitt person."
     )
-    @Deprecated("Erstattet av getPersonOgOppgaver")
-    @PostMapping("/fnr", produces = ["application/json"])
-    fun getFnrSearchResponse(@RequestBody input: SearchPersonByFnrInput): FnrSearchResponse? {
-        logger.info("Deprecated endepunkt /search/fnr kalt")
-        val personSearchResponse =
-            personSearchService.fnrSearch(klagebehandlingerSearchCriteriaMapper.toSearchCriteria(input))
-
-        return if (personSearchResponse != null) {
-            val saksbehandler = innloggetSaksbehandlerRepository.getInnloggetIdent()
-            klagebehandlingListMapper.mapPersonSearchResponseToFnrSearchResponse(
-                personSearchResponse = personSearchResponse,
-                saksbehandler = saksbehandler,
-                tilgangTilYtelser = saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter.flatMap { it.ytelser }
-            )
-        } else {
-            null
-        }
-    }
-
-    @ApiOperation(
-        value = "Søk oppgaver som gjelder en gitt person",
-        notes = "Finner alle oppgaver som saksbehandler har tilgang til som omhandler en gitt person."
-    )
     @PostMapping("/personogoppgaver", produces = ["application/json"])
     fun getPersonOgOppgaver(@RequestBody input: SearchPersonByFnrInput): FnrSearchResponse {
         val personSearchResponse: PersonSearchResponse =
