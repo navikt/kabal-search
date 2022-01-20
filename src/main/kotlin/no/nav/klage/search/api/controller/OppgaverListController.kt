@@ -56,9 +56,9 @@ class OppgaverListController(
             return emptyResponse()
         }
 
-        val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
+        //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         val searchCriteria = klagebehandlingerSearchCriteriaMapper.toLedigeOppgaverSearchCriteria(
-            queryParams = queryParams.copy(ytelser = ytelser, hjemler = hjemler),
+            queryParams = queryParams.copy(ytelser = ytelser), //, hjemler = hjemler),
         )
 
         val esResponse = elasticsearchService.findLedigeOppgaverByCriteria(searchCriteria)
