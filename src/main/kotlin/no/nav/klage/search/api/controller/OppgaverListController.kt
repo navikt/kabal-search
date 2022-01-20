@@ -92,12 +92,12 @@ class OppgaverListController(
         )
 
         //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
-        val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
+        val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSaksbehandlersFerdigstilteOppgaverSearchCriteria(
             navIdent = navIdent,
             queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
         )
 
-        val esResponse = elasticsearchService.findByCriteria(searchCriteria)
+        val esResponse = elasticsearchService.findSaksbehandlersFerdigstilteOppgaverByCriteria(searchCriteria)
         return KlagebehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
             klagebehandlinger = klagebehandlingListMapper.mapEsKlagebehandlingerToListView(
