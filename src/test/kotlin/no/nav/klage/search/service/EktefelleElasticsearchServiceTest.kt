@@ -8,6 +8,7 @@ import no.nav.klage.kodeverk.Tema
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
+import no.nav.klage.search.domain.ExtraPersonWithYtelser
 import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.IKKE_TILDELT
@@ -199,7 +200,7 @@ class EktefelleElasticsearchServiceTest {
                 KlagebehandlingerSearchCriteria(
                     ytelser = listOf(Ytelse.FOR_FOR),
                     foedselsnr = "123",
-                    extraPersonWithYtelser = KlagebehandlingerSearchCriteria.ExtraPersonWithYtelser(
+                    extraPersonWithYtelser = ExtraPersonWithYtelser(
                         foedselsnr = "456",
                         ytelser = listOf(Ytelse.SYK_SYK),
                     ),
@@ -222,7 +223,7 @@ class EktefelleElasticsearchServiceTest {
                 KlagebehandlingerSearchCriteria(
                     ytelser = listOf(Ytelse.SYK_SYK),
                     foedselsnr = "123",
-                    extraPersonWithYtelser = KlagebehandlingerSearchCriteria.ExtraPersonWithYtelser(
+                    extraPersonWithYtelser = ExtraPersonWithYtelser(
                         foedselsnr = "456",
                         ytelser = listOf(Ytelse.FOR_FOR),
                     ),
@@ -245,7 +246,7 @@ class EktefelleElasticsearchServiceTest {
                 KlagebehandlingerSearchCriteria(
                     ytelser = listOf(Ytelse.SYK_SYK),
                     foedselsnr = "123",
-                    extraPersonWithYtelser = KlagebehandlingerSearchCriteria.ExtraPersonWithYtelser(
+                    extraPersonWithYtelser = ExtraPersonWithYtelser(
                         foedselsnr = "456",
                         ytelser = listOf(Ytelse.SYK_SYK),
                     ),

@@ -4,7 +4,7 @@ import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.kodeverk.hjemmel.Hjemmel
 import no.nav.klage.search.api.view.*
-import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
+import no.nav.klage.search.domain.*
 import no.nav.klage.search.domain.saksbehandler.Enhet
 import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import no.nav.klage.search.util.getLogger
@@ -27,7 +27,7 @@ class KlagebehandlingerSearchCriteriaMapper(
 
     fun toSearchCriteria(input: SearchPersonByFnrInput) = KlagebehandlingerSearchCriteria(
         foedselsnr = input.query,
-        statuskategori = KlagebehandlingerSearchCriteria.Statuskategori.ALLE,
+        statuskategori = Statuskategori.ALLE,
         offset = 0,
         limit = 2,
         kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
@@ -50,7 +50,7 @@ class KlagebehandlingerSearchCriteriaMapper(
         saksbehandlere = listOf(navIdent),
         sortField = mapSortField(queryParams.sortering),
         ferdigstiltFom = mapFerdigstiltFom(queryParams),
-        statuskategori = KlagebehandlingerSearchCriteria.Statuskategori.AVSLUTTET,
+        statuskategori = Statuskategori.AVSLUTTET,
         kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
         kanBehandleFortrolig = kanBehandleFortrolig(),
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
@@ -71,31 +71,25 @@ class KlagebehandlingerSearchCriteriaMapper(
         saksbehandlere = listOf(navIdent),
         sortField = mapSortField(queryParams.sortering),
         ferdigstiltFom = null,
-        statuskategori = KlagebehandlingerSearchCriteria.Statuskategori.AAPEN,
+        statuskategori = Statuskategori.AAPEN,
         kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
         kanBehandleFortrolig = kanBehandleFortrolig(),
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
     )
 
-    fun toSearchCriteria(
-        queryParams: MineLedigeOppgaverQueryParams,
-    ) = KlagebehandlingerSearchCriteria(
-        enhetId = null,
-        typer = queryParams.typer.map { Type.of(it) },
-        ytelser = queryParams.ytelser.map { Ytelse.of(it) },
-        hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
-        order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
-        offset = queryParams.start,
-        limit = queryParams.antall,
-        erTildeltSaksbehandler = false,
-        saksbehandlere = emptyList(),
-        sortField = mapSortField(queryParams.sortering),
-        ferdigstiltFom = null,
-        statuskategori = KlagebehandlingerSearchCriteria.Statuskategori.AAPEN,
-        kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
-        kanBehandleFortrolig = kanBehandleFortrolig(),
-        kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
-    )
+    fun toLedigeOppgaverSearchCriteria(queryParams: MineLedigeOppgaverQueryParams): LedigeOppgaverSearchCriteria =
+        LedigeOppgaverSearchCriteria(
+            typer = queryParams.typer.map { Type.of(it) },
+            ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+            hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            offset = queryParams.start,
+            limit = queryParams.antall,
+            sortField = mapSortField(queryParams.sortering),
+            kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
+            kanBehandleFortrolig = kanBehandleFortrolig(),
+            kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+        )
 
     fun toSearchCriteria(
         enhetId: String,
@@ -112,7 +106,7 @@ class KlagebehandlingerSearchCriteriaMapper(
         saksbehandlere = queryParams.tildelteSaksbehandlere,
         sortField = mapSortField(queryParams.sortering),
         ferdigstiltFom = null,
-        statuskategori = KlagebehandlingerSearchCriteria.Statuskategori.AAPEN,
+        statuskategori = Statuskategori.AAPEN,
         kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
         kanBehandleFortrolig = kanBehandleFortrolig(),
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
@@ -133,32 +127,32 @@ class KlagebehandlingerSearchCriteriaMapper(
         saksbehandlere = queryParams.tildelteSaksbehandlere,
         sortField = mapSortField(queryParams.sortering),
         ferdigstiltFom = mapFerdigstiltFom(queryParams),
-        statuskategori = KlagebehandlingerSearchCriteria.Statuskategori.AVSLUTTET,
+        statuskategori = Statuskategori.AVSLUTTET,
         kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
         kanBehandleFortrolig = kanBehandleFortrolig(),
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
     )
 
-    private fun mapSortField(sortering: Sortering?): KlagebehandlingerSearchCriteria.SortField =
+    private fun mapSortField(sortering: Sortering?): SortField =
         when (sortering) {
-            Sortering.MOTTATT -> KlagebehandlingerSearchCriteria.SortField.MOTTATT
-            Sortering.FRIST -> KlagebehandlingerSearchCriteria.SortField.FRIST
-            Sortering.ALDER -> KlagebehandlingerSearchCriteria.SortField.MOTTATT
-            else -> KlagebehandlingerSearchCriteria.SortField.FRIST
+            Sortering.MOTTATT -> SortField.MOTTATT
+            Sortering.FRIST -> SortField.FRIST
+            Sortering.ALDER -> SortField.MOTTATT
+            else -> SortField.FRIST
         }
 
-    private fun mapOrder(rekkefoelge: Rekkefoelge?, sortering: Sortering?): KlagebehandlingerSearchCriteria.Order =
+    private fun mapOrder(rekkefoelge: Rekkefoelge?, sortering: Sortering?): Order =
         if (rekkefoelge == Rekkefoelge.SYNKENDE) {
             if (sortering == Sortering.ALDER) {
-                KlagebehandlingerSearchCriteria.Order.ASC
+                Order.ASC
             } else {
-                KlagebehandlingerSearchCriteria.Order.DESC
+                Order.DESC
             }
         } else {
             if (sortering == Sortering.ALDER) {
-                KlagebehandlingerSearchCriteria.Order.DESC
+                Order.DESC
             } else {
-                KlagebehandlingerSearchCriteria.Order.ASC
+                Order.ASC
             }
         }
 
@@ -172,9 +166,9 @@ class KlagebehandlingerSearchCriteriaMapper(
         ytelser = queryParams.ytelser.map { Ytelse.of(it) },
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
         order = if (queryParams.rekkefoelge == Rekkefoelge.SYNKENDE) {
-            KlagebehandlingerSearchCriteria.Order.DESC
+            Order.DESC
         } else {
-            KlagebehandlingerSearchCriteria.Order.ASC
+            Order.ASC
         },
         offset = queryParams.start,
         limit = queryParams.antall,
@@ -182,15 +176,15 @@ class KlagebehandlingerSearchCriteriaMapper(
         saksbehandlere = queryParams.tildeltSaksbehandler,
         //projection = queryParams.projeksjon?.let { KlagebehandlingerSearchCriteria.Projection.valueOf(it.name) },
         sortField = if (queryParams.sortering == Sortering.MOTTATT) {
-            KlagebehandlingerSearchCriteria.SortField.MOTTATT
+            SortField.MOTTATT
         } else {
-            KlagebehandlingerSearchCriteria.SortField.FRIST
+            SortField.FRIST
         },
         ferdigstiltFom = mapFerdigstiltFom(queryParams),
         statuskategori = if (queryParams.ferdigstiltFom != null || queryParams.ferdigstiltDaysAgo != null) {
-            KlagebehandlingerSearchCriteria.Statuskategori.AVSLUTTET
+            Statuskategori.AVSLUTTET
         } else {
-            KlagebehandlingerSearchCriteria.Statuskategori.AAPEN
+            Statuskategori.AAPEN
         },
         kanBehandleEgenAnsatt = innloggetSaksbehandlerRepository.kanBehandleEgenAnsatt(),
         kanBehandleFortrolig = innloggetSaksbehandlerRepository.kanBehandleFortrolig(),
@@ -218,7 +212,7 @@ class KlagebehandlingerSearchCriteriaMapper(
             erTildeltSaksbehandler = false,
             saksbehandlere = emptyList(),
             ferdigstiltFom = null,
-            statuskategori = KlagebehandlingerSearchCriteria.Statuskategori.AAPEN,
+            statuskategori = Statuskategori.AAPEN,
             fristFom = LocalDate.now().minusYears(15),
             fristTom = LocalDate.now().minusDays(1),
             offset = 0,
@@ -237,7 +231,7 @@ class KlagebehandlingerSearchCriteriaMapper(
             erTildeltSaksbehandler = false,
             saksbehandlere = emptyList(),
             ferdigstiltFom = null,
-            statuskategori = KlagebehandlingerSearchCriteria.Statuskategori.AAPEN,
+            statuskategori = Statuskategori.AAPEN,
             fristFom = LocalDate.now().minusYears(15),
             fristTom = LocalDate.now().minusDays(1),
             offset = 0,
@@ -246,6 +240,7 @@ class KlagebehandlingerSearchCriteriaMapper(
             kanBehandleFortrolig = kanBehandleFortrolig(),
             kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
         )
+
 }
 
 
