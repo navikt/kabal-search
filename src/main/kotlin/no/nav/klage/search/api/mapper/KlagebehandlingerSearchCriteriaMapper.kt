@@ -6,14 +6,14 @@ import no.nav.klage.kodeverk.hjemmel.Hjemmel
 import no.nav.klage.search.api.view.*
 import no.nav.klage.search.domain.*
 import no.nav.klage.search.domain.saksbehandler.Enhet
-import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
+import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import no.nav.klage.search.util.getLogger
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
 class KlagebehandlingerSearchCriteriaMapper(
-    private val innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository,
+    private val OAuthTokenService: OAuthTokenService,
 ) {
 
     companion object {
@@ -21,9 +21,9 @@ class KlagebehandlingerSearchCriteriaMapper(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    fun kanBehandleEgenAnsatt() = innloggetSaksbehandlerRepository.kanBehandleEgenAnsatt()
-    fun kanBehandleFortrolig() = innloggetSaksbehandlerRepository.kanBehandleFortrolig()
-    fun kanBehandleStrengtFortrolig() = innloggetSaksbehandlerRepository.kanBehandleStrengtFortrolig()
+    fun kanBehandleEgenAnsatt() = OAuthTokenService.kanBehandleEgenAnsatt()
+    fun kanBehandleFortrolig() = OAuthTokenService.kanBehandleFortrolig()
+    fun kanBehandleStrengtFortrolig() = OAuthTokenService.kanBehandleStrengtFortrolig()
 
     fun toSearchCriteria(input: SearchPersonByFnrInput) = KlagebehandlingerSearchCriteria(
         foedselsnr = input.query,
@@ -183,9 +183,9 @@ class KlagebehandlingerSearchCriteriaMapper(
         } else {
             Statuskategori.AAPEN
         },
-        kanBehandleEgenAnsatt = innloggetSaksbehandlerRepository.kanBehandleEgenAnsatt(),
-        kanBehandleFortrolig = innloggetSaksbehandlerRepository.kanBehandleFortrolig(),
-        kanBehandleStrengtFortrolig = innloggetSaksbehandlerRepository.kanBehandleStrengtFortrolig(),
+        kanBehandleEgenAnsatt = OAuthTokenService.kanBehandleEgenAnsatt(),
+        kanBehandleFortrolig = OAuthTokenService.kanBehandleFortrolig(),
+        kanBehandleStrengtFortrolig = OAuthTokenService.kanBehandleStrengtFortrolig(),
     )
 
     private fun mapFerdigstiltFom(queryParams: KlagebehandlingerQueryParams): LocalDate? {

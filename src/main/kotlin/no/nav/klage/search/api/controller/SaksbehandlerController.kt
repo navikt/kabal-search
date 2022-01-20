@@ -7,9 +7,9 @@ import no.nav.klage.search.api.view.SaksbehandlereListResponse
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.domain.SaksbehandlereByEnhetSearchCriteria
 import no.nav.klage.search.exceptions.MissingTilgangException
-import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import no.nav.klage.search.service.ElasticsearchService
-import no.nav.klage.search.service.SaksbehandlerService
+import no.nav.klage.search.service.saksbehandler.InnloggetSaksbehandlerService
+import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.GetMapping
@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RestController
 @ProtectedWithClaims(issuer = ISSUER_AAD)
 class SaksbehandlerController(
     private val elasticsearchService: ElasticsearchService,
-    private val innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository,
-    private val saksbehandlerService: SaksbehandlerService,
+    private val oAuthTokenService: OAuthTokenService,
+    private val innloggetSaksbehandlerService: InnloggetSaksbehandlerService,
 ) {
 
     companion object {
@@ -41,16 +41,16 @@ class SaksbehandlerController(
     ): SaksbehandlereListResponse {
         logger.debug("getSaksbehandlereForEnhet")
 
-        if (!saksbehandlerService.hasSaksbehandlerAccessToEnhet(enhet)) {
-            throw MissingTilgangException("Saksbehandler ${innloggetSaksbehandlerRepository.getInnloggetIdent()} does not have access to enhet $enhet")
+        if (innloggetSaksbehandlerService.getEnhetMedYtelserForSaksbehandler().enhet.enhetId != enhet) {
+            throw MissingTilgangException("Saksbehandler ${oAuthTokenService.getInnloggetIdent()} does not have access to enhet $enhet")
         }
 
         val esResponse = elasticsearchService.findSaksbehandlereByEnhetCriteria(
             SaksbehandlereByEnhetSearchCriteria(
                 enhet = enhet,
-                kanBehandleEgenAnsatt = innloggetSaksbehandlerRepository.kanBehandleEgenAnsatt(),
-                kanBehandleFortrolig = innloggetSaksbehandlerRepository.kanBehandleFortrolig(),
-                kanBehandleStrengtFortrolig = innloggetSaksbehandlerRepository.kanBehandleStrengtFortrolig(),
+                kanBehandleEgenAnsatt = oAuthTokenService.kanBehandleEgenAnsatt(),
+                kanBehandleFortrolig = oAuthTokenService.kanBehandleFortrolig(),
+                kanBehandleStrengtFortrolig = oAuthTokenService.kanBehandleStrengtFortrolig(),
             )
         )
         return SaksbehandlereListResponse(

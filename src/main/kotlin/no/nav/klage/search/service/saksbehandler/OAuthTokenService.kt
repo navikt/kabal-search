@@ -1,14 +1,11 @@
-package no.nav.klage.search.repositories
+package no.nav.klage.search.service.saksbehandler
 
-import no.nav.klage.kodeverk.Ytelse
-import no.nav.klage.search.domain.saksbehandler.EnheterMedLovligeYtelser
 import no.nav.klage.search.util.TokenUtil
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Service
-class InnloggetSaksbehandlerRepository(
-    private val saksbehandlerRepository: SaksbehandlerRepository,
+class OAuthTokenService(
     private val tokenUtil: TokenUtil,
     @Value("\${ROLE_KLAGE_SAKSBEHANDLER}") private val saksbehandlerRole: String,
     @Value("\${ROLE_KLAGE_FAGANSVARLIG}") private val fagansvarligRole: String,
@@ -19,8 +16,6 @@ class InnloggetSaksbehandlerRepository(
     @Value("\${ROLE_KLAGE_EGEN_ANSATT}") private val kanBehandleEgenAnsattRole: String,
     @Value("\${ROLE_ADMIN}") private val adminRole: String
 ) {
-    fun getEnheterMedYtelserForSaksbehandler(): EnheterMedLovligeYtelser =
-        saksbehandlerRepository.getEnheterMedYtelserForSaksbehandler(getInnloggetIdent())
 
     fun getInnloggetIdent() = tokenUtil.getIdent()
 
@@ -38,18 +33,6 @@ class InnloggetSaksbehandlerRepository(
         tokenUtil.getRollerFromToken().hasRole(kanBehandleStrengtFortroligRole)
 
     fun kanBehandleEgenAnsatt(): Boolean = tokenUtil.getRollerFromToken().hasRole(kanBehandleEgenAnsattRole)
-
-    fun harTilgangTilEnhet(enhetId: String): Boolean {
-        return saksbehandlerRepository.harTilgangTilEnhet(getInnloggetIdent(), enhetId)
-    }
-
-    fun harTilgangTilYtelse(ytelse: Ytelse): Boolean {
-        return saksbehandlerRepository.harTilgangTilYtelse(getInnloggetIdent(), ytelse)
-    }
-
-    fun harTilgangTilEnhetOgYtelse(enhetId: String, ytelse: Ytelse): Boolean {
-        return saksbehandlerRepository.harTilgangTilEnhetOgYtelse(getInnloggetIdent(), enhetId, ytelse)
-    }
 
     private fun List<String>.hasRole(role: String) = any { it.contains(role) }
 }

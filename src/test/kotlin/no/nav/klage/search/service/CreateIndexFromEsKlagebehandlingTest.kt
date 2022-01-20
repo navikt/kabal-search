@@ -5,7 +5,7 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import no.finn.unleash.Unleash
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
-import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
+import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import org.apache.http.util.EntityUtils
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
@@ -34,7 +34,7 @@ class CreateIndexFromEsKlagebehandlingTest {
     lateinit var unleash: Unleash
 
     @MockkBean(relaxed = true)
-    lateinit var innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository
+    lateinit var OAuthTokenService: OAuthTokenService
 
     @Autowired
     lateinit var client: RestHighLevelClient

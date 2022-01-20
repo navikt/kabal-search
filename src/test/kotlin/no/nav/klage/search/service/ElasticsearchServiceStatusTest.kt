@@ -11,8 +11,8 @@ import no.nav.klage.search.config.ElasticsearchServiceConfiguration
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.*
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
-import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import no.nav.klage.search.repositories.SearchHits
+import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
 import org.opensearch.index.query.QueryBuilders
@@ -42,7 +42,7 @@ class ElasticsearchServiceStatusTest {
     lateinit var unleash: Unleash
 
     @MockkBean(relaxed = true)
-    lateinit var innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository
+    lateinit var OAuthTokenService: OAuthTokenService
 
     @Autowired
     lateinit var service: ElasticsearchService

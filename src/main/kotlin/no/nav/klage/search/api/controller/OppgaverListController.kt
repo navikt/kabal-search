@@ -12,9 +12,9 @@ import no.nav.klage.search.domain.kodeverk.ytelseTilSoekehjemler
 import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeYtelser
 import no.nav.klage.search.exceptions.MissingTilgangException
 import no.nav.klage.search.exceptions.NotMatchingUserException
-import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import no.nav.klage.search.service.ElasticsearchService
-import no.nav.klage.search.service.SaksbehandlerService
+import no.nav.klage.search.service.saksbehandler.InnloggetSaksbehandlerService
+import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.GetMapping
@@ -28,8 +28,8 @@ class OppgaverListController(
     private val klagebehandlingListMapper: KlagebehandlingListMapper,
     private val elasticsearchService: ElasticsearchService,
     private val klagebehandlingerSearchCriteriaMapper: KlagebehandlingerSearchCriteriaMapper,
-    private val innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository,
-    private val saksbehandlerService: SaksbehandlerService,
+    private val oAuthTokenService: OAuthTokenService,
+    private val innloggetSaksbehandlerService: InnloggetSaksbehandlerService,
 ) {
 
     companion object {
@@ -49,7 +49,7 @@ class OppgaverListController(
 
         val ytelser = lovligeValgteYtelser(
             queryParams = queryParams,
-            valgteEnheter = saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
+            valgteEnheter = innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
         )
         //TODO: Dette hadde vært bedre å håndtere i ElasticsearchService enn her
         if (ytelser.isEmpty()) {
@@ -88,7 +88,7 @@ class OppgaverListController(
 
         val ytelser = lovligeValgteYtelser(
             queryParams = queryParams,
-            valgteEnheter = saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
+            valgteEnheter = innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
         )
 
         //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
@@ -127,7 +127,7 @@ class OppgaverListController(
 
         val ytelser = lovligeValgteYtelser(
             queryParams = queryParams,
-            valgteEnheter = saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
+            valgteEnheter = innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
         )
 
         //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
@@ -235,7 +235,7 @@ class OppgaverListController(
 
         val ytelser = lovligeValgteYtelser(
             queryParams = queryParams,
-            valgteEnheter = saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
+            valgteEnheter = innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
         )
         //TODO: Dette hadde vært bedre å håndtere i ElasticsearchService enn her
         if (ytelser.isEmpty()) {
@@ -253,7 +253,7 @@ class OppgaverListController(
     }
 
     private fun validateNavIdent(navIdent: String) {
-        val innloggetIdent = innloggetSaksbehandlerRepository.getInnloggetIdent()
+        val innloggetIdent = oAuthTokenService.getInnloggetIdent()
         if (innloggetIdent != navIdent) {
             throw NotMatchingUserException(
                 "logged in user does not match sent in user. " +
@@ -263,13 +263,13 @@ class OppgaverListController(
     }
 
     private fun getEnhetOrThrowException(enhetId: String): EnhetMedLovligeYtelser =
-        saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter.find { it.enhet.enhetId == enhetId }
+        innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter.find { it.enhet.enhetId == enhetId }
             ?: throw IllegalArgumentException("Saksbehandler har ikke tilgang til angitt enhet")
 
     private fun validateRettigheterForEnhetensTildelteOppgaver() {
-        if (!(innloggetSaksbehandlerRepository.isLeder() || innloggetSaksbehandlerRepository.isFagansvarlig())) {
+        if (!(oAuthTokenService.isLeder() || oAuthTokenService.isFagansvarlig())) {
             val message =
-                "${innloggetSaksbehandlerRepository.getInnloggetIdent()} har ikke tilgang til å se alle tildelte oppgaver."
+                "${oAuthTokenService.getInnloggetIdent()} har ikke tilgang til å se alle tildelte oppgaver."
             logger.warn(message)
             throw MissingTilgangException(message)
         }
@@ -294,6 +294,6 @@ class OppgaverListController(
         }
 
     private fun getAlleYtelserInnloggetSaksbehandlerKanBehandle() =
-        saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter.flatMap { it.ytelser }
+        innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter.flatMap { it.ytelser }
 }
 

@@ -2,8 +2,8 @@ package no.nav.klage.search.api.controller
 
 import no.nav.klage.search.config.SecurityConfiguration
 import no.nav.klage.search.exceptions.MissingTilgangException
-import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import no.nav.klage.search.service.AdminService
+import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.http.HttpStatus
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 @ProtectedWithClaims(issuer = SecurityConfiguration.ISSUER_AAD)
 class AdminController(
     private val adminService: AdminService,
-    private val innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository,
+    private val OAuthTokenService: OAuthTokenService,
 ) {
 
     companion object {
@@ -39,7 +39,7 @@ class AdminController(
     }
 
     private fun validateUserIsAdmin() {
-        if (!innloggetSaksbehandlerRepository.isAdmin()) {
+        if (!OAuthTokenService.isAdmin()) {
             throw MissingTilgangException("Not an admin")
         }
     }

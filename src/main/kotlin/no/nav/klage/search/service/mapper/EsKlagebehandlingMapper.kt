@@ -7,7 +7,7 @@ import no.nav.klage.search.clients.klageendret.KlagebehandlingSkjemaV1
 import no.nav.klage.search.clients.pdl.PdlFacade
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsSaksdokument
-import no.nav.klage.search.service.SaksbehandlerService
+import no.nav.klage.search.service.saksbehandler.SaksbehandlerService
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getSecureLogger
 import org.springframework.stereotype.Service
@@ -104,9 +104,7 @@ class EsKlagebehandlingMapper(
 
     private fun getTildeltSaksbehandlernavn(klagebehandling: KlagebehandlingSkjemaV1): String? {
         return klagebehandling.gjeldendeTildeling?.saksbehandler?.ident?.let {
-            val names = saksbehandlerService.getNamesForSaksbehandlere(
-                setOf(it)
-            )
+            val names = saksbehandlerService.getNamesForSaksbehandlere(setOf(it))
             names[it]
         }
     }

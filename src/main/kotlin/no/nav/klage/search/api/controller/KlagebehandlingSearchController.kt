@@ -9,9 +9,9 @@ import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.domain.personsoek.PersonSearchResponse
 import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeYtelser
 import no.nav.klage.search.exceptions.PersonNotFoundException
-import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
 import no.nav.klage.search.service.PersonSearchService
-import no.nav.klage.search.service.SaksbehandlerService
+import no.nav.klage.search.service.saksbehandler.InnloggetSaksbehandlerService
+import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.PostMapping
@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.RestController
 class KlagebehandlingSearchController(
     private val klagebehandlingListMapper: KlagebehandlingListMapper,
     private val klagebehandlingerSearchCriteriaMapper: KlagebehandlingerSearchCriteriaMapper,
-    private val innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository,
-    private val saksbehandlerService: SaksbehandlerService,
+    private val oAuthTokenService: OAuthTokenService,
+    private val innloggetSaksbehandlerService: InnloggetSaksbehandlerService,
     private val personSearchService: PersonSearchService,
 ) {
 
@@ -45,11 +45,11 @@ class KlagebehandlingSearchController(
         val personSearchResponse: PersonSearchResponse =
             personSearchService.fnrSearch(klagebehandlingerSearchCriteriaMapper.toSearchCriteria(input))
                 ?: throw PersonNotFoundException("Person med fnr ${input.query} ikke funnet")
-        val saksbehandler = innloggetSaksbehandlerRepository.getInnloggetIdent()
+        val saksbehandler = oAuthTokenService.getInnloggetIdent()
         return klagebehandlingListMapper.mapPersonSearchResponseToFnrSearchResponse(
             personSearchResponse = personSearchResponse,
             saksbehandler = saksbehandler,
-            tilgangTilYtelser = saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter.flatMap { it.ytelser }
+            tilgangTilYtelser = innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter.flatMap { it.ytelser }
         )
     }
 
@@ -113,7 +113,7 @@ class KlagebehandlingSearchController(
     }*/
 
     private fun getEnhetOrThrowException(enhetId: String): EnhetMedLovligeYtelser =
-        saksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter.find { it.enhet.enhetId == enhetId }
+        innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter.find { it.enhet.enhetId == enhetId }
             ?: throw IllegalArgumentException("Saksbehandler har ikke tilgang til angitt enhet")
 
 }
