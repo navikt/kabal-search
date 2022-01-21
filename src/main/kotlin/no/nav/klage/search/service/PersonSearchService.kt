@@ -2,7 +2,7 @@ package no.nav.klage.search.service
 
 import no.nav.klage.search.clients.pdl.graphql.PdlClient
 import no.nav.klage.search.clients.pdl.graphql.SoekPersonResponse
-import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
+import no.nav.klage.search.domain.OppgaverOmPersonSearchCriteria
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.personsoek.Navn
 import no.nav.klage.search.domain.personsoek.Person
@@ -22,27 +22,21 @@ class PersonSearchService(
         private val secureLogger = getSecureLogger()
     }
 
-    fun fnrSearch(input: KlagebehandlingerSearchCriteria): PersonSearchResponse? {
+    fun fnrSearch(input: OppgaverOmPersonSearchCriteria): PersonSearchResponse? {
         val searchHitsInES = esSoek(input)
         logger.debug("fnrSearch: Got ${searchHitsInES.size} hits from ES")
-        val listOfPersonSoekResponse = searchHitsInES.groupBy { it.sakenGjelderFnr }.map { (fnr, klagebehandlinger) ->
-            PersonSearchResponse(
-                fnr = fnr!!,
-                fornavn = klagebehandlinger.first().sakenGjelderFornavn
-                    ?: throw RuntimeException("fornavn missing"),
-                mellomnavn = klagebehandlinger.first().sakenGjelderMellomnavn,
-                etternavn = klagebehandlinger.first().sakenGjelderEtternavn
-                    ?: throw RuntimeException("etternavn missing"),
-                klagebehandlinger = klagebehandlinger
-            )
-        }
-        return if (listOfPersonSoekResponse.size == 1) {
-            listOfPersonSoekResponse.first()
-        } else if (listOfPersonSoekResponse.isEmpty()) {
+        return if (searchHitsInES.isEmpty()) {
             null
         } else {
-            secureLogger.error("More than one hit for fnr {}.", input.foedselsnr)
-            throw RuntimeException("More than one hit for fnr.")
+            PersonSearchResponse(
+                fnr = input.fnr,
+                fornavn = searchHitsInES.first().sakenGjelderFornavn
+                    ?: throw RuntimeException("fornavn missing"),
+                mellomnavn = searchHitsInES.first().sakenGjelderMellomnavn,
+                etternavn = searchHitsInES.first().sakenGjelderEtternavn
+                    ?: throw RuntimeException("etternavn missing"),
+                klagebehandlinger = searchHitsInES
+            )
         }
     }
 
@@ -66,8 +60,8 @@ class PersonSearchService(
         return people ?: emptyList()
     }
 
-    private fun esSoek(input: KlagebehandlingerSearchCriteria): List<EsKlagebehandling> {
-        val esResponse = elasticsearchService.findByCriteria(input)
+    private fun esSoek(input: OppgaverOmPersonSearchCriteria): List<EsKlagebehandling> {
+        val esResponse = elasticsearchService.findOppgaverOmPersonByCriteria(input)
         return esResponse.searchHits.map { it.content }
     }
 

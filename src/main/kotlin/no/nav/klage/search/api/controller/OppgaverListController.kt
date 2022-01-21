@@ -131,18 +131,18 @@ class OppgaverListController(
         )
 
         //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
-        val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
+        val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSaksbehandlersUferdigeOppgaverSearchCriteria(
             navIdent = navIdent,
             queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
         )
 
-        val esResponse = elasticsearchService.findByCriteria(searchCriteria)
+        val esResponse = elasticsearchService.findSaksbehandlersUferdigeOppgaverByCriteria(searchCriteria)
         return KlagebehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
             klagebehandlinger = klagebehandlingListMapper.mapEsKlagebehandlingerToListView(
                 esKlagebehandlinger = esResponse.searchHits.map { it.content },
                 visePersonData = true,
-                saksbehandlere = searchCriteria.saksbehandlere,
+                saksbehandlere = listOf(searchCriteria.saksbehandler),
                 tilgangTilYtelser = getAlleYtelserInnloggetSaksbehandlerKanBehandle()
             )
         )
@@ -164,12 +164,12 @@ class OppgaverListController(
         val valgtEnhet = getEnhetOrThrowException(enhetId)
         val ytelser = lovligeValgteYtelser(queryParams = queryParams, valgteEnheter = listOf(valgtEnhet))
         //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
-        val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
+        val searchCriteria = klagebehandlingerSearchCriteriaMapper.toEnhetensFerdigstilteOppgaverSearchCriteria(
             enhetId = enhetId,
             queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
         )
 
-        val esResponse = elasticsearchService.findByCriteria(searchCriteria)
+        val esResponse = elasticsearchService.findEnhetensFerdigstilteOppgaverByCriteria(searchCriteria)
         return KlagebehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
             klagebehandlinger = klagebehandlingListMapper.mapEsKlagebehandlingerToListView(
@@ -202,12 +202,12 @@ class OppgaverListController(
         }
 
         //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
-        val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteria(
+        val searchCriteria = klagebehandlingerSearchCriteriaMapper.toEnhetensUferdigeOppgaverSearchCriteria(
             enhetId = enhetId,
             queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
         )
 
-        val esResponse = elasticsearchService.findByCriteria(searchCriteria)
+        val esResponse = elasticsearchService.findEnhetensUferdigeOppgaverByCriteria(searchCriteria)
         return KlagebehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
             klagebehandlinger = klagebehandlingListMapper.mapEsKlagebehandlingerToListView(
@@ -243,7 +243,7 @@ class OppgaverListController(
         }
         //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         return AntallUtgaatteFristerResponse(
-            antall = elasticsearchService.countByCriteria(
+            antall = elasticsearchService.countLedigeOppgaverMedUtgaatFristByCriteria(
                 criteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteriaForLedigeMedUtgaattFrist(
                     navIdent = navIdent,
                     queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
