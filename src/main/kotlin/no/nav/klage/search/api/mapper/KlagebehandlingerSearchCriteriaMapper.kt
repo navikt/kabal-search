@@ -27,8 +27,7 @@ class KlagebehandlingerSearchCriteriaMapper(
     fun toOppgaverOmPersonSearchCriteria(input: SearchPersonByFnrInput) = OppgaverOmPersonSearchCriteria(
         fnr = input.query,
         offset = 0,
-        //TODO: Hvorfor setter vi denne? Hvorfor bare vise de to første??
-        limit = 2,
+        limit = 100,
         kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
         kanBehandleFortrolig = kanBehandleFortrolig(),
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
@@ -160,7 +159,7 @@ class KlagebehandlingerSearchCriteriaMapper(
                 Order.ASC
             }
         }
-    
+
     private fun mapFerdigstiltFom(queryParams: FerdigstilteOppgaverQueryParams): LocalDate =
         LocalDate.now().minusDays(queryParams.ferdigstiltDaysAgo)
 

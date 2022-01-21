@@ -25,24 +25,18 @@ class PersonSearchService(
     fun fnrSearch(input: OppgaverOmPersonSearchCriteria): PersonSearchResponse? {
         val searchHitsInES = esSoek(input)
         logger.debug("fnrSearch: Got ${searchHitsInES.size} hits from ES")
-        val listOfPersonSoekResponse = searchHitsInES.groupBy { it.sakenGjelderFnr }.map { (fnr, klagebehandlinger) ->
-            PersonSearchResponse(
-                fnr = fnr!!,
-                fornavn = klagebehandlinger.first().sakenGjelderFornavn
-                    ?: throw RuntimeException("fornavn missing"),
-                mellomnavn = klagebehandlinger.first().sakenGjelderMellomnavn,
-                etternavn = klagebehandlinger.first().sakenGjelderEtternavn
-                    ?: throw RuntimeException("etternavn missing"),
-                klagebehandlinger = klagebehandlinger
-            )
-        }
-        return if (listOfPersonSoekResponse.size == 1) {
-            listOfPersonSoekResponse.first()
-        } else if (listOfPersonSoekResponse.isEmpty()) {
+        return if (searchHitsInES.isEmpty()) {
             null
         } else {
-            secureLogger.error("More than one hit for fnr {}.", input.fnr)
-            throw RuntimeException("More than one hit for fnr.")
+            PersonSearchResponse(
+                fnr = input.fnr,
+                fornavn = searchHitsInES.first().sakenGjelderFornavn
+                    ?: throw RuntimeException("fornavn missing"),
+                mellomnavn = searchHitsInES.first().sakenGjelderMellomnavn,
+                etternavn = searchHitsInES.first().sakenGjelderEtternavn
+                    ?: throw RuntimeException("etternavn missing"),
+                klagebehandlinger = searchHitsInES
+            )
         }
     }
 
