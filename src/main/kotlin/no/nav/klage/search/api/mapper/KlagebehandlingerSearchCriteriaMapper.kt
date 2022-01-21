@@ -160,16 +160,7 @@ class KlagebehandlingerSearchCriteriaMapper(
                 Order.ASC
             }
         }
-
-    //TODO: Skulle denne vært brukt??
-    private fun mapFerdigstiltFom(queryParams: KlagebehandlingerQueryParams): LocalDate? {
-        return if (queryParams.ferdigstiltDaysAgo != null) {
-            LocalDate.now().minusDays(queryParams.ferdigstiltDaysAgo.toLong())
-        } else {
-            queryParams.ferdigstiltFom
-        }
-    }
-
+    
     private fun mapFerdigstiltFom(queryParams: FerdigstilteOppgaverQueryParams): LocalDate =
         LocalDate.now().minusDays(queryParams.ferdigstiltDaysAgo)
 
