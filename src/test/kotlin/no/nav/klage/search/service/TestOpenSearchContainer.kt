@@ -1,7 +1,6 @@
 package no.nav.klage.search.service
 
 import org.testcontainers.containers.GenericContainer
-import org.testcontainers.containers.Network
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy
 import java.time.Duration
 
@@ -13,8 +12,6 @@ class TestOpenSearchContainer private constructor() :
         private const val IMAGE_VERSION = "opensearchproject/opensearch:1.1.0"
 
         private val CONTAINER: TestOpenSearchContainer = TestOpenSearchContainer()
-
-        val network = Network.newNetwork()
 
         val instance: TestOpenSearchContainer
             get() {

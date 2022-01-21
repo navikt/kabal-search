@@ -3,7 +3,7 @@ package no.nav.klage.search.api.controller
 import no.finn.unleash.Unleash
 import no.finn.unleash.UnleashContext
 import no.nav.klage.search.config.SecurityConfiguration
-import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
+import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.api.Unprotected
@@ -16,7 +16,7 @@ import springfox.documentation.annotations.ApiIgnore
 @ApiIgnore
 class FeatureToggleController(
     private val unleash: Unleash,
-    private val innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository
+    private val oAuthTokenService: OAuthTokenService
 ) {
 
     companion object {
@@ -41,7 +41,7 @@ class FeatureToggleController(
         UnleashContext.builder().userId(getIdent()).build()
 
     private fun getIdent() = try {
-        innloggetSaksbehandlerRepository.getInnloggetIdent()
+        oAuthTokenService.getInnloggetIdent()
     } catch (e: Exception) {
         logger.info("Not able to retrieve token", e)
         "UINNLOGGET"

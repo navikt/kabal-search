@@ -1,8 +1,5 @@
 package no.nav.klage.search.service
 
-import com.ninjasquad.springmockk.MockkBean
-import io.mockk.every
-import no.finn.unleash.Unleash
 import no.nav.klage.kodeverk.MedunderskriverFlyt
 import no.nav.klage.kodeverk.Tema
 import no.nav.klage.kodeverk.Type
@@ -14,7 +11,10 @@ import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.IKKE_TILDELT
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.MethodOrderer
+import org.junit.jupiter.api.Order
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestMethodOrder
 import org.opensearch.index.query.QueryBuilders
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -37,19 +37,11 @@ class EktefelleElasticsearchServiceTest {
         val esContainer: TestOpenSearchContainer = TestOpenSearchContainer.instance
     }
 
-    @MockkBean(relaxed = true)
-    lateinit var unleash: Unleash
-
     @Autowired
     lateinit var service: ElasticsearchService
 
     @Autowired
     lateinit var repo: EsKlagebehandlingRepository
-
-    @BeforeEach
-    fun setup() {
-        every { unleash.isEnabled(any(), false) } returns true
-    }
 
     @Test
     @Order(1)

@@ -1,11 +1,11 @@
-package no.nav.klage.search.api
+package no.nav.klage.search.api.controller
 
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import no.finn.unleash.Unleash
 import no.finn.unleash.UnleashContext
 import no.nav.klage.search.api.controller.FeatureToggleController
-import no.nav.klage.search.repositories.InnloggetSaksbehandlerRepository
+import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import org.hamcrest.Matchers.containsString
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
@@ -30,11 +30,11 @@ class FeatureToggleControllerTest {
     lateinit var unleash: Unleash
 
     @MockkBean
-    lateinit var innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository
+    lateinit var oAuthTokenService: OAuthTokenService
 
     @BeforeEach
     fun setup() {
-        every { innloggetSaksbehandlerRepository.getInnloggetIdent() } returns "H149390"
+        every { oAuthTokenService.getInnloggetIdent() } returns "H149390"
         every { unleash.isEnabled(any(), any<UnleashContext>()) } returns true
     }
 

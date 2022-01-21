@@ -41,6 +41,7 @@ import org.opensearch.search.builder.SearchSourceBuilder
 
 
 class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
+
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
