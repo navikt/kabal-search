@@ -45,13 +45,13 @@ enum class Order {
     ASC, DESC
 }
 
-enum class Statuskategori {
-    AAPEN, AVSLUTTET, ALLE
-}
+//enum class Statuskategori {
+//    AAPEN, AVSLUTTET, ALLE
+//}
 
 //fun KlagebehandlingerSearchCriteria.isFnrSoek() = raw.isNumeric()
 
-private fun String.isNumeric() = toLongOrNull() != null
+//private fun String.isNumeric() = toLongOrNull() != null
 
 interface PageableSearchCriteria {
     val offset: Int
