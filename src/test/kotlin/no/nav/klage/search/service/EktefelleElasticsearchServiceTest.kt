@@ -1,36 +1,22 @@
 package no.nav.klage.search.service
 
-import no.nav.klage.kodeverk.MedunderskriverFlyt
-import no.nav.klage.kodeverk.Tema
-import no.nav.klage.kodeverk.Type
-import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
-import no.nav.klage.search.domain.ExtraPersonWithYtelser
-import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
-import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
-import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.IKKE_TILDELT
-import no.nav.klage.search.repositories.EsKlagebehandlingRepository
-import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.MethodOrderer
-import org.junit.jupiter.api.Order
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
-import org.opensearch.index.query.QueryBuilders
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 
 @ActiveProfiles("local")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @Testcontainers
 @SpringBootTest(classes = [ElasticsearchServiceConfiguration::class])
+@Disabled
 class EktefelleElasticsearchServiceTest {
 
+    /*
     companion object {
         @Container
         @JvmField
@@ -252,4 +238,6 @@ class EktefelleElasticsearchServiceTest {
         assertThat(klagebehandlinger.size).isEqualTo(2L)
         assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder("1002L", "1003L")
     }
+
+     */
 }

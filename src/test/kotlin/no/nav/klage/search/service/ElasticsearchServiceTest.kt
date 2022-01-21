@@ -5,7 +5,9 @@ import no.nav.klage.kodeverk.Tema
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
-import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
+import no.nav.klage.search.domain.CountLedigeOppgaverMedUtgaattFristSearchCriteria
+import no.nav.klage.search.domain.LedigeOppgaverSearchCriteria
+import no.nav.klage.search.domain.SortField
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.IKKE_TILDELT
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
@@ -109,11 +111,15 @@ class ElasticsearchServiceTest {
     @Order(4)
     fun `Klagebehandling can be searched for by ytelse`() {
         val klagebehandlinger: List<EsKlagebehandling> =
-            service.findByCriteria(
-                KlagebehandlingerSearchCriteria(
+            service.findLedigeOppgaverByCriteria(
+                LedigeOppgaverSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
+                    typer = emptyList(),
+                    hjemler = emptyList(),
                     offset = 0,
                     limit = 10,
+                    order = no.nav.klage.search.domain.Order.ASC,
+                    sortField = SortField.FRIST,
                     kanBehandleEgenAnsatt = false,
                     kanBehandleFortrolig = false,
                     kanBehandleStrengtFortrolig = false,
@@ -126,19 +132,20 @@ class ElasticsearchServiceTest {
     @Test
     @Order(5)
     fun `Klagebehandling can be searched for by frist`() {
-        val klagebehandlinger: List<EsKlagebehandling> =
-            service.findByCriteria(
-                KlagebehandlingerSearchCriteria(
+        val antall =
+            service.countLedigeOppgaverMedUtgaatFristByCriteria(
+                CountLedigeOppgaverMedUtgaattFristSearchCriteria(
+                    typer = emptyList(),
+                    ytelser = emptyList(),
+                    hjemler = emptyList(),
                     fristFom = LocalDate.of(2020, 12, 1),
-                    offset = 0,
-                    limit = 10,
+                    fristTom = LocalDate.now(),
                     kanBehandleEgenAnsatt = false,
                     kanBehandleFortrolig = false,
                     kanBehandleStrengtFortrolig = false,
                 )
-            ).searchHits.map { it.content }
-        assertThat(klagebehandlinger.size).isEqualTo(1L)
-        assertThat(klagebehandlinger.first().id).isEqualTo("1001L")
+            )
+        assertThat(antall).isEqualTo(1L)
     }
 
 }

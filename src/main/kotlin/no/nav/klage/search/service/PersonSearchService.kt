@@ -2,7 +2,7 @@ package no.nav.klage.search.service
 
 import no.nav.klage.search.clients.pdl.graphql.PdlClient
 import no.nav.klage.search.clients.pdl.graphql.SoekPersonResponse
-import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
+import no.nav.klage.search.domain.OppgaverOmPersonSearchCriteria
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.personsoek.Navn
 import no.nav.klage.search.domain.personsoek.Person
@@ -22,7 +22,7 @@ class PersonSearchService(
         private val secureLogger = getSecureLogger()
     }
 
-    fun fnrSearch(input: KlagebehandlingerSearchCriteria): PersonSearchResponse? {
+    fun fnrSearch(input: OppgaverOmPersonSearchCriteria): PersonSearchResponse? {
         val searchHitsInES = esSoek(input)
         logger.debug("fnrSearch: Got ${searchHitsInES.size} hits from ES")
         val listOfPersonSoekResponse = searchHitsInES.groupBy { it.sakenGjelderFnr }.map { (fnr, klagebehandlinger) ->
@@ -41,7 +41,7 @@ class PersonSearchService(
         } else if (listOfPersonSoekResponse.isEmpty()) {
             null
         } else {
-            secureLogger.error("More than one hit for fnr {}.", input.foedselsnr)
+            secureLogger.error("More than one hit for fnr {}.", input.fnr)
             throw RuntimeException("More than one hit for fnr.")
         }
     }
@@ -66,8 +66,8 @@ class PersonSearchService(
         return people ?: emptyList()
     }
 
-    private fun esSoek(input: KlagebehandlingerSearchCriteria): List<EsKlagebehandling> {
-        val esResponse = elasticsearchService.findByCriteria(input)
+    private fun esSoek(input: OppgaverOmPersonSearchCriteria): List<EsKlagebehandling> {
+        val esResponse = elasticsearchService.findOppgaverOmPersonByCriteria(input)
         return esResponse.searchHits.map { it.content }
     }
 

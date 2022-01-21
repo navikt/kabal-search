@@ -1,7 +1,6 @@
 package no.nav.klage.search.service
 
 import no.nav.klage.kodeverk.MedunderskriverFlyt
-import no.nav.klage.kodeverk.Type
 import no.nav.klage.search.domain.*
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.*
@@ -17,6 +16,7 @@ import org.opensearch.common.unit.TimeValue
 import org.opensearch.index.query.BoolQueryBuilder
 import org.opensearch.index.query.QueryBuilder
 import org.opensearch.index.query.QueryBuilders
+import org.opensearch.index.query.TermQueryBuilder
 import org.opensearch.search.aggregations.AggregationBuilder
 import org.opensearch.search.aggregations.AggregationBuilders
 import org.opensearch.search.aggregations.bucket.range.ParsedDateRange
@@ -64,6 +64,17 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
         esKlagebehandlingRepository.save(klagebehandling)
     }
 
+    open fun findOppgaverOmPersonByCriteria(criteria: OppgaverOmPersonSearchCriteria): KlagebehandlingerSearchHits {
+        val searchSourceBuilder = SearchSourceBuilder()
+        searchSourceBuilder.query(criteria.toEsQuery())
+        searchSourceBuilder.addPaging(criteria)
+        searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
+
+        val searchHits = esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
+        logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
+        return searchHits
+    }
+
     open fun findLedigeOppgaverByCriteria(criteria: LedigeOppgaverSearchCriteria): KlagebehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
@@ -71,8 +82,7 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
         searchSourceBuilder.addSorting(criteria)
         searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
 
-        val searchHits =
-            esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
+        val searchHits = esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
         logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
         return searchHits
     }
@@ -84,12 +94,48 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
         searchSourceBuilder.addSorting(criteria)
         searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
 
-        val searchHits =
-            esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
+        val searchHits = esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
         logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
         return searchHits
     }
 
+    open fun findSaksbehandlersUferdigeOppgaverByCriteria(criteria: SaksbehandlersUferdigeOppgaverSearchCriteria): KlagebehandlingerSearchHits {
+        val searchSourceBuilder = SearchSourceBuilder()
+        searchSourceBuilder.query(criteria.toEsQuery())
+        searchSourceBuilder.addPaging(criteria)
+        searchSourceBuilder.addSorting(criteria)
+        searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
+
+        val searchHits = esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
+        logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
+        return searchHits
+    }
+
+    open fun findEnhetensFerdigstilteOppgaverByCriteria(criteria: EnhetensFerdigstilteOppgaverSearchCriteria): KlagebehandlingerSearchHits {
+        val searchSourceBuilder = SearchSourceBuilder()
+        searchSourceBuilder.query(criteria.toEsQuery())
+        searchSourceBuilder.addPaging(criteria)
+        searchSourceBuilder.addSorting(criteria)
+        searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
+
+        val searchHits = esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
+        logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
+        return searchHits
+    }
+
+    open fun findEnhetensUferdigeOppgaverByCriteria(criteria: EnhetensUferdigeOppgaverSearchCriteria): KlagebehandlingerSearchHits {
+        val searchSourceBuilder = SearchSourceBuilder()
+        searchSourceBuilder.query(criteria.toEsQuery())
+        searchSourceBuilder.addPaging(criteria)
+        searchSourceBuilder.addSorting(criteria)
+        searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
+
+        val searchHits = esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
+        logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
+        return searchHits
+    }
+
+    /*
     open fun findByCriteria(criteria: KlagebehandlingerSearchCriteria): KlagebehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
@@ -97,11 +143,11 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
         searchSourceBuilder.addSorting(criteria)
         searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
 
-        val searchHits =
-            esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
+        val searchHits = esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
         logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
         return searchHits
     }
+     */
 
     open fun findSaksbehandlereByEnhetCriteria(criteria: SaksbehandlereByEnhetSearchCriteria): SortedSet<Saksbehandler> {
         val searchHits: SearchHits<EsKlagebehandling> = esKlagebehandlingRepository.search(criteria.toEsQuery())
@@ -156,7 +202,7 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
         return getMedian(saksdokumenterPerAvsluttetBehandling)
     }
 
-    open fun countByCriteria(criteria: KlagebehandlingerSearchCriteria): Int {
+    open fun countLedigeOppgaverMedUtgaatFristByCriteria(criteria: CountLedigeOppgaverMedUtgaattFristSearchCriteria): Int {
         return esKlagebehandlingRepository.count(criteria.toEsQuery()).toInt()
     }
 
@@ -185,6 +231,17 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
         this.size(criteria.limit)
     }
 
+    private fun OppgaverOmPersonSearchCriteria.toEsQuery(): QueryBuilder {
+        logger.debug("Search criteria: {}", this)
+        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
+        baseQuery.addSecurityFilters(this)
+
+        baseQuery.must(haveSakenGjelder(fnr))
+
+        logger.debug("Making search request with query {}", baseQuery.toString())
+        return baseQuery
+    }
+
     private fun SaksbehandlereByEnhetSearchCriteria.toEsQuery(): QueryBuilder {
         logger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
@@ -209,149 +266,70 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
         return baseQuery
     }
 
+    private fun CountLedigeOppgaverMedUtgaattFristSearchCriteria.toEsQuery(): QueryBuilder {
+        logger.debug("Search criteria: {}", this)
+        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
+        baseQuery.addSecurityFilters(this)
+        baseQuery.addBasicFilters(this)
+        baseQuery.mustNot(beAvsluttetAvSaksbehandler())
+        baseQuery.mustNot(beTildeltSaksbehandler())
+        baseQuery.must(haveFristMellom(fristFom, fristTom))
+        logger.debug("Making search request with query {}", baseQuery.toString())
+        return baseQuery
+    }
+
     private fun SaksbehandlersFerdigstilteOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
         logger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
-        baseQuery.must(beAvsluttetAvSaksbehandler())
-        baseQuery.must(beTildeltSaksbehandler(saksbehandler))
+        //baseQuery.must(beAvsluttetAvSaksbehandler())
         baseQuery.must(beAvsluttetAvSaksbehandlerEtter(ferdigstiltFom))
+        baseQuery.must(beTildeltSaksbehandler(saksbehandler))
 
         logger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
-    private fun KlagebehandlingerSearchCriteria.toEsQuery(): QueryBuilder {
-
-        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
+    private fun SaksbehandlersUferdigeOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
         logger.debug("Search criteria: {}", this)
-
+        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
+        baseQuery.addBasicFilters(this)
+        baseQuery.mustNot(beAvsluttetAvSaksbehandler())
+        baseQuery.must(beTildeltSaksbehandlerOrMedunderskriver(saksbehandler))
 
-        val combinedInnerFnrAndYtelseQuery = QueryBuilders.boolQuery()
-        baseQuery.must(combinedInnerFnrAndYtelseQuery)
+        logger.debug("Making search request with query {}", baseQuery.toString())
+        return baseQuery
+    }
 
-        val innerFnrAndYtelseQuery = QueryBuilders.boolQuery()
-        combinedInnerFnrAndYtelseQuery.should(innerFnrAndYtelseQuery)
-
-        val innerQueryFnr = QueryBuilders.boolQuery()
-        innerFnrAndYtelseQuery.must(innerQueryFnr)
-        foedselsnr?.let {
-            innerQueryFnr.should(QueryBuilders.termQuery("sakenGjelderFnr", it))
-        }
-
-        val innerQueryYtelse = QueryBuilders.boolQuery()
-        innerFnrAndYtelseQuery.must(innerQueryYtelse)
-        ytelser.forEach {
-            innerQueryYtelse.should(QueryBuilders.termQuery("ytelseId", it.id))
-        }
-
-        extraPersonWithYtelser?.let { extraPerson ->
-            val innerFnrAndYtelseEktefelleQuery = QueryBuilders.boolQuery()
-            combinedInnerFnrAndYtelseQuery.should(innerFnrAndYtelseEktefelleQuery)
-
-            innerFnrAndYtelseEktefelleQuery.must(
-                QueryBuilders.termQuery(
-                    "sakenGjelderFnr",
-                    extraPerson.foedselsnr
-                )
-            )
-
-            val innerYtelseEktefelleQuery = QueryBuilders.boolQuery()
-            innerFnrAndYtelseEktefelleQuery.must(innerYtelseEktefelleQuery)
-            extraPerson.ytelser.forEach { ytelse ->
-                innerYtelseEktefelleQuery.should(QueryBuilders.termQuery("ytelseId", ytelse.id))
-            }
-        }
-
-        when (statuskategori) {
-            Statuskategori.AAPEN -> baseQuery.mustNot(beAvsluttetAvSaksbehandler())
-            Statuskategori.AVSLUTTET -> baseQuery.must(beAvsluttetAvSaksbehandler())
-            Statuskategori.ALLE -> Unit
-        }
-
-        enhetId?.let {
-            baseQuery.must(QueryBuilders.termQuery("tildeltEnhet", enhetId))
-        }
-
-        val innerQueryBehandlingtype = QueryBuilders.boolQuery()
-        baseQuery.must(innerQueryBehandlingtype)
-        if (typer.isNotEmpty()) {
-            typer.forEach {
-                innerQueryBehandlingtype.should(QueryBuilders.termQuery("type", it.id))
-            }
-        } else {
-            innerQueryBehandlingtype.should(QueryBuilders.termQuery("type", Type.KLAGE.id))
-        }
-
-        erTildeltSaksbehandler?.let {
-            if (erTildeltSaksbehandler) {
-                baseQuery.must(beTildeltSaksbehandler())
-            } else {
-                baseQuery.mustNot(beTildeltSaksbehandler())
-            }
-        }
+    private fun EnhetensFerdigstilteOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
+        logger.debug("Search criteria: {}", this)
+        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
+        baseQuery.addSecurityFilters(this)
+        baseQuery.addBasicFilters(this)
+        //baseQuery.must(beAvsluttetAvSaksbehandler())
+        baseQuery.must(beAvsluttetAvSaksbehandlerEtter(ferdigstiltFom))
+        baseQuery.must(beTildeltEnhet(enhetId))
         if (saksbehandlere.isNotEmpty()) {
-            val innerQuerySaksbehandler = QueryBuilders.boolQuery()
-            saksbehandlere.forEach {
-                innerQuerySaksbehandler.should(QueryBuilders.termQuery("tildeltSaksbehandlerident", it))
-            }
-
-            if (statuskategori == Statuskategori.AAPEN) {
-                saksbehandlere.forEach {
-                    val innerMedunderskriverQuery = QueryBuilders.boolQuery()
-                    innerMedunderskriverQuery.must(QueryBuilders.termQuery("medunderskriverident", it))
-                    innerMedunderskriverQuery.must(
-                        QueryBuilders.termQuery(
-                            "medunderskriverFlyt",
-                            MedunderskriverFlyt.OVERSENDT_TIL_MEDUNDERSKRIVER.name
-                        )
-                    )
-                    innerQuerySaksbehandler.should(innerMedunderskriverQuery)
-                }
-            }
-
-            baseQuery.must(innerQuerySaksbehandler)
+            baseQuery.must(beTildeltSaksbehandler(saksbehandlere))
         }
 
-        opprettetFom?.let {
-            baseQuery.must(
-                QueryBuilders.rangeQuery("mottattKlageinstans").gte(it).format(ISO8601).timeZone(ZONEID_UTC)
-            )
-        }
-        opprettetTom?.let {
-            baseQuery.must(
-                QueryBuilders.rangeQuery("mottattKlageinstans").lte(it).format(ISO8601).timeZone(ZONEID_UTC)
-            )
-        }
-        ferdigstiltFom?.let {
-            baseQuery.must(
-                QueryBuilders.rangeQuery("avsluttetAvSaksbehandler").gte(it).format(ISO8601).timeZone(ZONEID_UTC)
-            )
-        }
-        ferdigstiltTom?.let {
-            baseQuery.must(
-                QueryBuilders.rangeQuery("avsluttetAvSaksbehandler").lte(it).format(ISO8601).timeZone(ZONEID_UTC)
-            )
-        }
-        fristFom?.let {
-            baseQuery.must(
-                QueryBuilders.rangeQuery("frist").gte(it).format(ISO8601).timeZone(ZONEID_UTC)
-            )
-        }
-        fristTom?.let {
-            baseQuery.must(
-                QueryBuilders.rangeQuery("frist").lte(it).format(ISO8601).timeZone(ZONEID_UTC)
-            )
-        }
+        logger.debug("Making search request with query {}", baseQuery.toString())
+        return baseQuery
+    }
 
-        if (hjemler.isNotEmpty()) {
-            val innerQueryHjemler = QueryBuilders.boolQuery()
-            baseQuery.must(innerQueryHjemler)
-            hjemler.forEach {
-                innerQueryHjemler.should(QueryBuilders.termQuery("hjemler", it.id))
-            }
+    private fun EnhetensUferdigeOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
+        logger.debug("Search criteria: {}", this)
+        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
+        baseQuery.addSecurityFilters(this)
+        baseQuery.addBasicFilters(this)
+        baseQuery.mustNot(beAvsluttetAvSaksbehandler())
+        baseQuery.must(beTildeltEnhet(enhetId))
+        if (saksbehandlere.isNotEmpty()) {
+            //TODO: Skal man her ta med oppgaver hvor en saksbehandler i enheten er medunderskriver på en annen enhets oppgave?
+            // Det er ikke med nå, jeg inkluderer ikke medunderskrivere i det hele tatt
+            baseQuery.must(beTildeltSaksbehandler(saksbehandlere))
         }
 
         logger.debug("Making search request with query {}", baseQuery.toString())
@@ -601,6 +579,15 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
     private fun beAvsluttetAvSaksbehandlerEtter(ferdigstiltFom: LocalDate) =
         QueryBuilders.rangeQuery("avsluttetAvSaksbehandler").gte(ferdigstiltFom).format(ISO8601).timeZone(ZONEID_UTC)
 
+    private fun haveFristEtter(fristFom: LocalDate) =
+        QueryBuilders.rangeQuery("frist").gte(fristFom).format(ISO8601).timeZone(ZONEID_UTC)
+
+    private fun haveFristFoer(fristTom: LocalDate) =
+        QueryBuilders.rangeQuery("frist").lte(fristTom).format(ISO8601).timeZone(ZONEID_UTC)
+
+    private fun haveFristMellom(fristFom: LocalDate, fristTom: LocalDate) =
+        QueryBuilders.rangeQuery("frist").gte(fristFom).lte(fristTom).format(ISO8601).timeZone(ZONEID_UTC)
+
     private fun beTildeltSaksbehandler(saksbehandlere: List<String>): BoolQueryBuilder {
         val innerQuerySaksbehandler = QueryBuilders.boolQuery()
         saksbehandlere.forEach {
@@ -612,4 +599,169 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
     private fun beTildeltSaksbehandler(navIdent: String) =
         QueryBuilders.termQuery("tildeltSaksbehandlerident", navIdent)
 
+    private fun beTildeltMedunderskriver(navIdent: String): BoolQueryBuilder {
+        val innerQueryMedunderskriver = QueryBuilders.boolQuery()
+        innerQueryMedunderskriver.must(QueryBuilders.termQuery("medunderskriverident", navIdent))
+        innerQueryMedunderskriver.must(
+            QueryBuilders.termQuery(
+                "medunderskriverFlyt",
+                MedunderskriverFlyt.OVERSENDT_TIL_MEDUNDERSKRIVER.name
+            )
+        )
+        return innerQueryMedunderskriver
+    }
+
+    private fun beTildeltSaksbehandlerOrMedunderskriver(navIdent: String): BoolQueryBuilder {
+        val innerQuery = QueryBuilders.boolQuery()
+        innerQuery.should(beTildeltSaksbehandler(navIdent))
+        innerQuery.should(beTildeltMedunderskriver(navIdent))
+        return innerQuery
+    }
+
+    private fun beTildeltEnhet(enhetId: String): TermQueryBuilder =
+        QueryBuilders.termQuery("tildeltEnhet", enhetId)
+
+    private fun haveSakenGjelder(fnr: String): TermQueryBuilder =
+        QueryBuilders.termQuery("sakenGjelderFnr", fnr)
+
+
+    //TODO: Har beholdt dette fordi det bare er her koden for relaterte personer og sånt er dokumentert.
+    /*
+   private fun KlagebehandlingerSearchCriteria.toEsQuery(): QueryBuilder {
+
+       val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
+       logger.debug("Search criteria: {}", this)
+
+       baseQuery.addSecurityFilters(this)
+
+       val combinedInnerFnrAndYtelseQuery = QueryBuilders.boolQuery()
+       baseQuery.must(combinedInnerFnrAndYtelseQuery)
+
+       val innerFnrAndYtelseQuery = QueryBuilders.boolQuery()
+       combinedInnerFnrAndYtelseQuery.should(innerFnrAndYtelseQuery)
+
+       val innerQueryFnr = QueryBuilders.boolQuery()
+       innerFnrAndYtelseQuery.must(innerQueryFnr)
+       foedselsnr?.let {
+           innerQueryFnr.should(QueryBuilders.termQuery("sakenGjelderFnr", it))
+       }
+
+       val innerQueryYtelse = QueryBuilders.boolQuery()
+       innerFnrAndYtelseQuery.must(innerQueryYtelse)
+       ytelser.forEach {
+           innerQueryYtelse.should(QueryBuilders.termQuery("ytelseId", it.id))
+       }
+
+       extraPersonWithYtelser?.let { extraPerson ->
+           val innerFnrAndYtelseEktefelleQuery = QueryBuilders.boolQuery()
+           combinedInnerFnrAndYtelseQuery.should(innerFnrAndYtelseEktefelleQuery)
+
+           innerFnrAndYtelseEktefelleQuery.must(
+               QueryBuilders.termQuery(
+                   "sakenGjelderFnr",
+                   extraPerson.foedselsnr
+               )
+           )
+
+           val innerYtelseEktefelleQuery = QueryBuilders.boolQuery()
+           innerFnrAndYtelseEktefelleQuery.must(innerYtelseEktefelleQuery)
+           extraPerson.ytelser.forEach { ytelse ->
+               innerYtelseEktefelleQuery.should(QueryBuilders.termQuery("ytelseId", ytelse.id))
+           }
+       }
+
+       when (statuskategori) {
+           Statuskategori.AAPEN -> baseQuery.mustNot(beAvsluttetAvSaksbehandler())
+           Statuskategori.AVSLUTTET -> baseQuery.must(beAvsluttetAvSaksbehandler())
+           Statuskategori.ALLE -> Unit
+       }
+
+       enhetId?.let {
+           baseQuery.must(QueryBuilders.termQuery("tildeltEnhet", enhetId))
+       }
+
+       val innerQueryBehandlingtype = QueryBuilders.boolQuery()
+       baseQuery.must(innerQueryBehandlingtype)
+       if (typer.isNotEmpty()) {
+           typer.forEach {
+               innerQueryBehandlingtype.should(QueryBuilders.termQuery("type", it.id))
+           }
+       } else {
+           innerQueryBehandlingtype.should(QueryBuilders.termQuery("type", Type.KLAGE.id))
+       }
+
+       erTildeltSaksbehandler?.let {
+           if (erTildeltSaksbehandler) {
+               baseQuery.must(beTildeltSaksbehandler())
+           } else {
+               baseQuery.mustNot(beTildeltSaksbehandler())
+           }
+       }
+       if (saksbehandlere.isNotEmpty()) {
+           val innerQuerySaksbehandler = QueryBuilders.boolQuery()
+           saksbehandlere.forEach {
+               innerQuerySaksbehandler.should(QueryBuilders.termQuery("tildeltSaksbehandlerident", it))
+           }
+
+           if (statuskategori == Statuskategori.AAPEN) {
+               saksbehandlere.forEach {
+                   val innerMedunderskriverQuery = QueryBuilders.boolQuery()
+                   innerMedunderskriverQuery.must(QueryBuilders.termQuery("medunderskriverident", it))
+                   innerMedunderskriverQuery.must(
+                       QueryBuilders.termQuery(
+                           "medunderskriverFlyt",
+                           MedunderskriverFlyt.OVERSENDT_TIL_MEDUNDERSKRIVER.name
+                       )
+                   )
+                   innerQuerySaksbehandler.should(innerMedunderskriverQuery)
+               }
+           }
+
+           baseQuery.must(innerQuerySaksbehandler)
+       }
+
+       opprettetFom?.let {
+           baseQuery.must(
+               QueryBuilders.rangeQuery("mottattKlageinstans").gte(it).format(ISO8601).timeZone(ZONEID_UTC)
+           )
+       }
+       opprettetTom?.let {
+           baseQuery.must(
+               QueryBuilders.rangeQuery("mottattKlageinstans").lte(it).format(ISO8601).timeZone(ZONEID_UTC)
+           )
+       }
+       ferdigstiltFom?.let {
+           baseQuery.must(
+               QueryBuilders.rangeQuery("avsluttetAvSaksbehandler").gte(it).format(ISO8601).timeZone(ZONEID_UTC)
+           )
+       }
+       ferdigstiltTom?.let {
+           baseQuery.must(
+               QueryBuilders.rangeQuery("avsluttetAvSaksbehandler").lte(it).format(ISO8601).timeZone(ZONEID_UTC)
+           )
+       }
+       fristFom?.let {
+           baseQuery.must(
+               QueryBuilders.rangeQuery("frist").gte(it).format(ISO8601).timeZone(ZONEID_UTC)
+           )
+       }
+       fristTom?.let {
+           baseQuery.must(
+               QueryBuilders.rangeQuery("frist").lte(it).format(ISO8601).timeZone(ZONEID_UTC)
+           )
+       }
+
+       if (hjemler.isNotEmpty()) {
+           val innerQueryHjemler = QueryBuilders.boolQuery()
+           baseQuery.must(innerQueryHjemler)
+           hjemler.forEach {
+               innerQueryHjemler.should(QueryBuilders.termQuery("hjemler", it.id))
+           }
+       }
+
+       logger.debug("Making search request with query {}", baseQuery.toString())
+       return baseQuery
+   }
+
+    */
 }

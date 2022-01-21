@@ -5,7 +5,8 @@ import no.nav.klage.kodeverk.Tema
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
-import no.nav.klage.search.domain.KlagebehandlingerSearchCriteria
+import no.nav.klage.search.domain.LedigeOppgaverSearchCriteria
+import no.nav.klage.search.domain.SortField
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.IKKE_TILDELT
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
@@ -213,11 +214,15 @@ class FortroligElasticsearchServiceTest {
     @Order(4)
     fun `Saksbehandler with no special rights will only see normal klagebehandlinger`() {
         val klagebehandlinger: List<EsKlagebehandling> =
-            service.findByCriteria(
-                KlagebehandlingerSearchCriteria(
+            service.findLedigeOppgaverByCriteria(
+                LedigeOppgaverSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
+                    typer = emptyList(),
+                    hjemler = emptyList(),
                     offset = 0,
                     limit = 10,
+                    order = no.nav.klage.search.domain.Order.ASC,
+                    sortField = SortField.FRIST,
                     kanBehandleEgenAnsatt = false,
                     kanBehandleFortrolig = false,
                     kanBehandleStrengtFortrolig = false,
@@ -230,11 +235,15 @@ class FortroligElasticsearchServiceTest {
     @Order(5)
     fun `Saksbehandler with egen ansatt rights will only see normal klagebehandlinger and those for egen ansatte, but not egen ansatte that are fortrolig or strengt fortrolig`() {
         val klagebehandlinger: List<EsKlagebehandling> =
-            service.findByCriteria(
-                KlagebehandlingerSearchCriteria(
+            service.findLedigeOppgaverByCriteria(
+                LedigeOppgaverSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
+                    typer = emptyList(),
+                    hjemler = emptyList(),
                     offset = 0,
                     limit = 10,
+                    order = no.nav.klage.search.domain.Order.ASC,
+                    sortField = SortField.FRIST,
                     kanBehandleEgenAnsatt = true,
                     kanBehandleFortrolig = false,
                     kanBehandleStrengtFortrolig = false,
@@ -247,11 +256,15 @@ class FortroligElasticsearchServiceTest {
     @Order(6)
     fun `Saksbehandler with fortrolig rights will see normale klagebehandlinger and fortrolige klagebehandlinger, including the combo fortrolig and egen ansatt`() {
         val klagebehandlinger: List<EsKlagebehandling> =
-            service.findByCriteria(
-                KlagebehandlingerSearchCriteria(
+            service.findLedigeOppgaverByCriteria(
+                LedigeOppgaverSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
+                    typer = emptyList(),
+                    hjemler = emptyList(),
                     offset = 0,
                     limit = 10,
+                    order = no.nav.klage.search.domain.Order.ASC,
+                    sortField = SortField.FRIST,
                     kanBehandleEgenAnsatt = false,
                     kanBehandleFortrolig = true,
                     kanBehandleStrengtFortrolig = false,
@@ -267,11 +280,15 @@ class FortroligElasticsearchServiceTest {
     @Order(7)
     fun `Saksbehandler with fortrolig rights and egen ansatt rights will see normale klagebehandling, fortrolige klagebehandlinger and egen ansatt klagebehandlinger`() {
         val klagebehandlinger: List<EsKlagebehandling> =
-            service.findByCriteria(
-                KlagebehandlingerSearchCriteria(
+            service.findLedigeOppgaverByCriteria(
+                LedigeOppgaverSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
+                    typer = emptyList(),
+                    hjemler = emptyList(),
                     offset = 0,
                     limit = 10,
+                    order = no.nav.klage.search.domain.Order.ASC,
+                    sortField = SortField.FRIST,
                     kanBehandleEgenAnsatt = true,
                     kanBehandleFortrolig = true,
                     kanBehandleStrengtFortrolig = false,
@@ -287,11 +304,15 @@ class FortroligElasticsearchServiceTest {
     @Order(8)
     fun `Saksbehandler with strengt fortrolig rights and egen ansatt rights will see strengt fortrolige klagebehandlinger, including the combo strengt fortrolig and egen ansatt`() {
         val klagebehandlinger: List<EsKlagebehandling> =
-            service.findByCriteria(
-                KlagebehandlingerSearchCriteria(
+            service.findLedigeOppgaverByCriteria(
+                LedigeOppgaverSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
+                    typer = emptyList(),
+                    hjemler = emptyList(),
                     offset = 0,
                     limit = 10,
+                    order = no.nav.klage.search.domain.Order.ASC,
+                    sortField = SortField.FRIST,
                     kanBehandleEgenAnsatt = true,
                     kanBehandleFortrolig = false,
                     kanBehandleStrengtFortrolig = true,
@@ -306,11 +327,15 @@ class FortroligElasticsearchServiceTest {
     @Order(9)
     fun `Saksbehandler with strengt fortrolig rights without egen ansatt rights will only see strengt fortrolige klagebehandlinger, including the combo strengt fortrolig and egen ansatt`() {
         val klagebehandlinger: List<EsKlagebehandling> =
-            service.findByCriteria(
-                KlagebehandlingerSearchCriteria(
+            service.findLedigeOppgaverByCriteria(
+                LedigeOppgaverSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
+                    typer = emptyList(),
+                    hjemler = emptyList(),
                     offset = 0,
                     limit = 10,
+                    order = no.nav.klage.search.domain.Order.ASC,
+                    sortField = SortField.FRIST,
                     kanBehandleEgenAnsatt = false,
                     kanBehandleFortrolig = false,
                     kanBehandleStrengtFortrolig = true,
@@ -326,11 +351,15 @@ class FortroligElasticsearchServiceTest {
     @Order(10)
     fun `Saksbehandler with fortrolig and strengt fortrolig rights will only see strengt fortrolige and fortrolige klagebehandlinger, including those that also are egen ansatte`() {
         val klagebehandlinger: List<EsKlagebehandling> =
-            service.findByCriteria(
-                KlagebehandlingerSearchCriteria(
+            service.findLedigeOppgaverByCriteria(
+                LedigeOppgaverSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
+                    typer = emptyList(),
+                    hjemler = emptyList(),
                     offset = 0,
                     limit = 10,
+                    order = no.nav.klage.search.domain.Order.ASC,
+                    sortField = SortField.FRIST,
                     kanBehandleEgenAnsatt = false,
                     kanBehandleFortrolig = true,
                     kanBehandleStrengtFortrolig = true,
@@ -348,11 +377,15 @@ class FortroligElasticsearchServiceTest {
     @Order(11)
     fun `Saksbehandler with fortrolig and strengt fortrolig and egen ansatt rights will only see strengt fortrolige and fortrolige klagebehandlinger, including those that also are egen ansatte`() {
         val klagebehandlinger: List<EsKlagebehandling> =
-            service.findByCriteria(
-                KlagebehandlingerSearchCriteria(
+            service.findLedigeOppgaverByCriteria(
+                LedigeOppgaverSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
+                    typer = emptyList(),
+                    hjemler = emptyList(),
                     offset = 0,
                     limit = 10,
+                    order = no.nav.klage.search.domain.Order.ASC,
+                    sortField = SortField.FRIST,
                     kanBehandleEgenAnsatt = true,
                     kanBehandleFortrolig = true,
                     kanBehandleStrengtFortrolig = true,

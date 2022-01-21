@@ -43,7 +43,7 @@ class KlagebehandlingSearchController(
     @PostMapping("/personogoppgaver", produces = ["application/json"])
     fun getPersonOgOppgaver(@RequestBody input: SearchPersonByFnrInput): FnrSearchResponse {
         val personSearchResponse: PersonSearchResponse =
-            personSearchService.fnrSearch(klagebehandlingerSearchCriteriaMapper.toSearchCriteria(input))
+            personSearchService.fnrSearch(klagebehandlingerSearchCriteriaMapper.toOppgaverOmPersonSearchCriteria(input))
                 ?: throw PersonNotFoundException("Person med fnr ${input.query} ikke funnet")
         val saksbehandler = oAuthTokenService.getInnloggetIdent()
         return klagebehandlingListMapper.mapPersonSearchResponseToFnrSearchResponse(
