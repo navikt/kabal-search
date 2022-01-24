@@ -3,7 +3,7 @@ package no.nav.klage.search.service
 import no.nav.klage.search.clients.pdl.graphql.PdlClient
 import no.nav.klage.search.clients.pdl.graphql.SoekPersonResponse
 import no.nav.klage.search.domain.OppgaverOmPersonSearchCriteria
-import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
+import no.nav.klage.search.domain.elasticsearch.EsAnonymKlagebehandling
 import no.nav.klage.search.domain.personsoek.Navn
 import no.nav.klage.search.domain.personsoek.Person
 import no.nav.klage.search.domain.personsoek.PersonSearchResponse
@@ -60,7 +60,7 @@ class PersonSearchService(
         return people ?: emptyList()
     }
 
-    private fun esSoek(input: OppgaverOmPersonSearchCriteria): List<EsKlagebehandling> {
+    private fun esSoek(input: OppgaverOmPersonSearchCriteria): List<EsAnonymKlagebehandling> {
         val esResponse = elasticsearchService.findOppgaverOmPersonByCriteria(input)
         return esResponse.searchHits.map { it.content }
     }
