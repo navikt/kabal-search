@@ -2,7 +2,6 @@ package no.nav.klage.search.api.mapper
 
 
 import no.nav.klage.kodeverk.MedunderskriverFlyt
-import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.api.view.FnrSearchResponse
 import no.nav.klage.search.api.view.KlagebehandlingListView
 import no.nav.klage.search.api.view.NavnView
@@ -25,8 +24,6 @@ class KlagebehandlingListMapper(
 
     fun mapPersonSearchResponseToFnrSearchResponse(
         personSearchResponse: PersonSearchResponse,
-        innloggetIdent: String,
-        tilgangTilYtelser: List<Ytelse>
     ): FnrSearchResponse {
         val klagebehandlinger =
             mapAnonymeEsKlagebehandlingerToListView(
