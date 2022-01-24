@@ -15,7 +15,7 @@ data class PersonView(
 )
 
 enum class AccessView {
-    NONE, READ, WRITE
+    NONE, READ, ASSIGN, WRITE
 }
 
 data class KlagebehandlingListView(

@@ -16,6 +16,7 @@ class AccessMapper(
     fun mapAccess(esKlagebehandling: EsAnonymKlagebehandling): AccessView {
         return when {
             harSkriveTilgang(esKlagebehandling) -> AccessView.WRITE
+            kanTildelesOppgaven(esKlagebehandling) -> AccessView.ASSIGN
             harLeseTilgang(esKlagebehandling) -> AccessView.READ
             else -> AccessView.NONE
         }
