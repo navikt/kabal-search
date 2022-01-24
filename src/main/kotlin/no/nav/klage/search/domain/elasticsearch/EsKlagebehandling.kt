@@ -5,9 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+enum class EsStatus {
+    IKKE_TILDELT, TILDELT, MEDUNDERSKRIVER_VALGT, SENDT_TIL_MEDUNDERSKRIVER, RETURNERT_TIL_SAKSBEHANDLER, AVSLUTTET_AV_SAKSBEHANDLER, FULLFOERT, UKJENT
+}
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class EsKlagebehandling(
-    val id: String,
+    override val id: String,
 
     val klagerFnr: String? = null,
     val klagerNavn: String? = null,
@@ -24,9 +28,9 @@ data class EsKlagebehandling(
     val sakenGjelderOrgnr: String? = null,
     val sakenGjelderOrgnavn: String? = null,
 
-    val tema: String,
-    val ytelseId: String?,
-    val type: String,
+    override val tema: String,
+    override val ytelseId: String?,
+    override val type: String,
 
     val kildeReferanse: String? = null,
     val sakFagsystem: String? = null,
@@ -42,7 +46,7 @@ data class EsKlagebehandling(
     val avsenderEnhetFoersteinstans: String? = null,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
-    val mottattKlageinstans: LocalDateTime,
+    override val mottattKlageinstans: LocalDateTime,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     val tildelt: LocalDateTime? = null,
@@ -54,22 +58,22 @@ data class EsKlagebehandling(
     val avsluttet: LocalDateTime? = null,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
-    val avsluttetAvSaksbehandler: LocalDateTime? = null,
+    override val avsluttetAvSaksbehandler: LocalDateTime? = null,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
-    val frist: LocalDate?,
+    override val frist: LocalDate?,
 
-    val tildeltSaksbehandlerident: String? = null,
+    override val tildeltSaksbehandlerident: String? = null,
 
-    val tildeltSaksbehandlernavn: String? = null,
+    override val tildeltSaksbehandlernavn: String? = null,
 
-    val medunderskriverident: String? = null,
+    override val medunderskriverident: String? = null,
 
-    val medunderskriverFlyt: String,
+    override val medunderskriverFlyt: String,
 
     val tildeltEnhet: String?,
 
-    val hjemler: List<String> = emptyList(),
+    override val hjemler: List<String> = emptyList(),
 
     val hjemlerNavn: List<String> = emptyList(),
 
@@ -87,14 +91,14 @@ data class EsKlagebehandling(
 
     val saksdokumenterJournalpostIdOgDokumentInfoId: List<String> = emptyList(),
 
-    val egenAnsatt: Boolean = false,
+    override val egenAnsatt: Boolean = false,
 
-    val fortrolig: Boolean = false,
+    override val fortrolig: Boolean = false,
 
-    val strengtFortrolig: Boolean = false,
+    override val strengtFortrolig: Boolean = false,
 
 /* Enn så lenge har vi bare ett vedtak, og da er det enklere å søke på det når det er flatt her nede enn når det er nested i List<Vedtak>.. */
-    val vedtakUtfall: String? = null,
+    override val vedtakUtfall: String? = null,
 
     val vedtakUtfallNavn: String? = null,
 
@@ -102,10 +106,25 @@ data class EsKlagebehandling(
 
     val vedtakHjemlerNavn: List<String> = emptyList(),
 
-    val status: Status
-) {
-    enum class Status {
-        IKKE_TILDELT, TILDELT, MEDUNDERSKRIVER_VALGT, SENDT_TIL_MEDUNDERSKRIVER, RETURNERT_TIL_SAKSBEHANDLER, AVSLUTTET_AV_SAKSBEHANDLER, FULLFOERT, UKJENT
-    }
-}
+    val status: EsStatus
+) : EsAnonymKlagebehandling
 
+interface EsAnonymKlagebehandling {
+
+    val strengtFortrolig: Boolean
+    val fortrolig: Boolean
+    val egenAnsatt: Boolean
+    val avsluttetAvSaksbehandler: LocalDateTime?
+    val vedtakUtfall: String?
+    val tildeltSaksbehandlernavn: String?
+    val tildeltSaksbehandlerident: String?
+    val medunderskriverFlyt: String
+    val medunderskriverident: String?
+    val mottattKlageinstans: LocalDateTime
+    val frist: LocalDate?
+    val hjemler: List<String>
+    val ytelseId: String?
+    val tema: String
+    val type: String
+    val id: String
+}

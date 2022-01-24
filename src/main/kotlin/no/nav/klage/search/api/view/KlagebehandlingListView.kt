@@ -8,9 +8,19 @@ data class KlagebehandlingerListRespons(
     val klagebehandlinger: List<KlagebehandlingListView>
 )
 
+data class PersonView(
+    val fnr: String?,
+    val navn: String?,
+    val sivilstand: String? = null
+)
+
+enum class AccessView {
+    NONE, READ, ASSIGN, WRITE
+}
+
 data class KlagebehandlingListView(
     val id: String,
-    val person: Person? = null,
+    val person: PersonView? = null,
     val type: String,
     val ytelse: String?,
     val tema: String,
@@ -31,11 +41,6 @@ data class KlagebehandlingListView(
     val egenAnsatt: Boolean,
     val fortrolig: Boolean,
     val strengtFortrolig: Boolean,
-    val ageKA: Int
-) {
-    data class Person(
-        val fnr: String?,
-        val navn: String?,
-        val sivilstand: String? = null
-    )
-}
+    val ageKA: Int,
+    val access: AccessView,
+)

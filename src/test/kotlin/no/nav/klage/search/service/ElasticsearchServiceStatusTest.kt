@@ -6,7 +6,8 @@ import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
-import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.*
+import no.nav.klage.search.domain.elasticsearch.EsStatus
+import no.nav.klage.search.domain.elasticsearch.EsStatus.*
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
 import no.nav.klage.search.repositories.SearchHits
 import org.assertj.core.api.Assertions.assertThat
@@ -78,7 +79,7 @@ class ElasticsearchServiceStatusTest {
         assertThat(service.countAvsluttet()).isEqualTo(1)
     }
 
-    private fun getKlagebehandling(status: EsKlagebehandling.Status) = EsKlagebehandling(
+    private fun getKlagebehandling(status: EsStatus) = EsKlagebehandling(
         id = UUID.randomUUID().toString(),
         tildeltEnhet = "4219",
         tema = Tema.OMS.id,

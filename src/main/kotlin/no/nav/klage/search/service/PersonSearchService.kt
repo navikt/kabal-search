@@ -72,9 +72,4 @@ class PersonSearchService(
             throw RuntimeException("Søkefeil i PDL")
         }
     }
-
-    private fun SoekPersonResponse.collectFnr(): List<String> =
-        this.data?.sokPerson?.hits?.map {
-            it.person.folkeregisteridentifikator.first().identifikasjonsnummer
-        } ?: listOf()
 }

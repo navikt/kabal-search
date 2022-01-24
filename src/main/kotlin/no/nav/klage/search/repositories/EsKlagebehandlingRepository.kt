@@ -4,6 +4,7 @@ package no.nav.klage.search.repositories
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import no.nav.klage.search.domain.elasticsearch.EsAnonymKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getSecureLogger
@@ -308,10 +309,29 @@ open class SearchHit<T>(val id: String, val content: T)
 class EsKlagebehandlingSearchHit(content: EsKlagebehandling) :
     SearchHit<EsKlagebehandling>(content.id, content)
 
+class EsAnonymKlagebehandlingSearchHit(content: EsKlagebehandling) :
+    SearchHit<EsAnonymKlagebehandling>(content.id, content)
+
 
 class KlagebehandlingerSearchHits(
     override val totalHits: Long,
     override val totalHitsRelation: TotalHits.Relation,
     override val searchHits: List<SearchHit<EsKlagebehandling>>,
     override val aggregations: Aggregations?
-) : SearchHits<EsKlagebehandling>
+) : SearchHits<EsKlagebehandling> {
+    fun anonymize(): AnonymeKlagebehandlingerSearchHits {
+        return AnonymeKlagebehandlingerSearchHits(
+            totalHits = totalHits,
+            totalHitsRelation = totalHitsRelation,
+            searchHits = searchHits.map { EsAnonymKlagebehandlingSearchHit(it.content) },
+            aggregations = aggregations,
+        )
+    }
+}
+
+class AnonymeKlagebehandlingerSearchHits(
+    override val totalHits: Long,
+    override val totalHitsRelation: TotalHits.Relation,
+    override val searchHits: List<SearchHit<EsAnonymKlagebehandling>>,
+    override val aggregations: Aggregations?
+) : SearchHits<EsAnonymKlagebehandling>

@@ -50,8 +50,6 @@ class KlagebehandlingSearchController(
 
         return klagebehandlingListMapper.mapPersonSearchResponseToFnrSearchResponse(
             personSearchResponse = personSearchResponse,
-            saksbehandler = saksbehandler,
-            tilgangTilYtelser = innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter.flatMap { it.ytelser }
         )
     }
 

@@ -67,8 +67,6 @@ class OppgaverListController(
             klagebehandlinger = klagebehandlingListMapper.mapEsKlagebehandlingerToListView(
                 esKlagebehandlinger = esResponse.searchHits.map { it.content },
                 visePersonData = false,
-                saksbehandlere = emptyList(),
-                tilgangTilYtelser = getAlleYtelserInnloggetSaksbehandlerKanBehandle()
             )
         )
     }
@@ -103,8 +101,6 @@ class OppgaverListController(
             klagebehandlinger = klagebehandlingListMapper.mapEsKlagebehandlingerToListView(
                 esKlagebehandlinger = esResponse.searchHits.map { it.content },
                 visePersonData = true,
-                saksbehandlere = listOf(searchCriteria.saksbehandler),
-                tilgangTilYtelser = getAlleYtelserInnloggetSaksbehandlerKanBehandle()
             )
         )
     }
@@ -142,8 +138,6 @@ class OppgaverListController(
             klagebehandlinger = klagebehandlingListMapper.mapEsKlagebehandlingerToListView(
                 esKlagebehandlinger = esResponse.searchHits.map { it.content },
                 visePersonData = true,
-                saksbehandlere = listOf(searchCriteria.saksbehandler),
-                tilgangTilYtelser = getAlleYtelserInnloggetSaksbehandlerKanBehandle()
             )
         )
     }
@@ -172,11 +166,8 @@ class OppgaverListController(
         val esResponse = elasticsearchService.findEnhetensFerdigstilteOppgaverByCriteria(searchCriteria)
         return KlagebehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            klagebehandlinger = klagebehandlingListMapper.mapEsKlagebehandlingerToListView(
+            klagebehandlinger = klagebehandlingListMapper.mapAnonymeEsKlagebehandlingerToListView(
                 esKlagebehandlinger = esResponse.searchHits.map { it.content },
-                visePersonData = false,
-                saksbehandlere = searchCriteria.saksbehandlere,
-                tilgangTilYtelser = getAlleYtelserInnloggetSaksbehandlerKanBehandle()
             )
         )
     }
@@ -210,11 +201,8 @@ class OppgaverListController(
         val esResponse = elasticsearchService.findEnhetensUferdigeOppgaverByCriteria(searchCriteria)
         return KlagebehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            klagebehandlinger = klagebehandlingListMapper.mapEsKlagebehandlingerToListView(
+            klagebehandlinger = klagebehandlingListMapper.mapAnonymeEsKlagebehandlingerToListView(
                 esKlagebehandlinger = esResponse.searchHits.map { it.content },
-                visePersonData = false,
-                saksbehandlere = searchCriteria.saksbehandlere,
-                tilgangTilYtelser = getAlleYtelserInnloggetSaksbehandlerKanBehandle()
             )
         )
     }
