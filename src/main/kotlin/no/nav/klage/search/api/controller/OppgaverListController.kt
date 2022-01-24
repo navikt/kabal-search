@@ -166,9 +166,8 @@ class OppgaverListController(
         val esResponse = elasticsearchService.findEnhetensFerdigstilteOppgaverByCriteria(searchCriteria)
         return KlagebehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            klagebehandlinger = klagebehandlingListMapper.mapEsKlagebehandlingerToListView(
+            klagebehandlinger = klagebehandlingListMapper.mapAnonymeEsKlagebehandlingerToListView(
                 esKlagebehandlinger = esResponse.searchHits.map { it.content },
-                visePersonData = false,
             )
         )
     }

@@ -8,6 +8,7 @@ import no.nav.klage.search.domain.elasticsearch.EsStatus.*
 import no.nav.klage.search.domain.elasticsearch.KlageStatistikk
 import no.nav.klage.search.domain.elasticsearch.RelatedKlagebehandlinger
 import no.nav.klage.search.domain.saksbehandler.Saksbehandler
+import no.nav.klage.search.repositories.AnonymeKlagebehandlingerSearchHits
 import no.nav.klage.search.repositories.EsKlagebehandlingRepository
 import no.nav.klage.search.repositories.KlagebehandlingerSearchHits
 import no.nav.klage.search.repositories.SearchHits
@@ -112,7 +113,7 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
         return searchHits
     }
 
-    open fun findEnhetensFerdigstilteOppgaverByCriteria(criteria: EnhetensFerdigstilteOppgaverSearchCriteria): KlagebehandlingerSearchHits {
+    open fun findEnhetensFerdigstilteOppgaverByCriteria(criteria: EnhetensFerdigstilteOppgaverSearchCriteria): AnonymeKlagebehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
@@ -121,10 +122,10 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
 
         val searchHits = esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
         logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
-        return searchHits
+        return searchHits.anonymize()
     }
 
-    open fun findEnhetensUferdigeOppgaverByCriteria(criteria: EnhetensUferdigeOppgaverSearchCriteria): KlagebehandlingerSearchHits {
+    open fun findEnhetensUferdigeOppgaverByCriteria(criteria: EnhetensUferdigeOppgaverSearchCriteria): AnonymeKlagebehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
@@ -133,7 +134,7 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
 
         val searchHits = esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
         logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
-        return searchHits
+        return searchHits.anonymize()
     }
 
     /*
