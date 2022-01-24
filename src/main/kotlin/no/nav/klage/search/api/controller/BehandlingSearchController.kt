@@ -2,8 +2,8 @@ package no.nav.klage.search.api.controller
 
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
-import no.nav.klage.search.api.mapper.KlagebehandlingListMapper
-import no.nav.klage.search.api.mapper.KlagebehandlingerSearchCriteriaMapper
+import no.nav.klage.search.api.mapper.BehandlingListMapper
+import no.nav.klage.search.api.mapper.BehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.*
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.domain.personsoek.PersonSearchResponse
@@ -23,9 +23,9 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/search")
 @Api(tags = ["kabal-search"])
 @ProtectedWithClaims(issuer = ISSUER_AAD)
-class KlagebehandlingSearchController(
-    private val klagebehandlingListMapper: KlagebehandlingListMapper,
-    private val klagebehandlingerSearchCriteriaMapper: KlagebehandlingerSearchCriteriaMapper,
+class BehandlingSearchController(
+    private val behandlingListMapper: BehandlingListMapper,
+    private val behandlingerSearchCriteriaMapper: BehandlingerSearchCriteriaMapper,
     private val oAuthTokenService: OAuthTokenService,
     private val innloggetSaksbehandlerService: InnloggetSaksbehandlerService,
     private val personSearchService: PersonSearchService,
@@ -45,10 +45,10 @@ class KlagebehandlingSearchController(
         val saksbehandler = oAuthTokenService.getInnloggetIdent()
 
         val personSearchResponse: PersonSearchResponse =
-            personSearchService.fnrSearch(klagebehandlingerSearchCriteriaMapper.toOppgaverOmPersonSearchCriteria(input))
+            personSearchService.fnrSearch(behandlingerSearchCriteriaMapper.toOppgaverOmPersonSearchCriteria(input))
                 ?: throw PersonNotFoundException("Person med fnr ${input.query} ikke funnet")
 
-        return klagebehandlingListMapper.mapPersonSearchResponseToFnrSearchResponse(
+        return behandlingListMapper.mapPersonSearchResponseToFnrSearchResponse(
             personSearchResponse = personSearchResponse,
         )
     }

@@ -10,7 +10,7 @@ enum class EsStatus {
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class EsKlagebehandling(
+data class EsBehandling(
     override val id: String,
 
     val klagerFnr: String? = null,
@@ -42,11 +42,21 @@ data class EsKlagebehandling(
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     val mottattFoersteinstans: LocalDate? = null,
 
+    //Tilsvarer de to under, beholder begge for redundans
+    val forrigeSaksbehandlerident: String? = null,
+    val forrigeBehandlendeEnhet: String? = null,
+
     val avsenderSaksbehandleridentFoersteinstans: String? = null,
     val avsenderEnhetFoersteinstans: String? = null,
 
+    //Nytt navn på mottattKlageinstans, beholder begge for redundans
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
+    val sakMottattKaDato: LocalDateTime? = null,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     override val mottattKlageinstans: LocalDateTime,
+
+    //Nytt felt, brukes kun til ankebehandling.
+    val forrigeVedtaksDato: LocalDate? = null,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     val tildelt: LocalDateTime? = null,
@@ -107,9 +117,9 @@ data class EsKlagebehandling(
     val vedtakHjemlerNavn: List<String> = emptyList(),
 
     val status: EsStatus
-) : EsAnonymKlagebehandling
+) : EsAnonymBehandling
 
-interface EsAnonymKlagebehandling {
+interface EsAnonymBehandling {
 
     val strengtFortrolig: Boolean
     val fortrolig: Boolean

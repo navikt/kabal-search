@@ -7,9 +7,9 @@ import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
 import no.nav.klage.search.domain.LedigeOppgaverSearchCriteria
 import no.nav.klage.search.domain.SortField
-import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
+import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import no.nav.klage.search.domain.elasticsearch.EsStatus.IKKE_TILDELT
-import no.nav.klage.search.repositories.EsKlagebehandlingRepository
+import no.nav.klage.search.repositories.EsBehandlingRepository
 import no.nav.klage.search.repositories.SearchHits
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.MethodOrderer
@@ -42,7 +42,7 @@ class FortroligElasticsearchServiceTest {
     lateinit var service: ElasticsearchService
 
     @Autowired
-    lateinit var repo: EsKlagebehandlingRepository
+    lateinit var repo: EsBehandlingRepository
 
     @Test
     @Order(1)
@@ -73,7 +73,7 @@ class FortroligElasticsearchServiceTest {
     @Order(3)
     fun `lagrer oppgaver for senere tester`() {
 
-        val normalPerson = EsKlagebehandling(
+        val normalPerson = EsBehandling(
             id = idNormal,
             tildeltEnhet = "4219",
             tema = Tema.OMS.id,
@@ -93,7 +93,7 @@ class FortroligElasticsearchServiceTest {
             medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
         )
         val fortroligPerson =
-            EsKlagebehandling(
+            EsBehandling(
                 id = idFortrolig,
                 tildeltEnhet = "4219",
                 tema = Tema.OMS.id,
@@ -113,7 +113,7 @@ class FortroligElasticsearchServiceTest {
                 fortrolig = true,
                 medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
             )
-        val strengtFortroligPerson = EsKlagebehandling(
+        val strengtFortroligPerson = EsBehandling(
             id = idStrengtFortrolig,
             tildeltEnhet = "4219",
             tema = Tema.OMS.id,
@@ -134,7 +134,7 @@ class FortroligElasticsearchServiceTest {
             medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
         )
         val egenAnsattPerson =
-            EsKlagebehandling(
+            EsBehandling(
                 id = idEgenAnsatt,
                 tildeltEnhet = "4219",
                 tema = Tema.OMS.id,
@@ -155,7 +155,7 @@ class FortroligElasticsearchServiceTest {
                 medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
             )
         val egenAnsattOgFortroligPerson =
-            EsKlagebehandling(
+            EsBehandling(
                 id = idEgenAnsattOgFortrolig,
                 tildeltEnhet = "4219",
                 tema = Tema.OMS.id,
@@ -177,7 +177,7 @@ class FortroligElasticsearchServiceTest {
                 medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
             )
         val egenAnsattOgStrengtFortroligPerson =
-            EsKlagebehandling(
+            EsBehandling(
                 id = idEgenAnsattOgStrengtFortrolig,
                 tildeltEnhet = "4219",
                 tema = Tema.OMS.id,
@@ -206,14 +206,14 @@ class FortroligElasticsearchServiceTest {
         repo.save(egenAnsattOgStrengtFortroligPerson)
 
         val query = QueryBuilders.matchAllQuery()
-        val searchHits: SearchHits<EsKlagebehandling> = repo.search(query)
+        val searchHits: SearchHits<EsBehandling> = repo.search(query)
         assertThat(searchHits.totalHits).isEqualTo(6L)
     }
 
     @Test
     @Order(4)
     fun `Saksbehandler with no special rights will only see normal klagebehandlinger`() {
-        val klagebehandlinger: List<EsKlagebehandling> =
+        val klagebehandlinger: List<EsBehandling> =
             service.findLedigeOppgaverByCriteria(
                 LedigeOppgaverSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
@@ -234,7 +234,7 @@ class FortroligElasticsearchServiceTest {
     @Test
     @Order(5)
     fun `Saksbehandler with egen ansatt rights will only see normal klagebehandlinger and those for egen ansatte, but not egen ansatte that are fortrolig or strengt fortrolig`() {
-        val klagebehandlinger: List<EsKlagebehandling> =
+        val klagebehandlinger: List<EsBehandling> =
             service.findLedigeOppgaverByCriteria(
                 LedigeOppgaverSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
@@ -255,7 +255,7 @@ class FortroligElasticsearchServiceTest {
     @Test
     @Order(6)
     fun `Saksbehandler with fortrolig rights will see normale klagebehandlinger and fortrolige klagebehandlinger, including the combo fortrolig and egen ansatt`() {
-        val klagebehandlinger: List<EsKlagebehandling> =
+        val klagebehandlinger: List<EsBehandling> =
             service.findLedigeOppgaverByCriteria(
                 LedigeOppgaverSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
@@ -279,7 +279,7 @@ class FortroligElasticsearchServiceTest {
     @Test
     @Order(7)
     fun `Saksbehandler with fortrolig rights and egen ansatt rights will see normale klagebehandling, fortrolige klagebehandlinger and egen ansatt klagebehandlinger`() {
-        val klagebehandlinger: List<EsKlagebehandling> =
+        val klagebehandlinger: List<EsBehandling> =
             service.findLedigeOppgaverByCriteria(
                 LedigeOppgaverSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
@@ -303,7 +303,7 @@ class FortroligElasticsearchServiceTest {
     @Test
     @Order(8)
     fun `Saksbehandler with strengt fortrolig rights and egen ansatt rights will see strengt fortrolige klagebehandlinger, including the combo strengt fortrolig and egen ansatt`() {
-        val klagebehandlinger: List<EsKlagebehandling> =
+        val klagebehandlinger: List<EsBehandling> =
             service.findLedigeOppgaverByCriteria(
                 LedigeOppgaverSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
@@ -326,7 +326,7 @@ class FortroligElasticsearchServiceTest {
     @Test
     @Order(9)
     fun `Saksbehandler with strengt fortrolig rights without egen ansatt rights will only see strengt fortrolige klagebehandlinger, including the combo strengt fortrolig and egen ansatt`() {
-        val klagebehandlinger: List<EsKlagebehandling> =
+        val klagebehandlinger: List<EsBehandling> =
             service.findLedigeOppgaverByCriteria(
                 LedigeOppgaverSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
@@ -350,7 +350,7 @@ class FortroligElasticsearchServiceTest {
     @Test
     @Order(10)
     fun `Saksbehandler with fortrolig and strengt fortrolig rights will only see strengt fortrolige and fortrolige klagebehandlinger, including those that also are egen ansatte`() {
-        val klagebehandlinger: List<EsKlagebehandling> =
+        val klagebehandlinger: List<EsBehandling> =
             service.findLedigeOppgaverByCriteria(
                 LedigeOppgaverSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),
@@ -376,7 +376,7 @@ class FortroligElasticsearchServiceTest {
     @Test
     @Order(11)
     fun `Saksbehandler with fortrolig and strengt fortrolig and egen ansatt rights will only see strengt fortrolige and fortrolige klagebehandlinger, including those that also are egen ansatte`() {
-        val klagebehandlinger: List<EsKlagebehandling> =
+        val klagebehandlinger: List<EsBehandling> =
             service.findLedigeOppgaverByCriteria(
                 LedigeOppgaverSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),

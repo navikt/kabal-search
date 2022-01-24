@@ -1,12 +1,12 @@
 package no.nav.klage.search.service
 
-import no.nav.klage.search.clients.klageendret.KlageEndretKafkaConsumer
+import no.nav.klage.search.clients.klageendret.BehandlingEndretKafkaConsumer
 import org.springframework.stereotype.Service
 
 @Service
 class AdminService(
     private val indexService: IndexService,
-    private val klageEndretKafkaConsumer: KlageEndretKafkaConsumer
+    private val behandlingEndretKafkaConsumer: BehandlingEndretKafkaConsumer
 ) {
 
     fun recreateEsIndex() {
@@ -14,10 +14,10 @@ class AdminService(
     }
 
     fun syncEsWithKafka() {
-        klageEndretKafkaConsumer.consumeFromBeginning()
+        behandlingEndretKafkaConsumer.consumeFromBeginning()
     }
 
     fun deleteAllInES() {
-        indexService.deleteAllKlagebehandlinger()
+        indexService.deleteAllBehandlinger()
     }
 }

@@ -6,9 +6,9 @@ import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
 import no.nav.klage.search.domain.SaksbehandlereByEnhetSearchCriteria
-import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
+import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import no.nav.klage.search.domain.elasticsearch.EsStatus.IKKE_TILDELT
-import no.nav.klage.search.repositories.EsKlagebehandlingRepository
+import no.nav.klage.search.repositories.EsBehandlingRepository
 import no.nav.klage.search.repositories.SearchHits
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.MethodOrderer
@@ -41,7 +41,7 @@ class ElasticsearchServiceFindSaksbehandlereTest {
     lateinit var service: ElasticsearchService
 
     @Autowired
-    lateinit var repo: EsKlagebehandlingRepository
+    lateinit var repo: EsBehandlingRepository
 
     @Test
     @Order(1)
@@ -124,7 +124,7 @@ class ElasticsearchServiceFindSaksbehandlereTest {
         )
 
         val query = QueryBuilders.matchAllQuery()
-        val searchHits: SearchHits<EsKlagebehandling> = repo.search(query)
+        val searchHits: SearchHits<EsBehandling> = repo.search(query)
         assertThat(searchHits.totalHits).isEqualTo(7L)
     }
 
@@ -151,8 +151,8 @@ class ElasticsearchServiceFindSaksbehandlereTest {
         saksbehandlerIdent: String,
         saksbehandlerNavn: String,
         avsluttetAvSaksbehandler: LocalDateTime?
-    ): EsKlagebehandling {
-        return EsKlagebehandling(
+    ): EsBehandling {
+        return EsBehandling(
             id = id,
             tildeltEnhet = enhet,
             tema = Tema.OMS.id,

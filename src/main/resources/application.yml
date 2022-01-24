@@ -120,6 +120,7 @@ UNLEASH_URL: https://unleash.nais.io/api/
 
 EGENANSATT_KAFKA_TOPIC: nom.skjermede-personer-v1
 PDL_PERSON_KAFKA_TOPIC: aapen-person-pdl-dokument-v1
-KLAGE_ENDRET_KAFKA_TOPIC: klage.klage-endret.v1 //Is also hardcoded in KlageEndretKafkaConsumer, change there if necessary!
+KLAGE_ENDRET_KAFKA_TOPIC: klage.klage-endret.v1
+BEHANDLING_ENDRET_KAFKA_TOPIC_V2: klage.behandling-endret.v2
 
 SERVICE_USER_PASSWORD: itest

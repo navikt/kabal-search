@@ -59,7 +59,7 @@ class AivenKafkaConfiguration(
     }
 
     @Bean
-    fun klageEndretKafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String> {
+    fun behandlingEndretKafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String> {
         val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
         factory.consumerFactory = klageEndretConsumerFactory()
 

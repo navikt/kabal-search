@@ -1,6 +1,6 @@
 package no.nav.klage.search.config
 
-import no.nav.klage.search.repositories.EsKlagebehandlingRepository
+import no.nav.klage.search.repositories.EsBehandlingRepository
 import no.nav.klage.search.service.ElasticsearchService
 import org.apache.http.HttpHost
 import org.apache.http.auth.AuthScope
@@ -43,8 +43,8 @@ class ElasticsearchServiceConfiguration(
     }
 
     @Bean
-    fun esKlagebehandlingRepository(): EsKlagebehandlingRepository {
-        return EsKlagebehandlingRepository(restHighLevelClient())
+    fun esKlagebehandlingRepository(): EsBehandlingRepository {
+        return EsBehandlingRepository(restHighLevelClient())
     }
 
     @Bean

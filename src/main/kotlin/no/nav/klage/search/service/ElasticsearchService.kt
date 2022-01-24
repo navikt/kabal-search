@@ -2,15 +2,15 @@ package no.nav.klage.search.service
 
 import no.nav.klage.kodeverk.MedunderskriverFlyt
 import no.nav.klage.search.domain.*
-import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
+import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import no.nav.klage.search.domain.elasticsearch.EsStatus
 import no.nav.klage.search.domain.elasticsearch.EsStatus.*
 import no.nav.klage.search.domain.elasticsearch.KlageStatistikk
 import no.nav.klage.search.domain.elasticsearch.RelatedKlagebehandlinger
 import no.nav.klage.search.domain.saksbehandler.Saksbehandler
-import no.nav.klage.search.repositories.AnonymeKlagebehandlingerSearchHits
-import no.nav.klage.search.repositories.EsKlagebehandlingRepository
-import no.nav.klage.search.repositories.KlagebehandlingerSearchHits
+import no.nav.klage.search.repositories.AnonymeBehandlingerSearchHits
+import no.nav.klage.search.repositories.EsBehandlingRepository
+import no.nav.klage.search.repositories.BehandlingerSearchHits
 import no.nav.klage.search.repositories.SearchHits
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getMedian
@@ -34,7 +34,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 
-open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlagebehandlingRepository) :
+open class ElasticsearchService(private val esBehandlingRepository: EsBehandlingRepository) :
     ApplicationListener<ContextRefreshedEvent> {
 
     companion object {
@@ -46,93 +46,93 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
     }
 
     fun recreateIndex() {
-        esKlagebehandlingRepository.recreateIndex()
+        esBehandlingRepository.recreateIndex()
     }
 
     override fun onApplicationEvent(event: ContextRefreshedEvent) {
         try {
-            esKlagebehandlingRepository.createIndex()
+            esBehandlingRepository.createIndex()
         } catch (e: Exception) {
             logger.error("Unable to initialize OpenSearch", e)
         }
     }
 
-    fun save(klagebehandlinger: List<EsKlagebehandling>) {
-        esKlagebehandlingRepository.save(klagebehandlinger)
+    fun save(klagebehandlinger: List<EsBehandling>) {
+        esBehandlingRepository.save(klagebehandlinger)
     }
 
-    fun save(klagebehandling: EsKlagebehandling) {
+    fun save(klagebehandling: EsBehandling) {
         logger.debug("Skal indeksere fra kabal-search, klage med id ${klagebehandling.id}")
-        esKlagebehandlingRepository.save(klagebehandling)
+        esBehandlingRepository.save(klagebehandling)
     }
 
-    open fun findOppgaverOmPersonByCriteria(criteria: OppgaverOmPersonSearchCriteria): KlagebehandlingerSearchHits {
+    open fun findOppgaverOmPersonByCriteria(criteria: OppgaverOmPersonSearchCriteria): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
         searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
 
-        val searchHits = esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder, emptyList())
         logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
         return searchHits
     }
 
-    open fun findLedigeOppgaverByCriteria(criteria: LedigeOppgaverSearchCriteria): KlagebehandlingerSearchHits {
+    open fun findLedigeOppgaverByCriteria(criteria: LedigeOppgaverSearchCriteria): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
         searchSourceBuilder.addSorting(criteria)
         searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
 
-        val searchHits = esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder, emptyList())
         logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
         return searchHits
     }
 
-    open fun findSaksbehandlersFerdigstilteOppgaverByCriteria(criteria: SaksbehandlersFerdigstilteOppgaverSearchCriteria): KlagebehandlingerSearchHits {
+    open fun findSaksbehandlersFerdigstilteOppgaverByCriteria(criteria: SaksbehandlersFerdigstilteOppgaverSearchCriteria): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
         searchSourceBuilder.addSorting(criteria)
         searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
 
-        val searchHits = esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder, emptyList())
         logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
         return searchHits
     }
 
-    open fun findSaksbehandlersUferdigeOppgaverByCriteria(criteria: SaksbehandlersUferdigeOppgaverSearchCriteria): KlagebehandlingerSearchHits {
+    open fun findSaksbehandlersUferdigeOppgaverByCriteria(criteria: SaksbehandlersUferdigeOppgaverSearchCriteria): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
         searchSourceBuilder.addSorting(criteria)
         searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
 
-        val searchHits = esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder, emptyList())
         logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
         return searchHits
     }
 
-    open fun findEnhetensFerdigstilteOppgaverByCriteria(criteria: EnhetensFerdigstilteOppgaverSearchCriteria): AnonymeKlagebehandlingerSearchHits {
+    open fun findEnhetensFerdigstilteOppgaverByCriteria(criteria: EnhetensFerdigstilteOppgaverSearchCriteria): AnonymeBehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
         searchSourceBuilder.addSorting(criteria)
         searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
 
-        val searchHits = esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder, emptyList())
         logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
         return searchHits.anonymize()
     }
 
-    open fun findEnhetensUferdigeOppgaverByCriteria(criteria: EnhetensUferdigeOppgaverSearchCriteria): AnonymeKlagebehandlingerSearchHits {
+    open fun findEnhetensUferdigeOppgaverByCriteria(criteria: EnhetensUferdigeOppgaverSearchCriteria): AnonymeBehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
         searchSourceBuilder.addSorting(criteria)
         searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
 
-        val searchHits = esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder, emptyList())
         logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
         return searchHits.anonymize()
     }
@@ -152,7 +152,7 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
      */
 
     open fun findSaksbehandlereByEnhetCriteria(criteria: SaksbehandlereByEnhetSearchCriteria): SortedSet<Saksbehandler> {
-        val searchHits: SearchHits<EsKlagebehandling> = esKlagebehandlingRepository.search(criteria.toEsQuery())
+        val searchHits: SearchHits<EsBehandling> = esBehandlingRepository.search(criteria.toEsQuery())
 
         //Sort results by etternavn
         return searchHits.map {
@@ -191,13 +191,13 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
     private fun countByStatus(status: EsStatus): Long {
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.must(QueryBuilders.termQuery("status", status))
-        return esKlagebehandlingRepository.count(baseQuery)
+        return esBehandlingRepository.count(baseQuery)
     }
 
     open fun countAntallSaksdokumenterIAvsluttedeBehandlingerMedian(): Double {
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.should(QueryBuilders.termQuery("status", FULLFOERT))
-        val searchHits = esKlagebehandlingRepository.search(baseQuery)
+        val searchHits = esBehandlingRepository.search(baseQuery)
         val saksdokumenterPerAvsluttetBehandling = searchHits.map { e -> e.content }
             .map { e -> e.saksdokumenter.size }.toList()
 
@@ -205,7 +205,7 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
     }
 
     open fun countLedigeOppgaverMedUtgaatFristByCriteria(criteria: CountLedigeOppgaverMedUtgaattFristSearchCriteria): Int {
-        return esKlagebehandlingRepository.count(criteria.toEsQuery()).toInt()
+        return esBehandlingRepository.count(criteria.toEsQuery()).toInt()
     }
 
     private fun SearchSourceBuilder.addSorting(criteria: SortableSearchCriteria) {
@@ -435,11 +435,11 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
     }
 
     fun deleteAll() {
-        esKlagebehandlingRepository.deleteAll()
+        esBehandlingRepository.deleteAll()
     }
 
     fun findAllIdAndModified(): Map<String, LocalDateTime> {
-        val searchHits = esKlagebehandlingRepository.search(QueryBuilders.matchAllQuery())
+        val searchHits = esBehandlingRepository.search(QueryBuilders.matchAllQuery())
         return searchHits.map { it.id to it.content.modified }.toMap()
     }
 
@@ -460,26 +460,26 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
         )
     }
 
-    private fun klagebehandlingerMedFoedselsnummer(fnr: String, aapen: Boolean): List<EsKlagebehandling> {
+    private fun klagebehandlingerMedFoedselsnummer(fnr: String, aapen: Boolean): List<EsBehandling> {
         return findWithBaseQueryAndAapen(
             QueryBuilders.boolQuery().must(QueryBuilders.termQuery("sakenGjelderFnr", fnr)), aapen
         )
     }
 
-    private fun klagebehandlingerMedSaksreferanse(saksreferanse: String, aapen: Boolean): List<EsKlagebehandling> {
+    private fun klagebehandlingerMedSaksreferanse(saksreferanse: String, aapen: Boolean): List<EsBehandling> {
         return findWithBaseQueryAndAapen(
             QueryBuilders.boolQuery().must(QueryBuilders.termQuery("kildeReferanse", saksreferanse)), aapen
         )
     }
 
-    private fun findWithBaseQueryAndAapen(baseQuery: BoolQueryBuilder, aapen: Boolean): List<EsKlagebehandling> {
+    private fun findWithBaseQueryAndAapen(baseQuery: BoolQueryBuilder, aapen: Boolean): List<EsBehandling> {
         if (aapen) {
             baseQuery.mustNot(beAvsluttetAvSaksbehandler())
         } else {
             baseQuery.must(beAvsluttetAvSaksbehandler())
         }
         return try {
-            esKlagebehandlingRepository.search(baseQuery)
+            esBehandlingRepository.search(baseQuery)
                 .searchHits.map { it.content }
         } catch (e: Exception) {
             logger.error("Failed to search ES for related klagebehandlinger", e)
@@ -493,7 +493,7 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
         val aggregationsForInnsendtAndAvsluttet = addAggregationsForInnsendtAndAvsluttet()
 
         val searchHitsInnsendtOgAvsluttet =
-            esKlagebehandlingRepository.search(baseQueryInnsendtOgAvsluttet, aggregationsForInnsendtAndAvsluttet)
+            esBehandlingRepository.search(baseQueryInnsendtOgAvsluttet, aggregationsForInnsendtAndAvsluttet)
 
         val innsendtOgAvsluttetAggs = searchHitsInnsendtOgAvsluttet.aggregations
         val sumInnsendtYesterday =
@@ -515,7 +515,7 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
         val aggregationsForOverFrist = addAggregationsForOverFrist()
 
         val searchHitsOverFrist =
-            esKlagebehandlingRepository.search(baseQueryOverFrist, aggregationsForOverFrist)
+            esBehandlingRepository.search(baseQueryOverFrist, aggregationsForOverFrist)
         val sumOverFrist =
             searchHitsOverFrist.aggregations!!.get<ParsedDateRange>("over_frist").buckets.firstOrNull()?.docCount
                 ?: 0
