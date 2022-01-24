@@ -3,7 +3,8 @@ package no.nav.klage.search.service
 import no.nav.klage.kodeverk.MedunderskriverFlyt
 import no.nav.klage.search.domain.*
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
-import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling.Status.*
+import no.nav.klage.search.domain.elasticsearch.EsStatus
+import no.nav.klage.search.domain.elasticsearch.EsStatus.*
 import no.nav.klage.search.domain.elasticsearch.KlageStatistikk
 import no.nav.klage.search.domain.elasticsearch.RelatedKlagebehandlinger
 import no.nav.klage.search.domain.saksbehandler.Saksbehandler
@@ -186,7 +187,7 @@ open class ElasticsearchService(private val esKlagebehandlingRepository: EsKlage
         return countByStatus(FULLFOERT)
     }
 
-    private fun countByStatus(status: EsKlagebehandling.Status): Long {
+    private fun countByStatus(status: EsStatus): Long {
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.must(QueryBuilders.termQuery("status", status))
         return esKlagebehandlingRepository.count(baseQuery)

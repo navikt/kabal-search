@@ -7,6 +7,7 @@ import no.nav.klage.search.clients.klageendret.KlagebehandlingSkjemaV1
 import no.nav.klage.search.clients.pdl.PdlFacade
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsSaksdokument
+import no.nav.klage.search.domain.elasticsearch.EsStatus
 import no.nav.klage.search.service.saksbehandler.SaksbehandlerService
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getSecureLogger
@@ -98,7 +99,7 @@ class EsKlagebehandlingMapper(
             hjemlerNavn = klagebehandling.hjemler.map { it.navn },
             vedtakUtfallNavn = klagebehandling.vedtak?.utfall?.navn,
             sakFagsystemNavn = klagebehandling.sakFagsystem?.navn,
-            status = EsKlagebehandling.Status.valueOf(klagebehandling.status.name)
+            status = EsStatus.valueOf(klagebehandling.status.name)
         )
     }
 

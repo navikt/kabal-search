@@ -6,28 +6,31 @@ import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.api.view.FnrSearchResponse
 import no.nav.klage.search.api.view.KlagebehandlingListView
 import no.nav.klage.search.api.view.NavnView
+import no.nav.klage.search.api.view.PersonView
 import no.nav.klage.search.clients.pdl.Sivilstand
+import no.nav.klage.search.domain.elasticsearch.EsAnonymKlagebehandling
 import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
 import no.nav.klage.search.domain.personsoek.PersonSearchResponse
-import org.springframework.stereotype.Service
+import no.nav.klage.search.service.saksbehandler.OAuthTokenService
+import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
-@Service
-class KlagebehandlingListMapper {
+@Component
+class KlagebehandlingListMapper(
+    private val accessMapper: AccessMapper,
+    private val oAuthTokenService: OAuthTokenService
+) {
 
     fun mapPersonSearchResponseToFnrSearchResponse(
         personSearchResponse: PersonSearchResponse,
-        saksbehandler: String,
+        innloggetIdent: String,
         tilgangTilYtelser: List<Ytelse>
     ): FnrSearchResponse {
         val klagebehandlinger =
-            mapEsKlagebehandlingerToListView(
+            mapAnonymeEsKlagebehandlingerToListView(
                 esKlagebehandlinger = personSearchResponse.klagebehandlinger,
-                visePersonData = false,
-                saksbehandlere = listOf(saksbehandler),
-                tilgangTilYtelser = tilgangTilYtelser
             )
         return FnrSearchResponse(
             fnr = personSearchResponse.fnr,
@@ -45,15 +48,13 @@ class KlagebehandlingListMapper {
     fun mapEsKlagebehandlingerToListView(
         esKlagebehandlinger: List<EsKlagebehandling>,
         visePersonData: Boolean,
-        saksbehandlere: List<String>,
-        tilgangTilYtelser: List<Ytelse>,
         sivilstand: Sivilstand? = null
     ): List<KlagebehandlingListView> {
         return esKlagebehandlinger.map { esKlagebehandling ->
             KlagebehandlingListView(
                 id = esKlagebehandling.id,
                 person = if (visePersonData) {
-                    KlagebehandlingListView.Person(
+                    PersonView(
                         esKlagebehandling.sakenGjelderFnr,
                         esKlagebehandling.sakenGjelderNavn,
                         if (esKlagebehandling.sakenGjelderFnr == sivilstand?.foedselsnr) sivilstand?.type?.id else null
@@ -68,7 +69,7 @@ class KlagebehandlingListMapper {
                 frist = esKlagebehandling.frist,
                 mottatt = esKlagebehandling.mottattKlageinstans.toLocalDate(),
                 harMedunderskriver = esKlagebehandling.medunderskriverident != null,
-                erMedunderskriver = esKlagebehandling.medunderskriverident != null && esKlagebehandling.medunderskriverident in saksbehandlere,
+                erMedunderskriver = esKlagebehandling.medunderskriverident != null && esKlagebehandling.medunderskriverident == oAuthTokenService.getInnloggetIdent(),
                 medunderskriverident = esKlagebehandling.medunderskriverident,
                 medunderskriverFlyt = MedunderskriverFlyt.valueOf(esKlagebehandling.medunderskriverFlyt),
                 erTildelt = esKlagebehandling.tildeltSaksbehandlerident != null,
@@ -77,15 +78,49 @@ class KlagebehandlingListMapper {
                 utfall = esKlagebehandling.vedtakUtfall,
                 avsluttetAvSaksbehandlerDate = esKlagebehandling.avsluttetAvSaksbehandler?.toLocalDate(),
                 isAvsluttetAvSaksbehandler = esKlagebehandling.avsluttetAvSaksbehandler?.toLocalDate() != null,
-                saksbehandlerHarTilgang = esKlagebehandling.ytelseId != null
-                        && Ytelse.of(esKlagebehandling.ytelseId) in tilgangTilYtelser,
+                saksbehandlerHarTilgang = accessMapper.kanTildelesOppgaven(esKlagebehandling),
                 egenAnsatt = esKlagebehandling.egenAnsatt,
                 fortrolig = esKlagebehandling.fortrolig,
                 strengtFortrolig = esKlagebehandling.strengtFortrolig,
-                ageKA = esKlagebehandling.mottattKlageinstans.toAgeInDays()
+                ageKA = esKlagebehandling.mottattKlageinstans.toAgeInDays(),
+                access = accessMapper.mapAccess(esKlagebehandling),
             )
         }
     }
+
+    fun mapAnonymeEsKlagebehandlingerToListView(
+        esKlagebehandlinger: List<EsAnonymKlagebehandling>,
+    ): List<KlagebehandlingListView> {
+        return esKlagebehandlinger.map { esKlagebehandling ->
+            KlagebehandlingListView(
+                id = esKlagebehandling.id,
+                person = null,
+                type = esKlagebehandling.type,
+                tema = esKlagebehandling.tema,
+                ytelse = esKlagebehandling.ytelseId,
+                hjemmel = esKlagebehandling.hjemler.firstOrNull(),
+                frist = esKlagebehandling.frist,
+                mottatt = esKlagebehandling.mottattKlageinstans.toLocalDate(),
+                harMedunderskriver = esKlagebehandling.medunderskriverident != null,
+                erMedunderskriver = esKlagebehandling.medunderskriverident != null && esKlagebehandling.medunderskriverident == oAuthTokenService.getInnloggetIdent(),
+                medunderskriverident = esKlagebehandling.medunderskriverident,
+                medunderskriverFlyt = MedunderskriverFlyt.valueOf(esKlagebehandling.medunderskriverFlyt),
+                erTildelt = esKlagebehandling.tildeltSaksbehandlerident != null,
+                tildeltSaksbehandlerident = esKlagebehandling.tildeltSaksbehandlerident,
+                tildeltSaksbehandlerNavn = esKlagebehandling.tildeltSaksbehandlernavn,
+                utfall = esKlagebehandling.vedtakUtfall,
+                avsluttetAvSaksbehandlerDate = esKlagebehandling.avsluttetAvSaksbehandler?.toLocalDate(),
+                isAvsluttetAvSaksbehandler = esKlagebehandling.avsluttetAvSaksbehandler?.toLocalDate() != null,
+                saksbehandlerHarTilgang = accessMapper.kanTildelesOppgaven(esKlagebehandling),
+                egenAnsatt = esKlagebehandling.egenAnsatt,
+                fortrolig = esKlagebehandling.fortrolig,
+                strengtFortrolig = esKlagebehandling.strengtFortrolig,
+                ageKA = esKlagebehandling.mottattKlageinstans.toAgeInDays(),
+                access = accessMapper.mapAccess(esKlagebehandling)
+            )
+        }
+    }
+
 
     private fun LocalDateTime.toAgeInDays() = ChronoUnit.DAYS.between(this.toLocalDate(), LocalDate.now()).toInt()
 }
