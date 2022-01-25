@@ -52,7 +52,7 @@ class EsBehandlingRepository(val client: RestHighLevelClient) {
             ObjectMapper().registerModule(KotlinModule()).registerModule(JavaTimeModule())
         const val SETTINGS_CONFIG = "/elasticsearch/settings.json"
         const val MAPPING_CONFIG = "/elasticsearch/mapping.json"
-        const val BEHANDLING_INDEX = "behandling"
+        const val BEHANDLING_INDEX = "klagebehandling"
     }
 
     fun indexExists(): Boolean {
