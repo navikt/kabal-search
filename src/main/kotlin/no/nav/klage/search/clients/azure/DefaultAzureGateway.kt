@@ -4,13 +4,17 @@ import no.nav.klage.search.domain.saksbehandler.Enhet
 import no.nav.klage.search.domain.saksbehandler.SaksbehandlerPersonligInfo
 import no.nav.klage.search.exceptions.EnhetNotFoundForSaksbehandlerException
 import no.nav.klage.search.gateway.AzureGateway
+import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getSecureLogger
 import org.springframework.stereotype.Service
 import no.nav.klage.kodeverk.Enhet as KodeverkEnhet
 
 @Service
-class DefaultAzureGateway(private val microsoftGraphClient: MicrosoftGraphClient) : AzureGateway {
+class DefaultAzureGateway(
+    private val microsoftGraphClient: MicrosoftGraphClient,
+    private val tokenUtil: TokenUtil
+) : AzureGateway {
 
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
@@ -20,7 +24,7 @@ class DefaultAzureGateway(private val microsoftGraphClient: MicrosoftGraphClient
 
     override fun getDataOmInnloggetSaksbehandler(): SaksbehandlerPersonligInfo {
         val data = try {
-            microsoftGraphClient.getInnloggetSaksbehandler()
+            microsoftGraphClient.getInnloggetSaksbehandler(tokenUtil.getIdent())
         } catch (e: Exception) {
             logger.error("Failed to call getInnloggetSaksbehandler", e)
             throw e

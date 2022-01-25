@@ -1,8 +1,10 @@
 package no.nav.klage.search.clients.azure
 
+import no.nav.klage.search.config.CacheWithJCacheConfiguration
 import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getSecureLogger
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
@@ -30,10 +32,11 @@ class MicrosoftGraphClient(
         private const val groupMemberSelect = "id,mail,onPremisesSamAccountName,displayName"
     }
 
+    //TODO: navIdent er bare så cachen skal ha en nøkkel. Det er mulig å dra nøkkelen ut av responsen også tror jeg, men det får vi bruke tid på en annen gang..
     @Retryable
-    fun getInnloggetSaksbehandler(): AzureUser {
+    @Cacheable(CacheWithJCacheConfiguration.AZUREUSER_CACHE)
+    fun getInnloggetSaksbehandler(navIdent: String): AzureUser {
         logger.debug("Fetching data about authenticated user from Microsoft Graph")
-
         return microsoftGraphWebClient.get()
             .uri { uriBuilder ->
                 uriBuilder
