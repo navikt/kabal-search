@@ -2,14 +2,15 @@ package no.nav.klage.search.api.mapper
 
 
 import no.nav.klage.kodeverk.MedunderskriverFlyt
-import no.nav.klage.search.api.view.FnrSearchResponse
 import no.nav.klage.search.api.view.BehandlingListView
+import no.nav.klage.search.api.view.FnrSearchResponse
 import no.nav.klage.search.api.view.NavnView
 import no.nav.klage.search.api.view.PersonView
 import no.nav.klage.search.clients.pdl.Sivilstand
 import no.nav.klage.search.domain.elasticsearch.EsAnonymBehandling
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import no.nav.klage.search.domain.personsoek.PersonSearchResponse
+import no.nav.klage.search.service.saksbehandler.InnloggetSaksbehandlerService
 import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import org.springframework.stereotype.Component
 import java.time.LocalDate
@@ -19,7 +20,8 @@ import java.time.temporal.ChronoUnit
 @Component
 class BehandlingListMapper(
     private val accessMapper: AccessMapper,
-    private val oAuthTokenService: OAuthTokenService
+    private val oAuthTokenService: OAuthTokenService,
+    private val innloggetSaksbehandlerService: InnloggetSaksbehandlerService,
 ) {
 
     fun mapPersonSearchResponseToFnrSearchResponse(
@@ -50,6 +52,13 @@ class BehandlingListMapper(
         visePersonData: Boolean,
         sivilstand: Sivilstand? = null
     ): List<BehandlingListView> {
+
+        val kanBehandleStrengtFortrolig = oAuthTokenService.kanBehandleStrengtFortrolig()
+        val kanBehandleFortrolig = oAuthTokenService.kanBehandleFortrolig()
+        val kanBehandleEgenAnsatt = oAuthTokenService.kanBehandleEgenAnsatt()
+        val lovligeYtelser = innloggetSaksbehandlerService.getEnhetMedYtelserForSaksbehandler().ytelser
+        val innloggetIdent = oAuthTokenService.getInnloggetIdent()
+
         return esBehandlinger.map { esBehandling ->
             BehandlingListView(
                 id = esBehandling.id,
@@ -69,7 +78,7 @@ class BehandlingListMapper(
                 frist = esBehandling.frist,
                 mottatt = esBehandling.sakMottattKaDato!!.toLocalDate(),
                 harMedunderskriver = esBehandling.medunderskriverident != null,
-                erMedunderskriver = esBehandling.medunderskriverident != null && esBehandling.medunderskriverident == oAuthTokenService.getInnloggetIdent(),
+                erMedunderskriver = esBehandling.medunderskriverident != null && esBehandling.medunderskriverident == innloggetIdent,
                 medunderskriverident = esBehandling.medunderskriverident,
                 medunderskriverFlyt = MedunderskriverFlyt.valueOf(esBehandling.medunderskriverFlyt),
                 erTildelt = esBehandling.tildeltSaksbehandlerident != null,
@@ -78,12 +87,25 @@ class BehandlingListMapper(
                 utfall = esBehandling.vedtakUtfall,
                 avsluttetAvSaksbehandlerDate = esBehandling.avsluttetAvSaksbehandler?.toLocalDate(),
                 isAvsluttetAvSaksbehandler = esBehandling.avsluttetAvSaksbehandler?.toLocalDate() != null,
-                saksbehandlerHarTilgang = accessMapper.kanTildelesOppgaven(esBehandling),
+                saksbehandlerHarTilgang = accessMapper.kanTildelesOppgaven(
+                    esKlagebehandling = esBehandling,
+                    kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig,
+                    kanBehandleFortrolig = kanBehandleFortrolig,
+                    kanBehandleEgenAnsatt = kanBehandleEgenAnsatt,
+                    lovligeYtelser = lovligeYtelser
+                ),
                 egenAnsatt = esBehandling.egenAnsatt,
                 fortrolig = esBehandling.fortrolig,
                 strengtFortrolig = esBehandling.strengtFortrolig,
                 ageKA = esBehandling.mottattKlageinstans.toAgeInDays(),
-                access = accessMapper.mapAccess(esBehandling),
+                access = accessMapper.mapAccess(
+                    esKlagebehandling = esBehandling,
+                    innloggetIdent = innloggetIdent,
+                    kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig,
+                    kanBehandleFortrolig = kanBehandleFortrolig,
+                    kanBehandleEgenAnsatt = kanBehandleEgenAnsatt,
+                    lovligeYtelser = lovligeYtelser,
+                )
             )
         }
     }
@@ -91,6 +113,13 @@ class BehandlingListMapper(
     fun mapAnonymeEsBehandlingerToListView(
         esBehandlinger: List<EsAnonymBehandling>,
     ): List<BehandlingListView> {
+
+        val kanBehandleStrengtFortrolig = oAuthTokenService.kanBehandleStrengtFortrolig()
+        val kanBehandleFortrolig = oAuthTokenService.kanBehandleFortrolig()
+        val kanBehandleEgenAnsatt = oAuthTokenService.kanBehandleEgenAnsatt()
+        val lovligeYtelser = innloggetSaksbehandlerService.getEnhetMedYtelserForSaksbehandler().ytelser
+        val innloggetIdent = oAuthTokenService.getInnloggetIdent()
+
         return esBehandlinger.map { esBehandling ->
             BehandlingListView(
                 id = esBehandling.id,
@@ -102,7 +131,7 @@ class BehandlingListMapper(
                 frist = esBehandling.frist,
                 mottatt = esBehandling.mottattKlageinstans.toLocalDate(),
                 harMedunderskriver = esBehandling.medunderskriverident != null,
-                erMedunderskriver = esBehandling.medunderskriverident != null && esBehandling.medunderskriverident == oAuthTokenService.getInnloggetIdent(),
+                erMedunderskriver = esBehandling.medunderskriverident != null && esBehandling.medunderskriverident == innloggetIdent,
                 medunderskriverident = esBehandling.medunderskriverident,
                 medunderskriverFlyt = MedunderskriverFlyt.valueOf(esBehandling.medunderskriverFlyt),
                 erTildelt = esBehandling.tildeltSaksbehandlerident != null,
@@ -111,12 +140,25 @@ class BehandlingListMapper(
                 utfall = esBehandling.vedtakUtfall,
                 avsluttetAvSaksbehandlerDate = esBehandling.avsluttetAvSaksbehandler?.toLocalDate(),
                 isAvsluttetAvSaksbehandler = esBehandling.avsluttetAvSaksbehandler?.toLocalDate() != null,
-                saksbehandlerHarTilgang = accessMapper.kanTildelesOppgaven(esBehandling),
+                saksbehandlerHarTilgang = accessMapper.kanTildelesOppgaven(
+                    esKlagebehandling = esBehandling,
+                    kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig,
+                    kanBehandleFortrolig = kanBehandleFortrolig,
+                    kanBehandleEgenAnsatt = kanBehandleEgenAnsatt,
+                    lovligeYtelser = lovligeYtelser
+                ),
                 egenAnsatt = esBehandling.egenAnsatt,
                 fortrolig = esBehandling.fortrolig,
                 strengtFortrolig = esBehandling.strengtFortrolig,
                 ageKA = esBehandling.mottattKlageinstans.toAgeInDays(),
-                access = accessMapper.mapAccess(esBehandling)
+                access = accessMapper.mapAccess(
+                    esKlagebehandling = esBehandling,
+                    innloggetIdent = innloggetIdent,
+                    kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig,
+                    kanBehandleFortrolig = kanBehandleFortrolig,
+                    kanBehandleEgenAnsatt = kanBehandleEgenAnsatt,
+                    lovligeYtelser = lovligeYtelser,
+                )
             )
         }
     }
