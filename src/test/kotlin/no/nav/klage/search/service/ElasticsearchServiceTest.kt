@@ -8,9 +8,9 @@ import no.nav.klage.search.config.ElasticsearchServiceConfiguration
 import no.nav.klage.search.domain.CountLedigeOppgaverMedUtgaattFristSearchCriteria
 import no.nav.klage.search.domain.LedigeOppgaverSearchCriteria
 import no.nav.klage.search.domain.SortField
-import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
+import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import no.nav.klage.search.domain.elasticsearch.EsStatus.IKKE_TILDELT
-import no.nav.klage.search.repositories.EsKlagebehandlingRepository
+import no.nav.klage.search.repositories.EsBehandlingRepository
 import no.nav.klage.search.repositories.SearchHits
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.MethodOrderer
@@ -43,7 +43,7 @@ class ElasticsearchServiceTest {
     lateinit var service: ElasticsearchService
 
     @Autowired
-    lateinit var repo: EsKlagebehandlingRepository
+    lateinit var repo: EsBehandlingRepository
 
     @Test
     @Order(1)
@@ -62,7 +62,7 @@ class ElasticsearchServiceTest {
     @Order(3)
     fun `lagrer to oppgaver for senere tester`() {
 
-        val klagebehandling1 = EsKlagebehandling(
+        val klagebehandling1 = EsBehandling(
             id = "1001L",
             tildeltEnhet = "4219",
             tema = Tema.OMS.id,
@@ -81,7 +81,7 @@ class ElasticsearchServiceTest {
             medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
         )
         val klagebehandling2 =
-            EsKlagebehandling(
+            EsBehandling(
                 id = "1002L",
                 tildeltEnhet = "4219",
                 tema = Tema.SYK.id,
@@ -103,14 +103,14 @@ class ElasticsearchServiceTest {
         repo.save(klagebehandling2)
 
         val query = QueryBuilders.matchAllQuery()
-        val searchHits: SearchHits<EsKlagebehandling> = repo.search(query)
+        val searchHits: SearchHits<EsBehandling> = repo.search(query)
         assertThat(searchHits.totalHits).isEqualTo(2L)
     }
 
     @Test
     @Order(4)
     fun `Klagebehandling can be searched for by ytelse`() {
-        val klagebehandlinger: List<EsKlagebehandling> =
+        val klagebehandlinger: List<EsBehandling> =
             service.findLedigeOppgaverByCriteria(
                 LedigeOppgaverSearchCriteria(
                     ytelser = listOf(Ytelse.OMS_OMP),

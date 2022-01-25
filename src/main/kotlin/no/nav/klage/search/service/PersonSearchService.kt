@@ -3,7 +3,7 @@ package no.nav.klage.search.service
 import no.nav.klage.search.clients.pdl.graphql.PdlClient
 import no.nav.klage.search.clients.pdl.graphql.SoekPersonResponse
 import no.nav.klage.search.domain.OppgaverOmPersonSearchCriteria
-import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
+import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import no.nav.klage.search.domain.personsoek.Navn
 import no.nav.klage.search.domain.personsoek.Person
 import no.nav.klage.search.domain.personsoek.PersonSearchResponse
@@ -35,7 +35,8 @@ class PersonSearchService(
                 mellomnavn = searchHitsInES.first().sakenGjelderMellomnavn,
                 etternavn = searchHitsInES.first().sakenGjelderEtternavn
                     ?: throw RuntimeException("etternavn missing"),
-                klagebehandlinger = searchHitsInES
+                klagebehandlinger = searchHitsInES,
+                behandlinger = searchHitsInES
             )
         }
     }
@@ -60,7 +61,7 @@ class PersonSearchService(
         return people ?: emptyList()
     }
 
-    private fun esSoek(input: OppgaverOmPersonSearchCriteria): List<EsKlagebehandling> {
+    private fun esSoek(input: OppgaverOmPersonSearchCriteria): List<EsBehandling> {
         val esResponse = elasticsearchService.findOppgaverOmPersonByCriteria(input)
         return esResponse.searchHits.map { it.content }
     }

@@ -71,6 +71,17 @@
       "type": "date",
       "format": "date"
     },
+    "forrigeSaksbehandlerident": {
+      "type": "keyword"
+    },
+    "forrigeBehandlendeEnhet": {
+      "type": "keyword",
+      "fields": {
+        "text": {
+          "type": "text"
+        }
+      }
+    },
     "avsenderSaksbehandleridentFoersteinstans": {
       "type": "keyword"
     },
@@ -81,6 +92,14 @@
           "type": "text"
         }
       }
+    },
+    "sakMottattKaDato": {
+      "type": "date",
+      "format": "date_time"
+    },
+    "forrigeVedtaksDato": {
+      "type": "date",
+      "format": "date"
     },
     "mottattKlageinstans": {
       "type": "date",

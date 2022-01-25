@@ -4,8 +4,8 @@ import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
 import no.nav.klage.kodeverk.Ytelse
-import no.nav.klage.search.api.mapper.KlagebehandlingListMapper
-import no.nav.klage.search.api.mapper.KlagebehandlingerSearchCriteriaMapper
+import no.nav.klage.search.api.mapper.BehandlingListMapper
+import no.nav.klage.search.api.mapper.BehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.*
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.domain.kodeverk.ytelseTilSoekehjemler
@@ -25,9 +25,9 @@ import org.springframework.web.bind.annotation.RestController
 @Api(tags = ["kabal-search"])
 @ProtectedWithClaims(issuer = ISSUER_AAD)
 class OppgaverListController(
-    private val klagebehandlingListMapper: KlagebehandlingListMapper,
+    private val behandlingListMapper: BehandlingListMapper,
     private val elasticsearchService: ElasticsearchService,
-    private val klagebehandlingerSearchCriteriaMapper: KlagebehandlingerSearchCriteriaMapper,
+    private val behandlingerSearchCriteriaMapper: BehandlingerSearchCriteriaMapper,
     private val oAuthTokenService: OAuthTokenService,
     private val innloggetSaksbehandlerService: InnloggetSaksbehandlerService,
 ) {
@@ -44,7 +44,7 @@ class OppgaverListController(
     @GetMapping("/ansatte/{navIdent}/oppgaver/ledige", produces = ["application/json"])
     fun getMineLedigeOppgaver(
         queryParams: MineLedigeOppgaverQueryParams
-    ): KlagebehandlingerListRespons {
+    ): BehandlingerListRespons {
         logger.debug("Params: {}", queryParams)
 
         val ytelser = lovligeValgteYtelser(
@@ -57,15 +57,19 @@ class OppgaverListController(
         }
 
         //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
-        val searchCriteria = klagebehandlingerSearchCriteriaMapper.toLedigeOppgaverSearchCriteria(
+        val searchCriteria = behandlingerSearchCriteriaMapper.toLedigeOppgaverSearchCriteria(
             queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
         )
 
         val esResponse = elasticsearchService.findLedigeOppgaverByCriteria(searchCriteria)
-        return KlagebehandlingerListRespons(
+        return BehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            klagebehandlinger = klagebehandlingListMapper.mapEsKlagebehandlingerToListView(
-                esKlagebehandlinger = esResponse.searchHits.map { it.content },
+            klagebehandlinger = behandlingListMapper.mapEsBehandlingerToListView(
+                esBehandlinger = esResponse.searchHits.map { it.content },
+                visePersonData = false,
+            ),
+            behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
+                esBehandlinger = esResponse.searchHits.map { it.content },
                 visePersonData = false,
             )
         )
@@ -80,7 +84,7 @@ class OppgaverListController(
         @ApiParam(value = "NavIdent til en ansatt")
         @PathVariable navIdent: String,
         queryParams: MineFerdigstilteOppgaverQueryParams
-    ): KlagebehandlingerListRespons {
+    ): BehandlingerListRespons {
         logger.debug("Params: {}", queryParams)
         validateNavIdent(navIdent)
 
@@ -90,23 +94,27 @@ class OppgaverListController(
         )
 
         //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
-        val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSaksbehandlersFerdigstilteOppgaverSearchCriteria(
+        val searchCriteria = behandlingerSearchCriteriaMapper.toSaksbehandlersFerdigstilteOppgaverSearchCriteria(
             navIdent = navIdent,
             queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
         )
 
         val esResponse = elasticsearchService.findSaksbehandlersFerdigstilteOppgaverByCriteria(searchCriteria)
-        return KlagebehandlingerListRespons(
+        return BehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            klagebehandlinger = klagebehandlingListMapper.mapEsKlagebehandlingerToListView(
-                esKlagebehandlinger = esResponse.searchHits.map { it.content },
+            klagebehandlinger = behandlingListMapper.mapEsBehandlingerToListView(
+                esBehandlinger = esResponse.searchHits.map { it.content },
                 visePersonData = true,
-            )
+            ),
+            behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
+                esBehandlinger = esResponse.searchHits.map { it.content },
+                visePersonData = true,
+            ),
         )
     }
 
-    private fun emptyResponse(): KlagebehandlingerListRespons =
-        KlagebehandlingerListRespons(antallTreffTotalt = 0, klagebehandlinger = emptyList())
+    private fun emptyResponse(): BehandlingerListRespons =
+        BehandlingerListRespons(antallTreffTotalt = 0, klagebehandlinger = emptyList(), behandlinger = emptyList())
 
     @ApiOperation(
         value = "Hent uferdige oppgaver for en ansatt",
@@ -117,7 +125,7 @@ class OppgaverListController(
         @ApiParam(value = "NavIdent til en ansatt")
         @PathVariable navIdent: String,
         queryParams: MineUferdigeOppgaverQueryParams
-    ): KlagebehandlingerListRespons {
+    ): BehandlingerListRespons {
         logger.debug("Params: {}", queryParams)
         validateNavIdent(navIdent)
 
@@ -127,18 +135,22 @@ class OppgaverListController(
         )
 
         //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
-        val searchCriteria = klagebehandlingerSearchCriteriaMapper.toSaksbehandlersUferdigeOppgaverSearchCriteria(
+        val searchCriteria = behandlingerSearchCriteriaMapper.toSaksbehandlersUferdigeOppgaverSearchCriteria(
             navIdent = navIdent,
             queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
         )
 
         val esResponse = elasticsearchService.findSaksbehandlersUferdigeOppgaverByCriteria(searchCriteria)
-        return KlagebehandlingerListRespons(
+        return BehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            klagebehandlinger = klagebehandlingListMapper.mapEsKlagebehandlingerToListView(
-                esKlagebehandlinger = esResponse.searchHits.map { it.content },
+            klagebehandlinger = behandlingListMapper.mapEsBehandlingerToListView(
+                esBehandlinger = esResponse.searchHits.map { it.content },
                 visePersonData = true,
-            )
+            ),
+            behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
+                esBehandlinger = esResponse.searchHits.map { it.content },
+                visePersonData = true,
+            ),
         )
     }
 
@@ -151,24 +163,27 @@ class OppgaverListController(
         @ApiParam(value = "EnhetId til enheten den ansatte jobber i")
         @PathVariable enhetId: String,
         queryParams: EnhetensFerdigstilteOppgaverQueryParams
-    ): KlagebehandlingerListRespons {
+    ): BehandlingerListRespons {
         logger.debug("Params: {}", queryParams)
         validateRettigheterForEnhetensTildelteOppgaver()
 
         val valgtEnhet = getEnhetOrThrowException(enhetId)
         val ytelser = lovligeValgteYtelser(queryParams = queryParams, valgteEnheter = listOf(valgtEnhet))
         //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
-        val searchCriteria = klagebehandlingerSearchCriteriaMapper.toEnhetensFerdigstilteOppgaverSearchCriteria(
+        val searchCriteria = behandlingerSearchCriteriaMapper.toEnhetensFerdigstilteOppgaverSearchCriteria(
             enhetId = enhetId,
             queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
         )
 
         val esResponse = elasticsearchService.findEnhetensFerdigstilteOppgaverByCriteria(searchCriteria)
-        return KlagebehandlingerListRespons(
+        return BehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            klagebehandlinger = klagebehandlingListMapper.mapAnonymeEsKlagebehandlingerToListView(
-                esKlagebehandlinger = esResponse.searchHits.map { it.content },
-            )
+            klagebehandlinger = behandlingListMapper.mapAnonymeEsBehandlingerToListView(
+                esBehandlinger = esResponse.searchHits.map { it.content },
+            ),
+            behandlinger = behandlingListMapper.mapAnonymeEsBehandlingerToListView(
+                esBehandlinger = esResponse.searchHits.map { it.content },
+            ),
         )
     }
 
@@ -181,7 +196,7 @@ class OppgaverListController(
         @ApiParam(value = "EnhetId til enheten den ansatte jobber i")
         @PathVariable enhetId: String,
         queryParams: EnhetensUferdigeOppgaverQueryParams
-    ): KlagebehandlingerListRespons {
+    ): BehandlingerListRespons {
         logger.debug("Params: {}", queryParams)
         validateRettigheterForEnhetensTildelteOppgaver()
 
@@ -193,24 +208,27 @@ class OppgaverListController(
         }
 
         //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
-        val searchCriteria = klagebehandlingerSearchCriteriaMapper.toEnhetensUferdigeOppgaverSearchCriteria(
+        val searchCriteria = behandlingerSearchCriteriaMapper.toEnhetensUferdigeOppgaverSearchCriteria(
             enhetId = enhetId,
             queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
         )
 
         val esResponse = elasticsearchService.findEnhetensUferdigeOppgaverByCriteria(searchCriteria)
-        return KlagebehandlingerListRespons(
+        return BehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            klagebehandlinger = klagebehandlingListMapper.mapAnonymeEsKlagebehandlingerToListView(
-                esKlagebehandlinger = esResponse.searchHits.map { it.content },
-            )
+            klagebehandlinger = behandlingListMapper.mapAnonymeEsBehandlingerToListView(
+                esBehandlinger = esResponse.searchHits.map { it.content },
+            ),
+            behandlinger = behandlingListMapper.mapAnonymeEsBehandlingerToListView(
+                esBehandlinger = esResponse.searchHits.map { it.content },
+            ),
         )
     }
 
 
     @ApiOperation(
-        value = "Hent antall utildelte klagebehandlinger for enheten der fristen gått ut",
-        notes = "Teller opp alle utildelte klagebehandlinger for enheten der fristen gått ut."
+        value = "Hent antall utildelte behandlinger for enheten der fristen gått ut",
+        notes = "Teller opp alle utildelte behandlinger for enheten der fristen gått ut."
     )
     @GetMapping("/ansatte/{navIdent}/antalloppgavermedutgaattefrister", produces = ["application/json"])
     fun getAntallUtgaatteFrister(
@@ -232,7 +250,7 @@ class OppgaverListController(
         //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         return AntallUtgaatteFristerResponse(
             antall = elasticsearchService.countLedigeOppgaverMedUtgaatFristByCriteria(
-                criteria = klagebehandlingerSearchCriteriaMapper.toSearchCriteriaForLedigeMedUtgaattFrist(
+                criteria = behandlingerSearchCriteriaMapper.toSearchCriteriaForLedigeMedUtgaattFrist(
                     navIdent = navIdent,
                     queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
                 )

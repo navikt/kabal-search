@@ -21,7 +21,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @Testcontainers
 @SpringBootTest(classes = [ElasticsearchServiceConfiguration::class])
-class CreateIndexFromEsKlagebehandlingTest {
+class CreateIndexFromEsBehandlingTest {
 
     companion object {
         @Container

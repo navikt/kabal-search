@@ -4,8 +4,8 @@ package no.nav.klage.search.repositories
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import no.nav.klage.search.domain.elasticsearch.EsAnonymKlagebehandling
-import no.nav.klage.search.domain.elasticsearch.EsKlagebehandling
+import no.nav.klage.search.domain.elasticsearch.EsAnonymBehandling
+import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getSecureLogger
 import org.apache.lucene.search.TotalHits
@@ -41,7 +41,7 @@ import org.opensearch.search.aggregations.Aggregations
 import org.opensearch.search.builder.SearchSourceBuilder
 
 
-class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
+class EsBehandlingRepository(val client: RestHighLevelClient) {
 
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
@@ -52,11 +52,11 @@ class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
             ObjectMapper().registerModule(KotlinModule()).registerModule(JavaTimeModule())
         const val SETTINGS_CONFIG = "/elasticsearch/settings.json"
         const val MAPPING_CONFIG = "/elasticsearch/mapping.json"
-        const val KLAGEBEHANDLING_INDEX = "klagebehandling"
+        const val BEHANDLING_INDEX = "klagebehandling"
     }
 
     fun indexExists(): Boolean {
-        val request = GetIndexRequest(KLAGEBEHANDLING_INDEX)
+        val request = GetIndexRequest(BEHANDLING_INDEX)
         return client.indices().exists(request, RequestOptions.DEFAULT)
     }
 
@@ -67,30 +67,30 @@ class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
 
     fun createIndex() {
         logger.info("Trying to initialize Elasticsearch")
-        logger.info("Does klagebehandling exist in Elasticsearch?")
+        logger.info("Does $BEHANDLING_INDEX exist in Elasticsearch?")
 
         if (!indexExists()) {
-            logger.info("klagebehandling does not exist in Elasticsearch")
-            val request = CreateIndexRequest(KLAGEBEHANDLING_INDEX)
+            logger.info("$BEHANDLING_INDEX does not exist in Elasticsearch")
+            val request = CreateIndexRequest(BEHANDLING_INDEX)
             request.settings(settings())
             request.mapping(mapping())
             val createIndexResponse: CreateIndexResponse = client.indices().create(request, RequestOptions.DEFAULT)
-            logger.info("Creation of ES index klagebehandling is acknowledged: ${createIndexResponse.isAcknowledged}")
+            logger.info("Creation of ES index $BEHANDLING_INDEX is acknowledged: ${createIndexResponse.isAcknowledged}")
         } else {
-            logger.info("klagebehandling does exist in Elasticsearch")
+            logger.info("$BEHANDLING_INDEX does exist in Elasticsearch")
         }
     }
 
     fun deleteIndex() {
-        logger.info("Deleting index klagebehandling")
-        val request = DeleteIndexRequest(KLAGEBEHANDLING_INDEX)
+        logger.info("Deleting index $BEHANDLING_INDEX")
+        val request = DeleteIndexRequest(BEHANDLING_INDEX)
         val deleteIndexResponse: AcknowledgedResponse = client.indices().delete(request, RequestOptions.DEFAULT)
-        logger.info("Deletion of ES index klagebehandling is acknowledged: ${deleteIndexResponse.isAcknowledged}")
+        logger.info("Deletion of ES index $BEHANDLING_INDEX is acknowledged: ${deleteIndexResponse.isAcknowledged}")
     }
 
     fun refreshIndex() {
         try {
-            val request = RefreshRequest(KLAGEBEHANDLING_INDEX)
+            val request = RefreshRequest(BEHANDLING_INDEX)
             val refreshResponse = client.indices().refresh(request, RequestOptions.DEFAULT)
             logResponseShardInfo(refreshResponse)
         } catch (exception: OpenSearchException) {
@@ -100,22 +100,22 @@ class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
         }
     }
 
-    fun save(klagebehandlinger: List<EsKlagebehandling>) {
+    fun save(behandlinger: List<EsBehandling>) {
         //TODO Kunne kanskje med fordel vært håndtert med en BulkRequest, ref https://github.com/navikt/pam-kandidatsok-es/blob/master/src/main/java/no/nav/arbeid/kandidatsok/es/client/EsIndexerHttpService.java
-        klagebehandlinger.forEach {
+        behandlinger.forEach {
             save(it, WriteRequest.RefreshPolicy.NONE)
         }
         refreshIndex()
     }
 
     fun save(
-        klagebehandling: EsKlagebehandling,
+        behandling: EsBehandling,
         refreshPolicy: WriteRequest.RefreshPolicy = WriteRequest.RefreshPolicy.IMMEDIATE
     ) {
         try {
-            val request = IndexRequest(KLAGEBEHANDLING_INDEX)
-            request.id(klagebehandling.id)
-            val jsonString = mapper.writeValueAsString(klagebehandling)
+            val request = IndexRequest(BEHANDLING_INDEX)
+            request.id(behandling.id)
+            val jsonString = mapper.writeValueAsString(behandling)
             request.source(jsonString, XContentType.JSON)
             request.refreshPolicy = refreshPolicy
             request.versionType(VersionType.INTERNAL)
@@ -127,42 +127,42 @@ class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
         } catch (e: OpenSearchException) {
             if (e.status() == RestStatus.CONFLICT) {
                 logger.info("Conflict when saving to ES, ignoring and moving on..")
-                logger.debug("Failed to save klagebehandling to ES: ${e.detailedMessage}", e)
+                logger.debug("Failed to save behandling to ES: ${e.detailedMessage}", e)
             } else {
-                logger.error("Failed to save klagebehandling to ES: ${e.detailedMessage}", e)
+                logger.error("Failed to save behandling to ES: ${e.detailedMessage}", e)
             }
         }
     }
 
     fun deleteAll() {
-        val request = DeleteByQueryRequest(KLAGEBEHANDLING_INDEX)
+        val request = DeleteByQueryRequest(BEHANDLING_INDEX)
         request.setQuery(QueryBuilders.matchAllQuery())
         val response: BulkByScrollResponse = client.deleteByQuery(request, RequestOptions.DEFAULT)
         logBulkResponse(response)
     }
 
-    fun saveAll(klagebehandlinger: List<EsKlagebehandling>) {
-        save(klagebehandlinger)
+    fun saveAll(behandlinger: List<EsBehandling>) {
+        save(behandlinger)
     }
 
     fun search(
         searchSourceBuilder: SearchSourceBuilder,
         aggregationBuilders: List<AggregationBuilder>
-    ): KlagebehandlingerSearchHits {
-        val searchRequest = SearchRequest(KLAGEBEHANDLING_INDEX)
+    ): BehandlingerSearchHits {
+        val searchRequest = SearchRequest(BEHANDLING_INDEX)
         searchRequest.source(searchSourceBuilder)
 
         aggregationBuilders.forEach { searchSourceBuilder.aggregation(it) }
         val searchResponse: SearchResponse = client.search(searchRequest, RequestOptions.DEFAULT)
         logSearchResponseShardInfo(searchResponse)
-        return KlagebehandlingerSearchHits(
+        return BehandlingerSearchHits(
             totalHits = searchResponse.hits.totalHits!!.value,
             totalHitsRelation = searchResponse.hits.totalHits!!.relation,
             searchHits = searchResponse.hits.map {
-                EsKlagebehandlingSearchHit(
+                EsBehandlingSearchHit(
                     mapper.readValue(
                         it.sourceAsString,
-                        EsKlagebehandling::class.java
+                        EsBehandling::class.java
                     )
                 )
             },
@@ -173,14 +173,14 @@ class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
     fun search(
         queryBuilder: QueryBuilder,
         aggregationBuilders: List<AggregationBuilder> = emptyList()
-    ): KlagebehandlingerSearchHits {
+    ): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(queryBuilder)
         return search(searchSourceBuilder, aggregationBuilders)
     }
 
     fun count(baseQuery: QueryBuilder): Long {
-        val countRequest = CountRequest(KLAGEBEHANDLING_INDEX)
+        val countRequest = CountRequest(BEHANDLING_INDEX)
         countRequest.query(baseQuery)
         val countResponse: CountResponse = client.count(countRequest, RequestOptions.DEFAULT)
         logCountResponseShardInfo(countResponse)
@@ -190,7 +190,7 @@ class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
     private fun settings(): Map<String, Any> {
         val parser = XContentType.JSON.xContent().createParser(
             NamedXContentRegistry.EMPTY, null,
-            EsKlagebehandlingRepository::class.java.getResourceAsStream(SETTINGS_CONFIG)
+            EsBehandlingRepository::class.java.getResourceAsStream(SETTINGS_CONFIG)
         )
         return parser.map()
     }
@@ -198,7 +198,7 @@ class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
     private fun mapping(): Map<String, Any> {
         val parser = XContentType.JSON.xContent().createParser(
             NamedXContentRegistry.EMPTY, null,
-            EsKlagebehandlingRepository::class.java.getResourceAsStream(MAPPING_CONFIG)
+            EsBehandlingRepository::class.java.getResourceAsStream(MAPPING_CONFIG)
         )
         return parser.map()
     }
@@ -207,9 +207,9 @@ class EsKlagebehandlingRepository(val client: RestHighLevelClient) {
         val index = indexResponse.index
         val id = indexResponse.id
         if (indexResponse.result == DocWriteResponse.Result.CREATED) {
-            logger.info("Created klagebehandling in ES index $index with id $id")
+            logger.info("Created behandling in ES index $index with id $id")
         } else if (indexResponse.result == DocWriteResponse.Result.UPDATED) {
-            logger.info("Updated klagebehandling in ES index $index with id $id")
+            logger.info("Updated behandling in ES index $index with id $id")
         }
         logIndexResponseShardInfo(indexResponse.shardInfo)
     }
@@ -306,32 +306,32 @@ interface SearchHits<T> : Iterable<SearchHit<T>> {
 
 open class SearchHit<T>(val id: String, val content: T)
 
-class EsKlagebehandlingSearchHit(content: EsKlagebehandling) :
-    SearchHit<EsKlagebehandling>(content.id, content)
+class EsBehandlingSearchHit(content: EsBehandling) :
+    SearchHit<EsBehandling>(content.id, content)
 
-class EsAnonymKlagebehandlingSearchHit(content: EsKlagebehandling) :
-    SearchHit<EsAnonymKlagebehandling>(content.id, content)
+class EsAnonymBehandlingSearchHit(content: EsBehandling) :
+    SearchHit<EsAnonymBehandling>(content.id, content)
 
 
-class KlagebehandlingerSearchHits(
+class BehandlingerSearchHits(
     override val totalHits: Long,
     override val totalHitsRelation: TotalHits.Relation,
-    override val searchHits: List<SearchHit<EsKlagebehandling>>,
+    override val searchHits: List<SearchHit<EsBehandling>>,
     override val aggregations: Aggregations?
-) : SearchHits<EsKlagebehandling> {
-    fun anonymize(): AnonymeKlagebehandlingerSearchHits {
-        return AnonymeKlagebehandlingerSearchHits(
+) : SearchHits<EsBehandling> {
+    fun anonymize(): AnonymeBehandlingerSearchHits {
+        return AnonymeBehandlingerSearchHits(
             totalHits = totalHits,
             totalHitsRelation = totalHitsRelation,
-            searchHits = searchHits.map { EsAnonymKlagebehandlingSearchHit(it.content) },
+            searchHits = searchHits.map { EsAnonymBehandlingSearchHit(it.content) },
             aggregations = aggregations,
         )
     }
 }
 
-class AnonymeKlagebehandlingerSearchHits(
+class AnonymeBehandlingerSearchHits(
     override val totalHits: Long,
     override val totalHitsRelation: TotalHits.Relation,
-    override val searchHits: List<SearchHit<EsAnonymKlagebehandling>>,
+    override val searchHits: List<SearchHit<EsAnonymBehandling>>,
     override val aggregations: Aggregations?
-) : SearchHits<EsAnonymKlagebehandling>
+) : SearchHits<EsAnonymBehandling>

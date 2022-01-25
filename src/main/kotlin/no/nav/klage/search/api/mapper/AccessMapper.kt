@@ -2,7 +2,7 @@ package no.nav.klage.search.api.mapper
 
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.api.view.AccessView
-import no.nav.klage.search.domain.elasticsearch.EsAnonymKlagebehandling
+import no.nav.klage.search.domain.elasticsearch.EsAnonymBehandling
 import no.nav.klage.search.service.saksbehandler.InnloggetSaksbehandlerService
 import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import org.springframework.stereotype.Component
@@ -13,7 +13,7 @@ class AccessMapper(
     private val innloggetSaksbehandlerService: InnloggetSaksbehandlerService
 ) {
 
-    fun mapAccess(esKlagebehandling: EsAnonymKlagebehandling): AccessView {
+    fun mapAccess(esKlagebehandling: EsAnonymBehandling): AccessView {
         return when {
             harSkriveTilgang(esKlagebehandling) -> AccessView.WRITE
             kanTildelesOppgaven(esKlagebehandling) -> AccessView.ASSIGN
@@ -22,15 +22,15 @@ class AccessMapper(
         }
     }
 
-    fun kanTildelesOppgaven(esKlagebehandling: EsAnonymKlagebehandling): Boolean =
+    fun kanTildelesOppgaven(esKlagebehandling: EsAnonymBehandling): Boolean =
         harLeseTilgang(esKlagebehandling) && innloggetSaksbehandlerService.getEnhetMedYtelserForSaksbehandler().ytelser.contains(
             Ytelse.of(esKlagebehandling.ytelseId!!)
         )
 
-    private fun harSkriveTilgang(esKlagebehandling: EsAnonymKlagebehandling): Boolean =
+    private fun harSkriveTilgang(esKlagebehandling: EsAnonymBehandling): Boolean =
         esKlagebehandling.tildeltSaksbehandlerident != null && esKlagebehandling.tildeltSaksbehandlerident == oAuthTokenService.getInnloggetIdent()
 
-    private fun harLeseTilgang(esKlagebehandling: EsAnonymKlagebehandling): Boolean {
+    private fun harLeseTilgang(esKlagebehandling: EsAnonymBehandling): Boolean {
 
         val kanBehandleStrengtFortrolig = oAuthTokenService.kanBehandleStrengtFortrolig()
         val kanBehandleFortrolig = oAuthTokenService.kanBehandleFortrolig()
