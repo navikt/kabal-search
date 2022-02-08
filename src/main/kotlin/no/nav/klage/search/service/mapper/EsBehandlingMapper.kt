@@ -143,7 +143,7 @@ class EsBehandlingMapper(
             sakenGjelderOrgnr = sakenGjelderOrgnr,
             sakenGjelderOrgnavn = sakenGjelderOrgnavn,
             tema = behandling.tema.id,
-            ytelseId = behandling.ytelse?.id,
+            ytelseId = behandling.ytelse.id,
             type = behandling.type.id,
             kildeReferanse = behandling.kildeReferanse,
             sakFagsystem = behandling.sakFagsystem?.id,
@@ -184,6 +184,8 @@ class EsBehandlingMapper(
             hjemlerNavn = behandling.hjemler.map { it.navn },
             vedtakUtfallNavn = behandling.vedtak?.utfall?.navn,
             sakFagsystemNavn = behandling.sakFagsystem?.navn,
+            sattPaaVent = behandling.sattPaaVent,
+            sattPaaVentExpires = behandling.sattPaaVentExpires,
             status = EsStatus.valueOf(behandling.status.name),
         )
     }

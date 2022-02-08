@@ -2,10 +2,7 @@ package no.nav.klage.search.api.mapper
 
 
 import no.nav.klage.kodeverk.MedunderskriverFlyt
-import no.nav.klage.search.api.view.BehandlingListView
-import no.nav.klage.search.api.view.FnrSearchResponse
-import no.nav.klage.search.api.view.NavnView
-import no.nav.klage.search.api.view.PersonView
+import no.nav.klage.search.api.view.*
 import no.nav.klage.search.clients.pdl.Sivilstand
 import no.nav.klage.search.domain.elasticsearch.EsAnonymBehandling
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
@@ -15,6 +12,7 @@ import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.chrono.ChronoLocalDateTime
 import java.time.temporal.ChronoUnit
 
 @Component
@@ -105,7 +103,8 @@ class BehandlingListMapper(
                     kanBehandleFortrolig = kanBehandleFortrolig,
                     kanBehandleEgenAnsatt = kanBehandleEgenAnsatt,
                     lovligeYtelser = lovligeYtelser,
-                )
+                ),
+                sattPaaVent = esBehandling.toSattPaaVent(),
             )
         }
     }
@@ -158,11 +157,21 @@ class BehandlingListMapper(
                     kanBehandleFortrolig = kanBehandleFortrolig,
                     kanBehandleEgenAnsatt = kanBehandleEgenAnsatt,
                     lovligeYtelser = lovligeYtelser,
-                )
+                ),
+                sattPaaVent = null,
             )
         }
     }
 
-
     private fun LocalDateTime.toAgeInDays() = ChronoUnit.DAYS.between(this.toLocalDate(), LocalDate.now()).toInt()
+
+    private fun EsBehandling.toSattPaaVent(): Venteperiode? {
+        return if (sattPaaVent != null) {
+            Venteperiode(
+                from = sattPaaVent.toLocalDate(),
+                to = sattPaaVentExpires?.toLocalDate(),
+                isExpired = sattPaaVentExpires?.isBefore(ChronoLocalDateTime.from(LocalDateTime.now()))
+            )
+        } else null
+    }
 }

@@ -33,6 +33,8 @@ class BehandlingSkjemaV2(
 
     val saksdokumenter: List<Dokument>,
     val vedtak: Vedtak?,
+    val sattPaaVent: LocalDateTime? = null,
+    val sattPaaVentExpires: LocalDateTime? = null,
 
     val status: StatusType,
 )
@@ -43,7 +45,7 @@ class BehandlingSkjemaV2(
     )
 
     enum class StatusType {
-        IKKE_TILDELT, TILDELT, MEDUNDERSKRIVER_VALGT, SENDT_TIL_MEDUNDERSKRIVER, RETURNERT_TIL_SAKSBEHANDLER, AVSLUTTET_AV_SAKSBEHANDLER, FULLFOERT, UKJENT
+        IKKE_TILDELT, TILDELT, MEDUNDERSKRIVER_VALGT, SENDT_TIL_MEDUNDERSKRIVER, RETURNERT_TIL_SAKSBEHANDLER, AVSLUTTET_AV_SAKSBEHANDLER, FULLFOERT, UKJENT, SATT_PAA_VENT
     }
 
     data class Person(
