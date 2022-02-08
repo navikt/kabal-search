@@ -155,6 +155,44 @@ class OppgaverListController(
     }
 
     @ApiOperation(
+        value = "Hent oppgaver satt på vent for en ansatt",
+        notes = "Henter alle oppgaver satt på vent som saksbehandler har tilgang til."
+    )
+    @GetMapping("/ansatte/{navIdent}/oppgaver/paavent", produces = ["application/json"])
+    fun getMineOppgaverPaaVent(
+        @ApiParam(value = "NavIdent til en ansatt")
+        @PathVariable navIdent: String,
+        queryParams: MineOppgaverPaaVentQueryParams
+    ): BehandlingerListRespons {
+        logger.debug("Params: {}", queryParams)
+        validateNavIdent(navIdent)
+
+        val ytelser = lovligeValgteYtelser(
+            queryParams = queryParams,
+            valgteEnheter = innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
+        )
+
+        //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
+        val searchCriteria = behandlingerSearchCriteriaMapper.toSaksbehandlersOppgaverPaaVentSearchCriteria(
+            navIdent = navIdent,
+            queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
+        )
+
+        val esResponse = elasticsearchService.findSaksbehandlersOppgaverPaaVentByCriteria(searchCriteria)
+        return BehandlingerListRespons(
+            antallTreffTotalt = esResponse.totalHits.toInt(),
+            klagebehandlinger = behandlingListMapper.mapEsBehandlingerToListView(
+                esBehandlinger = esResponse.searchHits.map { it.content },
+                visePersonData = true,
+            ),
+            behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
+                esBehandlinger = esResponse.searchHits.map { it.content },
+                visePersonData = true,
+            ),
+        )
+    }
+
+    @ApiOperation(
         value = "Hent enhetens ferdigstilte oppgaver",
         notes = "Henter alle ferdigstilte oppgaver for enheten som saksbehandler har tilgang til."
     )
