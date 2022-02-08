@@ -210,6 +210,14 @@
     "vedtakHjemlerNavn": {
       "type": "keyword"
     },
+    "sattPaaVent": {
+      "type": "date",
+      "format": "date_time"
+    },
+    "sattPaaVentExpires": {
+      "type": "date",
+      "format": "date_time"
+    },
     "status": {
       "type": "keyword"
     }

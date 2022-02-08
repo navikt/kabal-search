@@ -44,4 +44,11 @@ data class BehandlingListView(
     val strengtFortrolig: Boolean,
     val ageKA: Int,
     val access: AccessView,
+    val sattPaaVent: Venteperiode?,
+)
+
+data class Venteperiode(
+    val from: LocalDate?,
+    val to: LocalDate?,
+    val isExpired: Boolean?,
 )

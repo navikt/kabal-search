@@ -121,6 +121,23 @@ data class SaksbehandlersUferdigeOppgaverSearchCriteria(
     override val kanBehandleStrengtFortrolig: Boolean,
 ) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria
 
+data class SaksbehandlersOppgaverPaaVentSearchCriteria(
+    override val typer: List<Type>,
+    override val ytelser: List<Ytelse>,
+    override val hjemler: List<Hjemmel>,
+
+    val saksbehandler: String,
+
+    override val sortField: SortField,
+    override val order: Order,
+    override val offset: Int,
+    override val limit: Int,
+
+    override val kanBehandleEgenAnsatt: Boolean,
+    override val kanBehandleFortrolig: Boolean,
+    override val kanBehandleStrengtFortrolig: Boolean,
+) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria
+
 data class EnhetensFerdigstilteOppgaverSearchCriteria(
     override val typer: List<Type>,
     override val ytelser: List<Ytelse>,

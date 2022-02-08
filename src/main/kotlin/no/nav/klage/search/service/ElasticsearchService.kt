@@ -113,6 +113,18 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits
     }
 
+    open fun findSaksbehandlersOppgaverPaaVentByCriteria(criteria: SaksbehandlersOppgaverPaaVentSearchCriteria): BehandlingerSearchHits {
+        val searchSourceBuilder = SearchSourceBuilder()
+        searchSourceBuilder.query(criteria.toEsQuery())
+        searchSourceBuilder.addPaging(criteria)
+        searchSourceBuilder.addSorting(criteria)
+        searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
+
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder, emptyList())
+        logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
+        return searchHits
+    }
+
     open fun findEnhetensFerdigstilteOppgaverByCriteria(criteria: EnhetensFerdigstilteOppgaverSearchCriteria): AnonymeBehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
@@ -299,6 +311,20 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
+        baseQuery.mustNot(beSattPaaVent())
+        baseQuery.must(beTildeltSaksbehandlerOrMedunderskriver(saksbehandler))
+
+        logger.debug("Making search request with query {}", baseQuery.toString())
+        return baseQuery
+    }
+
+    private fun SaksbehandlersOppgaverPaaVentSearchCriteria.toEsQuery(): QueryBuilder {
+        logger.debug("Search criteria: {}", this)
+        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
+        baseQuery.addSecurityFilters(this)
+        baseQuery.addBasicFilters(this)
+        baseQuery.mustNot(beAvsluttetAvSaksbehandler())
+        baseQuery.must(beSattPaaVent())
         baseQuery.must(beTildeltSaksbehandlerOrMedunderskriver(saksbehandler))
 
         logger.debug("Making search request with query {}", baseQuery.toString())
@@ -575,6 +601,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     private fun beAvsluttetAvSaksbehandler() = QueryBuilders.existsQuery("avsluttetAvSaksbehandler")
+
+    private fun beSattPaaVent() = QueryBuilders.existsQuery("sattPaaVent")
 
     private fun beTildeltSaksbehandler() = QueryBuilders.existsQuery("tildeltSaksbehandlerident")
 

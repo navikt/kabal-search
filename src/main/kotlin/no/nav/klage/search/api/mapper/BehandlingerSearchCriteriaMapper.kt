@@ -70,6 +70,23 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
     )
 
+    fun toSaksbehandlersOppgaverPaaVentSearchCriteria(
+        navIdent: String,
+        queryParams: MineOppgaverPaaVentQueryParams,
+    ) = SaksbehandlersOppgaverPaaVentSearchCriteria(
+        typer = queryParams.typer.map { Type.of(it) },
+        ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+        hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+        saksbehandler = navIdent,
+        sortField = mapSortField(queryParams.sortering),
+        order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+        offset = queryParams.start,
+        limit = queryParams.antall,
+        kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
+        kanBehandleFortrolig = kanBehandleFortrolig(),
+        kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+    )
+
     //-- enhetens oppgaver:
 
     fun toEnhetensFerdigstilteOppgaverSearchCriteria(
