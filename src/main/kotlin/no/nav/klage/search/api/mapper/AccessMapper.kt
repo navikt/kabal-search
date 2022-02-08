@@ -3,38 +3,65 @@ package no.nav.klage.search.api.mapper
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.api.view.AccessView
 import no.nav.klage.search.domain.elasticsearch.EsAnonymBehandling
-import no.nav.klage.search.service.saksbehandler.InnloggetSaksbehandlerService
-import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import org.springframework.stereotype.Component
 
 @Component
-class AccessMapper(
-    private val oAuthTokenService: OAuthTokenService,
-    private val innloggetSaksbehandlerService: InnloggetSaksbehandlerService
-) {
+class AccessMapper {
 
-    fun mapAccess(esKlagebehandling: EsAnonymBehandling): AccessView {
+    fun mapAccess(
+        esKlagebehandling: EsAnonymBehandling,
+        innloggetIdent: String,
+        kanBehandleStrengtFortrolig: Boolean,
+        kanBehandleFortrolig: Boolean,
+        kanBehandleEgenAnsatt: Boolean,
+        lovligeYtelser: List<Ytelse>
+    ): AccessView {
         return when {
-            harSkriveTilgang(esKlagebehandling) -> AccessView.WRITE
-            kanTildelesOppgaven(esKlagebehandling) -> AccessView.ASSIGN
-            harLeseTilgang(esKlagebehandling) -> AccessView.READ
+            harSkriveTilgang(
+                esKlagebehandling = esKlagebehandling,
+                innloggetIdent = innloggetIdent
+            ) -> AccessView.WRITE
+            kanTildelesOppgaven(
+                esKlagebehandling = esKlagebehandling,
+                kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig,
+                kanBehandleFortrolig = kanBehandleFortrolig,
+                kanBehandleEgenAnsatt = kanBehandleEgenAnsatt,
+                lovligeYtelser = lovligeYtelser
+            ) -> AccessView.ASSIGN
+            harLeseTilgang(
+                esKlagebehandling = esKlagebehandling,
+                kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig,
+                kanBehandleFortrolig = kanBehandleFortrolig,
+                kanBehandleEgenAnsatt = kanBehandleEgenAnsatt
+            ) -> AccessView.READ
             else -> AccessView.NONE
         }
     }
 
-    fun kanTildelesOppgaven(esKlagebehandling: EsAnonymBehandling): Boolean =
-        harLeseTilgang(esKlagebehandling) && innloggetSaksbehandlerService.getEnhetMedYtelserForSaksbehandler().ytelser.contains(
-            Ytelse.of(esKlagebehandling.ytelseId!!)
+    fun kanTildelesOppgaven(
+        esKlagebehandling: EsAnonymBehandling,
+        kanBehandleStrengtFortrolig: Boolean,
+        kanBehandleFortrolig: Boolean,
+        kanBehandleEgenAnsatt: Boolean,
+        lovligeYtelser: List<Ytelse>
+    ): Boolean =
+        harLeseTilgang(
+            esKlagebehandling = esKlagebehandling,
+            kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig,
+            kanBehandleFortrolig = kanBehandleFortrolig,
+            kanBehandleEgenAnsatt = kanBehandleEgenAnsatt
         )
+                && lovligeYtelser.contains(Ytelse.of(esKlagebehandling.ytelseId!!))
 
-    private fun harSkriveTilgang(esKlagebehandling: EsAnonymBehandling): Boolean =
-        esKlagebehandling.tildeltSaksbehandlerident != null && esKlagebehandling.tildeltSaksbehandlerident == oAuthTokenService.getInnloggetIdent()
+    private fun harSkriveTilgang(esKlagebehandling: EsAnonymBehandling, innloggetIdent: String): Boolean =
+        esKlagebehandling.tildeltSaksbehandlerident != null && esKlagebehandling.tildeltSaksbehandlerident == innloggetIdent
 
-    private fun harLeseTilgang(esKlagebehandling: EsAnonymBehandling): Boolean {
-
-        val kanBehandleStrengtFortrolig = oAuthTokenService.kanBehandleStrengtFortrolig()
-        val kanBehandleFortrolig = oAuthTokenService.kanBehandleFortrolig()
-        val kanBehandleEgenAnsatt = oAuthTokenService.kanBehandleEgenAnsatt()
+    private fun harLeseTilgang(
+        esKlagebehandling: EsAnonymBehandling,
+        kanBehandleStrengtFortrolig: Boolean,
+        kanBehandleFortrolig: Boolean,
+        kanBehandleEgenAnsatt: Boolean,
+    ): Boolean {
 
         val erStrengtFortrolig = esKlagebehandling.strengtFortrolig
         val erFortrolig = esKlagebehandling.fortrolig
