@@ -87,6 +87,17 @@ data class EnhetensFerdigstilteOppgaverQueryParams(
     var tildelteSaksbehandlere: List<String> = emptyList(),
 ) : CommonOppgaverQueryParams, FerdigstilteOppgaverQueryParams
 
+data class EnhetensOppgaverPaaVentQueryParams(
+    override var typer: List<String> = emptyList(),
+    override var ytelser: List<String> = emptyList(),
+    override var hjemler: List<String> = emptyList(),
+    override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
+    override val sortering: Sortering? = Sortering.FRIST,
+    override val start: Int,
+    override val antall: Int,
+    var tildelteSaksbehandlere: List<String> = emptyList(),
+) : CommonOppgaverQueryParams
+
 data class EnhetensUferdigeOppgaverQueryParams(
     override var typer: List<String> = emptyList(),
     override var ytelser: List<String> = emptyList(),

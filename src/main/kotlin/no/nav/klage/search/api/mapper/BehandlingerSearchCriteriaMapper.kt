@@ -108,6 +108,24 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
     )
 
+    fun toEnhetensOppgaverPaaVentSearchCriteria(
+        enhetId: String,
+        queryParams: EnhetensOppgaverPaaVentQueryParams,
+    ) = EnhetensOppgaverPaaVentSearchCriteria(
+        typer = queryParams.typer.map { Type.of(it) },
+        ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+        hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+        enhetId = enhetId,
+        saksbehandlere = queryParams.tildelteSaksbehandlere,
+        sortField = mapSortField(queryParams.sortering),
+        order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+        offset = queryParams.start,
+        limit = queryParams.antall,
+        kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
+        kanBehandleFortrolig = kanBehandleFortrolig(),
+        kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+    )
+
     fun toEnhetensUferdigeOppgaverSearchCriteria(
         enhetId: String,
         queryParams: EnhetensUferdigeOppgaverQueryParams,
