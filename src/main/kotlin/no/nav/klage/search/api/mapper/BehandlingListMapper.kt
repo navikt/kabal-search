@@ -158,7 +158,7 @@ class BehandlingListMapper(
                     kanBehandleEgenAnsatt = kanBehandleEgenAnsatt,
                     lovligeYtelser = lovligeYtelser,
                 ),
-                sattPaaVent = null,
+                sattPaaVent = esBehandling.toSattPaaVent(),
             )
         }
     }
@@ -169,6 +169,16 @@ class BehandlingListMapper(
         return if (sattPaaVent != null) {
             Venteperiode(
                 from = sattPaaVent.toLocalDate(),
+                to = sattPaaVentExpires?.toLocalDate(),
+                isExpired = sattPaaVentExpires?.isBefore(ChronoLocalDateTime.from(LocalDateTime.now()))
+            )
+        } else null
+    }
+
+    private fun EsAnonymBehandling.toSattPaaVent(): Venteperiode? {
+        return if (sattPaaVent != null) {
+            Venteperiode(
+                from = sattPaaVent!!.toLocalDate(),
                 to = sattPaaVentExpires?.toLocalDate(),
                 isExpired = sattPaaVentExpires?.isBefore(ChronoLocalDateTime.from(LocalDateTime.now()))
             )
