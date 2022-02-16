@@ -16,10 +16,6 @@ val kabalKodeverkVersion = "2022.02.09-10.43.a6b654d1a4eb"
 val opensearchVersion = "1.1.0"
 val reactorSpringVersion = "1.0.1.RELEASE"
 
-
-val githubUser: String by project
-val githubPassword: String by project
-
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 ext["elasticsearch.version"] = "7.10.2"
@@ -27,13 +23,6 @@ ext["elasticsearch.version"] = "7.10.2"
 repositories {
     mavenCentral()
     maven("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
-    maven {
-        url = uri("https://maven.pkg.github.com/navikt/simple-slack-poster")
-        credentials {
-            username = githubUser
-            password = githubPassword
-        }
-    }
     maven("https://packages.confluent.io/maven/")
     maven("https://jitpack.io")
 }
