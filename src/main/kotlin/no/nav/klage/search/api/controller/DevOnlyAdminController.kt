@@ -5,9 +5,8 @@ import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.Unprotected
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.ResponseStatus
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import java.util.*
 
 @Profile("dev-gcp")
 @RestController
@@ -30,6 +29,19 @@ class DevOnlyAdminController(
             adminService.syncEsWithKafka()
         } catch (e: Exception) {
             logger.warn("Failed to reset ES index", e)
+            throw e
+        }
+    }
+
+    @Unprotected
+    @DeleteMapping("/internal/behandling/{id}", produces = ["application/json"])
+    fun deleteBehandlingFromElasticIndex(
+        @PathVariable("id") behandlingId: UUID,
+    ) {
+        try {
+            adminService.deleteBehandling(behandlingId)
+        } catch (e: Exception) {
+            logger.warn("Failed to delete behandling with id $behandlingId", e)
             throw e
         }
     }

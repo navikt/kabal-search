@@ -683,6 +683,10 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     private fun haveSakenGjelder(fnr: String): TermQueryBuilder =
         QueryBuilders.termQuery("sakenGjelderFnr", fnr)
 
+    fun deleteBehandling(behandlingId: UUID) {
+        esBehandlingRepository.deleteBehandling(behandlingId)
+    }
+
 
     //TODO: Har beholdt dette fordi det bare er her koden for relaterte personer og sånt er dokumentert.
     /*
