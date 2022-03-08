@@ -34,7 +34,7 @@ class DevOnlyAdminController(
     }
 
     @Unprotected
-    @DeleteMapping("/internal/behandling/{id}", produces = ["application/json"])
+    @DeleteMapping("/internal/behandlinger/{id}", produces = ["application/json"])
     fun deleteBehandlingFromElasticIndex(
         @PathVariable("id") behandlingId: UUID,
     ) {
