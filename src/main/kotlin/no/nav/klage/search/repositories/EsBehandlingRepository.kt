@@ -39,6 +39,7 @@ import org.opensearch.rest.RestStatus
 import org.opensearch.search.aggregations.AggregationBuilder
 import org.opensearch.search.aggregations.Aggregations
 import org.opensearch.search.builder.SearchSourceBuilder
+import java.util.*
 
 
 class EsBehandlingRepository(val client: RestHighLevelClient) {
@@ -137,6 +138,13 @@ class EsBehandlingRepository(val client: RestHighLevelClient) {
     fun deleteAll() {
         val request = DeleteByQueryRequest(BEHANDLING_INDEX)
         request.setQuery(QueryBuilders.matchAllQuery())
+        val response: BulkByScrollResponse = client.deleteByQuery(request, RequestOptions.DEFAULT)
+        logBulkResponse(response)
+    }
+
+    fun deleteBehandling(behandlingId: UUID) {
+        val request = DeleteByQueryRequest(BEHANDLING_INDEX)
+        request.setQuery(QueryBuilders.idsQuery().addIds(behandlingId.toString()))
         val response: BulkByScrollResponse = client.deleteByQuery(request, RequestOptions.DEFAULT)
         logBulkResponse(response)
     }

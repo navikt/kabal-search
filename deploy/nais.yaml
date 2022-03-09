@@ -74,6 +74,7 @@ spec:
     inbound:
       rules:
         - application: kabal-frontend
+        - application: kabal-api
     outbound:
       rules:
         - application: kabal-api

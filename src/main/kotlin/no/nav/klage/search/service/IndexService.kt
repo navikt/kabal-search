@@ -7,6 +7,7 @@ import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getSecureLogger
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 class IndexService(
@@ -60,6 +61,10 @@ class IndexService(
                 throw e
             }
         }
+    }
+
+    fun deleteBehandling(behandlingId: UUID) {
+        elasticsearchService.deleteBehandling(behandlingId)
     }
 
 }
