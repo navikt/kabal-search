@@ -12,6 +12,7 @@ import org.springframework.kafka.listener.AbstractConsumerSeekAware
 import org.springframework.kafka.support.KafkaHeaders
 import org.springframework.messaging.handler.annotation.Header
 import org.springframework.stereotype.Component
+import java.util.*
 
 
 @Component
@@ -51,17 +52,22 @@ class BehandlingEndretKafkaConsumer(
             logger.debug("Reading offset ${record.offset()} from partition ${record.partition()} on kafka topic ${record.topic()} using groupId $groupId")
             val behandlingId = record.key()
             logger.debug("Read behandling with id $behandlingId")
-            val behandling = record.value().toBehandling()
-            indexService.indexBehandling(behandling)
-            logger.debug("Successfully indexed behandling with id $behandlingId")
-            //logger.debug("Successfully indexed klagebehandling with id $klagebehandlingId, now acking record")
-            //ack.acknowledge()
+
+            if (record.value() == null) {
+                logger.debug("Behandling with id $behandlingId has null value. Means delete.")
+                indexService.deleteBehandling(UUID.fromString(behandlingId))
+            } else {
+                val behandling = record.value().toBehandling()
+                indexService.indexBehandling(behandling)
+                logger.debug("Successfully indexed behandling with id $behandlingId")
+                //logger.debug("Successfully indexed klagebehandling with id $klagebehandlingId, now acking record")
+                //ack.acknowledge()
+            }
         }.onFailure {
             secureLogger.error("Failed to process endret behandling record", it)
             throw RuntimeException("Could not process endret behandling record. See more details in secure log.")
         }
     }
 
-    private fun String.toKlagebehandling() = mapper.readValue(this, KlagebehandlingSkjemaV1::class.java)
     private fun String.toBehandling() = mapper.readValue(this, BehandlingSkjemaV2::class.java)
 }
