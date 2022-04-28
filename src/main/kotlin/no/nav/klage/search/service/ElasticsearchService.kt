@@ -1,6 +1,7 @@
 package no.nav.klage.search.service
 
 import no.nav.klage.kodeverk.MedunderskriverFlyt
+import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.domain.*
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import no.nav.klage.search.domain.elasticsearch.EsStatus
@@ -188,39 +189,41 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         }.toSortedSet(compareBy<Saksbehandler> { it.navn.split(" ").last() })
     }
 
-    open fun countIkkeTildelt(): Long {
-        return countByStatus(IKKE_TILDELT)
+    open fun countIkkeTildelt(ytelse: Ytelse): Long {
+        return countByStatusAndYtelse(IKKE_TILDELT, ytelse)
     }
 
-    open fun countTildelt(): Long {
-        return countByStatus(TILDELT)
+    open fun countTildelt(ytelse: Ytelse): Long {
+        return countByStatusAndYtelse(TILDELT, ytelse)
     }
 
-    open fun countSendtTilMedunderskriver(): Long {
-        return countByStatus(SENDT_TIL_MEDUNDERSKRIVER)
+    open fun countSendtTilMedunderskriver(ytelse: Ytelse): Long {
+        return countByStatusAndYtelse(SENDT_TIL_MEDUNDERSKRIVER, ytelse)
     }
 
-    open fun countMedunderskriverValgt(): Long {
-        return countByStatus(MEDUNDERSKRIVER_VALGT)
+    open fun countMedunderskriverValgt(ytelse: Ytelse): Long {
+        return countByStatusAndYtelse(MEDUNDERSKRIVER_VALGT, ytelse)
     }
 
-    open fun countReturnertTilSaksbehandler(): Long {
-        return countByStatus(RETURNERT_TIL_SAKSBEHANDLER)
+    open fun countReturnertTilSaksbehandler(ytelse: Ytelse): Long {
+        return countByStatusAndYtelse(RETURNERT_TIL_SAKSBEHANDLER, ytelse)
     }
 
-    open fun countAvsluttet(): Long {
-        return countByStatus(FULLFOERT)
+    open fun countAvsluttet(ytelse: Ytelse): Long {
+        return countByStatusAndYtelse(FULLFOERT, ytelse)
     }
 
-    private fun countByStatus(status: EsStatus): Long {
+    private fun countByStatusAndYtelse(status: EsStatus, ytelse: Ytelse): Long {
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.must(QueryBuilders.termQuery("status", status))
+        baseQuery.must(QueryBuilders.termQuery("ytelseId", ytelse.id))
         return esBehandlingRepository.count(baseQuery)
     }
 
-    open fun countAntallSaksdokumenterIAvsluttedeBehandlingerMedian(): Double {
+    open fun countAntallSaksdokumenterIAvsluttedeBehandlingerMedian(ytelse: Ytelse): Double {
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
-        baseQuery.should(QueryBuilders.termQuery("status", FULLFOERT))
+        baseQuery.must(QueryBuilders.termQuery("status", FULLFOERT))
+        baseQuery.must(QueryBuilders.termQuery("ytelseId", ytelse.id))
         val searchHits = esBehandlingRepository.search(baseQuery)
         val saksdokumenterPerAvsluttetBehandling = searchHits.map { e -> e.content }
             .map { e -> e.saksdokumenter.size }.toList()
@@ -690,7 +693,6 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     fun deleteBehandling(behandlingId: UUID) {
         esBehandlingRepository.deleteBehandling(behandlingId)
     }
-
 
     //TODO: Har beholdt dette fordi det bare er her koden for relaterte personer og sånt er dokumentert.
     /*

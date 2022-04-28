@@ -71,12 +71,14 @@ class ElasticsearchServiceStatusTest {
         val searchHits: SearchHits<EsBehandling> = repo.search(query)
         assertThat(searchHits.totalHits).isEqualTo(6L)
 
-        assertThat(service.countIkkeTildelt()).isEqualTo(1)
-        assertThat(service.countTildelt()).isEqualTo(1)
-        assertThat(service.countMedunderskriverValgt()).isEqualTo(1)
-        assertThat(service.countSendtTilMedunderskriver()).isEqualTo(1)
-        assertThat(service.countReturnertTilSaksbehandler()).isEqualTo(1)
-        assertThat(service.countAvsluttet()).isEqualTo(1)
+        val ytelse = Ytelse.OMS_OMP
+
+        assertThat(service.countIkkeTildelt(ytelse)).isEqualTo(1)
+        assertThat(service.countTildelt(ytelse)).isEqualTo(1)
+        assertThat(service.countMedunderskriverValgt(ytelse)).isEqualTo(1)
+        assertThat(service.countSendtTilMedunderskriver(ytelse)).isEqualTo(1)
+        assertThat(service.countReturnertTilSaksbehandler(ytelse)).isEqualTo(1)
+        assertThat(service.countAvsluttet(ytelse)).isEqualTo(1)
     }
 
     private fun getKlagebehandling(status: EsStatus) = EsBehandling(

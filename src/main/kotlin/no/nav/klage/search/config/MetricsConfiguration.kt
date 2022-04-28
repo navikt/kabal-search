@@ -1,9 +1,7 @@
 package no.nav.klage.search.config
 
-import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.config.MeterFilter
 import io.micrometer.influx.InfluxMeterRegistry
-import io.micrometer.prometheus.PrometheusMeterRegistry
 import no.nav.klage.search.util.getLogger
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer
 import org.springframework.context.annotation.Bean
@@ -16,16 +14,6 @@ class MetricsConfiguration {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        const val MOTTATT_KLAGE = "funksjonell.mottattklage"
-    }
-
-    @Bean
-    fun prometheusMetricsCustomization(): MeterRegistryCustomizer<PrometheusMeterRegistry>? {
-        return MeterRegistryCustomizer<PrometheusMeterRegistry> { registry ->
-            registry.config().meterFilter(
-                MeterFilter.denyNameStartsWith("funksjonell")
-            )
-        }
     }
 
     @Bean
@@ -36,8 +24,4 @@ class MetricsConfiguration {
             )
         }
     }
-}
-
-fun MeterRegistry.incrementMottattKlage(kildesystem: String, tema: String) {
-    counter(MetricsConfiguration.MOTTATT_KLAGE, "kildesystem", kildesystem, "tema", tema).increment()
 }
