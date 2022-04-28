@@ -114,7 +114,7 @@ enum class Rekkefoelge {
 }
 
 enum class Sortering {
-    FRIST, MOTTATT, ALDER, PAAVENT_FROM, PAAVENT_TO
+    FRIST, MOTTATT, ALDER, PAA_VENT_FROM, PAA_VENT_TO
 }
 
 enum class Projeksjon {
