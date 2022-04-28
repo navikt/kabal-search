@@ -113,10 +113,6 @@ enum class Rekkefoelge {
     STIGENDE, SYNKENDE
 }
 
-//enum class Sortering {
-//    FRIST, MOTTATT, ALDER
-//}
-
 enum class Sortering {
     FRIST, MOTTATT, ALDER, PAAVENT_FROM, PAAVENT_TO
 }
