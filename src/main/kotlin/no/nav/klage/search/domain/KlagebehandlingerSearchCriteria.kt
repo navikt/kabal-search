@@ -38,7 +38,7 @@ data class KlagebehandlingerSearchCriteria(
 //data class ExtraPersonWithYtelser(val foedselsnr: String, val ytelser: List<Ytelse>)
 
 enum class SortField {
-    FRIST, MOTTATT
+    FRIST, MOTTATT, PAAVENT_FROM, PAAVENT_TO
 }
 
 enum class Order {

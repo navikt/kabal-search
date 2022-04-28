@@ -236,6 +236,10 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         fun sortField(criteria: SortableSearchCriteria): String =
             if (criteria.sortField == SortField.MOTTATT) {
                 "mottattKlageinstans"
+            } else if (criteria.sortField == SortField.PAAVENT_FROM) {
+                "sattPaaVent"
+            } else if (criteria.sortField == SortField.PAAVENT_TO) {
+                "sattPaaVentExpires"
             } else {
                 "frist"
             }

@@ -177,6 +177,8 @@ class BehandlingerSearchCriteriaMapper(
             Sortering.MOTTATT -> SortField.MOTTATT
             Sortering.FRIST -> SortField.FRIST
             Sortering.ALDER -> SortField.MOTTATT
+            Sortering.PAAVENT_FROM -> SortField.PAAVENT_FROM
+            Sortering.PAAVENT_TO -> SortField.PAAVENT_TO
             else -> SortField.FRIST
         }
 
