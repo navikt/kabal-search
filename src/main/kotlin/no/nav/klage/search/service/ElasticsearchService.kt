@@ -11,8 +11,8 @@ import no.nav.klage.search.domain.elasticsearch.KlageStatistikk
 import no.nav.klage.search.domain.elasticsearch.RelatedKlagebehandlinger
 import no.nav.klage.search.domain.saksbehandler.Saksbehandler
 import no.nav.klage.search.repositories.AnonymeBehandlingerSearchHits
-import no.nav.klage.search.repositories.EsBehandlingRepository
 import no.nav.klage.search.repositories.BehandlingerSearchHits
+import no.nav.klage.search.repositories.EsBehandlingRepository
 import no.nav.klage.search.repositories.SearchHits
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getMedian
@@ -232,8 +232,15 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(QueryBuilders.termQuery("ytelseId", ytelse.id))
         baseQuery.must(QueryBuilders.termQuery("type", type.id))
         val searchHits = esBehandlingRepository.search(baseQuery)
+        logger.debug("searchHits median: $searchHits")
+        logger.debug("searchHits median size: ${searchHits.totalHits}")
+
         val saksdokumenterPerAvsluttetBehandling = searchHits.map { e -> e.content }
-            .map { e -> e.saksdokumenter.size }.toList()
+            .map { e ->
+                logger.debug("searchHits median content saksdokumenter size: ${e.saksdokumenter.size}")
+                e.saksdokumenter.size
+            }
+            .toList()
 
         return getMedian(saksdokumenterPerAvsluttetBehandling)
     }
