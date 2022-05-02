@@ -66,19 +66,22 @@ class ElasticsearchServiceStatusTest {
         repo.save(getKlagebehandling(SENDT_TIL_MEDUNDERSKRIVER))
         repo.save(getKlagebehandling(RETURNERT_TIL_SAKSBEHANDLER))
         repo.save(getKlagebehandling(FULLFOERT))
+        repo.save(getKlagebehandling(SATT_PAA_VENT))
 
         val query = QueryBuilders.matchAllQuery()
         val searchHits: SearchHits<EsBehandling> = repo.search(query)
         assertThat(searchHits.totalHits).isEqualTo(6L)
 
         val ytelse = Ytelse.OMS_OMP
+        val type = Type.KLAGE
 
-        assertThat(service.countIkkeTildelt(ytelse)).isEqualTo(1)
-        assertThat(service.countTildelt(ytelse)).isEqualTo(1)
-        assertThat(service.countMedunderskriverValgt(ytelse)).isEqualTo(1)
-        assertThat(service.countSendtTilMedunderskriver(ytelse)).isEqualTo(1)
-        assertThat(service.countReturnertTilSaksbehandler(ytelse)).isEqualTo(1)
-        assertThat(service.countAvsluttet(ytelse)).isEqualTo(1)
+        assertThat(service.countIkkeTildelt(ytelse, type)).isEqualTo(1)
+        assertThat(service.countTildelt(ytelse, type)).isEqualTo(1)
+        assertThat(service.countMedunderskriverValgt(ytelse, type)).isEqualTo(1)
+        assertThat(service.countSendtTilMedunderskriver(ytelse, type)).isEqualTo(1)
+        assertThat(service.countReturnertTilSaksbehandler(ytelse, type)).isEqualTo(1)
+        assertThat(service.countAvsluttet(ytelse, type)).isEqualTo(1)
+        assertThat(service.countSattPaaVent(ytelse, type)).isEqualTo(1)
     }
 
     private fun getKlagebehandling(status: EsStatus) = EsBehandling(
