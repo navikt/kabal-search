@@ -242,6 +242,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
             }
             .toList()
 
+        logger.debug("median list $saksdokumenterPerAvsluttetBehandling")
+
         return getMedian(saksdokumenterPerAvsluttetBehandling)
     }
 
