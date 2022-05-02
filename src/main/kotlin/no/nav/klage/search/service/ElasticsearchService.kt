@@ -232,12 +232,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(QueryBuilders.termQuery("ytelseId", ytelse.id))
         baseQuery.must(QueryBuilders.termQuery("type", type.id))
         val searchHits = esBehandlingRepository.search(baseQuery)
-        logger.debug("searchHits median: $searchHits")
-        logger.debug("searchHits median size: ${searchHits.totalHits}")
-
         val saksdokumenterPerAvsluttetBehandling = searchHits.map { e -> e.content }
             .map { e ->
-                logger.debug("searchHits median content saksdokumenter size: ${e.saksdokumenter.size}")
                 e.saksdokumenter.size
             }
             .toList()
