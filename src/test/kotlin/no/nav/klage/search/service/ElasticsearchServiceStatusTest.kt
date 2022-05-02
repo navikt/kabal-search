@@ -70,7 +70,7 @@ class ElasticsearchServiceStatusTest {
 
         val query = QueryBuilders.matchAllQuery()
         val searchHits: SearchHits<EsBehandling> = repo.search(query)
-        assertThat(searchHits.totalHits).isEqualTo(6L)
+        assertThat(searchHits.totalHits).isEqualTo(7L)
 
         val ytelse = Ytelse.OMS_OMP
         val type = Type.KLAGE
