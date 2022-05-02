@@ -3,6 +3,7 @@ package no.nav.klage.search.config
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.binder.MeterBinder
+import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.service.ElasticsearchService
 import no.nav.klage.search.util.getLogger
@@ -26,37 +27,47 @@ class FunksjonelleGaugesConfiguration {
         return try {
             MeterBinder { registry: MeterRegistry ->
                 Ytelse.values().forEach { ytelse ->
-                    Gauge.builder("funksjonell.ikketildelt") { elasticsearchService.countIkkeTildelt(ytelse) }
-                        .tag("ytelse", ytelse.navn).register(registry)
-                    Gauge.builder("funksjonell.tildelt") { elasticsearchService.countTildelt(ytelse) }
-                        .tag("ytelse", ytelse.navn).register(registry)
-                    Gauge.builder("funksjonell.medunderskrivervalgt") {
-                        elasticsearchService.countMedunderskriverValgt(
-                            ytelse
-                        )
-                    }
-                        .tag("ytelse", ytelse.navn).register(registry)
-                    Gauge.builder("funksjonell.sendttilmedunderskriver") {
-                        elasticsearchService.countSendtTilMedunderskriver(
-                            ytelse
-                        )
-                    }
-                        .tag("ytelse", ytelse.navn).register(registry)
-                    Gauge.builder("funksjonell.returnerttilsaksbehandler") {
-                        elasticsearchService.countReturnertTilSaksbehandler(
-                            ytelse
-                        )
-                    }
-                        .tag("ytelse", ytelse.navn).register(registry)
-                    Gauge.builder("funksjonell.avsluttet") { elasticsearchService.countAvsluttet(ytelse) }
-                        .tag("ytelse", ytelse.navn).register(registry)
+                    Type.values().forEach { type ->
+                        Gauge.builder("funksjonell.ikketildelt") { elasticsearchService.countIkkeTildelt(ytelse, type) }
+                            .tag("ytelse", ytelse.navn)
+                            .tag("type", type.navn)
+                            .register(registry)
 
-                    Gauge.builder("funksjonell.antallsaksdokumenterpaaavsluttedebehandlinger.median") {
-                        elasticsearchService.countAntallSaksdokumenterIAvsluttedeBehandlingerMedian(
-                            ytelse
-                        )
+                        Gauge.builder("funksjonell.tildelt") { elasticsearchService.countTildelt(ytelse, type) }
+                            .tag("ytelse", ytelse.navn)
+                            .tag("type", type.navn)
+                            .register(registry)
+
+                        Gauge.builder("funksjonell.medunderskrivervalgt") { elasticsearchService.countMedunderskriverValgt(ytelse, type) }
+                            .tag("ytelse", ytelse.navn)
+                            .tag("type", type.navn)
+                            .register(registry)
+
+                        Gauge.builder("funksjonell.sendttilmedunderskriver") { elasticsearchService.countSendtTilMedunderskriver(ytelse, type) }
+                            .tag("ytelse", ytelse.navn)
+                            .tag("type", type.navn)
+                            .register(registry)
+
+                        Gauge.builder("funksjonell.returnerttilsaksbehandler") { elasticsearchService.countReturnertTilSaksbehandler(ytelse, type) }
+                            .tag("ytelse", ytelse.navn)
+                            .tag("type", type.navn)
+                            .register(registry)
+
+                        Gauge.builder("funksjonell.avsluttet") { elasticsearchService.countAvsluttet(ytelse, type) }
+                            .tag("ytelse", ytelse.navn)
+                            .tag("type", type.navn)
+                            .register(registry)
+
+                        Gauge.builder("funksjonell.antallsaksdokumenterpaaavsluttedebehandlinger.median") { elasticsearchService.countAntallSaksdokumenterIAvsluttedeBehandlingerMedian(ytelse, type) }
+                            .tag("ytelse", ytelse.navn)
+                            .tag("type", type.navn)
+                            .register(registry)
+
+                        Gauge.builder("funksjonell.paavent") { elasticsearchService.countSattPaaVent(ytelse, type) }
+                            .tag("ytelse", ytelse.navn)
+                            .tag("type", type.navn)
+                            .register(registry)
                     }
-                        .tag("ytelse", ytelse.navn).register(registry)
                 }
             }
         } catch (e: Exception) {
