@@ -50,7 +50,6 @@ dependencies {
     implementation("org.ehcache:ehcache")
     implementation("org.jolokia:jolokia-core")
     implementation("io.micrometer:micrometer-registry-prometheus")
-    implementation("io.micrometer:micrometer-registry-influx")
     implementation("ch.qos.logback:logback-classic")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 

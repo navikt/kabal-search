@@ -3,6 +3,8 @@ package no.nav.klage.search.config
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.binder.MeterBinder
+import no.nav.klage.kodeverk.Type
+import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.service.ElasticsearchService
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getSecureLogger
@@ -24,18 +26,49 @@ class FunksjonelleGaugesConfiguration {
     fun registerFunctionalStats(elasticsearchService: ElasticsearchService): MeterBinder {
         return try {
             MeterBinder { registry: MeterRegistry ->
-                Gauge.builder("funksjonell.ikketildelt") { elasticsearchService.countIkkeTildelt() }.register(registry)
-                Gauge.builder("funksjonell.tildelt") { elasticsearchService.countTildelt() }.register(registry)
-                Gauge.builder("funksjonell.medunderskrivervalgt") { elasticsearchService.countMedunderskriverValgt() }
-                    .register(registry)
-                Gauge.builder("funksjonell.sendttilmedunderskriver") { elasticsearchService.countSendtTilMedunderskriver() }
-                    .register(registry)
-                Gauge.builder("funksjonell.returnerttilsaksbehandler") { elasticsearchService.countReturnertTilSaksbehandler() }
-                    .register(registry)
-                Gauge.builder("funksjonell.avsluttet") { elasticsearchService.countAvsluttet() }.register(registry)
-                Gauge.builder("funksjonell.antallsaksdokumenterpaaavsluttedebehandlinger.median") { elasticsearchService.countAntallSaksdokumenterIAvsluttedeBehandlingerMedian() }
-                    .register(registry)
-                //TODO: Egentlig ønsker jeg å registrere antall saksdokumenter per klagebehandling, med klagebehandlingId'en som en tag i gaugen. Men hvordan i all verden gjør jeg det??
+                Ytelse.values().forEach { ytelse ->
+                    Type.values().forEach { type ->
+                        Gauge.builder("funksjonell.ikketildelt") { elasticsearchService.countIkkeTildelt(ytelse, type) }
+                            .tag("ytelse", ytelse.navn)
+                            .tag("type", type.navn)
+                            .register(registry)
+
+                        Gauge.builder("funksjonell.tildelt") { elasticsearchService.countTildelt(ytelse, type) }
+                            .tag("ytelse", ytelse.navn)
+                            .tag("type", type.navn)
+                            .register(registry)
+
+                        Gauge.builder("funksjonell.medunderskrivervalgt") { elasticsearchService.countMedunderskriverValgt(ytelse, type) }
+                            .tag("ytelse", ytelse.navn)
+                            .tag("type", type.navn)
+                            .register(registry)
+
+                        Gauge.builder("funksjonell.sendttilmedunderskriver") { elasticsearchService.countSendtTilMedunderskriver(ytelse, type) }
+                            .tag("ytelse", ytelse.navn)
+                            .tag("type", type.navn)
+                            .register(registry)
+
+                        Gauge.builder("funksjonell.returnerttilsaksbehandler") { elasticsearchService.countReturnertTilSaksbehandler(ytelse, type) }
+                            .tag("ytelse", ytelse.navn)
+                            .tag("type", type.navn)
+                            .register(registry)
+
+                        Gauge.builder("funksjonell.avsluttet") { elasticsearchService.countAvsluttet(ytelse, type) }
+                            .tag("ytelse", ytelse.navn)
+                            .tag("type", type.navn)
+                            .register(registry)
+
+                        Gauge.builder("funksjonell.antallsaksdokumenterpaaavsluttedebehandlinger.median") { elasticsearchService.countAntallSaksdokumenterIAvsluttedeBehandlingerMedian(ytelse, type) }
+                            .tag("ytelse", ytelse.navn)
+                            .tag("type", type.navn)
+                            .register(registry)
+
+                        Gauge.builder("funksjonell.paavent") { elasticsearchService.countSattPaaVent(ytelse, type) }
+                            .tag("ytelse", ytelse.navn)
+                            .tag("type", type.navn)
+                            .register(registry)
+                    }
+                }
             }
         } catch (e: Exception) {
             secureLogger.error("Could not setup gauges", e)
