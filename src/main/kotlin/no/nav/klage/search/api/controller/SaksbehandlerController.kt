@@ -1,8 +1,8 @@
 package no.nav.klage.search.api.controller
 
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
-import io.swagger.annotations.ApiParam
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.tags.Tag
 import no.nav.klage.search.api.view.SaksbehandlereListResponse
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.domain.SaksbehandlereByEnhetSearchCriteria
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@Api(tags = ["kabal-search"])
+@Tag(name = "kabal-search")
 @ProtectedWithClaims(issuer = ISSUER_AAD)
 class SaksbehandlerController(
     private val elasticsearchService: ElasticsearchService,
@@ -30,13 +30,13 @@ class SaksbehandlerController(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    @ApiOperation(
-        value = "Hent saksbehandlere i gitt enhet",
-        notes = "Henter alle saksbehandlere fra aktive saker i gitt enhet."
+    @Operation(
+        summary = "Hent saksbehandlere i gitt enhet",
+        description = "Henter alle saksbehandlere fra aktive saker i gitt enhet."
     )
     @GetMapping("/enheter/{enhet}/saksbehandlere", produces = ["application/json"])
     fun getSaksbehandlereForEnhet(
-        @ApiParam(value = "Enhet")
+        @Parameter(name = "Enhet")
         @PathVariable enhet: String
     ): SaksbehandlereListResponse {
         logger.debug("getSaksbehandlereForEnhet")

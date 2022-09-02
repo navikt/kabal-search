@@ -3,12 +3,12 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val mockkVersion = "1.12.7"
 val tokenValidationVersion = "2.1.4"
 val logstashVersion = "7.2"
-val springSleuthVersion = "3.0.4"
+val springSleuthVersion = "3.1.3"
 val unleashVersion = "4.4.1"
 val problemSpringWebStartVersion = "0.27.0"
 val springRetryVersion = "1.3.3"
 val springMockkVersion = "3.1.1"
-val springFoxVersion = "3.0.0"
+val springDocVersion = "1.6.11"
 val testContainersVersion = "1.17.3"
 val threeTenExtraVersion = "1.7.1"
 val archunitVersion = "0.23.1"
@@ -28,12 +28,13 @@ repositories {
 }
 
 plugins {
-    id("org.springframework.boot") version "2.5.12"
-    id("io.spring.dependency-management") version "1.0.12.RELEASE"
+    id("org.springframework.boot") version "2.7.3"
     kotlin("jvm") version "1.7.10"
     kotlin("plugin.spring") version "1.7.10"
     idea
 }
+
+apply(plugin = "io.spring.dependency-management")
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -57,7 +58,7 @@ dependencies {
     implementation("org.opensearch.client:opensearch-rest-high-level-client:$opensearchVersion")
     implementation("org.threeten:threeten-extra:$threeTenExtraVersion")
     implementation("org.springframework.cloud:spring-cloud-starter-sleuth:$springSleuthVersion")
-    implementation("io.springfox:springfox-boot-starter:$springFoxVersion")
+    implementation("org.springdoc:springdoc-openapi-ui:$springDocVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
     implementation("no.nav.security:token-validation-spring:$tokenValidationVersion")
     implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
