@@ -12,7 +12,6 @@ val springDocVersion = "1.6.11"
 val testContainersVersion = "1.17.3"
 val threeTenExtraVersion = "1.7.1"
 val archunitVersion = "0.23.1"
-val kabalKodeverkVersion = "2022.09.02-09.46.42bb41c078e5"
 val opensearchVersion = "2.3.0"
 val reactorSpringVersion = "1.0.1.RELEASE"
 
@@ -62,7 +61,7 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
     implementation("no.nav.security:token-validation-spring:$tokenValidationVersion")
     implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
-    implementation("com.github.navikt:kabal-kodeverk:$kabalKodeverkVersion") {
+    implementation("com.github.navikt:klage-kodeverk:1.0.4") {
         exclude(group = "jakarta.persistence")
     }
     implementation("org.springframework.retry:spring-retry:$springRetryVersion")
