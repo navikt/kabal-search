@@ -1,7 +1,7 @@
 package no.nav.klage.search.api.controller
 
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
 import no.nav.klage.search.api.mapper.BehandlingListMapper
 import no.nav.klage.search.api.mapper.BehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.*
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/search")
-@Api(tags = ["kabal-search"])
+@Tag(name = "kabal-search")
 @ProtectedWithClaims(issuer = ISSUER_AAD)
 class BehandlingSearchController(
     private val behandlingListMapper: BehandlingListMapper,
@@ -36,9 +36,9 @@ class BehandlingSearchController(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    @ApiOperation(
-        value = "Søk oppgaver som gjelder en gitt person",
-        notes = "Finner alle oppgaver som saksbehandler har tilgang til som omhandler en gitt person."
+    @Operation(
+        summary = "Søk oppgaver som gjelder en gitt person",
+        description = "Finner alle oppgaver som saksbehandler har tilgang til som omhandler en gitt person."
     )
     @PostMapping("/personogoppgaver", produces = ["application/json"])
     fun getPersonOgOppgaver(@RequestBody input: SearchPersonByFnrInput): FnrSearchResponse {
@@ -53,9 +53,9 @@ class BehandlingSearchController(
         )
     }
 
-    @ApiOperation(
-        value = "Hent oppgaver som gjelder en gitt person",
-        notes = "Henter alle oppgaver som saksbehandler har tilgang til som omhandler en gitt person."
+    @Operation(
+        summary = "Hent oppgaver som gjelder en gitt person",
+        description = "Henter alle oppgaver som saksbehandler har tilgang til som omhandler en gitt person."
     )
     @PostMapping("/name", produces = ["application/json"])
     fun getNameSearchResponse(@RequestBody input: SearchPersonByNameInput): NameSearchResponse {

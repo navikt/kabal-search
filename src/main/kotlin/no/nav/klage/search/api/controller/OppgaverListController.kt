@@ -1,8 +1,8 @@
 package no.nav.klage.search.api.controller
 
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
-import io.swagger.annotations.ApiParam
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.tags.Tag
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.api.mapper.BehandlingListMapper
 import no.nav.klage.search.api.mapper.BehandlingerSearchCriteriaMapper
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@Api(tags = ["kabal-search"])
+@Tag(name = "kabal-search")
 @ProtectedWithClaims(issuer = ISSUER_AAD)
 class OppgaverListController(
     private val behandlingListMapper: BehandlingListMapper,
@@ -37,9 +37,9 @@ class OppgaverListController(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    @ApiOperation(
-        value = "Hent ledige oppgaver for en saksbehandler",
-        notes = "Henter alle ledige oppgaver saksbehandler har tilgang til."
+    @Operation(
+        summary = "Hent ledige oppgaver for en saksbehandler",
+        description = "Henter alle ledige oppgaver saksbehandler har tilgang til."
     )
     @GetMapping("/ansatte/{navIdent}/oppgaver/ledige", produces = ["application/json"])
     fun getMineLedigeOppgaver(
@@ -75,13 +75,13 @@ class OppgaverListController(
         )
     }
 
-    @ApiOperation(
-        value = "Hent ferdigstilte oppgaver for en ansatt",
-        notes = "Henter alle ferdigstilte oppgaver som saksbehandler har tilgang til."
+    @Operation(
+        summary = "Hent ferdigstilte oppgaver for en ansatt",
+        description = "Henter alle ferdigstilte oppgaver som saksbehandler har tilgang til."
     )
     @GetMapping("/ansatte/{navIdent}/oppgaver/ferdigstilte", produces = ["application/json"])
     fun getMineFerdigstilteOppgaver(
-        @ApiParam(value = "NavIdent til en ansatt")
+        @Parameter(name = "NavIdent til en ansatt")
         @PathVariable navIdent: String,
         queryParams: MineFerdigstilteOppgaverQueryParams
     ): BehandlingerListRespons {
@@ -116,13 +116,13 @@ class OppgaverListController(
     private fun emptyResponse(): BehandlingerListRespons =
         BehandlingerListRespons(antallTreffTotalt = 0, klagebehandlinger = emptyList(), behandlinger = emptyList())
 
-    @ApiOperation(
-        value = "Hent uferdige oppgaver for en ansatt",
-        notes = "Henter alle uferdige oppgaver som saksbehandler har tilgang til."
+    @Operation(
+        summary = "Hent uferdige oppgaver for en ansatt",
+        description = "Henter alle uferdige oppgaver som saksbehandler har tilgang til."
     )
     @GetMapping("/ansatte/{navIdent}/oppgaver/uferdige", produces = ["application/json"])
     fun getMineUferdigeOppgaver(
-        @ApiParam(value = "NavIdent til en ansatt")
+        @Parameter(name = "NavIdent til en ansatt")
         @PathVariable navIdent: String,
         queryParams: MineUferdigeOppgaverQueryParams
     ): BehandlingerListRespons {
@@ -154,13 +154,13 @@ class OppgaverListController(
         )
     }
 
-    @ApiOperation(
-        value = "Hent oppgaver satt på vent for en ansatt",
-        notes = "Henter alle oppgaver satt på vent som saksbehandler har tilgang til."
+    @Operation(
+        summary = "Hent oppgaver satt på vent for en ansatt",
+        description = "Henter alle oppgaver satt på vent som saksbehandler har tilgang til."
     )
     @GetMapping("/ansatte/{navIdent}/oppgaver/paavent", produces = ["application/json"])
     fun getMineOppgaverPaaVent(
-        @ApiParam(value = "NavIdent til en ansatt")
+        @Parameter(name = "NavIdent til en ansatt")
         @PathVariable navIdent: String,
         queryParams: MineOppgaverPaaVentQueryParams
     ): BehandlingerListRespons {
@@ -192,13 +192,13 @@ class OppgaverListController(
         )
     }
 
-    @ApiOperation(
-        value = "Hent enhetens ferdigstilte oppgaver",
-        notes = "Henter alle ferdigstilte oppgaver for enheten som saksbehandler har tilgang til."
+    @Operation(
+        summary = "Hent enhetens ferdigstilte oppgaver",
+        description = "Henter alle ferdigstilte oppgaver for enheten som saksbehandler har tilgang til."
     )
     @GetMapping("/enhet/{enhetId}/oppgaver/tildelte/ferdigstilte", produces = ["application/json"])
     fun getEnhetensFerdigstilteOppgaver(
-        @ApiParam(value = "EnhetId til enheten den ansatte jobber i")
+        @Parameter(name = "EnhetId til enheten den ansatte jobber i")
         @PathVariable enhetId: String,
         queryParams: EnhetensFerdigstilteOppgaverQueryParams
     ): BehandlingerListRespons {
@@ -225,13 +225,13 @@ class OppgaverListController(
         )
     }
 
-    @ApiOperation(
-        value = "Hent enhetens oppgaver på vent",
-        notes = "Henter alle oppgaver satt på vent for enheten som saksbehandler har tilgang til."
+    @Operation(
+        summary = "Hent enhetens oppgaver på vent",
+        description = "Henter alle oppgaver satt på vent for enheten som saksbehandler har tilgang til."
     )
     @GetMapping("/enhet/{enhetId}/oppgaver/tildelte/paavent", produces = ["application/json"])
     fun getEnhetensOppgaverPaaVent(
-        @ApiParam(value = "EnhetId til enheten den ansatte jobber i")
+        @Parameter(name = "EnhetId til enheten den ansatte jobber i")
         @PathVariable enhetId: String,
         queryParams: EnhetensOppgaverPaaVentQueryParams
     ): BehandlingerListRespons {
@@ -258,13 +258,13 @@ class OppgaverListController(
         )
     }
 
-    @ApiOperation(
-        value = "Hent uferdige oppgaver for en enhet",
-        notes = "Henter alle uferdige oppgaver i enheten som saksbehandler har tilgang til."
+    @Operation(
+        summary = "Hent uferdige oppgaver for en enhet",
+        description = "Henter alle uferdige oppgaver i enheten som saksbehandler har tilgang til."
     )
     @GetMapping("/enhet/{enhetId}/oppgaver/tildelte/uferdige", produces = ["application/json"])
     fun getEnhetensUferdigeOppgaver(
-        @ApiParam(value = "EnhetId til enheten den ansatte jobber i")
+        @Parameter(name = "EnhetId til enheten den ansatte jobber i")
         @PathVariable enhetId: String,
         queryParams: EnhetensUferdigeOppgaverQueryParams
     ): BehandlingerListRespons {
@@ -297,13 +297,13 @@ class OppgaverListController(
     }
 
 
-    @ApiOperation(
-        value = "Hent antall utildelte behandlinger for enheten der fristen gått ut",
-        notes = "Teller opp alle utildelte behandlinger for enheten der fristen gått ut."
+    @Operation(
+        summary = "Hent antall utildelte behandlinger for enheten der fristen gått ut",
+        description = "Teller opp alle utildelte behandlinger for enheten der fristen gått ut."
     )
     @GetMapping("/ansatte/{navIdent}/antalloppgavermedutgaattefrister", produces = ["application/json"])
     fun getAntallUtgaatteFrister(
-        @ApiParam(value = "NavIdent til en ansatt")
+        @Parameter(name = "NavIdent til en ansatt")
         @PathVariable navIdent: String,
         queryParams: MineLedigeOppgaverQueryParams
     ): AntallUtgaatteFristerResponse {

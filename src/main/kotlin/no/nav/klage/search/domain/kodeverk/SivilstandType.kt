@@ -1,9 +1,7 @@
 package no.nav.klage.search.domain.kodeverk
 
-import io.swagger.annotations.ApiModel
 import no.nav.klage.kodeverk.Kode
 
-@ApiModel
 enum class SivilstandType(override val id: String, override val navn: String, override val beskrivelse: String) : Kode {
 
     GIFT("1", "Gift", "Gift"),

@@ -381,7 +381,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
-        //baseQuery.must(beAvsluttetAvSaksbehandler())
+        baseQuery.mustNot(beAvsluttetAvSaksbehandler())
         baseQuery.must(beSattPaaVent())
         baseQuery.must(beTildeltEnhet(enhetId))
         if (saksbehandlere.isNotEmpty()) {
