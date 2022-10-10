@@ -10,7 +10,7 @@ import com.tngtech.archunit.library.Architectures.layeredArchitecture
 @AnalyzeClasses(packages = ["no.nav.klage.search"], importOptions = [ImportOption.DoNotIncludeTests::class])
 class LayeredArchitectureTest {
 
-    fun kabalApiLayeredArchitecture() = layeredArchitecture()
+    fun kabalApiLayeredArchitecture() = layeredArchitecture().consideringAllDependencies()
         .layer("Controllers").definedBy("no.nav.klage.search.api.controller")
         .layer("ApiMappers").definedBy("no.nav.klage.search.api.mapper")
         .layer("View").definedBy("no.nav.klage.search.api.view")
