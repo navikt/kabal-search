@@ -55,22 +55,6 @@
             <appender-ref ref="secureJson"/>
         </logger>
 
-        <logger name="reactor.netty.http.client" level="debug" additivity="false">
-            <appender-ref ref="secureJson"/>
-        </logger>
-
-        <logger name="org.springframework.data.elasticsearch.client" level="trace" additivity="false">
-            <appender-ref ref="secureJson"/>
-        </logger>
-
-        <logger name="org.springframework.data.elasticsearch.client.WIRE" level="trace" additivity="false">
-            <appender-ref ref="secureJson"/>
-        </logger>
-
-        <logger name="tracer" level="trace" additivity="false">
-            <appender-ref ref="secureJson"/>
-        </logger>
-
         <logger name="org.springframework.data.convert.CustomConversions" level="error"/>
 
         <logger name="no.nav.security.token.support.spring.validation.interceptor.JwtTokenHandlerInterceptor"
