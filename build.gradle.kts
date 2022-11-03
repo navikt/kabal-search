@@ -62,7 +62,7 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
     implementation("no.nav.security:token-validation-spring:$tokenValidationVersion")
     implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
-    implementation("com.github.navikt:klage-kodeverk:1.1.5") {
+    implementation("com.github.navikt:klage-kodeverk:1.1.6") {
         exclude(group = "jakarta.persistence")
     }
     implementation("org.springframework.retry:spring-retry:$springRetryVersion")
