@@ -14,13 +14,13 @@ spec:
     application:
       enabled: true
       tenant: {{tenant}}
-      allowAllUsers: true
       claims:
         groups:
+          - id: {{KABAL_SAKSBEHANDLING}}
+          - id: {{KABAL_FAGTEKSTREDIGERING}}
           - id: {{KABAL_OPPGAVESTYRING_EGEN_ENHET}}
-          - id: {{FORTROLIG}}
-          - id: {{STRENGT_FORTROLIG}}
-          - id: {{EGEN_ANSATT}}
+          - id: {{KABAL_OPPGAVESTYRING_ALLE_ENHETER}}
+          - id: {{KABAL_MALTEKSTREDIGERING}}
           {{#if KABAL_ADMIN}}
           - id: {{KABAL_ADMIN}}
           {{/if}}
