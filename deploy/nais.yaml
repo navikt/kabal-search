@@ -14,6 +14,7 @@ spec:
     application:
       enabled: true
       tenant: {{tenant}}
+      allowAllUsers: true
       claims:
         groups:
           - id: {{KABAL_OPPGAVESTYRING_EGEN_ENHET}}
