@@ -344,7 +344,7 @@ class OppgaverListController(
             ?: throw IllegalArgumentException("Saksbehandler har ikke tilgang til angitt enhet")
 
     private fun validateRettigheterForEnhetensTildelteOppgaver() {
-        if (!(oAuthTokenService.isLeder() || oAuthTokenService.isFagansvarlig())) {
+        if (!oAuthTokenService.isKabalOppgavestyringEgenEnhet()) {
             val message =
                 "${oAuthTokenService.getInnloggetIdent()} har ikke tilgang til å se alle tildelte oppgaver."
             logger.warn(message)

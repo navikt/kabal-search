@@ -7,32 +7,25 @@ import org.springframework.stereotype.Service
 @Service
 class OAuthTokenService(
     private val tokenUtil: TokenUtil,
-    @Value("\${ROLE_KLAGE_SAKSBEHANDLER}") private val saksbehandlerRole: String,
-    @Value("\${ROLE_KLAGE_FAGANSVARLIG}") private val fagansvarligRole: String,
-    @Value("\${ROLE_KLAGE_LEDER}") private val lederRole: String,
-    @Value("\${ROLE_KLAGE_MERKANTIL}") private val merkantilRole: String,
-    @Value("\${ROLE_KLAGE_FORTROLIG}") private val kanBehandleFortroligRole: String,
-    @Value("\${ROLE_KLAGE_STRENGT_FORTROLIG}") private val kanBehandleStrengtFortroligRole: String,
-    @Value("\${ROLE_KLAGE_EGEN_ANSATT}") private val kanBehandleEgenAnsattRole: String,
-    @Value("\${ROLE_ADMIN}") private val adminRole: String
+    @Value("\${KABAL_OPPGAVESTYRING_EGEN_ENHET}") private val kabalOppgavestyringEgenEnhet: String,
+    @Value("\${FORTROLIG}") private val fortrolig: String,
+    @Value("\${STRENGT_FORTROLIG}") private val strengtFortrolig: String,
+    @Value("\${EGEN_ANSATT}") private val egenAnsatt: String,
+    @Value("\${KABAL_ADMIN}") private val kabalAdmin: String
 ) {
 
     fun getInnloggetIdent() = tokenUtil.getIdent()
 
-    fun isAdmin(): Boolean = tokenUtil.getRollerFromToken().hasRole(adminRole)
+    fun isAdmin(): Boolean = tokenUtil.getRollerFromToken().hasRole(kabalAdmin)
 
-    fun isLeder(): Boolean = tokenUtil.getRollerFromToken().hasRole(lederRole)
+    fun isKabalOppgavestyringEgenEnhet(): Boolean = tokenUtil.getRollerFromToken().hasRole(kabalOppgavestyringEgenEnhet)
 
-    fun isFagansvarlig(): Boolean = tokenUtil.getRollerFromToken().hasRole(fagansvarligRole)
-
-    fun isSaksbehandler(): Boolean = tokenUtil.getRollerFromToken().hasRole(saksbehandlerRole)
-
-    fun kanBehandleFortrolig(): Boolean = tokenUtil.getRollerFromToken().hasRole(kanBehandleFortroligRole)
+    fun kanBehandleFortrolig(): Boolean = tokenUtil.getRollerFromToken().hasRole(fortrolig)
 
     fun kanBehandleStrengtFortrolig(): Boolean =
-        tokenUtil.getRollerFromToken().hasRole(kanBehandleStrengtFortroligRole)
+        tokenUtil.getRollerFromToken().hasRole(strengtFortrolig)
 
-    fun kanBehandleEgenAnsatt(): Boolean = tokenUtil.getRollerFromToken().hasRole(kanBehandleEgenAnsattRole)
+    fun kanBehandleEgenAnsatt(): Boolean = tokenUtil.getRollerFromToken().hasRole(egenAnsatt)
 
     private fun List<String>.hasRole(role: String) = any { it.contains(role) }
 }
