@@ -11,7 +11,7 @@ val springMockkVersion = "3.1.1"
 val springDocVersion = "1.6.12"
 val testContainersVersion = "1.17.6"
 val threeTenExtraVersion = "1.7.1"
-val archunitVersion = "1.0.0"
+val archunitVersion = "1.0.1"
 val opensearchVersion = "2.4.0"
 val reactorSpringVersion = "1.0.1.RELEASE"
 
