@@ -112,9 +112,7 @@ class BehandlingSearchController(
         )
     }*/
 
-    private fun getEnhetOrThrowException(enhetId: String): EnhetMedLovligeYtelser =
-        innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter.find { it.enhet.enhetId == enhetId }
-            ?: throw IllegalArgumentException("Saksbehandler har ikke tilgang til angitt enhet")
+
 
 }
 

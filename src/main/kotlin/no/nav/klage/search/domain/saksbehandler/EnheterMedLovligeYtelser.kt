@@ -1,3 +1,3 @@
 package no.nav.klage.search.domain.saksbehandler
 
-data class EnheterMedLovligeYtelser(val enheter: List<EnhetMedLovligeYtelser>)
+data class EnheterMedLovligeYtelser(val enheterMedLovligeYtelser: List<EnhetMedLovligeYtelser>)
