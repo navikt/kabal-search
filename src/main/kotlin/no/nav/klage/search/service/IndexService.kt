@@ -25,23 +25,6 @@ class IndexService(
         elasticsearchService.deleteAll()
     }
 
-    @Retryable
-    fun indexKlagebehandling(klagebehandling: KlagebehandlingSkjemaV1) {
-        try {
-            elasticsearchService.save(
-                esBehandlingMapper.mapKlagebehandlingToEsKlagebehandling(klagebehandling)
-            )
-        } catch (e: Exception) {
-            if (e.message?.contains("version_conflict_engine_exception") == true) {
-                logger.info("Later version already indexed, ignoring this..")
-            } else {
-                logger.error("Unable to index klagebehandling ${klagebehandling.id}, see securelogs for details")
-                securelogger.error("Unable to index klagebehandling ${klagebehandling.id}", e)
-                throw e
-            }
-        }
-    }
-
     fun recreateIndex() {
         elasticsearchService.recreateIndex()
     }
