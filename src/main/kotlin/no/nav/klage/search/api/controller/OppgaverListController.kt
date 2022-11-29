@@ -49,7 +49,7 @@ class OppgaverListController(
 
         val ytelser = lovligeValgteYtelser(
             queryParams = queryParams,
-            valgteEnheter = innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
+            valgteEnheter = innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheterMedLovligeYtelser
         )
         //TODO: Dette hadde vært bedre å håndtere i ElasticsearchService enn her
         if (ytelser.isEmpty()) {
@@ -86,7 +86,7 @@ class OppgaverListController(
 
         val ytelser = lovligeValgteYtelser(
             queryParams = queryParams,
-            valgteEnheter = innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
+            valgteEnheter = innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheterMedLovligeYtelser
         )
 
         //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
@@ -123,7 +123,7 @@ class OppgaverListController(
 
         val ytelser = lovligeValgteYtelser(
             queryParams = queryParams,
-            valgteEnheter = innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
+            valgteEnheter = innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheterMedLovligeYtelser
         )
 
         //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
@@ -157,7 +157,7 @@ class OppgaverListController(
 
         val ytelser = lovligeValgteYtelser(
             queryParams = queryParams,
-            valgteEnheter = innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
+            valgteEnheter = innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheterMedLovligeYtelser
         )
 
         //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
@@ -287,7 +287,7 @@ class OppgaverListController(
 
         val ytelser = lovligeValgteYtelser(
             queryParams = queryParams,
-            valgteEnheter = innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter
+            valgteEnheter = innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheterMedLovligeYtelser
         )
         //TODO: Dette hadde vært bedre å håndtere i ElasticsearchService enn her
         if (ytelser.isEmpty()) {
@@ -315,7 +315,7 @@ class OppgaverListController(
     }
 
     private fun getEnhetOrThrowException(enhetId: String): EnhetMedLovligeYtelser =
-        innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter.find { it.enhet.enhetId == enhetId }
+        innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheterMedLovligeYtelser.find { it.enhet.enhetId == enhetId }
             ?: throw IllegalArgumentException("Saksbehandler har ikke tilgang til angitt enhet")
 
     private fun validateRettigheterForEnhetensTildelteOppgaver() {
@@ -334,18 +334,7 @@ class OppgaverListController(
         if (queryParams.ytelser.isEmpty()) {
             valgteEnheter.flatMap { it.ytelser }.map { it.id }
         } else {
-            valgteEnheter.flatMap { it.ytelser }.map { it.id }.intersect(queryParams.ytelser)
+            valgteEnheter.flatMap { it.ytelser }.map { it.id }.intersect(queryParams.ytelser.toSet())
         }.toList()
-
-    private fun lovligeValgteHjemler(queryParams: CommonOppgaverQueryParams, ytelser: List<String>) =
-        if (queryParams.hjemler.isEmpty()) {
-            ytelser.mapNotNull { ytelseTilSoekehjemler.get(Ytelse.of(it)) }.flatten().map { it.id }
-        } else {
-            ytelser.mapNotNull { ytelseTilSoekehjemler.get(Ytelse.of(it)) }.flatten().map { it.id }
-                .intersect(queryParams.hjemler).toList()
-        }
-
-    private fun getAlleYtelserInnloggetSaksbehandlerKanBehandle() =
-        innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheter.flatMap { it.ytelser }
 }
 

@@ -10,15 +10,30 @@ import no.nav.klage.search.util.getLogger
 import org.springframework.stereotype.Service
 
 @Service
-class InnloggetSaksbehandlerService(private val azureGateway: AzureGateway) {
+class InnloggetSaksbehandlerService(
+    private val azureGateway: AzureGateway,
+    private val oAuthTokenService: OAuthTokenService,
+) {
 
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    fun getEnheterMedYtelserForSaksbehandler(): EnheterMedLovligeYtelser =
-        listOf(azureGateway.getDataOmInnloggetSaksbehandler().enhet).berikMedYtelser()
+    fun getEnheterMedYtelserForSaksbehandler(): EnheterMedLovligeYtelser {
+        if (oAuthTokenService.iskabalOppgavestyringAlleEnheter()) {
+            return EnheterMedLovligeYtelser(
+                klageenhetTilYtelser.map {
+                    val enhet = Enhet(it.key.navn, it.key.navn)
+                    EnhetMedLovligeYtelser(
+                        enhet = enhet,
+                        ytelser = getYtelserForEnhet(enhet)
+                    )
+                }
+            )
+        }
+        return listOf(azureGateway.getDataOmInnloggetSaksbehandler().enhet).berikMedYtelser()
+    }
 
     fun getEnhetMedYtelserForSaksbehandler(): EnhetMedLovligeYtelser =
         azureGateway.getDataOmInnloggetSaksbehandler().enhet.berikMedYtelser()
