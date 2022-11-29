@@ -64,10 +64,6 @@ class OppgaverListController(
         val esResponse = elasticsearchService.findLedigeOppgaverByCriteria(searchCriteria)
         return BehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            klagebehandlinger = behandlingListMapper.mapEsBehandlingerToListView(
-                esBehandlinger = esResponse.searchHits.map { it.content },
-                visePersonData = false,
-            ),
             behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
                 esBehandlinger = esResponse.searchHits.map { it.content },
                 visePersonData = false,
@@ -102,10 +98,6 @@ class OppgaverListController(
         val esResponse = elasticsearchService.findSaksbehandlersFerdigstilteOppgaverByCriteria(searchCriteria)
         return BehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            klagebehandlinger = behandlingListMapper.mapEsBehandlingerToListView(
-                esBehandlinger = esResponse.searchHits.map { it.content },
-                visePersonData = true,
-            ),
             behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
                 esBehandlinger = esResponse.searchHits.map { it.content },
                 visePersonData = true,
@@ -114,7 +106,7 @@ class OppgaverListController(
     }
 
     private fun emptyResponse(): BehandlingerListRespons =
-        BehandlingerListRespons(antallTreffTotalt = 0, klagebehandlinger = emptyList(), behandlinger = emptyList())
+        BehandlingerListRespons(antallTreffTotalt = 0, behandlinger = emptyList())
 
     @Operation(
         summary = "Hent uferdige oppgaver for en ansatt",
@@ -143,10 +135,6 @@ class OppgaverListController(
         val esResponse = elasticsearchService.findSaksbehandlersUferdigeOppgaverByCriteria(searchCriteria)
         return BehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            klagebehandlinger = behandlingListMapper.mapEsBehandlingerToListView(
-                esBehandlinger = esResponse.searchHits.map { it.content },
-                visePersonData = true,
-            ),
             behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
                 esBehandlinger = esResponse.searchHits.map { it.content },
                 visePersonData = true,
@@ -181,10 +169,6 @@ class OppgaverListController(
         val esResponse = elasticsearchService.findSaksbehandlersOppgaverPaaVentByCriteria(searchCriteria)
         return BehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            klagebehandlinger = behandlingListMapper.mapEsBehandlingerToListView(
-                esBehandlinger = esResponse.searchHits.map { it.content },
-                visePersonData = true,
-            ),
             behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
                 esBehandlinger = esResponse.searchHits.map { it.content },
                 visePersonData = true,
@@ -216,9 +200,6 @@ class OppgaverListController(
         val esResponse = elasticsearchService.findEnhetensFerdigstilteOppgaverByCriteria(searchCriteria)
         return BehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            klagebehandlinger = behandlingListMapper.mapAnonymeEsBehandlingerToListView(
-                esBehandlinger = esResponse.searchHits.map { it.content },
-            ),
             behandlinger = behandlingListMapper.mapAnonymeEsBehandlingerToListView(
                 esBehandlinger = esResponse.searchHits.map { it.content },
             ),
@@ -249,9 +230,6 @@ class OppgaverListController(
         val esResponse = elasticsearchService.findEnhetensOppgaverPaaVentByCriteria(searchCriteria)
         return BehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            klagebehandlinger = behandlingListMapper.mapAnonymeEsBehandlingerToListView(
-                esBehandlinger = esResponse.searchHits.map { it.content },
-            ),
             behandlinger = behandlingListMapper.mapAnonymeEsBehandlingerToListView(
                 esBehandlinger = esResponse.searchHits.map { it.content },
             ),
@@ -287,9 +265,6 @@ class OppgaverListController(
         val esResponse = elasticsearchService.findEnhetensUferdigeOppgaverByCriteria(searchCriteria)
         return BehandlingerListRespons(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            klagebehandlinger = behandlingListMapper.mapAnonymeEsBehandlingerToListView(
-                esBehandlinger = esResponse.searchHits.map { it.content },
-            ),
             behandlinger = behandlingListMapper.mapAnonymeEsBehandlingerToListView(
                 esBehandlinger = esResponse.searchHits.map { it.content },
             ),

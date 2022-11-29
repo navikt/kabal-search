@@ -33,4 +33,7 @@ class SaksbehandlerService(private val azureGateway: AzureGateway) {
 
         return saksbehandlerNameCache
     }
+
+    fun getNameForIdent(it: String) =
+        getNamesForSaksbehandlere(setOf(it)).getOrDefault(it, "Ukjent navn")
 }

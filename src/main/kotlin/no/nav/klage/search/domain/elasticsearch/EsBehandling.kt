@@ -87,6 +87,8 @@ data class EsBehandling(
 
     override val medunderskriverident: String? = null,
 
+    override val medunderskriverNavn: String? = null,
+
     override val medunderskriverFlyt: String,
 
     val tildeltEnhet: String?,
@@ -115,7 +117,7 @@ data class EsBehandling(
 
     override val strengtFortrolig: Boolean = false,
 
-/* Enn så lenge har vi bare ett vedtak, og da er det enklere å søke på det når det er flatt her nede enn når det er nested i List<Vedtak>.. */
+    /* Enn så lenge har vi bare ett vedtak, og da er det enklere å søke på det når det er flatt her nede enn når det er nested i List<Vedtak>.. */
     override val vedtakUtfall: String? = null,
 
     val vedtakUtfallNavn: String? = null,
@@ -144,6 +146,7 @@ interface EsAnonymBehandling {
     val tildeltSaksbehandlerident: String?
     val medunderskriverFlyt: String
     val medunderskriverident: String?
+    val medunderskriverNavn: String?
     val mottattKlageinstans: LocalDateTime
     val frist: LocalDate?
     val hjemler: List<String>

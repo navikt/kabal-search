@@ -5,7 +5,6 @@ import java.time.LocalDate
 
 data class BehandlingerListRespons(
     val antallTreffTotalt: Int,
-    val klagebehandlinger: List<BehandlingListView>,
     val behandlinger: List<BehandlingListView>
 )
 
@@ -31,6 +30,7 @@ data class BehandlingListView(
     val erMedunderskriver: Boolean = false,
     val harMedunderskriver: Boolean = false,
     val medunderskriverident: String?,
+    val medunderskriverNavn: String?,
     val medunderskriverFlyt: MedunderskriverFlyt,
     val utfall: String?,
     val avsluttetAvSaksbehandlerDate: LocalDate?,
