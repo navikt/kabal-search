@@ -165,6 +165,7 @@ class EsBehandlingMapper(
             tildeltSaksbehandlernavn = getTildeltSaksbehandlernavn(behandling),
             medunderskriverident = behandling.medunderskriver?.saksbehandler?.ident,
             medunderskriverFlyt = behandling.medunderskriverFlytStatus.navn,
+            medunderskriverNavn = getSaksbehandlernavn(behandling.medunderskriver?.saksbehandler?.ident),
             sendtMedunderskriver = behandling.medunderskriver?.tidspunkt,
             tildeltEnhet = behandling.gjeldendeTildeling?.enhet?.nr,
             hjemler = behandling.hjemler.map { it.id },
@@ -201,6 +202,12 @@ class EsBehandlingMapper(
         return behandling.gjeldendeTildeling?.saksbehandler?.ident?.let {
             val names = saksbehandlerService.getNamesForSaksbehandlere(setOf(it))
             names[it]
+        }
+    }
+
+    private fun getSaksbehandlernavn(navIdent: String?): String? {
+        return navIdent?.let {
+            saksbehandlerService.getNameForIdent(it)
         }
     }
 }

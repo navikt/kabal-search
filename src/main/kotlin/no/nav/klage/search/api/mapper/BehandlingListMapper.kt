@@ -78,8 +78,7 @@ class BehandlingListMapper(
                 harMedunderskriver = esBehandling.medunderskriverident != null,
                 erMedunderskriver = esBehandling.medunderskriverident != null && esBehandling.medunderskriverident == innloggetIdent,
                 medunderskriverident = esBehandling.medunderskriverident,
-                //TODO
-                medunderskriverNavn = esBehandling.medunderskriverident,
+                medunderskriverNavn = esBehandling.medunderskriverNavn,
                 medunderskriverFlyt = MedunderskriverFlyt.valueOf(esBehandling.medunderskriverFlyt),
                 erTildelt = esBehandling.tildeltSaksbehandlerident != null,
                 tildeltSaksbehandlerident = esBehandling.tildeltSaksbehandlerident,
@@ -134,8 +133,7 @@ class BehandlingListMapper(
                 harMedunderskriver = esBehandling.medunderskriverident != null,
                 erMedunderskriver = esBehandling.medunderskriverident != null && esBehandling.medunderskriverident == innloggetIdent,
                 medunderskriverident = esBehandling.medunderskriverident,
-                //TODO
-                medunderskriverNavn = esBehandling.medunderskriverident,
+                medunderskriverNavn = esBehandling.medunderskriverNavn,
                 medunderskriverFlyt = MedunderskriverFlyt.valueOf(esBehandling.medunderskriverFlyt),
                 erTildelt = esBehandling.tildeltSaksbehandlerident != null,
                 tildeltSaksbehandlerident = esBehandling.tildeltSaksbehandlerident,
