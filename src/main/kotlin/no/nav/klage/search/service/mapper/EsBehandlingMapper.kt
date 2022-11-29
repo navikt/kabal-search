@@ -82,9 +82,10 @@ class EsBehandlingMapper(
             avsluttetAvSaksbehandler = klagebehandling.avsluttetAvSaksbehandlerTidspunkt,
             frist = klagebehandling.fristDato,
             tildeltSaksbehandlerident = klagebehandling.gjeldendeTildeling?.saksbehandler?.ident,
-            tildeltSaksbehandlernavn = getTildeltSaksbehandlernavn(klagebehandling),
+            tildeltSaksbehandlernavn = getSaksbehandlernavn(klagebehandling.gjeldendeTildeling?.saksbehandler?.ident),
             medunderskriverident = klagebehandling.medunderskriver?.saksbehandler?.ident,
             medunderskriverFlyt = klagebehandling.medunderskriverFlytStatus.navn,
+            medunderskriverNavn = getSaksbehandlernavn(klagebehandling.medunderskriver?.saksbehandler?.ident),
             sendtMedunderskriver = klagebehandling.medunderskriver?.tidspunkt,
             tildeltEnhet = klagebehandling.gjeldendeTildeling?.enhet?.nr,
             hjemler = klagebehandling.hjemler.map { it.id },
@@ -162,7 +163,7 @@ class EsBehandlingMapper(
             avsluttetAvSaksbehandler = behandling.avsluttetAvSaksbehandlerTidspunkt,
             frist = behandling.fristDato,
             tildeltSaksbehandlerident = behandling.gjeldendeTildeling?.saksbehandler?.ident,
-            tildeltSaksbehandlernavn = getTildeltSaksbehandlernavn(behandling),
+            tildeltSaksbehandlernavn = getSaksbehandlernavn(behandling.gjeldendeTildeling?.saksbehandler?.ident),
             medunderskriverident = behandling.medunderskriver?.saksbehandler?.ident,
             medunderskriverFlyt = behandling.medunderskriverFlytStatus.navn,
             medunderskriverNavn = getSaksbehandlernavn(behandling.medunderskriver?.saksbehandler?.ident),
@@ -189,20 +190,6 @@ class EsBehandlingMapper(
             sattPaaVentExpires = behandling.sattPaaVentExpires,
             status = EsStatus.valueOf(behandling.status.name),
         )
-    }
-
-    private fun getTildeltSaksbehandlernavn(klagebehandling: KlagebehandlingSkjemaV1): String? {
-        return klagebehandling.gjeldendeTildeling?.saksbehandler?.ident?.let {
-            val names = saksbehandlerService.getNamesForSaksbehandlere(setOf(it))
-            names[it]
-        }
-    }
-
-    private fun getTildeltSaksbehandlernavn(behandling: BehandlingSkjemaV2): String? {
-        return behandling.gjeldendeTildeling?.saksbehandler?.ident?.let {
-            val names = saksbehandlerService.getNamesForSaksbehandlere(setOf(it))
-            names[it]
-        }
     }
 
     private fun getSaksbehandlernavn(navIdent: String?): String? {
