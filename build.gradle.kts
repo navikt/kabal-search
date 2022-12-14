@@ -12,7 +12,7 @@ val springDocVersion = "1.6.13"
 val testContainersVersion = "1.17.6"
 val threeTenExtraVersion = "1.7.1"
 val archunitVersion = "1.0.1"
-val opensearchVersion = "2.4.0"
+val opensearchVersion = "2.4.1"
 val reactorSpringVersion = "1.0.1.RELEASE"
 
 java.sourceCompatibility = JavaVersion.VERSION_17
