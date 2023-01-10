@@ -1,12 +1,17 @@
 package no.nav.klage.search.service.saksbehandler
 
+import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.gateway.AzureGateway
+import no.nav.klage.search.service.KabalInnstillingerService
 import no.nav.klage.search.util.getLogger
 import org.springframework.stereotype.Service
 import kotlin.system.measureTimeMillis
 
 @Service
-class SaksbehandlerService(private val azureGateway: AzureGateway) {
+class SaksbehandlerService(
+    private val azureGateway: AzureGateway,
+    private val kabalInnstillingerService: KabalInnstillingerService
+) {
 
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
@@ -36,4 +41,8 @@ class SaksbehandlerService(private val azureGateway: AzureGateway) {
 
     fun getNameForIdent(it: String) =
         getNamesForSaksbehandlere(setOf(it)).getOrDefault(it, "Ukjent navn")
+
+    fun getTildelteYtelserForSaksbehandler(navIdent: String): List<Ytelse> {
+        return kabalInnstillingerService.getTildelteYtelserForSaksbehandler(navIdent)
+    }
 }

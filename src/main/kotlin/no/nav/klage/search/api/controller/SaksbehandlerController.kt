@@ -41,7 +41,7 @@ class SaksbehandlerController(
     ): SaksbehandlereListResponse {
         logger.debug("getSaksbehandlereForEnhet")
 
-        if (innloggetSaksbehandlerService.getEnhetMedYtelserForSaksbehandler().enhet.enhetId != enhet) {
+        if (innloggetSaksbehandlerService.getEnhetForSaksbehandler().enhetId != enhet) {
             throw MissingTilgangException("Saksbehandler ${oAuthTokenService.getInnloggetIdent()} does not have access to enhet $enhet")
         }
 

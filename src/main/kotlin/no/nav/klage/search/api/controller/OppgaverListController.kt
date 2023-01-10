@@ -8,7 +8,6 @@ import no.nav.klage.search.api.mapper.BehandlingListMapper
 import no.nav.klage.search.api.mapper.BehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.*
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
-import no.nav.klage.search.domain.kodeverk.ytelseTilSoekehjemler
 import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeYtelser
 import no.nav.klage.search.exceptions.MissingTilgangException
 import no.nav.klage.search.exceptions.NotMatchingUserException
@@ -47,9 +46,9 @@ class OppgaverListController(
     ): BehandlingerListRespons {
         logger.debug("Params: {}", queryParams)
 
-        val ytelser = lovligeValgteYtelser(
+        val ytelser = getYtelserQueryListForSaksbehandler(
             queryParams = queryParams,
-            valgteEnheter = innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheterMedLovligeYtelser
+            tildelteYtelser = innloggetSaksbehandlerService.getTildelteYtelserForSaksbehandler()
         )
         //TODO: Dette hadde vært bedre å håndtere i ElasticsearchService enn her
         if (ytelser.isEmpty()) {
@@ -84,9 +83,9 @@ class OppgaverListController(
         logger.debug("Params: {}", queryParams)
         validateNavIdent(navIdent)
 
-        val ytelser = lovligeValgteYtelser(
+        val ytelser = getYtelserQueryListForSaksbehandler(
             queryParams = queryParams,
-            valgteEnheter = innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheterMedLovligeYtelser
+            tildelteYtelser = innloggetSaksbehandlerService.getTildelteYtelserForSaksbehandler()
         )
 
         //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
@@ -121,9 +120,9 @@ class OppgaverListController(
         logger.debug("Params: {}", queryParams)
         validateNavIdent(navIdent)
 
-        val ytelser = lovligeValgteYtelser(
+        val ytelser = getYtelserQueryListForSaksbehandler(
             queryParams = queryParams,
-            valgteEnheter = innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheterMedLovligeYtelser
+            tildelteYtelser = innloggetSaksbehandlerService.getTildelteYtelserForSaksbehandler()
         )
 
         //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
@@ -155,9 +154,9 @@ class OppgaverListController(
         logger.debug("Params: {}", queryParams)
         validateNavIdent(navIdent)
 
-        val ytelser = lovligeValgteYtelser(
+        val ytelser = getYtelserQueryListForSaksbehandler(
             queryParams = queryParams,
-            valgteEnheter = innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheterMedLovligeYtelser
+            tildelteYtelser = innloggetSaksbehandlerService.getTildelteYtelserForSaksbehandler()
         )
 
         //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
@@ -190,7 +189,8 @@ class OppgaverListController(
         validateRettigheterForEnhetensTildelteOppgaver()
 
         val valgtEnhet = getEnhetOrThrowException(enhetId)
-        val ytelser = lovligeValgteYtelser(queryParams = queryParams, valgteEnheter = listOf(valgtEnhet))
+        //TODO: Problem, får ikke ytelser som ikke tilhører enheten ved ekstraordinær tildeling
+        val ytelser = getYtelserQueryListForEnheter(queryParams = queryParams, valgteEnheter = listOf(valgtEnhet))
         //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         val searchCriteria = behandlingerSearchCriteriaMapper.toEnhetensFerdigstilteOppgaverSearchCriteria(
             enhetId = enhetId,
@@ -220,7 +220,7 @@ class OppgaverListController(
         validateRettigheterForEnhetensTildelteOppgaver()
 
         val valgtEnhet = getEnhetOrThrowException(enhetId)
-        val ytelser = lovligeValgteYtelser(queryParams = queryParams, valgteEnheter = listOf(valgtEnhet))
+        val ytelser = getYtelserQueryListForEnheter(queryParams = queryParams, valgteEnheter = listOf(valgtEnhet))
         //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         val searchCriteria = behandlingerSearchCriteriaMapper.toEnhetensOppgaverPaaVentSearchCriteria(
             enhetId = enhetId,
@@ -250,7 +250,7 @@ class OppgaverListController(
         validateRettigheterForEnhetensTildelteOppgaver()
 
         val valgtEnhet = getEnhetOrThrowException(enhetId)
-        val ytelser = lovligeValgteYtelser(queryParams = queryParams, valgteEnheter = listOf(valgtEnhet))
+        val ytelser = getYtelserQueryListForEnheter(queryParams = queryParams, valgteEnheter = listOf(valgtEnhet))
         //TODO: Dette hadde vært bedre å håndtere i ElasticsearchService enn her
         if (ytelser.isEmpty()) {
             return emptyResponse()
@@ -285,9 +285,9 @@ class OppgaverListController(
         logger.debug("Params: {}", queryParams)
         validateNavIdent(navIdent)
 
-        val ytelser = lovligeValgteYtelser(
+        val ytelser = getYtelserQueryListForSaksbehandler(
             queryParams = queryParams,
-            valgteEnheter = innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheterMedLovligeYtelser
+            tildelteYtelser = innloggetSaksbehandlerService.getTildelteYtelserForSaksbehandler()
         )
         //TODO: Dette hadde vært bedre å håndtere i ElasticsearchService enn her
         if (ytelser.isEmpty()) {
@@ -327,9 +327,20 @@ class OppgaverListController(
         }
     }
 
-    private fun lovligeValgteYtelser(
+    private fun getYtelserQueryListForSaksbehandler(
         queryParams: CommonOppgaverQueryParams,
-        valgteEnheter: List<EnhetMedLovligeYtelser>
+        tildelteYtelser: List<Ytelse>
+    ): List<String> {
+        return if (queryParams.ytelser.isEmpty()) {
+            tildelteYtelser.map { it.id }
+        } else {
+            tildelteYtelser.map { it.id }.intersect(queryParams.ytelser.toSet())
+        }.toList()
+    }
+
+    private fun getYtelserQueryListForEnheter(
+        queryParams: CommonOppgaverQueryParams,
+        valgteEnheter: List<EnhetMedLovligeYtelser>,
     ) =
         if (queryParams.ytelser.isEmpty()) {
             valgteEnheter.flatMap { it.ytelser }.map { it.id }
