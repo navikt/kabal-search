@@ -71,6 +71,7 @@ spec:
     outbound:
       rules:
         - application: kabal-api
+        - application: kabal-innstillinger
       external:
       {{#each externalHosts}}
         - host: {{host}}

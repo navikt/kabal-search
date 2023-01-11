@@ -6,6 +6,7 @@ import no.nav.klage.search.domain.saksbehandler.Enhet
 import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeYtelser
 import no.nav.klage.search.domain.saksbehandler.EnheterMedLovligeYtelser
 import no.nav.klage.search.gateway.AzureGateway
+import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import org.springframework.stereotype.Service
 
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service
 class InnloggetSaksbehandlerService(
     private val azureGateway: AzureGateway,
     private val oAuthTokenService: OAuthTokenService,
+    private val tokenUtil: TokenUtil,
+    private val saksbehandlerService: SaksbehandlerService
 ) {
 
     companion object {
@@ -35,8 +38,14 @@ class InnloggetSaksbehandlerService(
         return listOf(azureGateway.getDataOmInnloggetSaksbehandler().enhet).berikMedYtelser()
     }
 
-    fun getEnhetMedYtelserForSaksbehandler(): EnhetMedLovligeYtelser =
-        azureGateway.getDataOmInnloggetSaksbehandler().enhet.berikMedYtelser()
+    fun getEnhetForSaksbehandler(): Enhet {
+        return azureGateway.getDataOmInnloggetSaksbehandler().enhet
+    }
+
+    fun getTildelteYtelserForSaksbehandler(): List<Ytelse> {
+        val innloggetSaksbehandlerIdent = tokenUtil.getIdent()
+        return saksbehandlerService.getTildelteYtelserForSaksbehandler(innloggetSaksbehandlerIdent)
+    }
 
     private fun List<Enhet>.berikMedYtelser(): EnheterMedLovligeYtelser {
         return EnheterMedLovligeYtelser(this.map { it.berikMedYtelser() })

@@ -54,7 +54,7 @@ class BehandlingListMapper(
         val kanBehandleStrengtFortrolig = oAuthTokenService.kanBehandleStrengtFortrolig()
         val kanBehandleFortrolig = oAuthTokenService.kanBehandleFortrolig()
         val kanBehandleEgenAnsatt = oAuthTokenService.kanBehandleEgenAnsatt()
-        val lovligeYtelser = innloggetSaksbehandlerService.getEnhetMedYtelserForSaksbehandler().ytelser
+        val lovligeYtelser = innloggetSaksbehandlerService.getTildelteYtelserForSaksbehandler()
         val innloggetIdent = oAuthTokenService.getInnloggetIdent()
 
         return esBehandlinger.map { esBehandling ->
@@ -117,7 +117,7 @@ class BehandlingListMapper(
         val kanBehandleStrengtFortrolig = oAuthTokenService.kanBehandleStrengtFortrolig()
         val kanBehandleFortrolig = oAuthTokenService.kanBehandleFortrolig()
         val kanBehandleEgenAnsatt = oAuthTokenService.kanBehandleEgenAnsatt()
-        val lovligeYtelser = innloggetSaksbehandlerService.getEnhetMedYtelserForSaksbehandler().ytelser
+        val lovligeYtelser = innloggetSaksbehandlerService.getTildelteYtelserForSaksbehandler()
         val innloggetIdent = oAuthTokenService.getInnloggetIdent()
 
         return esBehandlinger.map { esBehandling ->

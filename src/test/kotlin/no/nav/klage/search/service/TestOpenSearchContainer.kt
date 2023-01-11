@@ -9,7 +9,7 @@ class TestOpenSearchContainer private constructor() :
     GenericContainer<TestOpenSearchContainer>(IMAGE_VERSION) {
 
     companion object {
-        private const val IMAGE_VERSION = "opensearchproject/opensearch:1.1.0"
+        private const val IMAGE_VERSION = "opensearchproject/opensearch:latest"
 
         private val CONTAINER: TestOpenSearchContainer = TestOpenSearchContainer()
 
@@ -26,7 +26,7 @@ class TestOpenSearchContainer private constructor() :
             HttpWaitStrategy()
                 .forPort(9200)
                 .forStatusCodeMatching { response: Int -> response == 200 || response == 401 }
-                .withStartupTimeout(Duration.ofMinutes(2)))
+                .withStartupTimeout(Duration.ofMinutes(1)))
         withEnv("discovery.type", "single-node")
         withEnv("DISABLE_INSTALL_DEMO_CONFIG", "true")
         withEnv("DISABLE_SECURITY_PLUGIN", "true")
