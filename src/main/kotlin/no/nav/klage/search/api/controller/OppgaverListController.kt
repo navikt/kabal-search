@@ -83,15 +83,9 @@ class OppgaverListController(
         logger.debug("Params: {}", queryParams)
         validateNavIdent(navIdent)
 
-        val ytelser = getYtelserQueryListForSaksbehandler(
-            queryParams = queryParams,
-            tildelteYtelser = innloggetSaksbehandlerService.getTildelteYtelserForSaksbehandler()
-        )
-
-        //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         val searchCriteria = behandlingerSearchCriteriaMapper.toSaksbehandlersFerdigstilteOppgaverSearchCriteria(
             navIdent = navIdent,
-            queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
+            queryParams = queryParams
         )
 
         val esResponse = elasticsearchService.findSaksbehandlersFerdigstilteOppgaverByCriteria(searchCriteria)
@@ -120,15 +114,9 @@ class OppgaverListController(
         logger.debug("Params: {}", queryParams)
         validateNavIdent(navIdent)
 
-        val ytelser = getYtelserQueryListForSaksbehandler(
-            queryParams = queryParams,
-            tildelteYtelser = innloggetSaksbehandlerService.getTildelteYtelserForSaksbehandler()
-        )
-
-        //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         val searchCriteria = behandlingerSearchCriteriaMapper.toSaksbehandlersUferdigeOppgaverSearchCriteria(
             navIdent = navIdent,
-            queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
+            queryParams = queryParams
         )
 
         val esResponse = elasticsearchService.findSaksbehandlersUferdigeOppgaverByCriteria(searchCriteria)
@@ -154,15 +142,9 @@ class OppgaverListController(
         logger.debug("Params: {}", queryParams)
         validateNavIdent(navIdent)
 
-        val ytelser = getYtelserQueryListForSaksbehandler(
-            queryParams = queryParams,
-            tildelteYtelser = innloggetSaksbehandlerService.getTildelteYtelserForSaksbehandler()
-        )
-
-        //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         val searchCriteria = behandlingerSearchCriteriaMapper.toSaksbehandlersOppgaverPaaVentSearchCriteria(
             navIdent = navIdent,
-            queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
+            queryParams = queryParams
         )
 
         val esResponse = elasticsearchService.findSaksbehandlersOppgaverPaaVentByCriteria(searchCriteria)
