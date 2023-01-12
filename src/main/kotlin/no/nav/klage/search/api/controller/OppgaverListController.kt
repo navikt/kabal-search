@@ -8,7 +8,6 @@ import no.nav.klage.search.api.mapper.BehandlingListMapper
 import no.nav.klage.search.api.mapper.BehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.*
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
-import no.nav.klage.search.domain.saksbehandler.EnhetMedLovligeYtelser
 import no.nav.klage.search.exceptions.MissingTilgangException
 import no.nav.klage.search.exceptions.NotMatchingUserException
 import no.nav.klage.search.service.ElasticsearchService
@@ -158,6 +157,38 @@ class OppgaverListController(
     }
 
     @Operation(
+        summary = "Hent antall utildelte behandlinger for tilgjengelig for saksbehandler der fristen gått ut",
+        description = "Hent antall utildelte behandlinger for tilgjengelig for saksbehandler der fristen gått ut"
+    )
+    @GetMapping("/ansatte/{navIdent}/antalloppgavermedutgaattefrister", produces = ["application/json"])
+    fun getAntallUtgaatteFristerForMeg(
+        @Parameter(name = "NavIdent til en ansatt")
+        @PathVariable navIdent: String,
+        queryParams: MineLedigeOppgaverQueryParams
+    ): AntallUtgaatteFristerResponse {
+        logger.debug("Params: {}", queryParams)
+        validateNavIdent(navIdent)
+
+        val ytelser = getYtelserQueryListForSaksbehandler(
+            queryParams = queryParams,
+            tildelteYtelser = innloggetSaksbehandlerService.getTildelteYtelserForSaksbehandler()
+        )
+        //TODO: Dette hadde vært bedre å håndtere i ElasticsearchService enn her
+        if (ytelser.isEmpty()) {
+            return AntallUtgaatteFristerResponse(0)
+        }
+
+        return AntallUtgaatteFristerResponse(
+            antall = elasticsearchService.countLedigeOppgaverMedUtgaattFristByCriteria(
+                criteria = behandlingerSearchCriteriaMapper.toSearchCriteriaForLedigeMedUtgaattFrist(
+                    navIdent = navIdent,
+                    queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
+                )
+            )
+        )
+    }
+
+    @Operation(
         summary = "Hent enhetens ferdigstilte oppgaver",
         description = "Henter alle ferdigstilte oppgaver for enheten som saksbehandler har tilgang til."
     )
@@ -170,13 +201,9 @@ class OppgaverListController(
         logger.debug("Params: {}", queryParams)
         validateRettigheterForEnhetensTildelteOppgaver()
 
-        val valgtEnhet = getEnhetOrThrowException(enhetId)
-        //TODO: Problem, får ikke ytelser som ikke tilhører enheten ved ekstraordinær tildeling
-        val ytelser = getYtelserQueryListForEnheter(queryParams = queryParams, valgteEnheter = listOf(valgtEnhet))
-        //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         val searchCriteria = behandlingerSearchCriteriaMapper.toEnhetensFerdigstilteOppgaverSearchCriteria(
             enhetId = enhetId,
-            queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
+            queryParams = queryParams
         )
 
         val esResponse = elasticsearchService.findEnhetensFerdigstilteOppgaverByCriteria(searchCriteria)
@@ -201,12 +228,9 @@ class OppgaverListController(
         logger.debug("Params: {}", queryParams)
         validateRettigheterForEnhetensTildelteOppgaver()
 
-        val valgtEnhet = getEnhetOrThrowException(enhetId)
-        val ytelser = getYtelserQueryListForEnheter(queryParams = queryParams, valgteEnheter = listOf(valgtEnhet))
-        //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         val searchCriteria = behandlingerSearchCriteriaMapper.toEnhetensOppgaverPaaVentSearchCriteria(
             enhetId = enhetId,
-            queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
+            queryParams = queryParams
         )
 
         val esResponse = elasticsearchService.findEnhetensOppgaverPaaVentByCriteria(searchCriteria)
@@ -231,17 +255,9 @@ class OppgaverListController(
         logger.debug("Params: {}", queryParams)
         validateRettigheterForEnhetensTildelteOppgaver()
 
-        val valgtEnhet = getEnhetOrThrowException(enhetId)
-        val ytelser = getYtelserQueryListForEnheter(queryParams = queryParams, valgteEnheter = listOf(valgtEnhet))
-        //TODO: Dette hadde vært bedre å håndtere i ElasticsearchService enn her
-        if (ytelser.isEmpty()) {
-            return emptyResponse()
-        }
-
-        //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
         val searchCriteria = behandlingerSearchCriteriaMapper.toEnhetensUferdigeOppgaverSearchCriteria(
             enhetId = enhetId,
-            queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
+            queryParams = queryParams
         )
 
         val esResponse = elasticsearchService.findEnhetensUferdigeOppgaverByCriteria(searchCriteria)
@@ -250,39 +266,6 @@ class OppgaverListController(
             behandlinger = behandlingListMapper.mapAnonymeEsBehandlingerToListView(
                 esBehandlinger = esResponse.searchHits.map { it.content },
             ),
-        )
-    }
-
-
-    @Operation(
-        summary = "Hent antall utildelte behandlinger for enheten der fristen gått ut",
-        description = "Teller opp alle utildelte behandlinger for enheten der fristen gått ut."
-    )
-    @GetMapping("/ansatte/{navIdent}/antalloppgavermedutgaattefrister", produces = ["application/json"])
-    fun getAntallUtgaatteFrister(
-        @Parameter(name = "NavIdent til en ansatt")
-        @PathVariable navIdent: String,
-        queryParams: MineLedigeOppgaverQueryParams
-    ): AntallUtgaatteFristerResponse {
-        logger.debug("Params: {}", queryParams)
-        validateNavIdent(navIdent)
-
-        val ytelser = getYtelserQueryListForSaksbehandler(
-            queryParams = queryParams,
-            tildelteYtelser = innloggetSaksbehandlerService.getTildelteYtelserForSaksbehandler()
-        )
-        //TODO: Dette hadde vært bedre å håndtere i ElasticsearchService enn her
-        if (ytelser.isEmpty()) {
-            return AntallUtgaatteFristerResponse(0)
-        }
-        //val hjemler: List<String> = lovligeValgteHjemler(queryParams = queryParams, ytelser = ytelser)
-        return AntallUtgaatteFristerResponse(
-            antall = elasticsearchService.countLedigeOppgaverMedUtgaatFristByCriteria(
-                criteria = behandlingerSearchCriteriaMapper.toSearchCriteriaForLedigeMedUtgaattFrist(
-                    navIdent = navIdent,
-                    queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
-                )
-            )
         )
     }
 
@@ -295,10 +278,6 @@ class OppgaverListController(
             )
         }
     }
-
-    private fun getEnhetOrThrowException(enhetId: String): EnhetMedLovligeYtelser =
-        innloggetSaksbehandlerService.getEnheterMedYtelserForSaksbehandler().enheterMedLovligeYtelser.find { it.enhet.enhetId == enhetId }
-            ?: throw IllegalArgumentException("Saksbehandler har ikke tilgang til angitt enhet")
 
     private fun validateRettigheterForEnhetensTildelteOppgaver() {
         if (!oAuthTokenService.isKabalOppgavestyringEgenEnhet()) {
@@ -319,15 +298,5 @@ class OppgaverListController(
             tildelteYtelser.map { it.id }.intersect(queryParams.ytelser.toSet())
         }.toList()
     }
-
-    private fun getYtelserQueryListForEnheter(
-        queryParams: CommonOppgaverQueryParams,
-        valgteEnheter: List<EnhetMedLovligeYtelser>,
-    ) =
-        if (queryParams.ytelser.isEmpty()) {
-            valgteEnheter.flatMap { it.ytelser }.map { it.id }
-        } else {
-            valgteEnheter.flatMap { it.ytelser }.map { it.id }.intersect(queryParams.ytelser.toSet())
-        }.toList()
 }
 

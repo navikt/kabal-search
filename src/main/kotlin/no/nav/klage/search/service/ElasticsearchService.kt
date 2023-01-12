@@ -241,7 +241,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return getMedian(saksdokumenterPerAvsluttetBehandling)
     }
 
-    open fun countLedigeOppgaverMedUtgaatFristByCriteria(criteria: CountLedigeOppgaverMedUtgaattFristSearchCriteria): Int {
+    open fun countLedigeOppgaverMedUtgaattFristByCriteria(criteria: CountLedigeOppgaverMedUtgaattFristSearchCriteria): Int {
         return esBehandlingRepository.count(criteria.toEsQuery()).toInt()
     }
 
@@ -452,12 +452,14 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                 filterQuery.should(QueryBuilders.termQuery("strengtFortrolig", true))
                 filterQuery.should(QueryBuilders.termQuery("fortrolig", true))
             }
+
             !kanBehandleEgenAnsatt && kanBehandleFortrolig && kanBehandleStrengtFortrolig -> {
                 //Case 2
                 //Er i praksis det samme som case 1
                 filterQuery.should(QueryBuilders.termQuery("strengtFortrolig", true))
                 filterQuery.should(QueryBuilders.termQuery("fortrolig", true))
             }
+
             kanBehandleEgenAnsatt && !kanBehandleFortrolig && kanBehandleStrengtFortrolig -> {
                 //Case 3
                 //tolker dette som kun egen ansatt som også er strengt fortrolig
@@ -465,6 +467,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                 filterQuery.must(QueryBuilders.termQuery("strengtFortrolig", true))
                 filterQuery.mustNot(QueryBuilders.termQuery("fortrolig", true))
             }
+
             kanBehandleEgenAnsatt && kanBehandleFortrolig && !kanBehandleStrengtFortrolig -> {
                 //Case 4
                 //Skal inkludere de normale
@@ -472,12 +475,14 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                 //Skal inkludere fortrolig
                 filterQuery.mustNot(QueryBuilders.termQuery("strengtFortrolig", true))
             }
+
             !kanBehandleEgenAnsatt && !kanBehandleFortrolig && kanBehandleStrengtFortrolig -> {
                 //Case 5.
                 //Er i praksis det samme som case 3. Inkluderer egen ansatte som også har strengt fortrolig, strengt fortrolig trumfer egen ansatt
                 filterQuery.must(QueryBuilders.termQuery("strengtFortrolig", true))
                 filterQuery.mustNot(QueryBuilders.termQuery("fortrolig", true))
             }
+
             !kanBehandleEgenAnsatt && kanBehandleFortrolig && !kanBehandleStrengtFortrolig -> {
                 //Case 6
                 //Skal inkludere de normale
@@ -490,6 +495,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                 filterQuery.mustNot(egenAnsattAndNotFortrolig)
                 filterQuery.mustNot(QueryBuilders.termQuery("strengtFortrolig", true))
             }
+
             kanBehandleEgenAnsatt && !kanBehandleFortrolig && !kanBehandleStrengtFortrolig -> {
                 //Case 7
                 //Skal inkludere de normale
@@ -497,6 +503,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                 filterQuery.mustNot(QueryBuilders.termQuery("strengtFortrolig", true))
                 filterQuery.mustNot(QueryBuilders.termQuery("fortrolig", true))
             }
+
             !kanBehandleEgenAnsatt && !kanBehandleFortrolig && !kanBehandleStrengtFortrolig -> {
                 //Case 8
                 filterQuery.mustNot(QueryBuilders.termQuery("strengtFortrolig", true))
