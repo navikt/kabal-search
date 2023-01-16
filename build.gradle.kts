@@ -1,19 +1,19 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val mockkVersion = "1.13.3"
-val tokenValidationVersion = "2.1.8"
+val tokenValidationVersion = "3.0.2"
 val logstashVersion = "7.2"
-val springSleuthVersion = "3.1.5"
 val unleashVersion = "4.4.1"
-val problemSpringWebStartVersion = "0.27.0"
 val springRetryVersion = "2.0.0"
-val springMockkVersion = "3.1.2"
-val springDocVersion = "1.6.14"
+val springMockkVersion = "4.0.0"
+val springDocVersion = "2.0.2"
 val testContainersVersion = "1.17.6"
 val threeTenExtraVersion = "1.7.2"
 val archunitVersion = "1.0.1"
 val opensearchVersion = "2.4.1"
 val reactorSpringVersion = "1.0.1.RELEASE"
+val kodeverkVersion = "1.2.4"
+val ehcacheVersion = "3.10.8"
 
 java.sourceCompatibility = JavaVersion.VERSION_17
 
@@ -27,8 +27,8 @@ repositories {
 }
 
 plugins {
-    val kotlinVersion = "1.7.22"
-    id("org.springframework.boot") version "2.7.5"
+    val kotlinVersion = "1.8.0"
+    id("org.springframework.boot") version "3.0.1"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     idea
@@ -48,26 +48,24 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.kafka:spring-kafka")
     implementation("javax.cache:cache-api")
-    implementation("org.ehcache:ehcache")
-    implementation("org.jolokia:jolokia-core")
     implementation("io.micrometer:micrometer-registry-prometheus")
+    implementation("io.micrometer:micrometer-tracing-bridge-brave")
     implementation("ch.qos.logback:logback-classic")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     //Not managed by Spring:
+    implementation("org.ehcache:ehcache:$ehcacheVersion")
     implementation("org.opensearch.client:opensearch-rest-high-level-client:$opensearchVersion")
     implementation("org.threeten:threeten-extra:$threeTenExtraVersion")
-    implementation("org.springframework.cloud:spring-cloud-starter-sleuth:$springSleuthVersion")
-    implementation("org.springdoc:springdoc-openapi-ui:$springDocVersion")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
     implementation("no.nav.security:token-validation-spring:$tokenValidationVersion")
     implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
-    implementation("com.github.navikt:klage-kodeverk:v1.2.4") {
+    implementation("com.github.navikt:klage-kodeverk:$kodeverkVersion") {
         exclude(group = "jakarta.persistence")
     }
     implementation("org.springframework.retry:spring-retry:$springRetryVersion")
     implementation("no.finn.unleash:unleash-client-java:$unleashVersion")
-    implementation("org.zalando:problem-spring-web-starter:$problemSpringWebStartVersion")
 
     //Test
     //Managed by Spring:

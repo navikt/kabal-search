@@ -1,7 +1,6 @@
 package no.nav.klage.search.clients.ereg
 
 
-import brave.Tracer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
@@ -12,7 +11,6 @@ import org.springframework.web.reactive.function.client.bodyToMono
 @Component
 class EregClient(
     private val eregWebClient: WebClient,
-    private val tracer: Tracer
 ) {
 
     @Value("\${spring.application.name}")
@@ -28,7 +26,6 @@ class EregClient(
                         .build(orgnummer)
                 }
                 .accept(MediaType.APPLICATION_JSON)
-                .header("Nav-Call-Id", tracer.currentSpan().context().traceIdString())
                 .header("Nav-Consumer-Id", applicationName)
                 .retrieve()
                 .bodyToMono<Organisasjon>()
@@ -40,6 +37,7 @@ class EregClient(
                     is WebClientResponseException.NotFound -> {
                         null
                     }
+
                     else -> throw error
                 }
             }

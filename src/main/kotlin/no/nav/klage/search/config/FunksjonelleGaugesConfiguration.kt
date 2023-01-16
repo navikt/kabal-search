@@ -10,7 +10,7 @@ import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getSecureLogger
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import javax.annotation.PreDestroy
+import jakarta.annotation.PreDestroy
 
 
 @Configuration
