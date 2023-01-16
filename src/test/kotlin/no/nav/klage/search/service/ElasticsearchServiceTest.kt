@@ -133,7 +133,7 @@ class ElasticsearchServiceTest {
     @Order(5)
     fun `Klagebehandling can be searched for by frist`() {
         val antall =
-            service.countLedigeOppgaverMedUtgaatFristByCriteria(
+            service.countLedigeOppgaverMedUtgaattFristByCriteria(
                 CountLedigeOppgaverMedUtgaattFristSearchCriteria(
                     typer = emptyList(),
                     ytelser = emptyList(),
