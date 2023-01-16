@@ -1,6 +1,5 @@
 package no.nav.klage.search.clients.axsys
 
-import brave.Tracer
 import no.nav.klage.search.config.CacheWithJCacheConfiguration.Companion.TILGANGER_CACHE
 import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
@@ -16,7 +15,6 @@ import org.springframework.web.reactive.function.client.bodyToMono
 class AxsysClient(
     private val axsysWebClient: WebClient,
     private val tokenUtil: TokenUtil,
-    private val tracer: Tracer
 ) {
 
     companion object {
@@ -43,7 +41,6 @@ class AxsysClient(
                         .build(navIdent)
                 }
                 .header("Authorization", "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithAxsysScope()}")
-                .header("Nav-Call-Id", tracer.currentSpan().context().traceIdString())
                 .header("Nav-Consumer-Id", applicationName)
 
                 .retrieve()
