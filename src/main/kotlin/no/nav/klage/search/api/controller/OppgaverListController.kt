@@ -161,7 +161,7 @@ class OppgaverListController(
         description = "Hent antall utildelte behandlinger for tilgjengelig for saksbehandler der fristen gått ut"
     )
     @GetMapping("/ansatte/{navIdent}/antalloppgavermedutgaattefrister", produces = ["application/json"])
-    fun getAntallUtgaatteFristerForMeg(
+    fun getUtgaatteFristerAvailableToSaksbehandlerCount(
         @Parameter(name = "NavIdent til en ansatt")
         @PathVariable navIdent: String,
         queryParams: MineLedigeOppgaverQueryParams
