@@ -12,7 +12,7 @@ val threeTenExtraVersion = "1.7.2"
 val archunitVersion = "1.0.1"
 val opensearchVersion = "2.4.1"
 val reactorSpringVersion = "1.0.1.RELEASE"
-val kodeverkVersion = "1.2.4"
+val kodeverkVersion = "1.2.9"
 val ehcacheVersion = "3.10.8"
 
 java.sourceCompatibility = JavaVersion.VERSION_17
