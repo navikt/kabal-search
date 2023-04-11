@@ -31,18 +31,6 @@ class TokenUtil(
         return response.accessToken
     }
 
-    fun getSaksbehandlerAccessTokenWithAxsysScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["axsys-onbehalfof"]
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.accessToken
-    }
-
-    fun getAppAccessTokenWithAxsysScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["axsys-maskintilmaskin"]
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.accessToken
-    }
-
     fun getUserAccessTokenWithKabalInnstillingerScope(): String {
         val clientProperties = clientConfigurationProperties.registration["kabal-innstillinger-onbehalfof"]
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
