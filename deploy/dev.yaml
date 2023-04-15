@@ -1,5 +1,6 @@
 ingresses:
   - https://kabal-search.dev.intern.nav.no
+  - https://kabal-search.intern.dev.nav.no
 externalHosts:
   - host: login.microsoftonline.com
   - host: hooks.slack.com
