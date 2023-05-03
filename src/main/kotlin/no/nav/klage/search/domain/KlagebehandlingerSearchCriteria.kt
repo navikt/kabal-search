@@ -84,7 +84,10 @@ data class OppgaverOmPersonSearchCriteria(
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
     override val kanBehandleStrengtFortrolig: Boolean,
-) : PageableSearchCriteria, SecuritySearchCriteria
+
+    override val sortField: SortField,
+    override val order: Order,
+) : PageableSearchCriteria, SecuritySearchCriteria, SortableSearchCriteria
 
 data class SaksbehandlersFerdigstilteOppgaverSearchCriteria(
     override val typer: List<Type>,

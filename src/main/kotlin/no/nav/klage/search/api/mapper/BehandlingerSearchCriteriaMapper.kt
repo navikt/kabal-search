@@ -31,6 +31,8 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
         kanBehandleFortrolig = kanBehandleFortrolig(),
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+        sortField = SortField.MOTTATT,
+        order = Order.DESC,
     )
 
     //-- saksbehandlers oppgaver:

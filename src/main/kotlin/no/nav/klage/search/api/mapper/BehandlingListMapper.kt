@@ -36,9 +36,7 @@ class BehandlingListMapper(
                 mellomnavn = personSearchResponse.mellomnavn,
                 etternavn = personSearchResponse.etternavn
             ),
-            klagebehandlinger = behandlinger,
-            aapneKlagebehandlinger = behandlinger.filter { !it.isAvsluttetAvSaksbehandler },
-            avsluttedeKlagebehandlinger = behandlinger.filter { it.isAvsluttetAvSaksbehandler },
+            //TODO FE will not need all of these, but is not yet decided which to use.
             behandlinger = behandlinger,
             aapneBehandlinger = behandlinger.filter { !it.isAvsluttetAvSaksbehandler },
             avsluttedeBehandlinger = behandlinger.filter { it.isAvsluttetAvSaksbehandler }

@@ -72,9 +72,10 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
+        searchSourceBuilder.addSorting(criteria)
         searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
 
-        val searchHits = esBehandlingRepository.search(searchSourceBuilder, emptyList())
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder)
         logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
         return searchHits
     }
@@ -86,7 +87,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         searchSourceBuilder.addSorting(criteria)
         searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
 
-        val searchHits = esBehandlingRepository.search(searchSourceBuilder, emptyList())
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder)
         logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
         return searchHits
     }
@@ -98,7 +99,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         searchSourceBuilder.addSorting(criteria)
         searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
 
-        val searchHits = esBehandlingRepository.search(searchSourceBuilder, emptyList())
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder)
         logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
         return searchHits
     }
@@ -110,7 +111,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         searchSourceBuilder.addSorting(criteria)
         searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
 
-        val searchHits = esBehandlingRepository.search(searchSourceBuilder, emptyList())
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder)
         logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
         return searchHits
     }
@@ -122,7 +123,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         searchSourceBuilder.addSorting(criteria)
         searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
 
-        val searchHits = esBehandlingRepository.search(searchSourceBuilder, emptyList())
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder)
         logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
         return searchHits
     }
@@ -134,7 +135,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         searchSourceBuilder.addSorting(criteria)
         searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
 
-        val searchHits = esBehandlingRepository.search(searchSourceBuilder, emptyList())
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder)
         logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
         return searchHits.anonymize()
     }
@@ -146,7 +147,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         searchSourceBuilder.addSorting(criteria)
         searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
 
-        val searchHits = esBehandlingRepository.search(searchSourceBuilder, emptyList())
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder)
         logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
         return searchHits.anonymize()
     }
@@ -158,7 +159,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         searchSourceBuilder.addSorting(criteria)
         searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
 
-        val searchHits = esBehandlingRepository.search(searchSourceBuilder, emptyList())
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder)
         logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
         return searchHits.anonymize()
     }
@@ -171,7 +172,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         searchSourceBuilder.addSorting(criteria)
         searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
 
-        val searchHits = esKlagebehandlingRepository.search(searchSourceBuilder, emptyList())
+        val searchHits = esKlagebehandlingRepository.search(searchSourceBuilder)
         logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
         return searchHits
     }
