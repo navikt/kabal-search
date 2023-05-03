@@ -28,8 +28,8 @@ import org.opensearch.client.core.CountResponse
 import org.opensearch.client.indices.CreateIndexRequest
 import org.opensearch.client.indices.CreateIndexResponse
 import org.opensearch.client.indices.GetIndexRequest
-import org.opensearch.common.xcontent.NamedXContentRegistry
 import org.opensearch.common.xcontent.XContentType
+import org.opensearch.core.xcontent.NamedXContentRegistry
 import org.opensearch.index.VersionType
 import org.opensearch.index.query.QueryBuilder
 import org.opensearch.index.query.QueryBuilders
