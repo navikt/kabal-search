@@ -155,7 +155,7 @@ class EsBehandlingRepository(val client: RestHighLevelClient) {
 
     fun search(
         searchSourceBuilder: SearchSourceBuilder,
-        aggregationBuilders: List<AggregationBuilder>
+        aggregationBuilders: List<AggregationBuilder> = emptyList(),
     ): BehandlingerSearchHits {
         val searchRequest = SearchRequest(BEHANDLING_INDEX)
         searchRequest.source(searchSourceBuilder)

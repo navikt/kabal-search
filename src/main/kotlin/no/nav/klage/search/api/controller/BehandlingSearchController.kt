@@ -42,8 +42,6 @@ class BehandlingSearchController(
     )
     @PostMapping("/personogoppgaver", produces = ["application/json"])
     fun getPersonOgOppgaver(@RequestBody input: SearchPersonByFnrInput): FnrSearchResponse {
-        val saksbehandler = oAuthTokenService.getInnloggetIdent()
-
         val personSearchResponse: PersonSearchResponse =
             personSearchService.fnrSearch(behandlingerSearchCriteriaMapper.toOppgaverOmPersonSearchCriteria(input))
                 ?: throw PersonNotFoundException("Person med fnr ${input.query} ikke funnet")
