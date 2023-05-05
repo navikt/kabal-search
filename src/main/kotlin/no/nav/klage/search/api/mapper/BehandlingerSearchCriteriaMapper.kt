@@ -174,6 +174,14 @@ class BehandlingerSearchCriteriaMapper(
             kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
         )
 
+    fun toBehandlingIdSearchCriteria(behandlingId: String): BehandlingIdSearchCriteria =
+        BehandlingIdSearchCriteria(
+            behandlingId = behandlingId,
+            kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
+            kanBehandleFortrolig = kanBehandleFortrolig(),
+            kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+        )
+
     private fun mapSortField(sortering: Sortering?): SortField =
         when (sortering) {
             Sortering.MOTTATT -> SortField.MOTTATT

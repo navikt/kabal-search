@@ -211,6 +211,14 @@ data class LedigeOppgaverSearchCriteria(
     override val kanBehandleStrengtFortrolig: Boolean,
 ) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria
 
+data class BehandlingIdSearchCriteria(
+    val behandlingId: String,
+
+    override val kanBehandleEgenAnsatt: Boolean,
+    override val kanBehandleFortrolig: Boolean,
+    override val kanBehandleStrengtFortrolig: Boolean,
+) : SecuritySearchCriteria
+
 data class CountLedigeOppgaverMedUtgaattFristSearchCriteria(
     override val typer: List<Type>,
     override val ytelser: List<Ytelse>,

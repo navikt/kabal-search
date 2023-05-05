@@ -70,6 +70,29 @@ class OppgaverListController(
     }
 
     @Operation(
+        summary = "Hent ledige oppgaver for en saksbehandler",
+        description = "Henter alle ledige oppgaver saksbehandler har tilgang til."
+    )
+    @GetMapping("/oppgaver/{behandlingId}", produces = ["application/json"])
+    fun getOppgave(
+        @PathVariable behandlingId: String,
+    ): BehandlingListView {
+        logger.debug("getOppgave: {}", behandlingId)
+
+        val searchCriteria = behandlingerSearchCriteriaMapper.toBehandlingIdSearchCriteria(
+            behandlingId = behandlingId,
+        )
+        val esResponse = elasticsearchService.findOppgaveByBehandlingId(searchCriteria)
+
+        val result = behandlingListMapper.mapEsBehandlingerToListView(
+            esBehandlinger = esResponse.searchHits.map { it.content },
+            visePersonData = false,
+        )
+
+        return result.first()
+    }
+
+    @Operation(
         summary = "Hent ferdigstilte oppgaver for en ansatt",
         description = "Henter alle ferdigstilte oppgaver som saksbehandler har tilgang til."
     )
