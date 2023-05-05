@@ -93,6 +93,29 @@ class OppgaverListController(
     }
 
     @Operation(
+        summary = "Hent person",
+        description = "Hent person."
+    )
+    @GetMapping("/oppgaver/{behandlingId}/person", produces = ["application/json"])
+    fun getPersonByOppgave(
+        @PathVariable behandlingId: String,
+    ): PersonView {
+        logger.debug("getPersonByOppgave: {}", behandlingId)
+
+        val searchCriteria = behandlingerSearchCriteriaMapper.toBehandlingIdSearchCriteria(
+            behandlingId = behandlingId,
+        )
+        val esResponse = elasticsearchService.findOppgaveByBehandlingId(searchCriteria)
+
+        val result = behandlingListMapper.mapEsBehandlingerToListView(
+            esBehandlinger = esResponse.searchHits.map { it.content },
+            visePersonData = true,
+        )
+
+        return result.first().person!!
+    }
+
+    @Operation(
         summary = "Hent ferdigstilte oppgaver for en ansatt",
         description = "Henter alle ferdigstilte oppgaver som saksbehandler har tilgang til."
     )
