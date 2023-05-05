@@ -283,7 +283,7 @@ class BehandlingerSearchCriteriaMapper(
             kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
         )
 
-    fun toSearchCriteriaForLedigeMedUtgaattFrist(navIdent: String, queryParams: MineLedigeOppgaverQueryParams) =
+    fun toSearchCriteriaForLedigeMedUtgaattFrist(navIdent: String, queryParams: CommonOppgaverQueryParams) =
         CountLedigeOppgaverMedUtgaattFristSearchCriteria(
             typer = queryParams.typer.map { Type.of(it) },
             ytelser = queryParams.ytelser.map { Ytelse.of(it) },

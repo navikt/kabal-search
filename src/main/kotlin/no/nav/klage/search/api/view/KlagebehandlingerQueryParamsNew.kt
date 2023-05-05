@@ -43,6 +43,14 @@ data class MineLedigeOppgaverQueryParamsNew(
     override val sortering: Sortering? = Sortering.FRIST,
 ) : CommonOppgaverQueryParams
 
+data class MineLedigeOppgaverCountQueryParams(
+    override var typer: List<String> = emptyList(),
+    override var ytelser: List<String> = emptyList(),
+    override var hjemler: List<String> = emptyList(),
+    override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
+    override val sortering: Sortering? = Sortering.MOTTATT,
+) : CommonOppgaverQueryParams
+
 data class MineOppgaverPaaVentQueryParamsNew(
     override var typer: List<String> = emptyList(),
     override var ytelser: List<String> = emptyList(),

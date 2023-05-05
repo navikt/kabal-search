@@ -9,6 +9,7 @@ import no.nav.klage.search.api.mapper.BehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.*
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.exceptions.MissingTilgangException
+import no.nav.klage.search.exceptions.NotMatchingUserException
 import no.nav.klage.search.service.ElasticsearchService
 import no.nav.klage.search.service.saksbehandler.InnloggetSaksbehandlerService
 import no.nav.klage.search.service.saksbehandler.OAuthTokenService
@@ -263,6 +264,48 @@ class OppgaverListControllerNew(
                 esBehandlinger = esResponse.searchHits.map { it.content },
             ),
         )
+    }
+
+    @Operation(
+        summary = "Hent antall utildelte behandlinger for tilgjengelig for saksbehandler der fristen gått ut",
+        description = "Hent antall utildelte behandlinger for tilgjengelig for saksbehandler der fristen gått ut"
+    )
+    @GetMapping("/ansatte/{navIdent}/antalloppgavermedutgaattefrister_new", produces = ["application/json"])
+    fun getUtgaatteFristerAvailableToSaksbehandlerCount(
+        @Parameter(name = "NavIdent til en ansatt")
+        @PathVariable navIdent: String,
+        queryParams: MineLedigeOppgaverCountQueryParams
+    ): AntallUtgaatteFristerResponse {
+        logger.debug("Params: {}", queryParams)
+        validateNavIdent(navIdent)
+
+        val ytelser = getYtelserQueryListForSaksbehandler(
+            queryParams = queryParams,
+            tildelteYtelser = innloggetSaksbehandlerService.getTildelteYtelserForSaksbehandler()
+        )
+        //TODO: Dette hadde vært bedre å håndtere i ElasticsearchService enn her
+        if (ytelser.isEmpty()) {
+            return AntallUtgaatteFristerResponse(0)
+        }
+
+        return AntallUtgaatteFristerResponse(
+            antall = elasticsearchService.countLedigeOppgaverMedUtgaattFristByCriteria(
+                criteria = behandlingerSearchCriteriaMapper.toSearchCriteriaForLedigeMedUtgaattFrist(
+                    navIdent = navIdent,
+                    queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
+                )
+            )
+        )
+    }
+
+    private fun validateNavIdent(navIdent: String) {
+        val innloggetIdent = oAuthTokenService.getInnloggetIdent()
+        if (innloggetIdent != navIdent) {
+            throw NotMatchingUserException(
+                "logged in user does not match sent in user. " +
+                        "Logged in: $innloggetIdent, sent in: $navIdent"
+            )
+        }
     }
 
     private fun validateRettigheterForEnhetensTildelteOppgaver() {
