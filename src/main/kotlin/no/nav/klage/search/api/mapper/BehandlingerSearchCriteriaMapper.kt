@@ -55,6 +55,24 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
     )
 
+    fun toSaksbehandlersFerdigstilteOppgaverSearchCriteria(
+        navIdent: String,
+        queryParams: MineFerdigstilteOppgaverQueryParamsNew,
+    ) = SaksbehandlersFerdigstilteOppgaverSearchCriteria(
+        typer = queryParams.typer.map { Type.of(it) },
+        ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+        hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+        saksbehandler = navIdent,
+        ferdigstiltFom = mapFerdigstiltFom(queryParams),
+        sortField = mapSortField(queryParams.sortering),
+        order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+        offset = 0,
+        limit = 50_000,
+        kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
+        kanBehandleFortrolig = kanBehandleFortrolig(),
+        kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+    )
+
     fun toSaksbehandlersUferdigeOppgaverSearchCriteria(
         navIdent: String,
         queryParams: MineUferdigeOppgaverQueryParams,
@@ -72,6 +90,23 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
     )
 
+    fun toSaksbehandlersUferdigeOppgaverSearchCriteria(
+        navIdent: String,
+        queryParams: MineUferdigeOppgaverQueryParamsNew,
+    ) = SaksbehandlersUferdigeOppgaverSearchCriteria(
+        typer = queryParams.typer.map { Type.of(it) },
+        ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+        hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+        saksbehandler = navIdent,
+        sortField = mapSortField(queryParams.sortering),
+        order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+        offset = 0,
+        limit = 50_000,
+        kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
+        kanBehandleFortrolig = kanBehandleFortrolig(),
+        kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+    )
+
     fun toSaksbehandlersOppgaverPaaVentSearchCriteria(
         navIdent: String,
         queryParams: MineOppgaverPaaVentQueryParams,
@@ -84,6 +119,23 @@ class BehandlingerSearchCriteriaMapper(
         order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
         offset = queryParams.start,
         limit = queryParams.antall,
+        kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
+        kanBehandleFortrolig = kanBehandleFortrolig(),
+        kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+    )
+
+    fun toSaksbehandlersOppgaverPaaVentSearchCriteria(
+        navIdent: String,
+        queryParams: MineOppgaverPaaVentQueryParamsNew,
+    ) = SaksbehandlersOppgaverPaaVentSearchCriteria(
+        typer = queryParams.typer.map { Type.of(it) },
+        ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+        hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+        saksbehandler = navIdent,
+        sortField = mapSortField(queryParams.sortering),
+        order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+        offset = 0,
+        limit = 50_000,
         kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
         kanBehandleFortrolig = kanBehandleFortrolig(),
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
@@ -110,6 +162,25 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
     )
 
+    fun toEnhetensFerdigstilteOppgaverSearchCriteria(
+        enhetId: String,
+        queryParams: EnhetensFerdigstilteOppgaverQueryParamsNew,
+    ) = EnhetensFerdigstilteOppgaverSearchCriteria(
+        typer = queryParams.typer.map { Type.of(it) },
+        ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+        hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+        enhetId = enhetId,
+        saksbehandlere = queryParams.tildelteSaksbehandlere,
+        ferdigstiltFom = mapFerdigstiltFom(queryParams),
+        sortField = mapSortField(queryParams.sortering),
+        order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+        offset = 0,
+        limit = 50_000,
+        kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
+        kanBehandleFortrolig = kanBehandleFortrolig(),
+        kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+    )
+
     fun toEnhetensOppgaverPaaVentSearchCriteria(
         enhetId: String,
         queryParams: EnhetensOppgaverPaaVentQueryParams,
@@ -123,6 +194,24 @@ class BehandlingerSearchCriteriaMapper(
         order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
         offset = queryParams.start,
         limit = queryParams.antall,
+        kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
+        kanBehandleFortrolig = kanBehandleFortrolig(),
+        kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+    )
+
+    fun toEnhetensOppgaverPaaVentSearchCriteria(
+        enhetId: String,
+        queryParams: EnhetensOppgaverPaaVentQueryParamsNew,
+    ) = EnhetensOppgaverPaaVentSearchCriteria(
+        typer = queryParams.typer.map { Type.of(it) },
+        ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+        hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+        enhetId = enhetId,
+        saksbehandlere = queryParams.tildelteSaksbehandlere,
+        sortField = mapSortField(queryParams.sortering),
+        order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+        offset = 0,
+        limit = 50_000,
         kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
         kanBehandleFortrolig = kanBehandleFortrolig(),
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
@@ -146,6 +235,24 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
     )
 
+    fun toEnhetensUferdigeOppgaverSearchCriteria(
+        enhetId: String,
+        queryParams: EnhetensUferdigeOppgaverQueryParamsNew,
+    ) = EnhetensUferdigeOppgaverSearchCriteria(
+        typer = queryParams.typer.map { Type.of(it) },
+        ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+        hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+        enhetId = enhetId,
+        saksbehandlere = queryParams.tildelteSaksbehandlere,
+        sortField = mapSortField(queryParams.sortering),
+        order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+        offset = 0,
+        limit = 50_000,
+        kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
+        kanBehandleFortrolig = kanBehandleFortrolig(),
+        kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+    )
+
     //-- ledige oppgaver:
 
     fun toLedigeOppgaverSearchCriteria(queryParams: MineLedigeOppgaverQueryParams): LedigeOppgaverSearchCriteria =
@@ -157,6 +264,20 @@ class BehandlingerSearchCriteriaMapper(
             order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
             offset = queryParams.start,
             limit = queryParams.antall,
+            kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
+            kanBehandleFortrolig = kanBehandleFortrolig(),
+            kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+        )
+
+    fun toLedigeOppgaverSearchCriteria(queryParams: MineLedigeOppgaverQueryParamsNew): LedigeOppgaverSearchCriteria =
+        LedigeOppgaverSearchCriteria(
+            typer = queryParams.typer.map { Type.of(it) },
+            ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+            hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+            sortField = mapSortField(queryParams.sortering),
+            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            offset = 0,
+            limit = 50_000,
             kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
             kanBehandleFortrolig = kanBehandleFortrolig(),
             kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),

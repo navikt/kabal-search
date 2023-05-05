@@ -108,6 +108,16 @@ class BehandlingListMapper(
         }
     }
 
+    fun mapEsBehandlingerToListViewNew(
+        esBehandlinger: List<EsBehandling>,
+    ): List<BehandlingListViewNew> {
+        return esBehandlinger.map { esBehandling ->
+            BehandlingListViewNew(
+                id = esBehandling.id,
+            )
+        }
+    }
+
     fun mapAnonymeEsBehandlingerToListView(
         esBehandlinger: List<EsAnonymBehandling>,
     ): List<BehandlingListView> {
@@ -159,6 +169,16 @@ class BehandlingListMapper(
                     lovligeYtelser = lovligeYtelser,
                 ),
                 sattPaaVent = esBehandling.toSattPaaVent(),
+            )
+        }
+    }
+
+    fun mapAnonymeEsBehandlingerToListViewNew(
+        esBehandlinger: List<EsAnonymBehandling>,
+    ): List<BehandlingListViewNew> {
+        return esBehandlinger.map { esBehandling ->
+            BehandlingListViewNew(
+                id = esBehandling.id,
             )
         }
     }
