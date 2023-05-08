@@ -189,7 +189,10 @@ class OppgaverListControllerNew(
         summary = "Hent enhetens ferdigstilte oppgaver",
         description = "Henter alle ferdigstilte oppgaver for enheten som saksbehandler har tilgang til."
     )
-    @GetMapping("/enhet/{enhetId}/oppgaver/tildelte/ferdigstilte_new", produces = ["application/json"])
+    @GetMapping(
+        value = ["/enhet/{enhetId}/oppgaver/tildelte/ferdigstilte_new", "/enhet/{enhetId}/oppgaver/tildelte/ferdigstilte"],
+        produces = ["application/json"]
+    )
     fun getEnhetensFerdigstilteOppgaver(
         @Parameter(name = "EnhetId til enheten den ansatte jobber i")
         @PathVariable enhetId: String,
@@ -216,7 +219,10 @@ class OppgaverListControllerNew(
         summary = "Hent enhetens oppgaver på vent",
         description = "Henter alle oppgaver satt på vent for enheten som saksbehandler har tilgang til."
     )
-    @GetMapping("/enhet/{enhetId}/oppgaver/tildelte/paavent_new", produces = ["application/json"])
+    @GetMapping(
+        value = ["/enhet/{enhetId}/oppgaver/tildelte/paavent_new", "/enhet/{enhetId}/oppgaver/tildelte/paavent"],
+        produces = ["application/json"]
+    )
     fun getEnhetensOppgaverPaaVent(
         @Parameter(name = "EnhetId til enheten den ansatte jobber i")
         @PathVariable enhetId: String,
@@ -243,7 +249,10 @@ class OppgaverListControllerNew(
         summary = "Hent uferdige oppgaver for en enhet",
         description = "Henter alle uferdige oppgaver i enheten som saksbehandler har tilgang til."
     )
-    @GetMapping("/enhet/{enhetId}/oppgaver/tildelte/uferdige_new", produces = ["application/json"])
+    @GetMapping(
+        value = ["/enhet/{enhetId}/oppgaver/tildelte/uferdige_new", "/enhet/{enhetId}/oppgaver/tildelte/uferdige"],
+        produces = ["application/json"]
+    )
     fun getEnhetensUferdigeOppgaver(
         @Parameter(name = "EnhetId til enheten den ansatte jobber i")
         @PathVariable enhetId: String,
