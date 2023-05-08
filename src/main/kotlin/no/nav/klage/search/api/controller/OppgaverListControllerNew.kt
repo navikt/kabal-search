@@ -270,14 +270,11 @@ class OppgaverListControllerNew(
         summary = "Hent antall utildelte behandlinger for tilgjengelig for saksbehandler der fristen gått ut",
         description = "Hent antall utildelte behandlinger for tilgjengelig for saksbehandler der fristen gått ut"
     )
-    @GetMapping("/ansatte/{navIdent}/antalloppgavermedutgaattefrister_new", produces = ["application/json"])
+    @GetMapping("/antalloppgavermedutgaattefrister", produces = ["application/json"])
     fun getUtgaatteFristerAvailableToSaksbehandlerCount(
-        @Parameter(name = "NavIdent til en ansatt")
-        @PathVariable navIdent: String,
         queryParams: MineLedigeOppgaverCountQueryParams
     ): AntallUtgaatteFristerResponse {
         logger.debug("Params: {}", queryParams)
-        validateNavIdent(navIdent)
 
         val ytelser = getYtelserQueryListForSaksbehandler(
             queryParams = queryParams,
@@ -291,21 +288,11 @@ class OppgaverListControllerNew(
         return AntallUtgaatteFristerResponse(
             antall = elasticsearchService.countLedigeOppgaverMedUtgaattFristByCriteria(
                 criteria = behandlingerSearchCriteriaMapper.toSearchCriteriaForLedigeMedUtgaattFrist(
-                    navIdent = navIdent,
+                    navIdent = oAuthTokenService.getInnloggetIdent(),
                     queryParams = queryParams.copy(ytelser = ytelser) //, hjemler = hjemler),
                 )
             )
         )
-    }
-
-    private fun validateNavIdent(navIdent: String) {
-        val innloggetIdent = oAuthTokenService.getInnloggetIdent()
-        if (innloggetIdent != navIdent) {
-            throw NotMatchingUserException(
-                "logged in user does not match sent in user. " +
-                        "Logged in: $innloggetIdent, sent in: $navIdent"
-            )
-        }
     }
 
     private fun validateRettigheterForEnhetensTildelteOppgaver() {
