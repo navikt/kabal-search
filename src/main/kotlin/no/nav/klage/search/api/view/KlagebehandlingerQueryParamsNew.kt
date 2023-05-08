@@ -3,14 +3,12 @@ package no.nav.klage.search.api.view
 import org.springframework.format.annotation.DateTimeFormat
 import java.time.LocalDate
 
-data class KlagebehandlingerQueryParams(
+data class KlagebehandlingerQueryParamsNew(
     override var typer: List<String> = emptyList(),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
     override val sortering: Sortering? = Sortering.FRIST,
-    override val start: Int,
-    override val antall: Int,
     val projeksjon: Projeksjon? = null,
     val erTildeltSaksbehandler: Boolean? = null,
     var tildeltSaksbehandler: List<String> = emptyList(),
@@ -18,108 +16,73 @@ data class KlagebehandlingerQueryParams(
     val ferdigstiltFom: LocalDate? = null,
     val ferdigstiltDaysAgo: Long? = null,
     val enhet: String,
-) : CommonOppgaverQueryParams, Paging
+) : CommonOppgaverQueryParams
 
-interface Paging {
-    val start: Int
-    val antall: Int
-}
-
-interface CommonOppgaverQueryParams {
-    var typer: List<String>
-    var ytelser: List<String>
-    var hjemler: List<String>
-    val rekkefoelge: Rekkefoelge?
-    val sortering: Sortering?
-}
-
-interface FerdigstilteOppgaverQueryParams {
-    val ferdigstiltDaysAgo: Long
-}
-
-data class MineFerdigstilteOppgaverQueryParams(
+data class MineFerdigstilteOppgaverQueryParamsNew(
     override var typer: List<String> = emptyList(),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
     override val sortering: Sortering? = Sortering.FRIST,
-    override val start: Int,
-    override val antall: Int,
     override val ferdigstiltDaysAgo: Long,
-) : CommonOppgaverQueryParams, FerdigstilteOppgaverQueryParams, Paging
+) : CommonOppgaverQueryParams, FerdigstilteOppgaverQueryParams
 
-data class MineUferdigeOppgaverQueryParams(
+data class MineUferdigeOppgaverQueryParamsNew(
     override var typer: List<String> = emptyList(),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
     override val sortering: Sortering? = Sortering.FRIST,
-    override val start: Int,
-    override val antall: Int,
-) : CommonOppgaverQueryParams, Paging
+) : CommonOppgaverQueryParams
 
-data class MineLedigeOppgaverQueryParams(
+data class MineLedigeOppgaverQueryParamsNew(
     override var typer: List<String> = emptyList(),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
     override val sortering: Sortering? = Sortering.FRIST,
-    override val start: Int,
-    override val antall: Int,
-) : CommonOppgaverQueryParams, Paging
+) : CommonOppgaverQueryParams
 
-data class MineOppgaverPaaVentQueryParams(
+data class MineLedigeOppgaverCountQueryParams(
+    override var typer: List<String> = emptyList(),
+    override var ytelser: List<String> = emptyList(),
+    override var hjemler: List<String> = emptyList(),
+    override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
+    override val sortering: Sortering? = Sortering.MOTTATT,
+) : CommonOppgaverQueryParams
+
+data class MineOppgaverPaaVentQueryParamsNew(
     override var typer: List<String> = emptyList(),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
     override val sortering: Sortering? = Sortering.FRIST,
-    override val start: Int,
-    override val antall: Int,
-) : CommonOppgaverQueryParams, Paging
+) : CommonOppgaverQueryParams
 
-data class EnhetensFerdigstilteOppgaverQueryParams(
+data class EnhetensFerdigstilteOppgaverQueryParamsNew(
     override var typer: List<String> = emptyList(),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
     override val sortering: Sortering? = Sortering.FRIST,
-    override val start: Int,
-    override val antall: Int,
     override val ferdigstiltDaysAgo: Long,
     var tildelteSaksbehandlere: List<String> = emptyList(),
-) : CommonOppgaverQueryParams, FerdigstilteOppgaverQueryParams, Paging
+) : CommonOppgaverQueryParams, FerdigstilteOppgaverQueryParams
 
-data class EnhetensOppgaverPaaVentQueryParams(
+data class EnhetensOppgaverPaaVentQueryParamsNew(
     override var typer: List<String> = emptyList(),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
     override val sortering: Sortering? = Sortering.FRIST,
-    override val start: Int,
-    override val antall: Int,
     var tildelteSaksbehandlere: List<String> = emptyList(),
-) : CommonOppgaverQueryParams, Paging
+) : CommonOppgaverQueryParams
 
-data class EnhetensUferdigeOppgaverQueryParams(
+data class EnhetensUferdigeOppgaverQueryParamsNew(
     override var typer: List<String> = emptyList(),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
     override val sortering: Sortering? = Sortering.FRIST,
-    override val start: Int,
-    override val antall: Int,
     var tildelteSaksbehandlere: List<String> = emptyList(),
-) : CommonOppgaverQueryParams, Paging
-
-enum class Rekkefoelge {
-    STIGENDE, SYNKENDE
-}
-
-enum class Sortering {
-    FRIST, MOTTATT, ALDER, PAA_VENT_FROM, PAA_VENT_TO
-}
-
-enum class Projeksjon {
-    UTVIDET
-}
+) : CommonOppgaverQueryParams

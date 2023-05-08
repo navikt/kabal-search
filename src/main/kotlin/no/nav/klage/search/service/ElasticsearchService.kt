@@ -4,11 +4,8 @@ import no.nav.klage.kodeverk.MedunderskriverFlyt
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.domain.*
-import no.nav.klage.search.domain.elasticsearch.EsBehandling
-import no.nav.klage.search.domain.elasticsearch.EsStatus
+import no.nav.klage.search.domain.elasticsearch.*
 import no.nav.klage.search.domain.elasticsearch.EsStatus.*
-import no.nav.klage.search.domain.elasticsearch.KlageStatistikk
-import no.nav.klage.search.domain.elasticsearch.RelatedKlagebehandlinger
 import no.nav.klage.search.domain.saksbehandler.Saksbehandler
 import no.nav.klage.search.repositories.AnonymeBehandlingerSearchHits
 import no.nav.klage.search.repositories.BehandlingerSearchHits
@@ -92,6 +89,16 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits
     }
 
+    open fun findOppgaveByBehandlingId(criteria: BehandlingIdSearchCriteria): BehandlingerSearchHits {
+        val searchSourceBuilder = SearchSourceBuilder()
+        searchSourceBuilder.query(criteria.toEsQuery())
+        searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
+
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder)
+        logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
+        return searchHits
+    }
+
     open fun findSaksbehandlersFerdigstilteOppgaverByCriteria(criteria: SaksbehandlersFerdigstilteOppgaverSearchCriteria): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
@@ -163,20 +170,6 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
         return searchHits.anonymize()
     }
-
-    /*
-    open fun findByCriteria(criteria: KlagebehandlingerSearchCriteria): KlagebehandlingerSearchHits {
-        val searchSourceBuilder = SearchSourceBuilder()
-        searchSourceBuilder.query(criteria.toEsQuery())
-        searchSourceBuilder.addPaging(criteria)
-        searchSourceBuilder.addSorting(criteria)
-        searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
-
-        val searchHits = esKlagebehandlingRepository.search(searchSourceBuilder)
-        logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
-        return searchHits
-    }
-     */
 
     open fun findSaksbehandlereByEnhetCriteria(criteria: SaksbehandlereByEnhetSearchCriteria): SortedSet<Saksbehandler> {
         val searchHits: SearchHits<EsBehandling> = esBehandlingRepository.search(criteria.toEsQuery())
@@ -330,6 +323,16 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         //baseQuery.must(beAvsluttetAvSaksbehandler())
         baseQuery.must(beAvsluttetAvSaksbehandlerEtter(ferdigstiltFom))
         baseQuery.must(beTildeltSaksbehandler(saksbehandler))
+
+        logger.debug("Making search request with query {}", baseQuery.toString())
+        return baseQuery
+    }
+
+    private fun BehandlingIdSearchCriteria.toEsQuery(): QueryBuilder {
+        logger.debug("Search criteria: {}", this)
+        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
+        baseQuery.addSecurityFilters(this)
+        baseQuery.must(QueryBuilders.idsQuery().addIds(behandlingId))
 
         logger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
