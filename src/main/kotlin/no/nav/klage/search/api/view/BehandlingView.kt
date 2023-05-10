@@ -3,9 +3,13 @@ package no.nav.klage.search.api.view
 import no.nav.klage.kodeverk.MedunderskriverFlyt
 import java.time.LocalDate
 
-data class BehandlingerListRespons(
+data class BehandlingerListResponse(
     val antallTreffTotalt: Int,
     val behandlinger: List<BehandlingListView>
+)
+
+data class BehandlingListView(
+    val id: String,
 )
 
 data class PersonView(
@@ -18,7 +22,7 @@ enum class AccessView {
     NONE, READ, ASSIGN, WRITE
 }
 
-data class BehandlingListView(
+data class BehandlingView(
     val id: String,
     val person: PersonView? = null,
     val type: String,
