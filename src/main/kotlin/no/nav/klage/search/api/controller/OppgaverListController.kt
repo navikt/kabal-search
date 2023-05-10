@@ -188,86 +188,86 @@ class OppgaverListController(
         )
     }
 
-    @Operation(
-        summary = "Hent enhetens ferdigstilte oppgaver",
-        description = "Henter alle ferdigstilte oppgaver for enheten som saksbehandler har tilgang til."
-    )
-    @GetMapping("/enhet/{enhetId}/oppgaver/tildelte/ferdigstilte", produces = ["application/json"])
-    fun getEnhetensFerdigstilteOppgaver(
-        @Parameter(name = "EnhetId til enheten den ansatte jobber i")
-        @PathVariable enhetId: String,
-        queryParams: EnhetensFerdigstilteOppgaverQueryParams
-    ): BehandlingerListRespons {
-        logger.debug("Params: {}", queryParams)
-        validateRettigheterForEnhetensTildelteOppgaver()
+//    @Operation(
+//        summary = "Hent enhetens ferdigstilte oppgaver",
+//        description = "Henter alle ferdigstilte oppgaver for enheten som saksbehandler har tilgang til."
+//    )
+//    @GetMapping("/enhet/{enhetId}/oppgaver/tildelte/ferdigstilte", produces = ["application/json"])
+//    fun getEnhetensFerdigstilteOppgaver(
+//        @Parameter(name = "EnhetId til enheten den ansatte jobber i")
+//        @PathVariable enhetId: String,
+//        queryParams: EnhetensFerdigstilteOppgaverQueryParams
+//    ): BehandlingerListRespons {
+//        logger.debug("Params: {}", queryParams)
+//        validateRettigheterForEnhetensTildelteOppgaver()
+//
+//        val searchCriteria = behandlingerSearchCriteriaMapper.toEnhetensFerdigstilteOppgaverSearchCriteria(
+//            enhetId = enhetId,
+//            queryParams = queryParams
+//        )
+//
+//        val esResponse = elasticsearchService.findEnhetensFerdigstilteOppgaverByCriteria(searchCriteria)
+//        return BehandlingerListRespons(
+//            antallTreffTotalt = esResponse.totalHits.toInt(),
+//            behandlinger = behandlingListMapper.mapAnonymeEsBehandlingerToListView(
+//                esBehandlinger = esResponse.searchHits.map { it.content },
+//            ),
+//        )
+//    }
 
-        val searchCriteria = behandlingerSearchCriteriaMapper.toEnhetensFerdigstilteOppgaverSearchCriteria(
-            enhetId = enhetId,
-            queryParams = queryParams
-        )
+//    @Operation(
+//        summary = "Hent enhetens oppgaver på vent",
+//        description = "Henter alle oppgaver satt på vent for enheten som saksbehandler har tilgang til."
+//    )
+//    @GetMapping("/enhet/{enhetId}/oppgaver/tildelte/paavent", produces = ["application/json"])
+//    fun getEnhetensOppgaverPaaVent(
+//        @Parameter(name = "EnhetId til enheten den ansatte jobber i")
+//        @PathVariable enhetId: String,
+//        queryParams: EnhetensOppgaverPaaVentQueryParams
+//    ): BehandlingerListRespons {
+//        logger.debug("Params: {}", queryParams)
+//        validateRettigheterForEnhetensTildelteOppgaver()
+//
+//        val searchCriteria = behandlingerSearchCriteriaMapper.toEnhetensOppgaverPaaVentSearchCriteria(
+//            enhetId = enhetId,
+//            queryParams = queryParams
+//        )
+//
+//        val esResponse = elasticsearchService.findEnhetensOppgaverPaaVentByCriteria(searchCriteria)
+//        return BehandlingerListRespons(
+//            antallTreffTotalt = esResponse.totalHits.toInt(),
+//            behandlinger = behandlingListMapper.mapAnonymeEsBehandlingerToListView(
+//                esBehandlinger = esResponse.searchHits.map { it.content },
+//            ),
+//        )
+//    }
 
-        val esResponse = elasticsearchService.findEnhetensFerdigstilteOppgaverByCriteria(searchCriteria)
-        return BehandlingerListRespons(
-            antallTreffTotalt = esResponse.totalHits.toInt(),
-            behandlinger = behandlingListMapper.mapAnonymeEsBehandlingerToListView(
-                esBehandlinger = esResponse.searchHits.map { it.content },
-            ),
-        )
-    }
-
-    @Operation(
-        summary = "Hent enhetens oppgaver på vent",
-        description = "Henter alle oppgaver satt på vent for enheten som saksbehandler har tilgang til."
-    )
-    @GetMapping("/enhet/{enhetId}/oppgaver/tildelte/paavent", produces = ["application/json"])
-    fun getEnhetensOppgaverPaaVent(
-        @Parameter(name = "EnhetId til enheten den ansatte jobber i")
-        @PathVariable enhetId: String,
-        queryParams: EnhetensOppgaverPaaVentQueryParams
-    ): BehandlingerListRespons {
-        logger.debug("Params: {}", queryParams)
-        validateRettigheterForEnhetensTildelteOppgaver()
-
-        val searchCriteria = behandlingerSearchCriteriaMapper.toEnhetensOppgaverPaaVentSearchCriteria(
-            enhetId = enhetId,
-            queryParams = queryParams
-        )
-
-        val esResponse = elasticsearchService.findEnhetensOppgaverPaaVentByCriteria(searchCriteria)
-        return BehandlingerListRespons(
-            antallTreffTotalt = esResponse.totalHits.toInt(),
-            behandlinger = behandlingListMapper.mapAnonymeEsBehandlingerToListView(
-                esBehandlinger = esResponse.searchHits.map { it.content },
-            ),
-        )
-    }
-
-    @Operation(
-        summary = "Hent uferdige oppgaver for en enhet",
-        description = "Henter alle uferdige oppgaver i enheten som saksbehandler har tilgang til."
-    )
-    @GetMapping("/enhet/{enhetId}/oppgaver/tildelte/uferdige", produces = ["application/json"])
-    fun getEnhetensUferdigeOppgaver(
-        @Parameter(name = "EnhetId til enheten den ansatte jobber i")
-        @PathVariable enhetId: String,
-        queryParams: EnhetensUferdigeOppgaverQueryParams
-    ): BehandlingerListRespons {
-        logger.debug("Params: {}", queryParams)
-        validateRettigheterForEnhetensTildelteOppgaver()
-
-        val searchCriteria = behandlingerSearchCriteriaMapper.toEnhetensUferdigeOppgaverSearchCriteria(
-            enhetId = enhetId,
-            queryParams = queryParams
-        )
-
-        val esResponse = elasticsearchService.findEnhetensUferdigeOppgaverByCriteria(searchCriteria)
-        return BehandlingerListRespons(
-            antallTreffTotalt = esResponse.totalHits.toInt(),
-            behandlinger = behandlingListMapper.mapAnonymeEsBehandlingerToListView(
-                esBehandlinger = esResponse.searchHits.map { it.content },
-            ),
-        )
-    }
+//    @Operation(
+//        summary = "Hent uferdige oppgaver for en enhet",
+//        description = "Henter alle uferdige oppgaver i enheten som saksbehandler har tilgang til."
+//    )
+//    @GetMapping("/enhet/{enhetId}/oppgaver/tildelte/uferdige", produces = ["application/json"])
+//    fun getEnhetensUferdigeOppgaver(
+//        @Parameter(name = "EnhetId til enheten den ansatte jobber i")
+//        @PathVariable enhetId: String,
+//        queryParams: EnhetensUferdigeOppgaverQueryParams
+//    ): BehandlingerListRespons {
+//        logger.debug("Params: {}", queryParams)
+//        validateRettigheterForEnhetensTildelteOppgaver()
+//
+//        val searchCriteria = behandlingerSearchCriteriaMapper.toEnhetensUferdigeOppgaverSearchCriteria(
+//            enhetId = enhetId,
+//            queryParams = queryParams
+//        )
+//
+//        val esResponse = elasticsearchService.findEnhetensUferdigeOppgaverByCriteria(searchCriteria)
+//        return BehandlingerListRespons(
+//            antallTreffTotalt = esResponse.totalHits.toInt(),
+//            behandlinger = behandlingListMapper.mapAnonymeEsBehandlingerToListView(
+//                esBehandlinger = esResponse.searchHits.map { it.content },
+//            ),
+//        )
+//    }
 
     private fun validateNavIdent(navIdent: String) {
         val innloggetIdent = oAuthTokenService.getInnloggetIdent()
