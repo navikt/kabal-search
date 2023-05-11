@@ -26,7 +26,7 @@ class BehandlingListMapper(
         personSearchResponse: PersonSearchResponse,
     ): FnrSearchResponse {
         val behandlinger =
-            mapAnonymeEsBehandlingerToListView(
+            mapAnonymeEsBehandlingerToBehandlingView(
                 esBehandlinger = personSearchResponse.behandlinger,
             )
         return FnrSearchResponse(
@@ -43,11 +43,11 @@ class BehandlingListMapper(
         )
     }
 
-    fun mapEsBehandlingerToListView(
+    fun mapEsBehandlingerToBehandlingView(
         esBehandlinger: List<EsBehandling>,
         visePersonData: Boolean,
         sivilstand: Sivilstand? = null
-    ): List<BehandlingListView> {
+    ): List<BehandlingView> {
 
         val kanBehandleStrengtFortrolig = oAuthTokenService.kanBehandleStrengtFortrolig()
         val kanBehandleFortrolig = oAuthTokenService.kanBehandleFortrolig()
@@ -56,7 +56,7 @@ class BehandlingListMapper(
         val innloggetIdent = oAuthTokenService.getInnloggetIdent()
 
         return esBehandlinger.map { esBehandling ->
-            BehandlingListView(
+            BehandlingView(
                 id = esBehandling.id,
                 person = if (visePersonData) {
                     PersonView(
@@ -108,19 +108,19 @@ class BehandlingListMapper(
         }
     }
 
-    fun mapEsBehandlingerToListViewNew(
+    fun mapEsBehandlingerToListView(
         esBehandlinger: List<EsBehandling>,
-    ): List<BehandlingListViewNew> {
+    ): List<BehandlingListView> {
         return esBehandlinger.map { esBehandling ->
-            BehandlingListViewNew(
+            BehandlingListView(
                 id = esBehandling.id,
             )
         }
     }
 
-    fun mapAnonymeEsBehandlingerToListView(
+    fun mapAnonymeEsBehandlingerToBehandlingView(
         esBehandlinger: List<EsAnonymBehandling>,
-    ): List<BehandlingListView> {
+    ): List<BehandlingView> {
 
         val kanBehandleStrengtFortrolig = oAuthTokenService.kanBehandleStrengtFortrolig()
         val kanBehandleFortrolig = oAuthTokenService.kanBehandleFortrolig()
@@ -129,7 +129,7 @@ class BehandlingListMapper(
         val innloggetIdent = oAuthTokenService.getInnloggetIdent()
 
         return esBehandlinger.map { esBehandling ->
-            BehandlingListView(
+            BehandlingView(
                 id = esBehandling.id,
                 person = null,
                 type = esBehandling.type,
@@ -173,11 +173,11 @@ class BehandlingListMapper(
         }
     }
 
-    fun mapAnonymeEsBehandlingerToListViewNew(
+    fun mapAnonymeEsBehandlingerToListView(
         esBehandlinger: List<EsAnonymBehandling>,
-    ): List<BehandlingListViewNew> {
+    ): List<BehandlingListView> {
         return esBehandlinger.map { esBehandling ->
-            BehandlingListViewNew(
+            BehandlingListView(
                 id = esBehandling.id,
             )
         }

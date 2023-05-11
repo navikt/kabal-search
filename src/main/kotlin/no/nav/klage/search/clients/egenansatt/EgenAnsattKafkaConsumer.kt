@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component
 @Component
 class EgenAnsattKafkaConsumer(
     private val egenAnsattService: EgenAnsattService,
-    private val egenAnsattFinder: PartitionFinder<String, String>
 ) {
 
     companion object {

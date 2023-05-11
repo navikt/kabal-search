@@ -17,6 +17,7 @@ import org.springframework.kafka.listener.ContainerProperties.AckMode
 import org.springframework.kafka.listener.DefaultErrorHandler
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
 import org.springframework.util.backoff.FixedBackOff
+import java.io.Serializable
 import java.time.Duration
 
 
@@ -77,27 +78,15 @@ class AivenKafkaConfiguration(
 
     @Bean
     fun egenAnsattConsumerFactory(): ConsumerFactory<String, String> {
-        return DefaultKafkaConsumerFactory(egenAnsattConsumerProps())
+        return DefaultKafkaConsumerFactory(getConsumerProps())
     }
 
     @Bean
     fun klageEndretConsumerFactory(): ConsumerFactory<String, String> {
-        return DefaultKafkaConsumerFactory(klageEndretConsumerProps())
+        return DefaultKafkaConsumerFactory(getConsumerProps())
     }
 
-    private fun egenAnsattConsumerProps(): Map<String, Any> {
-        return mapOf(
-            ConsumerConfig.GROUP_ID_CONFIG to "kabal-search",
-            ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to false,
-            ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "earliest",
-            ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to ErrorHandlingDeserializer::class.java,
-            ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to ErrorHandlingDeserializer::class.java,
-            "spring.deserializer.key.delegate.class" to StringDeserializer::class.java,
-            "spring.deserializer.value.delegate.class" to StringDeserializer::class.java
-        ) + commonConfig()
-    }
-
-    private fun klageEndretConsumerProps(): Map<String, Any> {
+    private fun getConsumerProps(): Map<String, Serializable> {
         return mapOf(
             ConsumerConfig.GROUP_ID_CONFIG to "kabal-search",
             ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to false,
