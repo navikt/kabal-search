@@ -287,6 +287,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
         baseQuery.must(QueryBuilders.termQuery("tildeltEnhet", enhet))
         baseQuery.must(beTildeltSaksbehandler())
+        baseQuery.mustNot(beFeilregistrert())
 
         logger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -299,6 +300,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.addBasicFilters(this)
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
         baseQuery.mustNot(beTildeltSaksbehandler())
+        baseQuery.mustNot(beFeilregistrert())
         logger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
@@ -310,6 +312,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.addBasicFilters(this)
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
         baseQuery.mustNot(beTildeltSaksbehandler())
+        baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(haveFristMellom(fristFom, fristTom))
         logger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -323,6 +326,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         //baseQuery.must(beAvsluttetAvSaksbehandler())
         baseQuery.must(beAvsluttetAvSaksbehandlerEtter(ferdigstiltFom))
         baseQuery.must(beTildeltSaksbehandler(saksbehandler))
+        baseQuery.mustNot(beFeilregistrert())
 
         logger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -346,6 +350,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
         baseQuery.mustNot(beSattPaaVent())
         baseQuery.must(beTildeltSaksbehandlerOrMedunderskriver(saksbehandler))
+        baseQuery.mustNot(beFeilregistrert())
 
         logger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -359,6 +364,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
         baseQuery.must(beSattPaaVent())
         baseQuery.must(beTildeltSaksbehandlerOrMedunderskriver(saksbehandler))
+        baseQuery.mustNot(beFeilregistrert())
 
         logger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -375,6 +381,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         if (saksbehandlere.isNotEmpty()) {
             baseQuery.must(beTildeltSaksbehandler(saksbehandlere))
         }
+        baseQuery.mustNot(beFeilregistrert())
 
         logger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -391,6 +398,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         if (saksbehandlere.isNotEmpty()) {
             baseQuery.must(beTildeltSaksbehandler(saksbehandlere))
         }
+        baseQuery.mustNot(beFeilregistrert())
 
         logger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -409,6 +417,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
             // Det er ikke med nå, jeg inkluderer ikke medunderskrivere i det hele tatt
             baseQuery.must(beTildeltSaksbehandler(saksbehandlere))
         }
+        baseQuery.mustNot(beFeilregistrert())
 
         logger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -658,6 +667,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     private fun beAvsluttetAvSaksbehandler() = QueryBuilders.existsQuery("avsluttetAvSaksbehandler")
+
+    private fun beFeilregistrert() = QueryBuilders.existsQuery("feilregistrert")
 
     private fun beSattPaaVent() = QueryBuilders.existsQuery("sattPaaVent")
 

@@ -14,7 +14,8 @@ enum class EsStatus {
     AVSLUTTET_AV_SAKSBEHANDLER,
     FULLFOERT,
     UKJENT,
-    SATT_PAA_VENT
+    SATT_PAA_VENT,
+    FEILREGISTRERT,
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -132,6 +133,9 @@ data class EsBehandling(
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     override val sattPaaVentExpires: LocalDateTime? = null,
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
+    override val feilregistrert: LocalDateTime? = null,
+
     val status: EsStatus
 ) : EsAnonymBehandling
 
@@ -156,4 +160,5 @@ interface EsAnonymBehandling {
     val id: String
     val sattPaaVent: LocalDateTime?
     val sattPaaVentExpires: LocalDateTime?
+    val feilregistrert: LocalDateTime?
 }

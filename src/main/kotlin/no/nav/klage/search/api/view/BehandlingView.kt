@@ -2,6 +2,7 @@ package no.nav.klage.search.api.view
 
 import no.nav.klage.kodeverk.MedunderskriverFlyt
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 data class BehandlingerListResponse(
     val antallTreffTotalt: Int,
@@ -49,6 +50,7 @@ data class BehandlingView(
     val ageKA: Int,
     val access: AccessView,
     val sattPaaVent: Venteperiode?,
+    val feilregistrert: LocalDateTime?,
 )
 
 data class Venteperiode(

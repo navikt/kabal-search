@@ -108,6 +108,7 @@ class EsBehandlingMapper(
             sattPaaVent = behandling.sattPaaVent,
             sattPaaVentExpires = behandling.sattPaaVentExpires,
             status = EsStatus.valueOf(behandling.status.name),
+            feilregistrert = behandling.feilregistrert,
         )
     }
 

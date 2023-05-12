@@ -38,8 +38,9 @@ class BehandlingListMapper(
             ),
             //TODO FE will not need all of these, but is not yet decided which to use.
             behandlinger = behandlinger,
-            aapneBehandlinger = behandlinger.filter { !it.isAvsluttetAvSaksbehandler },
-            avsluttedeBehandlinger = behandlinger.filter { it.isAvsluttetAvSaksbehandler }
+            aapneBehandlinger = behandlinger.filter { it.feilregistrert == null && !it.isAvsluttetAvSaksbehandler },
+            avsluttedeBehandlinger = behandlinger.filter { it.feilregistrert == null && it.isAvsluttetAvSaksbehandler },
+            feilregistrerteBehandlinger = behandlinger.filter { it.feilregistrert != null },
         )
     }
 
@@ -104,6 +105,7 @@ class BehandlingListMapper(
                     lovligeYtelser = lovligeYtelser,
                 ),
                 sattPaaVent = esBehandling.toSattPaaVent(),
+                feilregistrert = esBehandling.feilregistrert,
             )
         }
     }
@@ -169,6 +171,7 @@ class BehandlingListMapper(
                     lovligeYtelser = lovligeYtelser,
                 ),
                 sattPaaVent = esBehandling.toSattPaaVent(),
+                feilregistrert = esBehandling.feilregistrert,
             )
         }
     }

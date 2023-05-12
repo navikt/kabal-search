@@ -35,10 +35,12 @@ class BehandlingSkjemaV2(
 
     val saksdokumenter: List<Dokument>,
     val vedtak: Vedtak?,
-    val sattPaaVent: LocalDateTime? = null,
-    val sattPaaVentExpires: LocalDateTime? = null,
+    val sattPaaVent: LocalDateTime?,
+    val sattPaaVentExpires: LocalDateTime?,
 
     val status: StatusType,
+
+    val feilregistrert: LocalDateTime?,
 ) {
     data class Vedtak(
         val utfall: Kode?,
@@ -46,7 +48,16 @@ class BehandlingSkjemaV2(
     )
 
     enum class StatusType {
-        IKKE_TILDELT, TILDELT, MEDUNDERSKRIVER_VALGT, SENDT_TIL_MEDUNDERSKRIVER, RETURNERT_TIL_SAKSBEHANDLER, AVSLUTTET_AV_SAKSBEHANDLER, FULLFOERT, UKJENT, SATT_PAA_VENT
+        IKKE_TILDELT,
+        TILDELT,
+        MEDUNDERSKRIVER_VALGT,
+        SENDT_TIL_MEDUNDERSKRIVER,
+        RETURNERT_TIL_SAKSBEHANDLER,
+        AVSLUTTET_AV_SAKSBEHANDLER,
+        FULLFOERT,
+        UKJENT,
+        SATT_PAA_VENT,
+        FEILREGISTRERT,
     }
 
     data class Person(
