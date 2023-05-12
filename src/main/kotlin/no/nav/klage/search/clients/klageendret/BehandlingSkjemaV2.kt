@@ -1,8 +1,10 @@
 package no.nav.klage.search.clients.klageendret
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 class BehandlingSkjemaV2(
     val id: String,
     val klager: PersonEllerOrganisasjon,
@@ -37,8 +39,7 @@ class BehandlingSkjemaV2(
     val sattPaaVentExpires: LocalDateTime? = null,
 
     val status: StatusType,
-)
-{
+) {
     data class Vedtak(
         val utfall: Kode?,
         val hjemler: List<Kode>,
