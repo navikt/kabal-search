@@ -4,10 +4,10 @@ import no.nav.klage.search.domain.kodeverk.SivilstandType
 
 data class Person(
     val foedselsnr: String,
-    val fornavn: String,
+    val fornavn: String?,
     val mellomnavn: String?,
-    val etternavn: String,
-    val sammensattNavn: String,
+    val etternavn: String?,
+    val sammensattNavn: String?,
     val beskyttelsesbehov: Beskyttelsesbehov?,
     val kjoenn: String?,
     val sivilstand: Sivilstand?

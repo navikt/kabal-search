@@ -15,7 +15,7 @@ data class BehandlingListView(
 
 data class PersonView(
     val fnr: String,
-    val navn: String,
+    val navn: String?,
 )
 
 enum class AccessView {

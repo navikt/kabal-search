@@ -30,10 +30,10 @@ data class EsBehandling(
     val klagerOrgnr: String? = null,
     val klagerOrgnavn: String? = null,
     val sakenGjelderFnr: String,
-    val sakenGjelderNavn: String,
-    val sakenGjelderFornavn: String,
+    val sakenGjelderNavn: String? = null,
+    val sakenGjelderFornavn: String? = null,
     val sakenGjelderMellomnavn: String? = null,
-    val sakenGjelderEtternavn: String,
+    val sakenGjelderEtternavn: String? = null,
     val sakenGjelderOrgnr: String? = null,
     val sakenGjelderOrgnavn: String? = null,
 
