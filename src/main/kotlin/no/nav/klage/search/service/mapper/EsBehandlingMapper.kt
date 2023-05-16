@@ -35,16 +35,15 @@ class EsBehandlingMapper(
         val klagerOrgnr = behandling.klager.organisasjon?.orgnr
         val klagerOrgnavn = klagerOrgnr?.let { eregClient.hentOrganisasjon(it)?.navn?.sammensattNavn() }
 
-        val sakenGjelderFnr = behandling.sakenGjelder.person?.fnr
-        val sakenGjelderPersonInfo = sakenGjelderFnr?.let { pdlFacade.getPersonInfo(it) }
+        val sakenGjelderFnr = behandling.sakenGjelder.person!!.fnr
+        val sakenGjelderPersonInfo = pdlFacade.getPersonInfo(sakenGjelderFnr)
 
         val sakenGjelderOrgnr = behandling.sakenGjelder.organisasjon?.orgnr
         val sakenGjelderOrgnavn = sakenGjelderOrgnr?.let { eregClient.hentOrganisasjon(it)?.navn?.sammensattNavn() }
 
-
-        val erFortrolig = sakenGjelderPersonInfo?.harBeskyttelsesbehovFortrolig() ?: false
-        val erStrengtFortrolig = sakenGjelderPersonInfo?.harBeskyttelsesbehovStrengtFortrolig() ?: false
-        val erEgenAnsatt = sakenGjelderFnr?.let { egenAnsattService.erEgenAnsatt(it) } ?: false
+        val erFortrolig = sakenGjelderPersonInfo.harBeskyttelsesbehovFortrolig()
+        val erStrengtFortrolig = sakenGjelderPersonInfo.harBeskyttelsesbehovStrengtFortrolig()
+        val erEgenAnsatt = sakenGjelderFnr.let { egenAnsattService.erEgenAnsatt(it) }
 
         return EsBehandling(
             id = behandling.id,
@@ -56,10 +55,10 @@ class EsBehandlingMapper(
             klagerOrgnr = klagerOrgnr,
             klagerOrgnavn = klagerOrgnavn,
             sakenGjelderFnr = sakenGjelderFnr,
-            sakenGjelderNavn = sakenGjelderPersonInfo?.sammensattNavn,
-            sakenGjelderFornavn = sakenGjelderPersonInfo?.fornavn,
-            sakenGjelderMellomnavn = sakenGjelderPersonInfo?.mellomnavn,
-            sakenGjelderEtternavn = sakenGjelderPersonInfo?.etternavn,
+            sakenGjelderNavn = sakenGjelderPersonInfo.sammensattNavn,
+            sakenGjelderFornavn = sakenGjelderPersonInfo.fornavn,
+            sakenGjelderMellomnavn = sakenGjelderPersonInfo.mellomnavn,
+            sakenGjelderEtternavn = sakenGjelderPersonInfo.etternavn,
             sakenGjelderOrgnr = sakenGjelderOrgnr,
             sakenGjelderOrgnavn = sakenGjelderOrgnavn,
             tema = behandling.tema.id,

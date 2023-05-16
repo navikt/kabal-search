@@ -29,16 +29,16 @@ data class EsBehandling(
     val klagerEtternavn: String? = null,
     val klagerOrgnr: String? = null,
     val klagerOrgnavn: String? = null,
-    val sakenGjelderFnr: String? = null,
-    val sakenGjelderNavn: String? = null,
-    val sakenGjelderFornavn: String? = null,
+    val sakenGjelderFnr: String,
+    val sakenGjelderNavn: String,
+    val sakenGjelderFornavn: String,
     val sakenGjelderMellomnavn: String? = null,
-    val sakenGjelderEtternavn: String? = null,
+    val sakenGjelderEtternavn: String,
     val sakenGjelderOrgnr: String? = null,
     val sakenGjelderOrgnavn: String? = null,
 
     override val tema: String,
-    override val ytelseId: String?,
+    override val ytelseId: String,
     override val type: String,
 
     val kildeReferanse: String? = null,
@@ -60,7 +60,7 @@ data class EsBehandling(
 
     //Nytt navn på mottattKlageinstans, beholder begge for redundans
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
-    val sakMottattKaDato: LocalDateTime? = null,
+    val sakMottattKaDato: LocalDateTime,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     override val mottattKlageinstans: LocalDateTime,
 
@@ -154,7 +154,7 @@ interface EsAnonymBehandling {
     val mottattKlageinstans: LocalDateTime
     val frist: LocalDate?
     val hjemler: List<String>
-    val ytelseId: String?
+    val ytelseId: String
     val tema: String
     val type: String
     val id: String

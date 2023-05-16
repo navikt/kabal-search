@@ -78,7 +78,12 @@ class ElasticsearchServiceTest {
             modified = LocalDateTime.now(),
             kilde = "K9",
             status = IKKE_TILDELT,
-            medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
+            medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
+            sakenGjelderFnr = "12345678910",
+            sakenGjelderNavn = "Mitt Navn",
+            sakenGjelderFornavn = "abc",
+            sakenGjelderEtternavn = "def",
+            sakMottattKaDato = LocalDateTime.now(),
         )
         val klagebehandling2 =
             EsBehandling(
@@ -97,7 +102,12 @@ class ElasticsearchServiceTest {
                 modified = LocalDateTime.now(),
                 kilde = "K9",
                 status = IKKE_TILDELT,
-                medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
+                medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
+                sakenGjelderFnr = "12345678910",
+                sakenGjelderNavn = "Mitt Navn",
+                sakenGjelderFornavn = "abc",
+                sakenGjelderEtternavn = "def",
+                sakMottattKaDato = LocalDateTime.now(),
             )
         repo.save(klagebehandling1)
         repo.save(klagebehandling2)

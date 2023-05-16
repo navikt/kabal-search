@@ -90,7 +90,11 @@ class FortroligElasticsearchServiceTest {
             kilde = "K9",
             status = IKKE_TILDELT,
             sakenGjelderFnr = "123",
-            medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
+            medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
+            sakenGjelderNavn = "Mitt Navn",
+            sakenGjelderFornavn = "abc",
+            sakenGjelderEtternavn = "def",
+            sakMottattKaDato = LocalDateTime.now(),
         )
         val fortroligPerson =
             EsBehandling(
@@ -111,7 +115,11 @@ class FortroligElasticsearchServiceTest {
                 status = IKKE_TILDELT,
                 sakenGjelderFnr = "123",
                 fortrolig = true,
-                medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
+                medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
+                sakenGjelderNavn = "Mitt Navn",
+                sakenGjelderFornavn = "abc",
+                sakenGjelderEtternavn = "def",
+                sakMottattKaDato = LocalDateTime.now(),
             )
         val strengtFortroligPerson = EsBehandling(
             id = idStrengtFortrolig,
@@ -131,7 +139,11 @@ class FortroligElasticsearchServiceTest {
             status = IKKE_TILDELT,
             sakenGjelderFnr = "123",
             strengtFortrolig = true,
-            medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
+            medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
+            sakenGjelderNavn = "Mitt Navn",
+            sakenGjelderFornavn = "abc",
+            sakenGjelderEtternavn = "def",
+            sakMottattKaDato = LocalDateTime.now(),
         )
         val egenAnsattPerson =
             EsBehandling(
@@ -152,7 +164,11 @@ class FortroligElasticsearchServiceTest {
                 status = IKKE_TILDELT,
                 sakenGjelderFnr = "123",
                 egenAnsatt = true,
-                medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
+                medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
+                sakenGjelderNavn = "Mitt Navn",
+                sakenGjelderFornavn = "abc",
+                sakenGjelderEtternavn = "def",
+                sakMottattKaDato = LocalDateTime.now(),
             )
         val egenAnsattOgFortroligPerson =
             EsBehandling(
@@ -174,7 +190,11 @@ class FortroligElasticsearchServiceTest {
                 sakenGjelderFnr = "123",
                 egenAnsatt = true,
                 fortrolig = true,
-                medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
+                medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
+                sakenGjelderNavn = "Mitt Navn",
+                sakenGjelderFornavn = "abc",
+                sakenGjelderEtternavn = "def",
+                sakMottattKaDato = LocalDateTime.now(),
             )
         val egenAnsattOgStrengtFortroligPerson =
             EsBehandling(
@@ -196,7 +216,11 @@ class FortroligElasticsearchServiceTest {
                 sakenGjelderFnr = "123",
                 egenAnsatt = true,
                 strengtFortrolig = true,
-                medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
+                medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
+                sakenGjelderNavn = "Mitt Navn",
+                sakenGjelderFornavn = "abc",
+                sakenGjelderEtternavn = "def",
+                sakMottattKaDato = LocalDateTime.now(),
             )
         repo.save(normalPerson)
         repo.save(fortroligPerson)

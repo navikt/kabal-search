@@ -14,9 +14,8 @@ data class BehandlingListView(
 )
 
 data class PersonView(
-    val fnr: String?,
-    val navn: String?,
-    val sivilstand: String? = null
+    val fnr: String,
+    val navn: String,
 )
 
 enum class AccessView {
@@ -25,13 +24,12 @@ enum class AccessView {
 
 data class BehandlingView(
     val id: String,
-    val person: PersonView? = null,
     val type: String,
-    val ytelse: String?,
+    val ytelse: String,
     val tema: String,
     val hjemmel: String?,
     val frist: LocalDate?,
-    val mottatt: LocalDate?,
+    val mottatt: LocalDate,
     val erMedunderskriver: Boolean = false,
     val harMedunderskriver: Boolean = false,
     val medunderskriverident: String?,

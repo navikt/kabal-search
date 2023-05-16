@@ -102,14 +102,12 @@ class OppgaverListController(
         val searchCriteria = behandlingerSearchCriteriaMapper.toBehandlingIdSearchCriteria(
             behandlingId = behandlingId,
         )
-        val esResponse = elasticsearchService.findOppgaveByBehandlingId(searchCriteria)
+        val esResponse = elasticsearchService.findOppgaveByBehandlingId(searchCriteria).searchHits.first().content
 
-        val result = behandlingListMapper.mapEsBehandlingerToBehandlingView(
-            esBehandlinger = esResponse.searchHits.map { it.content },
-            visePersonData = true,
+        return PersonView(
+            fnr = esResponse.sakenGjelderFnr,
+            navn = esResponse.sakenGjelderNavn,
         )
-
-        return result.first().person!!
     }
 
     @Operation(

@@ -109,15 +109,18 @@ class ElasticsearchIndexingTest {
             tildelt = null,
             avsluttet = null,
             hjemler = listOf(Hjemmel.FTRL_8_35.id),
-            sakenGjelderFnr = null,
-            sakenGjelderNavn = null,
+            sakenGjelderFnr = "12345678910",
+            sakenGjelderNavn = "Navnet Her",
             egenAnsatt = false,
             fortrolig = false,
             created = LocalDateTime.now(),
             modified = LocalDateTime.now(),
             kilde = "K9",
             status = IKKE_TILDELT,
-            medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
+            medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
+            sakenGjelderFornavn = "abc",
+            sakenGjelderEtternavn = "def",
+            sakMottattKaDato = LocalDateTime.now(),
         )
     }
 }

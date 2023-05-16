@@ -22,9 +22,9 @@ class HentPersonMapper {
         secureLogger.debug("pdl returned {}", pdlPerson)
         return Person(
             foedselsnr = fnr,
-            fornavn = pdlPerson.navn.firstOrNull()?.fornavn,
+            fornavn = pdlPerson.navn.firstOrNull()?.fornavn ?: error("no fornavn"),
             mellomnavn = pdlPerson.navn.firstOrNull()?.mellomnavn,
-            etternavn = pdlPerson.navn.firstOrNull()?.etternavn,
+            etternavn = pdlPerson.navn.firstOrNull()?.etternavn ?: error("no etternavn"),
             sammensattNavn = sammensattNavn(pdlPerson.navn.firstOrNull()),
             beskyttelsesbehov = pdlPerson.adressebeskyttelse.firstOrNull()?.gradering?.mapToBeskyttelsesbehov(),
             kjoenn = pdlPerson.kjoenn.firstOrNull()?.kjoenn?.name,
@@ -45,8 +45,8 @@ class HentPersonMapper {
             else -> throw IllegalArgumentException("This should never occur")
         }
 
-    private fun sammensattNavn(navn: PdlPerson.Navn?): String? =
-        navn?.let { "${it.fornavn} ${it.etternavn}" }
+    private fun sammensattNavn(navn: PdlPerson.Navn?): String =
+        navn?.let { "${it.fornavn} ${it.etternavn}" } ?: error("no name")
 
     fun PdlPerson.Adressebeskyttelse.GraderingType.mapToBeskyttelsesbehov(): Beskyttelsesbehov? =
         when (this) {

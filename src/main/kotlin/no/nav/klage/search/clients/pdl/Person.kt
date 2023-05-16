@@ -4,10 +4,10 @@ import no.nav.klage.search.domain.kodeverk.SivilstandType
 
 data class Person(
     val foedselsnr: String,
-    val fornavn: String?,
+    val fornavn: String,
     val mellomnavn: String?,
-    val etternavn: String?,
-    val sammensattNavn: String?,
+    val etternavn: String,
+    val sammensattNavn: String,
     val beskyttelsesbehov: Beskyttelsesbehov?,
     val kjoenn: String?,
     val sivilstand: Sivilstand?
@@ -17,13 +17,6 @@ data class Person(
     fun harBeskyttelsesbehovStrengtFortrolig() =
         beskyttelsesbehov == Beskyttelsesbehov.STRENGT_FORTROLIG || beskyttelsesbehov == Beskyttelsesbehov.STRENGT_FORTROLIG_UTLAND
 
-    fun settSammenNavn(): String {
-        return if (mellomnavn != null) {
-            "$fornavn $mellomnavn $etternavn"
-        } else {
-            "$fornavn $etternavn"
-        }
-    }
 }
 
 data class Sivilstand(val type: SivilstandType, val foedselsnr: String)

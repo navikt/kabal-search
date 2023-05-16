@@ -170,7 +170,12 @@ class ElasticsearchServiceFindSaksbehandlereTest {
             kilde = "K9",
             status = IKKE_TILDELT,
             medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
-            avsluttetAvSaksbehandler = avsluttetAvSaksbehandler
+            avsluttetAvSaksbehandler = avsluttetAvSaksbehandler,
+            sakenGjelderFnr = "12345678910",
+            sakenGjelderNavn = "Mitt Navn",
+            sakenGjelderFornavn = "abc",
+            sakenGjelderEtternavn = "def",
+            sakMottattKaDato = LocalDateTime.now(),
         )
     }
 

@@ -3,6 +3,7 @@ package no.nav.klage.search.api.mapper
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.api.view.AccessView
 import no.nav.klage.search.domain.elasticsearch.EsAnonymBehandling
+import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import org.springframework.stereotype.Component
 
 @Component
@@ -51,7 +52,7 @@ class AccessMapper {
             kanBehandleFortrolig = kanBehandleFortrolig,
             kanBehandleEgenAnsatt = kanBehandleEgenAnsatt
         )
-                && lovligeYtelser.contains(Ytelse.of(esKlagebehandling.ytelseId!!))
+                && lovligeYtelser.contains(Ytelse.of(esKlagebehandling.ytelseId))
 
     private fun harSkriveTilgang(esKlagebehandling: EsAnonymBehandling, innloggetIdent: String): Boolean =
         esKlagebehandling.tildeltSaksbehandlerident != null && esKlagebehandling.tildeltSaksbehandlerident == innloggetIdent
