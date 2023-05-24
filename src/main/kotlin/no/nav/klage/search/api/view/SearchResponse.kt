@@ -6,9 +6,9 @@ package no.nav.klage.search.api.view
 data class FnrSearchResponse(
     val fnr: String,
     val navn: NavnView,
-    val behandlinger: List<BehandlingView> = emptyList(),
-    val aapneBehandlinger: List<BehandlingView> = emptyList(),
-    val avsluttedeBehandlinger: List<BehandlingView> = emptyList()
+    val aapneBehandlinger: List<BehandlingListView>,
+    val avsluttedeBehandlinger: List<BehandlingListView>,
+    val feilregistrerteBehandlinger: List<BehandlingListView>,
 )
 
 /**

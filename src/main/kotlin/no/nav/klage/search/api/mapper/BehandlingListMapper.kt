@@ -25,10 +25,8 @@ class BehandlingListMapper(
     fun mapPersonSearchResponseToFnrSearchResponse(
         personSearchResponse: PersonSearchResponse,
     ): FnrSearchResponse {
-        val behandlinger =
-            mapAnonymeEsBehandlingerToBehandlingView(
-                esBehandlinger = personSearchResponse.behandlinger,
-            )
+        val behandlinger = personSearchResponse.behandlinger
+
         return FnrSearchResponse(
             fnr = personSearchResponse.fnr,
             navn = NavnView(
@@ -36,10 +34,9 @@ class BehandlingListMapper(
                 mellomnavn = personSearchResponse.mellomnavn,
                 etternavn = personSearchResponse.etternavn
             ),
-            //TODO FE will not need all of these, but is not yet decided which to use.
-            behandlinger = behandlinger,
-            aapneBehandlinger = behandlinger.filter { !it.isAvsluttetAvSaksbehandler },
-            avsluttedeBehandlinger = behandlinger.filter { it.isAvsluttetAvSaksbehandler }
+            aapneBehandlinger = mapAnonymeEsBehandlingerToListView(behandlinger.filter { it.feilregistrert == null && it.avsluttetAvSaksbehandler == null }),
+            avsluttedeBehandlinger = mapAnonymeEsBehandlingerToListView(behandlinger.filter { it.feilregistrert == null && it.avsluttetAvSaksbehandler != null }),
+            feilregistrerteBehandlinger = mapAnonymeEsBehandlingerToListView(behandlinger.filter { it.feilregistrert != null }),
         )
     }
 
@@ -58,21 +55,12 @@ class BehandlingListMapper(
         return esBehandlinger.map { esBehandling ->
             BehandlingView(
                 id = esBehandling.id,
-                person = if (visePersonData) {
-                    PersonView(
-                        esBehandling.sakenGjelderFnr,
-                        esBehandling.sakenGjelderNavn,
-                        if (esBehandling.sakenGjelderFnr == sivilstand?.foedselsnr) sivilstand?.type?.id else null
-                    )
-                } else {
-                    null
-                },
                 type = esBehandling.type,
                 tema = esBehandling.tema,
                 ytelse = esBehandling.ytelseId,
                 hjemmel = esBehandling.hjemler.firstOrNull(),
                 frist = esBehandling.frist,
-                mottatt = esBehandling.sakMottattKaDato!!.toLocalDate(),
+                mottatt = esBehandling.sakMottattKaDato.toLocalDate(),
                 harMedunderskriver = esBehandling.medunderskriverident != null,
                 erMedunderskriver = esBehandling.medunderskriverident != null && esBehandling.medunderskriverident == innloggetIdent,
                 medunderskriverident = esBehandling.medunderskriverident,
@@ -104,6 +92,7 @@ class BehandlingListMapper(
                     lovligeYtelser = lovligeYtelser,
                 ),
                 sattPaaVent = esBehandling.toSattPaaVent(),
+                feilregistrert = esBehandling.feilregistrert,
             )
         }
     }
@@ -114,61 +103,6 @@ class BehandlingListMapper(
         return esBehandlinger.map { esBehandling ->
             BehandlingListView(
                 id = esBehandling.id,
-            )
-        }
-    }
-
-    fun mapAnonymeEsBehandlingerToBehandlingView(
-        esBehandlinger: List<EsAnonymBehandling>,
-    ): List<BehandlingView> {
-
-        val kanBehandleStrengtFortrolig = oAuthTokenService.kanBehandleStrengtFortrolig()
-        val kanBehandleFortrolig = oAuthTokenService.kanBehandleFortrolig()
-        val kanBehandleEgenAnsatt = oAuthTokenService.kanBehandleEgenAnsatt()
-        val lovligeYtelser = innloggetSaksbehandlerService.getTildelteYtelserForSaksbehandler()
-        val innloggetIdent = oAuthTokenService.getInnloggetIdent()
-
-        return esBehandlinger.map { esBehandling ->
-            BehandlingView(
-                id = esBehandling.id,
-                person = null,
-                type = esBehandling.type,
-                tema = esBehandling.tema,
-                ytelse = esBehandling.ytelseId,
-                hjemmel = esBehandling.hjemler.firstOrNull(),
-                frist = esBehandling.frist,
-                mottatt = esBehandling.mottattKlageinstans.toLocalDate(),
-                harMedunderskriver = esBehandling.medunderskriverident != null,
-                erMedunderskriver = esBehandling.medunderskriverident != null && esBehandling.medunderskriverident == innloggetIdent,
-                medunderskriverident = esBehandling.medunderskriverident,
-                medunderskriverNavn = esBehandling.medunderskriverNavn,
-                medunderskriverFlyt = MedunderskriverFlyt.valueOf(esBehandling.medunderskriverFlyt),
-                erTildelt = esBehandling.tildeltSaksbehandlerident != null,
-                tildeltSaksbehandlerident = esBehandling.tildeltSaksbehandlerident,
-                tildeltSaksbehandlerNavn = esBehandling.tildeltSaksbehandlernavn,
-                utfall = esBehandling.vedtakUtfall,
-                avsluttetAvSaksbehandlerDate = esBehandling.avsluttetAvSaksbehandler?.toLocalDate(),
-                isAvsluttetAvSaksbehandler = esBehandling.avsluttetAvSaksbehandler?.toLocalDate() != null,
-                saksbehandlerHarTilgang = accessMapper.kanTildelesOppgaven(
-                    esKlagebehandling = esBehandling,
-                    kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig,
-                    kanBehandleFortrolig = kanBehandleFortrolig,
-                    kanBehandleEgenAnsatt = kanBehandleEgenAnsatt,
-                    lovligeYtelser = lovligeYtelser
-                ),
-                egenAnsatt = esBehandling.egenAnsatt,
-                fortrolig = esBehandling.fortrolig,
-                strengtFortrolig = esBehandling.strengtFortrolig,
-                ageKA = esBehandling.mottattKlageinstans.toAgeInDays(),
-                access = accessMapper.mapAccess(
-                    esKlagebehandling = esBehandling,
-                    innloggetIdent = innloggetIdent,
-                    kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig,
-                    kanBehandleFortrolig = kanBehandleFortrolig,
-                    kanBehandleEgenAnsatt = kanBehandleEgenAnsatt,
-                    lovligeYtelser = lovligeYtelser,
-                ),
-                sattPaaVent = esBehandling.toSattPaaVent(),
             )
         }
     }

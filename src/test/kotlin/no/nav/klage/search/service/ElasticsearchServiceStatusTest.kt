@@ -100,7 +100,12 @@ class ElasticsearchServiceStatusTest {
         modified = LocalDateTime.now(),
         kilde = "K9",
         status = status,
-        medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name
+        medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
+        sakenGjelderFnr = "12345678910",
+        sakenGjelderNavn = "Mitt Navn",
+        sakenGjelderFornavn = "abc",
+        sakenGjelderEtternavn = "def",
+        sakMottattKaDato = LocalDateTime.now(),
     )
 
 }

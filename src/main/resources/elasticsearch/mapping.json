@@ -218,6 +218,10 @@
       "type": "date",
       "format": "date_time"
     },
+    "feilregistrert": {
+      "type": "date",
+      "format": "date_time"
+    },
     "status": {
       "type": "keyword"
     }
