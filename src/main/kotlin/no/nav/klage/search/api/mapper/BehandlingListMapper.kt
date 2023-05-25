@@ -36,7 +36,7 @@ class BehandlingListMapper(
             ),
             aapneBehandlinger = mapAnonymeEsBehandlingerToListView(behandlinger.filter { it.feilregistrert == null && it.avsluttetAvSaksbehandler == null }),
             avsluttedeBehandlinger = mapAnonymeEsBehandlingerToListView(behandlinger.filter { it.feilregistrert == null && it.avsluttetAvSaksbehandler != null }),
-            feilregistrerteBehandlinger = mapAnonymeEsBehandlingerToListView(behandlinger.filter { it.feilregistrert != null }),
+            feilregistrerteBehandlinger = mapAnonymeEsBehandlingerToListView(behandlinger.filter { it.feilregistrert != null }.sortedByDescending { it.feilregistrert }),
         )
     }
 
