@@ -14,7 +14,7 @@ class BehandlingSkjemaV2(
     val ytelse: Kode,
     val type: Kode,
     val kildeReferanse: String,
-    val sakFagsystem: Kode?,
+    val sakFagsystem: Kode,
     val sakFagsakId: String?,
     val innsendtDato: LocalDate?,
     val mottattFoersteinstansDato: LocalDate?,

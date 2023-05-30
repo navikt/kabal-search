@@ -106,6 +106,7 @@ class ElasticsearchServiceStatusTest {
         sakenGjelderFornavn = "abc",
         sakenGjelderEtternavn = "def",
         sakMottattKaDato = LocalDateTime.now(),
+        sakFagsystem = "1",
     )
 
 }

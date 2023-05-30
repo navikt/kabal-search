@@ -49,6 +49,7 @@ data class BehandlingView(
     val access: AccessView,
     val sattPaaVent: Venteperiode?,
     val feilregistrert: LocalDateTime?,
+    val fagsystemId: String,
 )
 
 data class Venteperiode(
