@@ -42,7 +42,7 @@ data class EsBehandling(
     override val type: String,
 
     val kildeReferanse: String? = null,
-    val sakFagsystem: String? = null,
+    val sakFagsystem: String,
     val sakFagsystemNavn: String? = null,
     val sakFagsakId: String? = null,
 

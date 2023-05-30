@@ -65,7 +65,7 @@ class EsBehandlingMapper(
             ytelseId = behandling.ytelse.id,
             type = behandling.type.id,
             kildeReferanse = behandling.kildeReferanse,
-            sakFagsystem = behandling.sakFagsystem?.id,
+            sakFagsystem = behandling.sakFagsystem.id,
             sakFagsakId = behandling.sakFagsakId,
             innsendt = behandling.innsendtDato,
             mottattFoersteinstans = behandling.mottattFoersteinstansDato,

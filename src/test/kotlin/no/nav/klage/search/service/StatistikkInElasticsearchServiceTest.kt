@@ -81,6 +81,7 @@ class StatistikkInElasticsearchServiceTest {
             sakenGjelderFornavn = "abc",
             sakenGjelderEtternavn = "def",
             sakMottattKaDato = LocalDateTime.now(),
+            sakFagsystem = "1",
         )
 
     @Test

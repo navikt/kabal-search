@@ -121,6 +121,7 @@ class ElasticsearchIndexingTest {
             sakenGjelderFornavn = "abc",
             sakenGjelderEtternavn = "def",
             sakMottattKaDato = LocalDateTime.now(),
+            sakFagsystem = "1",
         )
     }
 }

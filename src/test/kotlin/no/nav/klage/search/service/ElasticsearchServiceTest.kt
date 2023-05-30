@@ -84,6 +84,7 @@ class ElasticsearchServiceTest {
             sakenGjelderFornavn = "abc",
             sakenGjelderEtternavn = "def",
             sakMottattKaDato = LocalDateTime.now(),
+            sakFagsystem = "1",
         )
         val klagebehandling2 =
             EsBehandling(
@@ -108,6 +109,7 @@ class ElasticsearchServiceTest {
                 sakenGjelderFornavn = "abc",
                 sakenGjelderEtternavn = "def",
                 sakMottattKaDato = LocalDateTime.now(),
+                sakFagsystem = "1",
             )
         repo.save(klagebehandling1)
         repo.save(klagebehandling2)

@@ -95,6 +95,7 @@ class FortroligElasticsearchServiceTest {
             sakenGjelderFornavn = "abc",
             sakenGjelderEtternavn = "def",
             sakMottattKaDato = LocalDateTime.now(),
+            sakFagsystem = "1",
         )
         val fortroligPerson =
             EsBehandling(
@@ -120,6 +121,7 @@ class FortroligElasticsearchServiceTest {
                 sakenGjelderFornavn = "abc",
                 sakenGjelderEtternavn = "def",
                 sakMottattKaDato = LocalDateTime.now(),
+                sakFagsystem = "1",
             )
         val strengtFortroligPerson = EsBehandling(
             id = idStrengtFortrolig,
@@ -144,6 +146,7 @@ class FortroligElasticsearchServiceTest {
             sakenGjelderFornavn = "abc",
             sakenGjelderEtternavn = "def",
             sakMottattKaDato = LocalDateTime.now(),
+            sakFagsystem = "1",
         )
         val egenAnsattPerson =
             EsBehandling(
@@ -169,6 +172,7 @@ class FortroligElasticsearchServiceTest {
                 sakenGjelderFornavn = "abc",
                 sakenGjelderEtternavn = "def",
                 sakMottattKaDato = LocalDateTime.now(),
+                sakFagsystem = "1",
             )
         val egenAnsattOgFortroligPerson =
             EsBehandling(
@@ -195,6 +199,7 @@ class FortroligElasticsearchServiceTest {
                 sakenGjelderFornavn = "abc",
                 sakenGjelderEtternavn = "def",
                 sakMottattKaDato = LocalDateTime.now(),
+                sakFagsystem = "1",
             )
         val egenAnsattOgStrengtFortroligPerson =
             EsBehandling(
@@ -221,6 +226,7 @@ class FortroligElasticsearchServiceTest {
                 sakenGjelderFornavn = "abc",
                 sakenGjelderEtternavn = "def",
                 sakMottattKaDato = LocalDateTime.now(),
+                sakFagsystem = "1",
             )
         repo.save(normalPerson)
         repo.save(fortroligPerson)
