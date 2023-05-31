@@ -19,14 +19,26 @@ class DevOnlyAdminController(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
+    @Unprotected
+    @GetMapping("/internal/elasticadmin/recreate", produces = ["application/json"])
+    @ResponseStatus(HttpStatus.OK)
+    fun recreateAndSyncElasticIndex() {
+        try {
+            adminService.recreateEsIndex()
+            adminService.syncEsWithKafka()
+        } catch (e: Exception) {
+            logger.warn("Failed to reset ES index", e)
+            throw e
+        }
+    }
+
     //TODO remember to change URL in e2e-tests
     @Unprotected
     @GetMapping("/internal/elasticadmin/nuke", produces = ["application/json"])
     @ResponseStatus(HttpStatus.OK)
-    fun resetElasticIndex() {
+    fun recreateElasticIndex() {
         try {
             adminService.recreateEsIndex()
-            adminService.syncEsWithKafka()
         } catch (e: Exception) {
             logger.warn("Failed to reset ES index", e)
             throw e
