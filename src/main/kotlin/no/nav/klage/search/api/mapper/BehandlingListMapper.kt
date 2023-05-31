@@ -40,6 +40,18 @@ class BehandlingListMapper(
         )
     }
 
+    fun mapPersonSearchResponseToFnrSearchResponseWithoutPerson(
+        personSearchResponse: PersonSearchResponse,
+    ): FnrSearchResponseWithoutPerson {
+        val behandlinger = personSearchResponse.behandlinger
+
+        return FnrSearchResponseWithoutPerson(
+            aapneBehandlinger = mapAnonymeEsBehandlingerToListView(behandlinger.filter { it.feilregistrert == null && it.avsluttetAvSaksbehandler == null }),
+            avsluttedeBehandlinger = mapAnonymeEsBehandlingerToListView(behandlinger.filter { it.feilregistrert == null && it.avsluttetAvSaksbehandler != null }),
+            feilregistrerteBehandlinger = mapAnonymeEsBehandlingerToListView(behandlinger.filter { it.feilregistrert != null }.sortedByDescending { it.feilregistrert }),
+        )
+    }
+
     fun mapEsBehandlingerToBehandlingView(
         esBehandlinger: List<EsBehandling>,
         visePersonData: Boolean,

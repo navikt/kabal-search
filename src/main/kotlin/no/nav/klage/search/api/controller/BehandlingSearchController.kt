@@ -31,6 +31,8 @@ class BehandlingSearchController(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
+    //TODO remove when FE migrated to /oppgaver
+    @Deprecated("use /oppgaver instead")
     @Operation(
         summary = "Søk oppgaver som gjelder en gitt person",
         description = "Finner alle oppgaver som saksbehandler har tilgang til som omhandler en gitt person."
@@ -44,6 +46,28 @@ class BehandlingSearchController(
         return behandlingListMapper.mapPersonSearchResponseToFnrSearchResponse(
             personSearchResponse = personSearchResponse,
         )
+    }
+
+    @Operation(
+        summary = "Søk oppgaver som gjelder en gitt person",
+        description = "Finner alle oppgaver som saksbehandler har tilgang til som omhandler en gitt person."
+    )
+    @PostMapping("/oppgaver", produces = ["application/json"])
+    fun findOppgaver(@RequestBody input: SearchPersonByFnrInput): FnrSearchResponseWithoutPerson {
+        val personSearchResponse =
+            personSearchService.fnrSearch(behandlingerSearchCriteriaMapper.toOppgaverOmPersonSearchCriteria(input))
+
+        return if (personSearchResponse == null) {
+            FnrSearchResponseWithoutPerson(
+                aapneBehandlinger = listOf(),
+                avsluttedeBehandlinger = listOf(),
+                feilregistrerteBehandlinger = listOf(),
+            )
+        } else {
+            behandlingListMapper.mapPersonSearchResponseToFnrSearchResponseWithoutPerson(
+                personSearchResponse = personSearchResponse,
+            )
+        }
     }
 
     @Operation(
