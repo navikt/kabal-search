@@ -127,10 +127,8 @@ data class EsBehandling(
 
     val vedtakHjemlerNavn: List<String> = emptyList(),
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     override val sattPaaVent: LocalDate? = null,
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     override val sattPaaVentExpires: LocalDate? = null,
 
     override val sattPaaVentReason: String? = null,
