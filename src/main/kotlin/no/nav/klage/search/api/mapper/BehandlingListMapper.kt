@@ -34,9 +34,9 @@ class BehandlingListMapper(
                 mellomnavn = personSearchResponse.mellomnavn,
                 etternavn = personSearchResponse.etternavn
             ),
-            aapneBehandlinger = mapAnonymeEsBehandlingerToListView(behandlinger.filter { it.feilregistrert == null && it.avsluttetAvSaksbehandler == null }),
-            avsluttedeBehandlinger = mapAnonymeEsBehandlingerToListView(behandlinger.filter { it.feilregistrert == null && it.avsluttetAvSaksbehandler != null }),
-            feilregistrerteBehandlinger = mapAnonymeEsBehandlingerToListView(behandlinger.filter { it.feilregistrert != null }.sortedByDescending { it.feilregistrert }),
+            aapneBehandlinger = mapEsBehandlingerToListView(behandlinger.filter { it.feilregistrert == null && it.avsluttetAvSaksbehandler == null }),
+            avsluttedeBehandlinger = mapEsBehandlingerToListView(behandlinger.filter { it.feilregistrert == null && it.avsluttetAvSaksbehandler != null }),
+            feilregistrerteBehandlinger = mapEsBehandlingerToListView(behandlinger.filter { it.feilregistrert != null }.sortedByDescending { it.feilregistrert }),
         )
     }
 
@@ -46,9 +46,9 @@ class BehandlingListMapper(
         val behandlinger = personSearchResponse.behandlinger
 
         return FnrSearchResponseWithoutPerson(
-            aapneBehandlinger = mapAnonymeEsBehandlingerToListView(behandlinger.filter { it.feilregistrert == null && it.avsluttetAvSaksbehandler == null }),
-            avsluttedeBehandlinger = mapAnonymeEsBehandlingerToListView(behandlinger.filter { it.feilregistrert == null && it.avsluttetAvSaksbehandler != null }),
-            feilregistrerteBehandlinger = mapAnonymeEsBehandlingerToListView(behandlinger.filter { it.feilregistrert != null }.sortedByDescending { it.feilregistrert }),
+            aapneBehandlinger = mapEsBehandlingerToListView(behandlinger.filter { it.feilregistrert == null && it.avsluttetAvSaksbehandler == null }),
+            avsluttedeBehandlinger = mapEsBehandlingerToListView(behandlinger.filter { it.feilregistrert == null && it.avsluttetAvSaksbehandler != null }),
+            feilregistrerteBehandlinger = mapEsBehandlingerToListView(behandlinger.filter { it.feilregistrert != null }.sortedByDescending { it.feilregistrert }),
         )
     }
 
@@ -111,23 +111,9 @@ class BehandlingListMapper(
     }
 
     fun mapEsBehandlingerToListView(
-        esBehandlinger: List<EsBehandling>,
-    ): List<BehandlingListView> {
-        return esBehandlinger.map { esBehandling ->
-            BehandlingListView(
-                id = esBehandling.id,
-            )
-        }
-    }
-
-    fun mapAnonymeEsBehandlingerToListView(
         esBehandlinger: List<EsAnonymBehandling>,
-    ): List<BehandlingListView> {
-        return esBehandlinger.map { esBehandling ->
-            BehandlingListView(
-                id = esBehandling.id,
-            )
-        }
+    ): List<String> {
+        return esBehandlinger.map { it.id }
     }
 
     private fun LocalDateTime.toAgeInDays() = ChronoUnit.DAYS.between(this.toLocalDate(), LocalDate.now()).toInt()
