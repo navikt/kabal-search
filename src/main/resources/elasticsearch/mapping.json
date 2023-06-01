@@ -212,11 +212,14 @@
     },
     "sattPaaVent": {
       "type": "date",
-      "format": "date_time"
+      "format": "date"
     },
     "sattPaaVentExpires": {
       "type": "date",
-      "format": "date_time"
+      "format": "date"
+    },
+    "sattPaaVentReason": {
+      "type": "text"
     },
     "feilregistrert": {
       "type": "date",

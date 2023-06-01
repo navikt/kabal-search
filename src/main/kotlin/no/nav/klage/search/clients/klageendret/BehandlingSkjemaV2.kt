@@ -35,8 +35,9 @@ class BehandlingSkjemaV2(
 
     val saksdokumenter: List<Dokument>,
     val vedtak: Vedtak?,
-    val sattPaaVent: LocalDateTime?,
-    val sattPaaVentExpires: LocalDateTime?,
+    val sattPaaVent: LocalDate?,
+    val sattPaaVentExpires: LocalDate?,
+    val sattPaaVentReason: String?,
 
     val status: StatusType,
 

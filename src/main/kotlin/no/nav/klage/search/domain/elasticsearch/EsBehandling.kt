@@ -127,11 +127,13 @@ data class EsBehandling(
 
     val vedtakHjemlerNavn: List<String> = emptyList(),
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
-    override val sattPaaVent: LocalDateTime? = null,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
+    override val sattPaaVent: LocalDate? = null,
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
-    override val sattPaaVentExpires: LocalDateTime? = null,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
+    override val sattPaaVentExpires: LocalDate? = null,
+
+    override val sattPaaVentReason: String? = null,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     override val feilregistrert: LocalDateTime? = null,
@@ -158,7 +160,8 @@ interface EsAnonymBehandling {
     val tema: String
     val type: String
     val id: String
-    val sattPaaVent: LocalDateTime?
-    val sattPaaVentExpires: LocalDateTime?
+    val sattPaaVent: LocalDate?
+    val sattPaaVentExpires: LocalDate?
+    val sattPaaVentReason: String?
     val feilregistrert: LocalDateTime?
 }

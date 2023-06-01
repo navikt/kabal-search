@@ -38,13 +38,14 @@ data class BehandlingView(
     val strengtFortrolig: Boolean,
     val ageKA: Int,
     val access: AccessView,
-    val sattPaaVent: Venteperiode?,
+    val sattPaaVent: SattPaaVent?,
     val feilregistrert: LocalDateTime?,
     val fagsystemId: String,
 )
 
-data class Venteperiode(
+data class SattPaaVent(
     val from: LocalDate?,
     val to: LocalDate?,
     val isExpired: Boolean?,
+    val reason: String?,
 )
