@@ -6,16 +6,7 @@ import java.time.LocalDateTime
 
 data class BehandlingerListResponse(
     val antallTreffTotalt: Int,
-    val behandlinger: List<BehandlingListView>
-)
-
-data class BehandlingListView(
-    val id: String,
-)
-
-data class PersonView(
-    val fnr: String,
-    val navn: String?,
+    val behandlinger: List<String>
 )
 
 enum class AccessView {

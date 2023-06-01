@@ -6,18 +6,18 @@ package no.nav.klage.search.api.view
 data class FnrSearchResponse(
     val fnr: String?,
     val navn: NavnView?,
-    val aapneBehandlinger: List<BehandlingListView>,
-    val avsluttedeBehandlinger: List<BehandlingListView>,
-    val feilregistrerteBehandlinger: List<BehandlingListView>,
+    val aapneBehandlinger: List<String>,
+    val avsluttedeBehandlinger: List<String>,
+    val feilregistrerteBehandlinger: List<String>,
 )
 
 /**
  * When searching for a specific fnr
  */
 data class FnrSearchResponseWithoutPerson(
-    val aapneBehandlinger: List<BehandlingListView>,
-    val avsluttedeBehandlinger: List<BehandlingListView>,
-    val feilregistrerteBehandlinger: List<BehandlingListView>,
+    val aapneBehandlinger: List<String>,
+    val avsluttedeBehandlinger: List<String>,
+    val feilregistrerteBehandlinger: List<String>,
 )
 
 /**
