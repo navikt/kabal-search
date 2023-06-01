@@ -6,8 +6,7 @@ import no.nav.klage.search.api.mapper.BehandlingListMapper
 import no.nav.klage.search.api.mapper.BehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.*
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
-import no.nav.klage.search.domain.personsoek.PersonSearchResponse
-import no.nav.klage.search.exceptions.PersonNotFoundException
+import no.nav.klage.search.domain.personsoek.Navn
 import no.nav.klage.search.service.PersonSearchService
 import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
@@ -29,23 +28,6 @@ class BehandlingSearchController(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-    }
-
-    //TODO remove when FE migrated to /oppgaver
-    @Deprecated("use /oppgaver instead")
-    @Operation(
-        summary = "Søk oppgaver som gjelder en gitt person",
-        description = "Finner alle oppgaver som saksbehandler har tilgang til som omhandler en gitt person."
-    )
-    @PostMapping("/personogoppgaver", produces = ["application/json"])
-    fun getPersonOgOppgaver(@RequestBody input: SearchPersonByFnrInput): FnrSearchResponse {
-        val personSearchResponse: PersonSearchResponse =
-            personSearchService.fnrSearch(behandlingerSearchCriteriaMapper.toOppgaverOmPersonSearchCriteria(input))
-                ?: throw PersonNotFoundException("Person med fnr ${input.query} ikke funnet")
-
-        return behandlingListMapper.mapPersonSearchResponseToFnrSearchResponse(
-            personSearchResponse = personSearchResponse,
-        )
     }
 
     @Operation(
@@ -80,15 +62,19 @@ class BehandlingSearchController(
         return NameSearchResponse(
             people = people.map {
                 NameSearchResponse.PersonView(
-                    fnr = it.fnr,
-                    navn = NavnView(
-                        fornavn = it.navn.fornavn,
-                        mellomnavn = it.navn.mellomnavn,
-                        etternavn = it.navn.etternavn
-                    )
+                    id = it.fnr,
+                    name = it.navn.toFullName()
                 )
             }
         )
+    }
+
+    private fun Navn.toFullName(): String {
+        return if (mellomnavn != null) {
+            "$fornavn $mellomnavn $etternavn"
+        } else {
+            "$fornavn $etternavn"
+        }
     }
 }
 

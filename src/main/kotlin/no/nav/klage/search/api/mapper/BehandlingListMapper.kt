@@ -2,7 +2,9 @@ package no.nav.klage.search.api.mapper
 
 
 import no.nav.klage.kodeverk.MedunderskriverFlyt
-import no.nav.klage.search.api.view.*
+import no.nav.klage.search.api.view.BehandlingView
+import no.nav.klage.search.api.view.FnrSearchResponseWithoutPerson
+import no.nav.klage.search.api.view.Venteperiode
 import no.nav.klage.search.clients.pdl.Sivilstand
 import no.nav.klage.search.domain.elasticsearch.EsAnonymBehandling
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
@@ -21,24 +23,6 @@ class BehandlingListMapper(
     private val oAuthTokenService: OAuthTokenService,
     private val innloggetSaksbehandlerService: InnloggetSaksbehandlerService,
 ) {
-
-    fun mapPersonSearchResponseToFnrSearchResponse(
-        personSearchResponse: PersonSearchResponse,
-    ): FnrSearchResponse {
-        val behandlinger = personSearchResponse.behandlinger
-
-        return FnrSearchResponse(
-            fnr = personSearchResponse.fnr,
-            navn = NavnView(
-                fornavn = personSearchResponse.fornavn,
-                mellomnavn = personSearchResponse.mellomnavn,
-                etternavn = personSearchResponse.etternavn
-            ),
-            aapneBehandlinger = mapEsBehandlingerToListView(behandlinger.filter { it.feilregistrert == null && it.avsluttetAvSaksbehandler == null }),
-            avsluttedeBehandlinger = mapEsBehandlingerToListView(behandlinger.filter { it.feilregistrert == null && it.avsluttetAvSaksbehandler != null }),
-            feilregistrerteBehandlinger = mapEsBehandlingerToListView(behandlinger.filter { it.feilregistrert != null }.sortedByDescending { it.feilregistrert }),
-        )
-    }
 
     fun mapPersonSearchResponseToFnrSearchResponseWithoutPerson(
         personSearchResponse: PersonSearchResponse,
