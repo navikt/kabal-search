@@ -38,6 +38,18 @@ class AdminController(
         }
     }
 
+    @PostMapping("/internal/elasticadmin/recreate", produces = ["application/json"])
+    @ResponseStatus(HttpStatus.OK)
+    fun recreateElasticIndexWithPost() {
+        validateUserIsAdmin()
+        try {
+            adminService.recreateEsIndex()
+        } catch (e: Exception) {
+            logger.warn("Failed to recreate ES index", e)
+            throw e
+        }
+    }
+
     private fun validateUserIsAdmin() {
         if (!oAuthTokenService.isAdmin()) {
             throw MissingTilgangException("Not an admin")

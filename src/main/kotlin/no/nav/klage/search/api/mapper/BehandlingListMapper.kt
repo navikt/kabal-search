@@ -4,7 +4,7 @@ package no.nav.klage.search.api.mapper
 import no.nav.klage.kodeverk.MedunderskriverFlyt
 import no.nav.klage.search.api.view.BehandlingView
 import no.nav.klage.search.api.view.FnrSearchResponseWithoutPerson
-import no.nav.klage.search.api.view.Venteperiode
+import no.nav.klage.search.api.view.SattPaaVent
 import no.nav.klage.search.clients.pdl.Sivilstand
 import no.nav.klage.search.domain.elasticsearch.EsAnonymBehandling
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
@@ -14,7 +14,6 @@ import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.chrono.ChronoLocalDateTime
 import java.time.temporal.ChronoUnit
 
 @Component
@@ -102,22 +101,13 @@ class BehandlingListMapper(
 
     private fun LocalDateTime.toAgeInDays() = ChronoUnit.DAYS.between(this.toLocalDate(), LocalDate.now()).toInt()
 
-    private fun EsBehandling.toSattPaaVent(): Venteperiode? {
+    private fun EsBehandling.toSattPaaVent(): SattPaaVent? {
         return if (sattPaaVent != null) {
-            Venteperiode(
-                from = sattPaaVent.toLocalDate(),
-                to = sattPaaVentExpires?.toLocalDate(),
-                isExpired = sattPaaVentExpires?.isBefore(ChronoLocalDateTime.from(LocalDateTime.now()))
-            )
-        } else null
-    }
-
-    private fun EsAnonymBehandling.toSattPaaVent(): Venteperiode? {
-        return if (sattPaaVent != null) {
-            Venteperiode(
-                from = sattPaaVent!!.toLocalDate(),
-                to = sattPaaVentExpires?.toLocalDate(),
-                isExpired = sattPaaVentExpires?.isBefore(ChronoLocalDateTime.from(LocalDateTime.now()))
+            SattPaaVent(
+                from = sattPaaVent,
+                to = sattPaaVentExpires,
+                isExpired = sattPaaVentExpires?.isBefore(LocalDate.now()),
+                reason = sattPaaVentReason
             )
         } else null
     }

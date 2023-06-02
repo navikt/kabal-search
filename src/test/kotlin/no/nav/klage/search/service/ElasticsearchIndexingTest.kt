@@ -21,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 
@@ -122,6 +123,7 @@ class ElasticsearchIndexingTest {
             sakenGjelderEtternavn = "def",
             sakMottattKaDato = LocalDateTime.now(),
             sakFagsystem = "1",
+            sattPaaVent = LocalDate.now(),
         )
     }
 }

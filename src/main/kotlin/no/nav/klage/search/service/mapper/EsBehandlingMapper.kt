@@ -106,6 +106,7 @@ class EsBehandlingMapper(
             sakFagsystemNavn = behandling.sakFagsystem?.navn,
             sattPaaVent = behandling.sattPaaVent,
             sattPaaVentExpires = behandling.sattPaaVentExpires,
+            sattPaaVentReason = behandling.sattPaaVentReason,
             status = EsStatus.valueOf(behandling.status.name),
             feilregistrert = behandling.feilregistrert,
         )
