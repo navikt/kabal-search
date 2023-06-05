@@ -44,8 +44,8 @@ data class BehandlingView(
 )
 
 data class SattPaaVent(
-    val from: LocalDate?,
-    val to: LocalDate?,
-    val isExpired: Boolean?,
-    val reason: String?,
+    val from: LocalDate,
+    val to: LocalDate,
+    val isExpired: Boolean,
+    val reason: String,
 )

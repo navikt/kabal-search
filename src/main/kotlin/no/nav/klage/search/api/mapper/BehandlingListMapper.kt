@@ -105,9 +105,9 @@ class BehandlingListMapper(
         return if (sattPaaVent != null) {
             SattPaaVent(
                 from = sattPaaVent,
-                to = sattPaaVentExpires,
-                isExpired = sattPaaVentExpires?.isBefore(LocalDate.now()),
-                reason = sattPaaVentReason
+                to = sattPaaVentExpires!!,
+                isExpired = sattPaaVentExpires.isBefore(LocalDate.now()),
+                reason = sattPaaVentReason!!
             )
         } else null
     }
