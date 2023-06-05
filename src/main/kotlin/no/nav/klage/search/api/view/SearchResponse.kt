@@ -7,6 +7,7 @@ data class FnrSearchResponseWithoutPerson(
     val aapneBehandlinger: List<String>,
     val avsluttedeBehandlinger: List<String>,
     val feilregistrerteBehandlinger: List<String>,
+    val paaVentBehandlinger: List<String>,
 )
 
 /**

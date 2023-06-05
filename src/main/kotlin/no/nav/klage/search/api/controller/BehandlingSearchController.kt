@@ -44,6 +44,7 @@ class BehandlingSearchController(
                 aapneBehandlinger = listOf(),
                 avsluttedeBehandlinger = listOf(),
                 feilregistrerteBehandlinger = listOf(),
+                paaVentBehandlinger = listOf(),
             )
         } else {
             behandlingListMapper.mapPersonSearchResponseToFnrSearchResponseWithoutPerson(
