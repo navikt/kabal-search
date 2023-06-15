@@ -38,7 +38,7 @@ data class KlagebehandlingerSearchCriteria(
 //data class ExtraPersonWithYtelser(val foedselsnr: String, val ytelser: List<Ytelse>)
 
 enum class SortField {
-    FRIST, MOTTATT, PAA_VENT_FROM, PAA_VENT_TO
+    FRIST, MOTTATT, PAA_VENT_FROM, PAA_VENT_TO, AVSLUTTET_AV_SAKSBEHANDLER
 }
 
 enum class Order {
@@ -96,6 +96,7 @@ data class SaksbehandlersFerdigstilteOppgaverSearchCriteria(
 
     val saksbehandler: String,
     val ferdigstiltFom: LocalDate,
+    val ferdigstiltTom: LocalDate,
 
     override val sortField: SortField,
     override val order: Order,
@@ -149,6 +150,7 @@ data class EnhetensFerdigstilteOppgaverSearchCriteria(
     val enhetId: String,
     val saksbehandlere: List<String>,
     val ferdigstiltFom: LocalDate,
+    val ferdigstiltTom: LocalDate,
 
     override val sortField: SortField,
     override val order: Order,

@@ -46,6 +46,7 @@ class BehandlingerSearchCriteriaMapper(
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
         saksbehandler = navIdent,
         ferdigstiltFom = mapFerdigstiltFom(queryParams),
+        ferdigstiltTom = queryParams.ferdigstiltTo ?: LocalDate.now(),
         sortField = mapSortField(queryParams.sortering),
         order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
         offset = 0,
@@ -101,6 +102,7 @@ class BehandlingerSearchCriteriaMapper(
         enhetId = enhetId,
         saksbehandlere = queryParams.tildelteSaksbehandlere,
         ferdigstiltFom = mapFerdigstiltFom(queryParams),
+        ferdigstiltTom = queryParams.ferdigstiltTo ?: LocalDate.now(),
         sortField = mapSortField(queryParams.sortering),
         order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
         offset = 0,
@@ -188,6 +190,7 @@ class BehandlingerSearchCriteriaMapper(
             Sortering.ALDER -> SortField.MOTTATT
             Sortering.PAA_VENT_FROM -> SortField.PAA_VENT_FROM
             Sortering.PAA_VENT_TO -> SortField.PAA_VENT_TO
+            Sortering.AVSLUTTET_AV_SAKSBEHANDLER -> SortField.AVSLUTTET_AV_SAKSBEHANDLER
             else -> SortField.FRIST
         }
 
@@ -206,9 +209,13 @@ class BehandlingerSearchCriteriaMapper(
             }
         }
 
-    private fun mapFerdigstiltFom(queryParams: FerdigstilteOppgaverQueryParams): LocalDate =
-        LocalDate.now().minusDays(queryParams.ferdigstiltDaysAgo)
-
+    private fun mapFerdigstiltFom(queryParams: FerdigstilteOppgaverQueryParams): LocalDate {
+        return if (queryParams.ferdigstiltFrom != null) {
+            queryParams.ferdigstiltFrom!!
+        } else {
+            LocalDate.now().minusDays(queryParams.ferdigstiltDaysAgo ?: 36500)
+        }
+    }
 }
 
 
