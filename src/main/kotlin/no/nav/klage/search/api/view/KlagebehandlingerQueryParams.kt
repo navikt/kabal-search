@@ -1,5 +1,7 @@
 package no.nav.klage.search.api.view
 
+import java.time.LocalDate
+
 interface CommonOppgaverQueryParams {
     var typer: List<String>
     var ytelser: List<String>
@@ -9,7 +11,9 @@ interface CommonOppgaverQueryParams {
 }
 
 interface FerdigstilteOppgaverQueryParams {
-    val ferdigstiltDaysAgo: Long
+    val ferdigstiltDaysAgo: Long?
+    val ferdigstiltFrom: LocalDate?
+    val ferdigstiltTo: LocalDate?
 }
 
 data class MineFerdigstilteOppgaverQueryParams(
@@ -17,8 +21,11 @@ data class MineFerdigstilteOppgaverQueryParams(
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
-    override val sortering: Sortering? = Sortering.FRIST,
-    override val ferdigstiltDaysAgo: Long,
+    override val sortering: Sortering? = Sortering.AVSLUTTET_AV_SAKSBEHANDLER,
+    override val ferdigstiltDaysAgo: Long?,
+    override val ferdigstiltFrom: LocalDate?,
+    override val ferdigstiltTo: LocalDate?,
+
 ) : CommonOppgaverQueryParams, FerdigstilteOppgaverQueryParams
 
 data class MineUferdigeOppgaverQueryParams(
@@ -56,8 +63,10 @@ data class EnhetensFerdigstilteOppgaverQueryParams(
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
-    override val sortering: Sortering? = Sortering.FRIST,
-    override val ferdigstiltDaysAgo: Long,
+    override val sortering: Sortering? = Sortering.AVSLUTTET_AV_SAKSBEHANDLER,
+    override val ferdigstiltDaysAgo: Long?,
+    override val ferdigstiltFrom: LocalDate?,
+    override val ferdigstiltTo: LocalDate?,
     var tildelteSaksbehandlere: List<String> = emptyList(),
 ) : CommonOppgaverQueryParams, FerdigstilteOppgaverQueryParams
 
@@ -84,5 +93,5 @@ enum class Rekkefoelge {
 }
 
 enum class Sortering {
-    FRIST, MOTTATT, ALDER, PAA_VENT_FROM, PAA_VENT_TO
+    FRIST, MOTTATT, ALDER, PAA_VENT_FROM, PAA_VENT_TO, AVSLUTTET_AV_SAKSBEHANDLER
 }

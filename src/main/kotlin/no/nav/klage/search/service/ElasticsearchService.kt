@@ -4,8 +4,11 @@ import no.nav.klage.kodeverk.MedunderskriverFlyt
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.domain.*
-import no.nav.klage.search.domain.elasticsearch.*
+import no.nav.klage.search.domain.elasticsearch.EsBehandling
+import no.nav.klage.search.domain.elasticsearch.EsStatus
 import no.nav.klage.search.domain.elasticsearch.EsStatus.*
+import no.nav.klage.search.domain.elasticsearch.KlageStatistikk
+import no.nav.klage.search.domain.elasticsearch.RelatedKlagebehandlinger
 import no.nav.klage.search.domain.saksbehandler.Saksbehandler
 import no.nav.klage.search.repositories.AnonymeBehandlingerSearchHits
 import no.nav.klage.search.repositories.BehandlingerSearchHits
@@ -247,6 +250,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                 "sattPaaVent"
             } else if (criteria.sortField == SortField.PAA_VENT_TO) {
                 "sattPaaVentExpires"
+            } else if (criteria.sortField == SortField.AVSLUTTET_AV_SAKSBEHANDLER) {
+                "avsluttetAvSaksbehandler"
             } else {
                 "frist"
             }
@@ -325,6 +330,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.addBasicFilters(this)
         //baseQuery.must(beAvsluttetAvSaksbehandler())
         baseQuery.must(beAvsluttetAvSaksbehandlerEtter(ferdigstiltFom))
+        baseQuery.must(beAvsluttetAvSaksbehandlerFoer(ferdigstiltTom))
         baseQuery.must(beTildeltSaksbehandler(saksbehandler))
         baseQuery.mustNot(beFeilregistrert())
 
@@ -377,6 +383,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.addBasicFilters(this)
         //baseQuery.must(beAvsluttetAvSaksbehandler())
         baseQuery.must(beAvsluttetAvSaksbehandlerEtter(ferdigstiltFom))
+        baseQuery.must(beAvsluttetAvSaksbehandlerFoer(ferdigstiltTom))
         baseQuery.must(beTildeltEnhet(enhetId))
         if (saksbehandlere.isNotEmpty()) {
             baseQuery.must(beTildeltSaksbehandler(saksbehandlere))
@@ -676,6 +683,9 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
 
     private fun beAvsluttetAvSaksbehandlerEtter(ferdigstiltFom: LocalDate) =
         QueryBuilders.rangeQuery("avsluttetAvSaksbehandler").gte(ferdigstiltFom).format(ISO8601).timeZone(ZONEID_UTC)
+
+    private fun beAvsluttetAvSaksbehandlerFoer(ferdigstiltTom: LocalDate) =
+        QueryBuilders.rangeQuery("avsluttetAvSaksbehandler").lte(ferdigstiltTom).format(ISO8601).timeZone(ZONEID_UTC)
 
     private fun haveFristEtter(fristFom: LocalDate) =
         QueryBuilders.rangeQuery("frist").gte(fristFom).format(ISO8601).timeZone(ZONEID_UTC)
