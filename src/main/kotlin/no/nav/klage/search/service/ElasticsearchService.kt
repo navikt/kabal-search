@@ -330,7 +330,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.addBasicFilters(this)
         //baseQuery.must(beAvsluttetAvSaksbehandler())
         baseQuery.must(beAvsluttetAvSaksbehandlerEtter(ferdigstiltFom))
-        baseQuery.must(beAvsluttetAvSaksbehandlerEtter(ferdigstiltTom))
+        baseQuery.must(beAvsluttetAvSaksbehandlerFoer(ferdigstiltTom))
         baseQuery.must(beTildeltSaksbehandler(saksbehandler))
         baseQuery.mustNot(beFeilregistrert())
 
