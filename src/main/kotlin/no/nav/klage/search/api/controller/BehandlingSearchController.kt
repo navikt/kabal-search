@@ -6,8 +6,11 @@ import no.nav.klage.search.api.mapper.BehandlingListMapper
 import no.nav.klage.search.api.mapper.BehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.*
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
+import no.nav.klage.search.domain.AuditLogEvent
 import no.nav.klage.search.domain.personsoek.Navn
 import no.nav.klage.search.service.PersonSearchService
+import no.nav.klage.search.util.AuditLogger
+import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.PostMapping
@@ -23,6 +26,8 @@ class BehandlingSearchController(
     private val behandlingListMapper: BehandlingListMapper,
     private val behandlingerSearchCriteriaMapper: BehandlingerSearchCriteriaMapper,
     private val personSearchService: PersonSearchService,
+    private val auditLogger: AuditLogger,
+    private val tokenUtil: TokenUtil,
 ) {
 
     companion object {
@@ -49,6 +54,14 @@ class BehandlingSearchController(
         } else {
             behandlingListMapper.mapPersonSearchResponseToFnrSearchResponseWithoutPerson(
                 personSearchResponse = personSearchResponse,
+            )
+        }.also {
+            auditLogger.log(
+                AuditLogEvent(
+                    navIdent = tokenUtil.getIdent(),
+                    personFnr = input.query,
+                    message = "Hentet behandlingsoversikt for person."
+                )
             )
         }
     }
