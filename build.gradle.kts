@@ -14,6 +14,7 @@ val opensearchVersion = "2.8.0"
 val reactorSpringVersion = "1.0.1.RELEASE"
 val kodeverkVersion = "1.3.12"
 val ehcacheVersion = "3.10.8"
+val logbackSyslog4jVersion = "1.0.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_17
 
@@ -55,6 +56,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     //Not managed by Spring:
+    implementation("com.papertrailapp:logback-syslog4j:$logbackSyslog4jVersion")
     implementation("org.ehcache:ehcache:$ehcacheVersion")
     implementation("org.opensearch.client:opensearch-rest-high-level-client:$opensearchVersion")
     implementation("org.threeten:threeten-extra:$threeTenExtraVersion")
