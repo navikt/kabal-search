@@ -35,6 +35,7 @@ class BehandlingEndretKafkaConsumer(
             logger.info("Seeking to beginning of topic ${tp.topic()} and partition ${tp.partition()}")
             callback.seekToBeginning(tp.topic(), tp.partition())
         }
+        logger.info("Finished consumeFromBeginning")
     }
 
     @KafkaListener(
