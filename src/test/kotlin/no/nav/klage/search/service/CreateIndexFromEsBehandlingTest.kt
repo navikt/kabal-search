@@ -57,14 +57,4 @@ class CreateIndexFromEsBehandlingTest {
         EntityUtils.toString(mappingResponse.entity)
     }
 
-    /*
-    @Test
-    @Order(3)
-    fun `denne vil printe ut mapping generert fra EsKlagebehandling`() {
-        val indexOps = esTemplate.indexOps(EsKlagebehandling::class.java)
-        val mappingDocument = indexOps.createMapping(EsKlagebehandling::class.java)
-        println(mappingDocument.toJson())
-    }
-    */
-
 }
