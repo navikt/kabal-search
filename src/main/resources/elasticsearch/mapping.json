@@ -1,117 +1,10 @@
 {
   "properties": {
-    "klagerFnr": {
+    "avsenderEnhetFoersteinstans": {
       "type": "keyword"
-    },
-    "klagerNavn": {
-      "type": "text"
-    },
-    "klagerFornavn": {
-      "type": "text"
-    },
-    "klagerMellomnavn": {
-      "type": "text"
-    },
-    "klagerEtternavn": {
-      "type": "text"
-    },
-    "klagerOrgnr": {
-      "type": "keyword"
-    },
-    "klagerOrgnavn": {
-      "type": "text"
-    },
-    "sakenGjelderFnr": {
-      "type": "keyword"
-    },
-    "sakenGjelderNavn": {
-      "type": "text"
-    },
-    "sakenGjelderFornavn": {
-      "type": "text"
-    },
-    "sakenGjelderMellomnavn": {
-      "type": "text"
-    },
-    "sakenGjelderEtternavn": {
-      "type": "text"
-    },
-    "sakenGjelderOrgnr": {
-      "type": "keyword"
-    },
-    "sakenGjelderOrgnavn": {
-      "type": "text"
-    },
-    "tema": {
-      "type": "keyword"
-    },
-    "ytelseId": {
-      "type": "keyword"
-    },
-    "typeId": {
-      "type": "keyword"
-    },
-    "kildeReferanse": {
-      "type": "keyword"
-    },
-    "sakFagsystem": {
-      "type": "keyword"
-    },
-    "sakFagsystemNavn": {
-      "type": "keyword"
-    },
-    "sakFagsakId": {
-      "type": "keyword"
-    },
-    "innsendt": {
-      "type": "date",
-      "format": "date"
-    },
-    "mottattFoersteinstans": {
-      "type": "date",
-      "format": "date"
-    },
-    "forrigeSaksbehandlerident": {
-      "type": "keyword"
-    },
-    "forrigeBehandlendeEnhet": {
-      "type": "keyword",
-      "fields": {
-        "text": {
-          "type": "text"
-        }
-      }
     },
     "avsenderSaksbehandleridentFoersteinstans": {
       "type": "keyword"
-    },
-    "avsenderEnhetFoersteinstans": {
-      "type": "keyword",
-      "fields": {
-        "text": {
-          "type": "text"
-        }
-      }
-    },
-    "sakMottattKaDato": {
-      "type": "date",
-      "format": "date_time"
-    },
-    "forrigeVedtaksDato": {
-      "type": "date",
-      "format": "date"
-    },
-    "mottattKlageinstans": {
-      "type": "date",
-      "format": "date_time"
-    },
-    "tildelt": {
-      "type": "date",
-      "format": "date_time"
-    },
-    "sendtMedunderskriver": {
-      "type": "date",
-      "format": "date_time"
     },
     "avsluttet": {
       "type": "date",
@@ -121,59 +14,136 @@
       "type": "date",
       "format": "date_time"
     },
+    "created": {
+      "type": "date",
+      "format": "date_time"
+    },
+    "egenAnsatt": {
+      "type": "boolean"
+    },
+    "feilregistrert": {
+      "type": "date",
+      "format": "date_time"
+    },
+    "forrigeBehandlendeEnhet": {
+      "type": "keyword"
+    },
+    "forrigeSaksbehandlerident": {
+      "type": "keyword"
+    },
+    "forrigeVedtaksDato": {
+      "type": "date",
+      "format": "date"
+    },
+    "fortrolig": {
+      "type": "boolean"
+    },
     "frist": {
       "type": "date",
       "format": "date"
     },
-    "tildeltSaksbehandlerident": {
+    "hjemler": {
       "type": "keyword"
     },
-    "tildeltSaksbehandlernavn": {
-      "type": "text"
+    "hjemlerNavn": {
+      "type": "keyword"
     },
-    "medunderskriverident": {
+    "id": {
+      "type": "keyword"
+    },
+    "innsendt": {
+      "type": "date",
+      "format": "date"
+    },
+    "kilde": {
+      "type": "keyword"
+    },
+    "kildeReferanse": {
+      "type": "keyword"
+    },
+    "klagerEtternavn": {
+      "type": "keyword"
+    },
+    "klagerFnr": {
+      "type": "keyword"
+    },
+    "klagerFornavn": {
+      "type": "keyword"
+    },
+    "klagerMellomnavn": {
+      "type": "keyword"
+    },
+    "klagerNavn": {
+      "type": "keyword"
+    },
+    "klagerOrgnavn": {
+      "type": "keyword"
+    },
+    "klagerOrgnr": {
       "type": "keyword"
     },
     "medunderskriverFlyt": {
       "type": "keyword"
     },
-    "tildeltEnhet": {
-      "type": "keyword",
-      "fields": {
-        "text": {
-          "type": "text"
-        }
-      }
-    },
-    "hjemler": {
-      "type": "keyword",
-      "fields": {
-        "text": {
-          "type": "text"
-        }
-      }
-    },
-    "hjemlerNavn": {
+    "medunderskriverNavn": {
       "type": "keyword"
     },
-    "created": {
-      "type": "date",
-      "format": "date_time"
+    "medunderskriverident": {
+      "type": "keyword"
     },
     "modified": {
       "type": "date",
       "format": "date_time"
     },
-    "kilde": {
+    "mottattFoersteinstans": {
+      "type": "date",
+      "format": "date"
+    },
+    "mottattKlageinstans": {
+      "type": "date",
+      "format": "date_time"
+    },
+    "sakFagsakId": {
+      "type": "keyword"
+    },
+    "sakFagsystem": {
+      "type": "keyword"
+    },
+    "sakFagsystemNavn": {
+      "type": "keyword"
+    },
+    "sakMottattKaDato": {
+      "type": "date",
+      "format": "date_time"
+    },
+    "sakenGjelderEtternavn": {
+      "type": "keyword"
+    },
+    "sakenGjelderFnr": {
+      "type": "keyword"
+    },
+    "sakenGjelderFornavn": {
+      "type": "keyword"
+    },
+    "sakenGjelderMellomnavn": {
+      "type": "keyword"
+    },
+    "sakenGjelderNavn": {
+      "type": "keyword"
+    },
+    "sakenGjelderOrgnavn": {
+      "type": "keyword"
+    },
+    "sakenGjelderOrgnr": {
       "type": "keyword"
     },
     "saksdokumenter": {
       "type": "nested",
       "properties": {
-        "journalpostId": {
+        "dokumentInfoId": {
           "type": "keyword"
         },
-        "dokumentInfoId": {
+        "journalpostId": {
           "type": "keyword"
         }
       }
@@ -182,32 +152,6 @@
       "type": "keyword"
     },
     "saksdokumenterJournalpostIdOgDokumentInfoId": {
-      "type": "keyword"
-    },
-    "egenAnsatt": {
-      "type": "boolean"
-    },
-    "fortrolig": {
-      "type": "boolean"
-    },
-    "strengtFortrolig": {
-      "type": "boolean"
-    },
-    "vedtakUtfall": {
-      "type": "keyword"
-    },
-    "vedtakUtfallNavn": {
-      "type": "keyword"
-    },
-    "vedtakHjemler": {
-      "type": "keyword",
-      "fields": {
-        "text": {
-          "type": "text"
-        }
-      }
-    },
-    "vedtakHjemlerNavn": {
       "type": "keyword"
     },
     "sattPaaVent": {
@@ -219,19 +163,50 @@
       "format": "date"
     },
     "sattPaaVentReason": {
-      "type": "text"
+      "type": "keyword"
     },
-    "feilregistrert": {
+    "sendtMedunderskriver": {
       "type": "date",
       "format": "date_time"
     },
-    "rolIdent": {
-      "type": "text"
-    },
-    "rolStateId": {
-      "type": "text"
-    },
     "status": {
+      "type": "keyword"
+    },
+    "strengtFortrolig": {
+      "type": "boolean"
+    },
+    "tema": {
+      "type": "keyword"
+    },
+    "tildelt": {
+      "type": "date",
+      "format": "date_time"
+    },
+    "tildeltEnhet": {
+      "type": "keyword"
+    },
+    "tildeltSaksbehandlerident": {
+      "type": "keyword"
+    },
+    "tildeltSaksbehandlernavn": {
+      "type": "keyword"
+    },
+    "type": {
+      "type": "keyword"
+    },
+    "vedtakHjemler": {
+      "type": "keyword"
+    },
+    "vedtakHjemlerNavn": {
+      "type": "keyword"
+    },
+    "vedtakUtfall": {
+      "type": "keyword"
+    },
+    "vedtakUtfallNavn": {
+      "type": "keyword"
+    },
+    "ytelseId": {
       "type": "keyword"
     }
   }
