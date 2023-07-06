@@ -42,6 +42,8 @@ class BehandlingSkjemaV2(
     val status: StatusType,
 
     val feilregistrert: LocalDateTime?,
+    val rolIdent: String?,
+    val rolStateId: String?,
 ) {
     data class Vedtak(
         val utfall: Kode?,

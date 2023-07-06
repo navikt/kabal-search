@@ -157,7 +157,7 @@ class ElasticsearchServiceFindSaksbehandlereTest {
             tildeltEnhet = enhet,
             tema = Tema.OMS.id,
             ytelseId = Ytelse.OMS_OMP.id,
-            type = Type.KLAGE.id,
+            typeId = Type.KLAGE.id,
             tildeltSaksbehandlerident = saksbehandlerIdent,
             tildeltSaksbehandlernavn = saksbehandlerNavn,
             innsendt = LocalDate.of(2019, 10, 1),
@@ -177,6 +177,8 @@ class ElasticsearchServiceFindSaksbehandlereTest {
             sakenGjelderEtternavn = "def",
             sakMottattKaDato = LocalDateTime.now(),
             sakFagsystem = "1",
+            rolIdent = "ROLIDENT",
+            rolStateId = "1",
         )
     }
 

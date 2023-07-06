@@ -101,7 +101,7 @@ class ElasticsearchIndexingTest {
             tildeltEnhet = "",
             tema = Tema.OMS.id,
             ytelseId = Ytelse.OMS_OMP.id,
-            type = Type.KLAGE.id,
+            typeId = Type.KLAGE.id,
             tildeltSaksbehandlerident = null,
             innsendt = null,
             mottattFoersteinstans = null,
@@ -124,6 +124,8 @@ class ElasticsearchIndexingTest {
             sakMottattKaDato = LocalDateTime.now(),
             sakFagsystem = "1",
             sattPaaVent = LocalDate.now(),
+            rolIdent = "ROLIDENT",
+            rolStateId = "1",
         )
     }
 }

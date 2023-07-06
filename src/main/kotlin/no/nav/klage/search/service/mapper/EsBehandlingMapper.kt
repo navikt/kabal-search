@@ -4,7 +4,6 @@ package no.nav.klage.search.service.mapper
 import no.nav.klage.search.clients.egenansatt.EgenAnsattService
 import no.nav.klage.search.clients.ereg.EregClient
 import no.nav.klage.search.clients.klageendret.BehandlingSkjemaV2
-import no.nav.klage.search.clients.klageendret.KlagebehandlingSkjemaV1
 import no.nav.klage.search.clients.pdl.PdlFacade
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import no.nav.klage.search.domain.elasticsearch.EsSaksdokument
@@ -63,7 +62,7 @@ class EsBehandlingMapper(
             sakenGjelderOrgnavn = sakenGjelderOrgnavn,
             tema = behandling.tema.id,
             ytelseId = behandling.ytelse.id,
-            type = behandling.type.id,
+            typeId = behandling.type.id,
             kildeReferanse = behandling.kildeReferanse,
             sakFagsystem = behandling.sakFagsystem.id,
             sakFagsakId = behandling.sakFagsakId,
@@ -109,6 +108,8 @@ class EsBehandlingMapper(
             sattPaaVentReason = behandling.sattPaaVentReason,
             status = EsStatus.valueOf(behandling.status.name),
             feilregistrert = behandling.feilregistrert,
+            rolIdent = behandling.rolIdent,
+            rolStateId = behandling.rolStateId,
         )
     }
 

@@ -78,7 +78,7 @@ class FortroligElasticsearchServiceTest {
             tildeltEnhet = "4219",
             tema = Tema.OMS.id,
             ytelseId = Ytelse.OMS_OMP.id,
-            type = Type.KLAGE.id,
+            typeId = Type.KLAGE.id,
             tildeltSaksbehandlerident = null,
             innsendt = LocalDate.of(2019, 10, 1),
             mottattFoersteinstans = LocalDate.of(2019, 11, 1),
@@ -96,6 +96,8 @@ class FortroligElasticsearchServiceTest {
             sakenGjelderEtternavn = "def",
             sakMottattKaDato = LocalDateTime.now(),
             sakFagsystem = "1",
+            rolIdent = "ROLIDENT",
+            rolStateId = "1",
         )
         val fortroligPerson =
             EsBehandling(
@@ -103,7 +105,7 @@ class FortroligElasticsearchServiceTest {
                 tildeltEnhet = "4219",
                 tema = Tema.OMS.id,
                 ytelseId = Ytelse.OMS_OMP.id,
-                type = Type.KLAGE.id,
+                typeId = Type.KLAGE.id,
                 tildeltSaksbehandlerident = null,
                 innsendt = LocalDate.of(2018, 10, 1),
                 mottattFoersteinstans = LocalDate.of(2018, 11, 1),
@@ -122,13 +124,15 @@ class FortroligElasticsearchServiceTest {
                 sakenGjelderEtternavn = "def",
                 sakMottattKaDato = LocalDateTime.now(),
                 sakFagsystem = "1",
+                rolIdent = "ROLIDENT",
+                rolStateId = "1",
             )
         val strengtFortroligPerson = EsBehandling(
             id = idStrengtFortrolig,
             tildeltEnhet = "4219",
             tema = Tema.OMS.id,
             ytelseId = Ytelse.OMS_OMP.id,
-            type = Type.KLAGE.id,
+            typeId = Type.KLAGE.id,
             tildeltSaksbehandlerident = null,
             innsendt = LocalDate.of(2019, 10, 1),
             mottattFoersteinstans = LocalDate.of(2019, 11, 1),
@@ -147,6 +151,8 @@ class FortroligElasticsearchServiceTest {
             sakenGjelderEtternavn = "def",
             sakMottattKaDato = LocalDateTime.now(),
             sakFagsystem = "1",
+            rolIdent = "ROLIDENT",
+            rolStateId = "1",
         )
         val egenAnsattPerson =
             EsBehandling(
@@ -154,7 +160,7 @@ class FortroligElasticsearchServiceTest {
                 tildeltEnhet = "4219",
                 tema = Tema.OMS.id,
                 ytelseId = Ytelse.OMS_OMP.id,
-                type = Type.KLAGE.id,
+                typeId = Type.KLAGE.id,
                 tildeltSaksbehandlerident = null,
                 innsendt = LocalDate.of(2018, 10, 1),
                 mottattFoersteinstans = LocalDate.of(2018, 11, 1),
@@ -173,6 +179,8 @@ class FortroligElasticsearchServiceTest {
                 sakenGjelderEtternavn = "def",
                 sakMottattKaDato = LocalDateTime.now(),
                 sakFagsystem = "1",
+                rolIdent = "ROLIDENT",
+                rolStateId = "1",
             )
         val egenAnsattOgFortroligPerson =
             EsBehandling(
@@ -180,7 +188,7 @@ class FortroligElasticsearchServiceTest {
                 tildeltEnhet = "4219",
                 tema = Tema.OMS.id,
                 ytelseId = Ytelse.OMS_OMP.id,
-                type = Type.KLAGE.id,
+                typeId = Type.KLAGE.id,
                 tildeltSaksbehandlerident = null,
                 innsendt = LocalDate.of(2018, 10, 1),
                 mottattFoersteinstans = LocalDate.of(2018, 11, 1),
@@ -200,6 +208,8 @@ class FortroligElasticsearchServiceTest {
                 sakenGjelderEtternavn = "def",
                 sakMottattKaDato = LocalDateTime.now(),
                 sakFagsystem = "1",
+                rolIdent = "ROLIDENT",
+                rolStateId = "1",
             )
         val egenAnsattOgStrengtFortroligPerson =
             EsBehandling(
@@ -207,7 +217,7 @@ class FortroligElasticsearchServiceTest {
                 tildeltEnhet = "4219",
                 tema = Tema.OMS.id,
                 ytelseId = Ytelse.OMS_OMP.id,
-                type = Type.KLAGE.id,
+                typeId = Type.KLAGE.id,
                 tildeltSaksbehandlerident = null,
                 innsendt = LocalDate.of(2018, 10, 1),
                 mottattFoersteinstans = LocalDate.of(2018, 11, 1),
@@ -227,6 +237,8 @@ class FortroligElasticsearchServiceTest {
                 sakenGjelderEtternavn = "def",
                 sakMottattKaDato = LocalDateTime.now(),
                 sakFagsystem = "1",
+                rolIdent = "ROLIDENT",
+                rolStateId = "1",
             )
         repo.save(normalPerson)
         repo.save(fortroligPerson)

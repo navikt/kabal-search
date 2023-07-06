@@ -39,7 +39,7 @@ data class EsBehandling(
 
     override val tema: String,
     override val ytelseId: String,
-    override val type: String,
+    override val typeId: String,
 
     val kildeReferanse: String? = null,
     val sakFagsystem: String,
@@ -136,7 +136,11 @@ data class EsBehandling(
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     override val feilregistrert: LocalDateTime? = null,
 
-    val status: EsStatus
+    override val rolIdent: String?,
+
+    override val rolStateId: String?,
+
+    val status: EsStatus,
 ) : EsAnonymBehandling
 
 interface EsAnonymBehandling {
@@ -156,10 +160,12 @@ interface EsAnonymBehandling {
     val hjemler: List<String>
     val ytelseId: String
     val tema: String
-    val type: String
+    val typeId: String
     val id: String
     val sattPaaVent: LocalDate?
     val sattPaaVentExpires: LocalDate?
     val sattPaaVentReason: String?
     val feilregistrert: LocalDateTime?
+    val rolIdent: String?
+    val rolStateId: String?
 }

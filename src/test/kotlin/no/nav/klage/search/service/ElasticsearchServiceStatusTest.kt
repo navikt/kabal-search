@@ -89,7 +89,7 @@ class ElasticsearchServiceStatusTest {
         tildeltEnhet = "4219",
         tema = Tema.OMS.id,
         ytelseId = Ytelse.OMS_OMP.id,
-        type = Type.KLAGE.id,
+        typeId = Type.KLAGE.id,
         tildeltSaksbehandlerident = null,
         innsendt = LocalDate.of(2019, 10, 1),
         mottattFoersteinstans = LocalDate.of(2019, 11, 1),
@@ -107,6 +107,8 @@ class ElasticsearchServiceStatusTest {
         sakenGjelderEtternavn = "def",
         sakMottattKaDato = LocalDateTime.now(),
         sakFagsystem = "1",
+        rolIdent = "ROLIDENT",
+        rolStateId = "1",
     )
 
 }

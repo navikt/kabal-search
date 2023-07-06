@@ -51,10 +51,13 @@ class BehandlingListMapper(
         return esBehandlinger.map { esBehandling ->
             BehandlingView(
                 id = esBehandling.id,
-                type = esBehandling.type,
+                type = esBehandling.typeId,
+                typeId = esBehandling.typeId,
                 tema = esBehandling.tema,
                 ytelse = esBehandling.ytelseId,
+                ytelseId = esBehandling.ytelseId,
                 hjemmel = esBehandling.hjemler.firstOrNull(),
+                hjemmelId = esBehandling.hjemler.firstOrNull(),
                 frist = esBehandling.frist,
                 mottatt = esBehandling.sakMottattKaDato.toLocalDate(),
                 harMedunderskriver = esBehandling.medunderskriverident != null,
@@ -62,10 +65,12 @@ class BehandlingListMapper(
                 medunderskriverident = esBehandling.medunderskriverident,
                 medunderskriverNavn = esBehandling.medunderskriverNavn,
                 medunderskriverFlyt = MedunderskriverFlyt.valueOf(esBehandling.medunderskriverFlyt),
+                medunderskriverFlytId = MedunderskriverFlyt.valueOf(esBehandling.medunderskriverFlyt).id,
                 erTildelt = esBehandling.tildeltSaksbehandlerident != null,
                 tildeltSaksbehandlerident = esBehandling.tildeltSaksbehandlerident,
                 tildeltSaksbehandlerNavn = esBehandling.tildeltSaksbehandlernavn,
                 utfall = esBehandling.vedtakUtfall,
+                utfallId = esBehandling.vedtakUtfall,
                 avsluttetAvSaksbehandlerDate = esBehandling.avsluttetAvSaksbehandler?.toLocalDate(),
                 isAvsluttetAvSaksbehandler = esBehandling.avsluttetAvSaksbehandler?.toLocalDate() != null,
                 saksbehandlerHarTilgang = accessMapper.kanTildelesOppgaven(

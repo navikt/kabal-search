@@ -62,7 +62,7 @@ class StatistikkInElasticsearchServiceTest {
             tildeltEnhet = "4219",
             tema = Tema.OMS.id,
             ytelseId = Ytelse.OMS_OMP.id,
-            type = Type.KLAGE.id,
+            typeId = Type.KLAGE.id,
             tildeltSaksbehandlerident = null,
             innsendt = innsendt,
             mottattFoersteinstans = LocalDate.of(2018, 11, 1),
@@ -82,6 +82,8 @@ class StatistikkInElasticsearchServiceTest {
             sakenGjelderEtternavn = "def",
             sakMottattKaDato = LocalDateTime.now(),
             sakFagsystem = "1",
+            rolIdent = "ROLIDENT",
+            rolStateId = "1",
         )
 
     @Test

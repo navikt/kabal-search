@@ -48,7 +48,7 @@
     "ytelseId": {
       "type": "keyword"
     },
-    "type": {
+    "typeId": {
       "type": "keyword"
     },
     "kildeReferanse": {
@@ -224,6 +224,12 @@
     "feilregistrert": {
       "type": "date",
       "format": "date_time"
+    },
+    "rolIdent": {
+      "type": "text"
+    },
+    "rolStateId": {
+      "type": "text"
     },
     "status": {
       "type": "keyword"

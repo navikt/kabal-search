@@ -67,7 +67,7 @@ class ElasticsearchServiceTest {
             tildeltEnhet = "4219",
             tema = Tema.OMS.id,
             ytelseId = Ytelse.OMS_OMP.id,
-            type = Type.KLAGE.id,
+            typeId = Type.KLAGE.id,
             tildeltSaksbehandlerident = null,
             innsendt = LocalDate.of(2019, 10, 1),
             mottattFoersteinstans = LocalDate.of(2019, 11, 1),
@@ -85,6 +85,8 @@ class ElasticsearchServiceTest {
             sakenGjelderEtternavn = "def",
             sakMottattKaDato = LocalDateTime.now(),
             sakFagsystem = "1",
+            rolIdent = "ROLIDENT",
+            rolStateId = "1",
         )
         val klagebehandling2 =
             EsBehandling(
@@ -92,7 +94,7 @@ class ElasticsearchServiceTest {
                 tildeltEnhet = "4219",
                 tema = Tema.SYK.id,
                 ytelseId = Ytelse.SYK_SYK.id,
-                type = Type.KLAGE.id,
+                typeId = Type.KLAGE.id,
                 tildeltSaksbehandlerident = null,
                 innsendt = LocalDate.of(2018, 10, 1),
                 mottattFoersteinstans = LocalDate.of(2018, 11, 1),
@@ -110,6 +112,8 @@ class ElasticsearchServiceTest {
                 sakenGjelderEtternavn = "def",
                 sakMottattKaDato = LocalDateTime.now(),
                 sakFagsystem = "1",
+                rolIdent = "ROLIDENT",
+                rolStateId = "1",
             )
         repo.save(klagebehandling1)
         repo.save(klagebehandling2)
