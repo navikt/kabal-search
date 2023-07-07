@@ -38,6 +38,7 @@ class BehandlingListMapper {
         return esBehandlinger.map { esBehandling ->
             BehandlingView(
                 id = esBehandling.behandlingId,
+                behandlingId = esBehandling.behandlingId,
                 type = esBehandling.typeId,
                 typeId = esBehandling.typeId,
                 ytelse = esBehandling.ytelseId,

@@ -11,6 +11,7 @@ data class BehandlingerListResponse(
 
 data class BehandlingView(
     val id: String,
+    val behandlingId: String,
     val type: String,
     val typeId: String,
     val ytelse: String,
