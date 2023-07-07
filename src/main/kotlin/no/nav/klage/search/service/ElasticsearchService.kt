@@ -213,7 +213,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.must(QueryBuilders.termQuery("status", status))
         baseQuery.must(QueryBuilders.termQuery("ytelseId", ytelse.id))
-        baseQuery.must(QueryBuilders.termQuery("type", type.id))
+        baseQuery.must(QueryBuilders.termQuery("typeId", type.id))
         return esBehandlingRepository.count(baseQuery)
     }
 
@@ -221,7 +221,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.must(QueryBuilders.termQuery("status", FULLFOERT))
         baseQuery.must(QueryBuilders.termQuery("ytelseId", ytelse.id))
-        baseQuery.must(QueryBuilders.termQuery("type", type.id))
+        baseQuery.must(QueryBuilders.termQuery("typeId", type.id))
         val searchHits = esBehandlingRepository.search(baseQuery)
         val saksdokumenterPerAvsluttetBehandling = searchHits.map { e -> e.content }
             .map { e ->
@@ -429,7 +429,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
             val innerQueryType = QueryBuilders.boolQuery()
             this.must(innerQueryType)
             basicSearchCriteria.typer.forEach {
-                innerQueryType.should(QueryBuilders.termQuery("type", it.id))
+                innerQueryType.should(QueryBuilders.termQuery("typeId", it.id))
             }
         }
 
