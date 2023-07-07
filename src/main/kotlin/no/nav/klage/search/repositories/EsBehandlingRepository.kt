@@ -115,7 +115,7 @@ class EsBehandlingRepository(val client: RestHighLevelClient) {
     ) {
         try {
             val request = IndexRequest(BEHANDLING_INDEX)
-            request.id(behandling.id)
+            request.id(behandling.behandlingId)
             val jsonString = mapper.writeValueAsString(behandling)
             request.source(jsonString, XContentType.JSON)
             request.refreshPolicy = refreshPolicy
@@ -315,10 +315,10 @@ interface SearchHits<T> : Iterable<SearchHit<T>> {
 open class SearchHit<T>(val id: String, val content: T)
 
 class EsBehandlingSearchHit(content: EsBehandling) :
-    SearchHit<EsBehandling>(content.id, content)
+    SearchHit<EsBehandling>(content.behandlingId, content)
 
 class EsAnonymBehandlingSearchHit(content: EsBehandling) :
-    SearchHit<EsAnonymBehandling>(content.id, content)
+    SearchHit<EsAnonymBehandling>(content.behandlingId, content)
 
 
 class BehandlingerSearchHits(

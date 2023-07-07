@@ -29,13 +29,6 @@ class PersonSearchService(
             null
         } else {
             PersonSearchResponse(
-                fnr = input.fnr,
-                fornavn = searchHitsInES.first().sakenGjelderFornavn
-                    ?: throw RuntimeException("fornavn missing"),
-                mellomnavn = searchHitsInES.first().sakenGjelderMellomnavn,
-                etternavn = searchHitsInES.first().sakenGjelderEtternavn
-                    ?: throw RuntimeException("etternavn missing"),
-                klagebehandlinger = searchHitsInES,
                 behandlinger = searchHitsInES
             )
         }

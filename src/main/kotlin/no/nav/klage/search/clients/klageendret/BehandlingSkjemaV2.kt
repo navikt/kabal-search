@@ -7,31 +7,18 @@ import java.time.LocalDateTime
 @JsonIgnoreProperties(ignoreUnknown = true)
 class BehandlingSkjemaV2(
     val id: String,
-    val klager: PersonEllerOrganisasjon,
-    val klagersProsessfullmektig: PersonEllerOrganisasjon?,
     val sakenGjelder: PersonEllerOrganisasjon,
-    val tema: Kode,
     val ytelse: Kode,
     val type: Kode,
-    val kildeReferanse: String,
     val sakFagsystem: Kode,
-    val sakFagsakId: String?,
     val innsendtDato: LocalDate?,
-    val mottattFoersteinstansDato: LocalDate?,
-    val forrigeSaksbehandler: Saksbehandler?,
-    val forrigeBehandlendeEnhet: Enhet?,
-    val forrigeVedtaksDato: LocalDate?,
     val sakMottattKaDato: LocalDateTime,
     val avsluttetAvSaksbehandlerTidspunkt: LocalDateTime?,
-    val avsluttetTidspunkt: LocalDateTime?,
     val fristDato: LocalDate?,
     val gjeldendeTildeling: TildeltSaksbehandler?,
     val medunderskriver: TildeltMedunderskriver?,
     val medunderskriverFlytStatus: Kode,
     val hjemler: List<Kode>,
-    val opprettetTidspunkt: LocalDateTime,
-    val sistEndretTidspunkt: LocalDateTime,
-    val kildesystem: Kode,
 
     val saksdokumenter: List<Dokument>,
     val vedtak: Vedtak?,
@@ -45,9 +32,10 @@ class BehandlingSkjemaV2(
     val rolIdent: String?,
     val rolStateId: String?,
 ) {
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
     data class Vedtak(
         val utfall: Kode?,
-        val hjemler: List<Kode>,
     )
 
     enum class StatusType {

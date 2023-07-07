@@ -1,7 +1,6 @@
 package no.nav.klage.search.service
 
 import no.nav.klage.kodeverk.MedunderskriverFlyt
-import no.nav.klage.kodeverk.Tema
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.kodeverk.hjemmel.Hjemmel
@@ -69,14 +68,13 @@ class ElasticsearchIndexingTest {
 
         val klagebehandling = klagebehandlingWith(
             id = "1001L",
-            saksreferanse = "hei"
         )
         repo.save(klagebehandling)
 
         val query = QueryBuilders.matchAllQuery()
         val searchHits: SearchHits<EsBehandling> = repo.search(query)
         assertThat(searchHits.totalHits).isEqualTo(1L)
-        assertThat(searchHits.searchHits.first().content.kildeReferanse).isEqualTo("hei")
+        assertThat(searchHits.searchHits.first().content.behandlingId).isEqualTo("1001L")
     }
 
     @Test
@@ -85,88 +83,51 @@ class ElasticsearchIndexingTest {
 
         var klagebehandling = klagebehandlingWith(
             id = "2001L",
-            saksreferanse = "hei"
         )
         repo.save(klagebehandling)
 
         klagebehandling = klagebehandlingWith(
             id = "2001L",
-            saksreferanse = "hallo"
         )
         repo.save(klagebehandling)
 
         val query = QueryBuilders.idsQuery().addIds("2001L")
         val searchHits: SearchHits<EsBehandling> = repo.search(query)
         assertThat(searchHits.totalHits).isEqualTo(1L)
-        assertThat(searchHits.searchHits.first().content.kildeReferanse).isEqualTo("hallo")
     }
 
     @Test
     @Order(5)
     fun `print mapping`() {
         val esBehandlingWithAllData = EsBehandling(
-            id = "id",
-            kildeReferanse = "saksreferanse",
+            behandlingId = "id",
             tildeltEnhet = "abc",
-            tema = Tema.OMS.id,
             ytelseId = Ytelse.OMS_OMP.id,
-            type = Type.KLAGE.id,
+            typeId = Type.KLAGE.id,
             tildeltSaksbehandlerident = "null",
             innsendt = LocalDate.now(),
-            mottattFoersteinstans = LocalDate.now(),
-            mottattKlageinstans = LocalDateTime.now(),
+            sakMottattKaDato = LocalDateTime.now(),
             frist = LocalDate.now(),
-            tildelt = LocalDateTime.now(),
-            avsluttet = LocalDateTime.now(),
-            hjemler = listOf(Hjemmel.FTRL_8_35.id, Hjemmel.FTRL_8_34.id),
+            hjemmelIdList = listOf(Hjemmel.FTRL_8_35.id, Hjemmel.FTRL_8_34.id),
             sakenGjelderFnr = "12345678910",
-            sakenGjelderNavn = "Navnet Her",
             egenAnsatt = false,
             fortrolig = false,
-            created = LocalDateTime.now(),
-            modified = LocalDateTime.now(),
-            kilde = "K9",
             status = IKKE_TILDELT,
-            medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
-            sakenGjelderFornavn = "abc",
-            sakenGjelderEtternavn = "def",
-            sakMottattKaDato = LocalDateTime.now(),
-            sakFagsystem = "1",
+            medunderskriverFlytId = MedunderskriverFlyt.IKKE_SENDT.name,
+            fagsystemId = "1",
             sattPaaVent = LocalDate.now(),
-            klagerFnr = "null",
-            klagerNavn = "null",
-            klagerFornavn = "null",
-            klagerMellomnavn = "null",
-            klagerEtternavn = "null",
-            klagerOrgnr = "null",
-            klagerOrgnavn = "null",
-            sakenGjelderMellomnavn = "null",
-            sakenGjelderOrgnr = "null",
-            sakenGjelderOrgnavn = "null",
-            sakFagsystemNavn = "null",
-            sakFagsakId = "null",
-            forrigeSaksbehandlerident = "null",
-            forrigeBehandlendeEnhet = "null",
-            avsenderSaksbehandleridentFoersteinstans = "null",
-            avsenderEnhetFoersteinstans = "null",
-            forrigeVedtaksDato = LocalDate.now(),
-            sendtMedunderskriver = LocalDateTime.now(),
             avsluttetAvSaksbehandler = LocalDateTime.now(),
             tildeltSaksbehandlernavn = "null",
             medunderskriverident = "null",
-            medunderskriverNavn = "null",
-            hjemlerNavn = listOf("a", "b"),
             saksdokumenter = listOf(EsSaksdokument(journalpostId = "1", dokumentInfoId = "bc")),
-            saksdokumenterJournalpostId = listOf("a", "|"),
-            saksdokumenterJournalpostIdOgDokumentInfoId = listOf("|", "d"),
             strengtFortrolig = false,
-            vedtakUtfall = "null",
-            vedtakUtfallNavn = "null",
-            vedtakHjemler = listOf("rst", "rsdt"),
-            vedtakHjemlerNavn = listOf("rst", "rsdt"),
+            utfallId = "null",
             sattPaaVentExpires = LocalDate.now(),
             sattPaaVentReason = "null",
             feilregistrert = LocalDateTime.now(),
+            rolIdent = "null",
+            rolStateId = "1",
+
         )
 
         repo.save(esBehandlingWithAllData)
@@ -177,35 +138,23 @@ class ElasticsearchIndexingTest {
 
     }
 
-    private fun klagebehandlingWith(id: String, saksreferanse: String): EsBehandling {
+    private fun klagebehandlingWith(id: String): EsBehandling {
         return EsBehandling(
-            id = id,
-            kildeReferanse = saksreferanse,
+            behandlingId = id,
             tildeltEnhet = "",
-            tema = Tema.OMS.id,
             ytelseId = Ytelse.OMS_OMP.id,
             typeId = Type.KLAGE.id,
             tildeltSaksbehandlerident = null,
             innsendt = null,
-            mottattFoersteinstans = null,
-            mottattKlageinstans = LocalDateTime.now(),
+            sakMottattKaDato = LocalDateTime.now(),
             frist = null,
-            tildelt = null,
-            avsluttet = null,
-            hjemler = listOf(Hjemmel.FTRL_8_35.id),
+            hjemmelIdList = listOf(Hjemmel.FTRL_8_35.id),
             sakenGjelderFnr = "12345678910",
-            sakenGjelderNavn = "Navnet Her",
             egenAnsatt = false,
             fortrolig = false,
-            created = LocalDateTime.now(),
-            modified = LocalDateTime.now(),
-            kilde = "K9",
             status = IKKE_TILDELT,
-            medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
-            sakenGjelderFornavn = "abc",
-            sakenGjelderEtternavn = "def",
-            sakMottattKaDato = LocalDateTime.now(),
-            sakFagsystem = "1",
+            medunderskriverFlytId = MedunderskriverFlyt.IKKE_SENDT.name,
+            fagsystemId = "1",
             sattPaaVent = LocalDate.now(),
             rolIdent = "ROLIDENT",
             rolStateId = "1",

@@ -1,39 +1,21 @@
 {
   "properties": {
-    "avsenderEnhetFoersteinstans": {
-      "type": "keyword"
-    },
-    "avsenderSaksbehandleridentFoersteinstans": {
-      "type": "keyword"
-    },
-    "avsluttet": {
-      "type": "date",
-      "format": "date_time"
-    },
     "avsluttetAvSaksbehandler": {
       "type": "date",
       "format": "date_time"
     },
-    "created": {
-      "type": "date",
-      "format": "date_time"
+    "behandlingId": {
+      "type": "keyword"
     },
     "egenAnsatt": {
       "type": "boolean"
     },
+    "fagsystemId": {
+      "type": "keyword"
+    },
     "feilregistrert": {
       "type": "date",
       "format": "date_time"
-    },
-    "forrigeBehandlendeEnhet": {
-      "type": "keyword"
-    },
-    "forrigeSaksbehandlerident": {
-      "type": "keyword"
-    },
-    "forrigeVedtaksDato": {
-      "type": "date",
-      "format": "date"
     },
     "fortrolig": {
       "type": "boolean"
@@ -42,99 +24,30 @@
       "type": "date",
       "format": "date"
     },
-    "hjemler": {
-      "type": "keyword"
-    },
-    "hjemlerNavn": {
-      "type": "keyword"
-    },
-    "id": {
+    "hjemmelIdList": {
       "type": "keyword"
     },
     "innsendt": {
       "type": "date",
       "format": "date"
     },
-    "kilde": {
-      "type": "keyword"
-    },
-    "kildeReferanse": {
-      "type": "keyword"
-    },
-    "klagerEtternavn": {
-      "type": "keyword"
-    },
-    "klagerFnr": {
-      "type": "keyword"
-    },
-    "klagerFornavn": {
-      "type": "keyword"
-    },
-    "klagerMellomnavn": {
-      "type": "keyword"
-    },
-    "klagerNavn": {
-      "type": "keyword"
-    },
-    "klagerOrgnavn": {
-      "type": "keyword"
-    },
-    "klagerOrgnr": {
-      "type": "keyword"
-    },
-    "medunderskriverFlyt": {
-      "type": "keyword"
-    },
-    "medunderskriverNavn": {
+    "medunderskriverFlytId": {
       "type": "keyword"
     },
     "medunderskriverident": {
       "type": "keyword"
     },
-    "modified": {
-      "type": "date",
-      "format": "date_time"
-    },
-    "mottattFoersteinstans": {
-      "type": "date",
-      "format": "date"
-    },
-    "mottattKlageinstans": {
-      "type": "date",
-      "format": "date_time"
-    },
-    "sakFagsakId": {
+    "rolIdent": {
       "type": "keyword"
     },
-    "sakFagsystem": {
-      "type": "keyword"
-    },
-    "sakFagsystemNavn": {
+    "rolStateId": {
       "type": "keyword"
     },
     "sakMottattKaDato": {
       "type": "date",
       "format": "date_time"
     },
-    "sakenGjelderEtternavn": {
-      "type": "keyword"
-    },
     "sakenGjelderFnr": {
-      "type": "keyword"
-    },
-    "sakenGjelderFornavn": {
-      "type": "keyword"
-    },
-    "sakenGjelderMellomnavn": {
-      "type": "keyword"
-    },
-    "sakenGjelderNavn": {
-      "type": "keyword"
-    },
-    "sakenGjelderOrgnavn": {
-      "type": "keyword"
-    },
-    "sakenGjelderOrgnr": {
       "type": "keyword"
     },
     "saksdokumenter": {
@@ -148,12 +61,6 @@
         }
       }
     },
-    "saksdokumenterJournalpostId": {
-      "type": "keyword"
-    },
-    "saksdokumenterJournalpostIdOgDokumentInfoId": {
-      "type": "keyword"
-    },
     "sattPaaVent": {
       "type": "date",
       "format": "date"
@@ -165,22 +72,11 @@
     "sattPaaVentReason": {
       "type": "keyword"
     },
-    "sendtMedunderskriver": {
-      "type": "date",
-      "format": "date_time"
-    },
     "status": {
       "type": "keyword"
     },
     "strengtFortrolig": {
       "type": "boolean"
-    },
-    "tema": {
-      "type": "keyword"
-    },
-    "tildelt": {
-      "type": "date",
-      "format": "date_time"
     },
     "tildeltEnhet": {
       "type": "keyword"
@@ -191,19 +87,10 @@
     "tildeltSaksbehandlernavn": {
       "type": "keyword"
     },
-    "type": {
+    "typeId": {
       "type": "keyword"
     },
-    "vedtakHjemler": {
-      "type": "keyword"
-    },
-    "vedtakHjemlerNavn": {
-      "type": "keyword"
-    },
-    "vedtakUtfall": {
-      "type": "keyword"
-    },
-    "vedtakUtfallNavn": {
+    "utfallId": {
       "type": "keyword"
     },
     "ytelseId": {
