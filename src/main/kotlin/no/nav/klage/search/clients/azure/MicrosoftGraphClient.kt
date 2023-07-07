@@ -28,8 +28,6 @@ class MicrosoftGraphClient(
             "onPremisesSamAccountName,displayName,givenName,surname,mail,officeLocation,userPrincipalName,id,jobTitle,streetAddress"
 
         private const val slimUserSelect = "userPrincipalName,onPremisesSamAccountName,displayName"
-
-        private const val groupMemberSelect = "id,mail,onPremisesSamAccountName,displayName"
     }
 
     //TODO: navIdent er bare så cachen skal ha en nøkkel. Det er mulig å dra nøkkelen ut av responsen også tror jeg, men det får vi bruke tid på en annen gang..

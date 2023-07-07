@@ -3,7 +3,6 @@ package no.nav.klage.search.clients.egenansatt
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import no.nav.klage.search.config.PartitionFinder
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getSecureLogger
 import org.apache.kafka.clients.consumer.ConsumerRecord

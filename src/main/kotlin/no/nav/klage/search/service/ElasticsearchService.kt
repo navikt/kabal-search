@@ -215,7 +215,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                     ?: throw RuntimeException("tildeltSaksbehandlerident is null. Can't happen"),
                 navn = it.content.tildeltSaksbehandlernavn ?: "Navn mangler"
             )
-        }.toSortedSet(compareBy<Saksbehandler> { it.navn.split(" ").last() })
+        }.toSortedSet(compareBy { it.navn.split(" ").last() })
     }
 
     open fun countIkkeTildelt(ytelse: Ytelse, type: Type): Long {
@@ -275,16 +275,22 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
 
     private fun SearchSourceBuilder.addSorting(criteria: SortableSearchCriteria) {
         fun sortField(criteria: SortableSearchCriteria): String =
-            if (criteria.sortField == SortField.MOTTATT) {
-                "sakMottattKaDato"
-            } else if (criteria.sortField == SortField.PAA_VENT_FROM) {
-                "sattPaaVent"
-            } else if (criteria.sortField == SortField.PAA_VENT_TO) {
-                "sattPaaVentExpires"
-            } else if (criteria.sortField == SortField.AVSLUTTET_AV_SAKSBEHANDLER) {
-                "avsluttetAvSaksbehandler"
-            } else {
-                "frist"
+            when (criteria.sortField) {
+                SortField.MOTTATT -> {
+                    "sakMottattKaDato"
+                }
+                SortField.PAA_VENT_FROM -> {
+                    "sattPaaVent"
+                }
+                SortField.PAA_VENT_TO -> {
+                    "sattPaaVentExpires"
+                }
+                SortField.AVSLUTTET_AV_SAKSBEHANDLER -> {
+                    "avsluttetAvSaksbehandler"
+                }
+                else -> {
+                    "frist"
+                }
             }
 
         fun mapOrder(criteria: SortableSearchCriteria): SortOrder {

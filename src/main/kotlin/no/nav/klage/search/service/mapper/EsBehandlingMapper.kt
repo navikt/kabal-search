@@ -2,7 +2,6 @@ package no.nav.klage.search.service.mapper
 
 
 import no.nav.klage.search.clients.egenansatt.EgenAnsattService
-import no.nav.klage.search.clients.ereg.EregClient
 import no.nav.klage.search.clients.klageendret.BehandlingSkjemaV2
 import no.nav.klage.search.clients.pdl.PdlFacade
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
@@ -18,7 +17,6 @@ class EsBehandlingMapper(
     private val pdlFacade: PdlFacade,
     private val egenAnsattService: EgenAnsattService,
     private val saksbehandlerService: SaksbehandlerService,
-    private val eregClient: EregClient
 ) {
 
     companion object {

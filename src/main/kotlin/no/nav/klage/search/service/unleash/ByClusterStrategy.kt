@@ -17,7 +17,7 @@ class ByClusterStrategy(@Value("\${nais.cluster.name}") val currentCluster: Stri
         getEnabledClusters(parameters)?.any { isCurrentClusterEnabled(it) } ?: false
 
     private fun getEnabledClusters(parameters: MutableMap<String, String>) =
-        parameters.get(PARAM)?.split(',')
+        parameters[PARAM]?.split(',')
 
     private fun isCurrentClusterEnabled(cluster: String): Boolean {
         return currentCluster == cluster

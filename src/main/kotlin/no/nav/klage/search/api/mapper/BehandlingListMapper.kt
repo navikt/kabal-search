@@ -5,7 +5,6 @@ import no.nav.klage.kodeverk.MedunderskriverFlyt
 import no.nav.klage.search.api.view.BehandlingView
 import no.nav.klage.search.api.view.FnrSearchResponseWithoutPerson
 import no.nav.klage.search.api.view.SattPaaVent
-import no.nav.klage.search.clients.pdl.Sivilstand
 import no.nav.klage.search.domain.elasticsearch.EsAnonymBehandling
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import no.nav.klage.search.domain.personsoek.PersonSearchResponse
@@ -25,15 +24,14 @@ class BehandlingListMapper {
         return FnrSearchResponseWithoutPerson(
             aapneBehandlinger = mapEsBehandlingerToListView(behandlinger.filter { it.feilregistrert == null && it.avsluttetAvSaksbehandler == null && it.sattPaaVent == null }),
             avsluttedeBehandlinger = mapEsBehandlingerToListView(behandlinger.filter { it.feilregistrert == null && it.avsluttetAvSaksbehandler != null }),
-            feilregistrerteBehandlinger = mapEsBehandlingerToListView(behandlinger.filter { it.feilregistrert != null }.sortedByDescending { it.feilregistrert }),
+            feilregistrerteBehandlinger = mapEsBehandlingerToListView(behandlinger.filter { it.feilregistrert != null }
+                .sortedByDescending { it.feilregistrert }),
             paaVentBehandlinger = mapEsBehandlingerToListView(behandlinger.filter { it.feilregistrert == null && it.avsluttetAvSaksbehandler == null && it.sattPaaVent != null }),
         )
     }
 
     fun mapEsBehandlingerToBehandlingView(
         esBehandlinger: List<EsBehandling>,
-        visePersonData: Boolean,
-        sivilstand: Sivilstand? = null
     ): List<BehandlingView> {
         return esBehandlinger.map { esBehandling ->
             BehandlingView(

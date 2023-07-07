@@ -1,7 +1,6 @@
 package no.nav.klage.search.service
 
 import no.nav.klage.search.clients.klageendret.BehandlingSkjemaV2
-import no.nav.klage.search.clients.klageendret.KlagebehandlingSkjemaV1
 import no.nav.klage.search.service.mapper.EsBehandlingMapper
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getSecureLogger

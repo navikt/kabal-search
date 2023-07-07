@@ -21,7 +21,6 @@ class FeatureToggleConfig {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        const val KLAGE_GENERELL_TILGANG = "klage.generellTilgang"
     }
 
     @Value("\${spring.application.name}")

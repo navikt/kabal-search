@@ -24,8 +24,6 @@ abstract class SearchRule
 
 class ContainsSearchRule(val contains: String) : SearchRule()
 
-class EqualsSearchRule(val equals: String, val caseSensitive: Boolean = false) : SearchRule()
-
 fun soekPersonNavnContainsQuery(searchString: String): SoekPersonGraphsqlQuery {
     val query = SoekPersonGraphsqlQuery::class.java.getResource("/pdl/soekPerson.graphql")?.cleanForGraphql() ?:
         throw RuntimeException("Query not found")
