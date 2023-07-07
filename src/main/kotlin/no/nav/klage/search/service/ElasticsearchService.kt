@@ -1,6 +1,7 @@
 package no.nav.klage.search.service
 
 import no.nav.klage.kodeverk.MedunderskriverFlyt
+import no.nav.klage.kodeverk.ROLState
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.domain.*
@@ -86,6 +87,18 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits
     }
 
+    open fun findLedigeROLOppgaverByCriteria(criteria: LedigeOppgaverSearchCriteria): BehandlingerSearchHits {
+        val searchSourceBuilder = SearchSourceBuilder()
+        searchSourceBuilder.query(criteria.toROLEsQuery())
+        searchSourceBuilder.addPaging(criteria)
+        searchSourceBuilder.addSorting(criteria)
+        searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
+
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder)
+        logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
+        return searchHits
+    }
+
     open fun findOppgaveByBehandlingId(criteria: BehandlingIdSearchCriteria): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
@@ -96,7 +109,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits
     }
 
-    open fun findSaksbehandlersFerdigstilteOppgaverByCriteria(criteria: SaksbehandlersFerdigstilteOppgaverSearchCriteria): BehandlingerSearchHits {
+    open fun findSaksbehandlersFerdigstilteOppgaverByCriteria(criteria: FerdigstilteOppgaverSearchCriteria): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
@@ -108,7 +121,19 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits
     }
 
-    open fun findSaksbehandlersUferdigeOppgaverByCriteria(criteria: SaksbehandlersUferdigeOppgaverSearchCriteria): BehandlingerSearchHits {
+    open fun findROLsFerdigstilteOppgaverByCriteria(criteria: FerdigstilteOppgaverSearchCriteria): BehandlingerSearchHits {
+        val searchSourceBuilder = SearchSourceBuilder()
+        searchSourceBuilder.query(criteria.toROLEsQuery())
+        searchSourceBuilder.addPaging(criteria)
+        searchSourceBuilder.addSorting(criteria)
+        searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
+
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder)
+        logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
+        return searchHits
+    }
+
+    open fun findSaksbehandlersUferdigeOppgaverByCriteria(criteria: UferdigeOppgaverSearchCriteria): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
@@ -120,7 +145,19 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits
     }
 
-    open fun findSaksbehandlersOppgaverPaaVentByCriteria(criteria: SaksbehandlersOppgaverPaaVentSearchCriteria): BehandlingerSearchHits {
+    open fun findROLsUferdigeOppgaverByCriteria(criteria: UferdigeOppgaverSearchCriteria): BehandlingerSearchHits {
+        val searchSourceBuilder = SearchSourceBuilder()
+        searchSourceBuilder.query(criteria.toROLEsQuery())
+        searchSourceBuilder.addPaging(criteria)
+        searchSourceBuilder.addSorting(criteria)
+        searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
+
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder)
+        logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
+        return searchHits
+    }
+
+    open fun findSaksbehandlersOppgaverPaaVentByCriteria(criteria: OppgaverPaaVentSearchCriteria): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
@@ -304,6 +341,20 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return baseQuery
     }
 
+    private fun LedigeOppgaverSearchCriteria.toROLEsQuery(): QueryBuilder {
+        logger.debug("Search criteria: {}", this)
+        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
+        baseQuery.addSecurityFilters(this)
+        baseQuery.addBasicFilters(this)
+        baseQuery.mustNot(beAvsluttetAvSaksbehandler())
+        baseQuery.must(beTildeltSaksbehandler())
+        baseQuery.mustNot(beFeilregistrert())
+        baseQuery.must(beSentToROL())
+        baseQuery.mustNot(beAssignedToROL())
+        logger.debug("Making search request with query {}", baseQuery.toString())
+        return baseQuery
+    }
+
     private fun CountLedigeOppgaverMedUtgaattFristSearchCriteria.toEsQuery(): QueryBuilder {
         logger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
@@ -317,7 +368,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return baseQuery
     }
 
-    private fun SaksbehandlersFerdigstilteOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
+    private fun FerdigstilteOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
         logger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
@@ -325,7 +376,21 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         //baseQuery.must(beAvsluttetAvSaksbehandler())
         baseQuery.must(beAvsluttetAvSaksbehandlerEtter(ferdigstiltFom))
         baseQuery.must(beAvsluttetAvSaksbehandlerFoer(ferdigstiltTom))
-        baseQuery.must(beTildeltSaksbehandler(saksbehandler))
+        baseQuery.must(beTildeltSaksbehandler(navIdent))
+        baseQuery.mustNot(beFeilregistrert())
+
+        logger.debug("Making search request with query {}", baseQuery.toString())
+        return baseQuery
+    }
+
+    private fun FerdigstilteOppgaverSearchCriteria.toROLEsQuery(): QueryBuilder {
+        logger.debug("Search criteria: {}", this)
+        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
+        baseQuery.addSecurityFilters(this)
+        baseQuery.addBasicFilters(this)
+        baseQuery.must(beAvsluttetAvSaksbehandlerEtter(ferdigstiltFom))
+        baseQuery.must(beAvsluttetAvSaksbehandlerFoer(ferdigstiltTom))
+        baseQuery.must(beAssignedToROL(navIdent = navIdent))
         baseQuery.mustNot(beFeilregistrert())
 
         logger.debug("Making search request with query {}", baseQuery.toString())
@@ -342,28 +407,43 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return baseQuery
     }
 
-    private fun SaksbehandlersUferdigeOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
+    private fun UferdigeOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
         logger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
         baseQuery.mustNot(beSattPaaVent())
-        baseQuery.must(beTildeltSaksbehandlerOrMedunderskriver(saksbehandler))
+        baseQuery.must(beTildeltSaksbehandlerOrMedunderskriver(navIdent))
         baseQuery.mustNot(beFeilregistrert())
 
         logger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
-    private fun SaksbehandlersOppgaverPaaVentSearchCriteria.toEsQuery(): QueryBuilder {
+    private fun UferdigeOppgaverSearchCriteria.toROLEsQuery(): QueryBuilder {
+        logger.debug("Search criteria: {}", this)
+        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
+        baseQuery.addSecurityFilters(this)
+        baseQuery.addBasicFilters(this)
+        baseQuery.mustNot(beAvsluttetAvSaksbehandler())
+        baseQuery.mustNot(beSattPaaVent())
+        baseQuery.mustNot(beFeilregistrert())
+        baseQuery.must(beSentToROL())
+        baseQuery.must(beAssignedToROL(navIdent = navIdent))
+
+        logger.debug("Making search request with query {}", baseQuery.toString())
+        return baseQuery
+    }
+
+    private fun OppgaverPaaVentSearchCriteria.toEsQuery(): QueryBuilder {
         logger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
         baseQuery.must(beSattPaaVent())
-        baseQuery.must(beTildeltSaksbehandlerOrMedunderskriver(saksbehandler))
+        baseQuery.must(beTildeltSaksbehandlerOrMedunderskriver(navIdent))
         baseQuery.mustNot(beFeilregistrert())
 
         logger.debug("Making search request with query {}", baseQuery.toString())
@@ -617,6 +697,21 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                 .format(ISO8601)
         )
     }
+
+    private fun beSentToROL(): BoolQueryBuilder {
+        val queryBeSentToROL = QueryBuilders.boolQuery()
+        queryBeSentToROL.must(
+            QueryBuilders.termQuery(
+                "rolStateId",
+                ROLState.OVERSENDT_TIL_ROL.id
+            )
+        )
+        return queryBeSentToROL
+    }
+
+    private fun beAssignedToROL() = QueryBuilders.existsQuery("rolIdent")
+
+    private fun beAssignedToROL(navIdent: String) = QueryBuilders.termQuery("rolIdent", navIdent)
 
     private fun beAvsluttetAvSaksbehandler() = QueryBuilders.existsQuery("avsluttetAvSaksbehandler")
 

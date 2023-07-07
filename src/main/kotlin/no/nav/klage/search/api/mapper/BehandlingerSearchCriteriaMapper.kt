@@ -37,14 +37,14 @@ class BehandlingerSearchCriteriaMapper(
 
     //-- saksbehandlers oppgaver:
 
-    fun toSaksbehandlersFerdigstilteOppgaverSearchCriteria(
+    fun toFerdigstilteOppgaverSearchCriteria(
         navIdent: String,
         queryParams: MineFerdigstilteOppgaverQueryParams,
-    ) = SaksbehandlersFerdigstilteOppgaverSearchCriteria(
+    ) = FerdigstilteOppgaverSearchCriteria(
         typer = queryParams.typer.map { Type.of(it) },
         ytelser = queryParams.ytelser.map { Ytelse.of(it) },
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
-        saksbehandler = navIdent,
+        navIdent = navIdent,
         ferdigstiltFom = mapFerdigstiltFom(queryParams),
         ferdigstiltTom = queryParams.ferdigstiltTo ?: LocalDate.now(),
         sortField = mapSortField(queryParams.sortering),
@@ -56,14 +56,14 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
     )
 
-    fun toSaksbehandlersUferdigeOppgaverSearchCriteria(
+    fun toUferdigeOppgaverSearchCriteria(
         navIdent: String,
         queryParams: MineUferdigeOppgaverQueryParams,
-    ) = SaksbehandlersUferdigeOppgaverSearchCriteria(
+    ) = UferdigeOppgaverSearchCriteria(
         typer = queryParams.typer.map { Type.of(it) },
         ytelser = queryParams.ytelser.map { Ytelse.of(it) },
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
-        saksbehandler = navIdent,
+        navIdent = navIdent,
         sortField = mapSortField(queryParams.sortering),
         order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
         offset = 0,
@@ -73,14 +73,14 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
     )
 
-    fun toSaksbehandlersOppgaverPaaVentSearchCriteria(
+    fun toOppgaverPaaVentSearchCriteria(
         navIdent: String,
         queryParams: MineOppgaverPaaVentQueryParams,
-    ) = SaksbehandlersOppgaverPaaVentSearchCriteria(
+    ) = OppgaverPaaVentSearchCriteria(
         typer = queryParams.typer.map { Type.of(it) },
         ytelser = queryParams.ytelser.map { Ytelse.of(it) },
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
-        saksbehandler = navIdent,
+        navIdent = navIdent,
         sortField = mapSortField(queryParams.sortering),
         order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
         offset = 0,
