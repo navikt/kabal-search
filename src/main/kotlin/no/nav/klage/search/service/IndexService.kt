@@ -20,10 +20,6 @@ class IndexService(
         private val securelogger = getSecureLogger()
     }
 
-    fun deleteAllBehandlinger() {
-        elasticsearchService.deleteAll()
-    }
-
     fun recreateIndex() {
         elasticsearchService.recreateIndex()
     }

@@ -2,6 +2,7 @@ package no.nav.klage.search.clients.egenansatt
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getSecureLogger
@@ -21,7 +22,17 @@ class EgenAnsattKafkaConsumer(
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
         private val secureLogger = getSecureLogger()
-        private val mapper = ObjectMapper().registerModule(KotlinModule()).registerModule(JavaTimeModule())
+        private val mapper = ObjectMapper().registerModule(
+            KotlinModule.Builder()
+                .withReflectionCacheSize(512)
+                .configure(KotlinFeature.NullToEmptyCollection, false)
+                .configure(KotlinFeature.NullToEmptyMap, false)
+                .configure(KotlinFeature.NullIsSameAsDefault, false)
+                .configure(KotlinFeature.SingletonSupport, false)
+                .configure(KotlinFeature.StrictNullChecks, false)
+                .
+                build()
+        ).registerModule(JavaTimeModule())
     }
 
     @KafkaListener(

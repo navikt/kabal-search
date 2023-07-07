@@ -106,7 +106,6 @@ class OppgaverListController(
 
         val result = behandlingListMapper.mapEsBehandlingerToBehandlingView(
             esBehandlinger = esResponse.searchHits.map { it.content },
-            visePersonData = false,
         )
 
         return result.first()

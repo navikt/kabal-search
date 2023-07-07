@@ -613,10 +613,6 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         }
     }
 
-    fun deleteAll() {
-        esBehandlingRepository.deleteAll()
-    }
-
     open fun statistikkQuery(): KlageStatistikk {
 
         val baseQueryInnsendtOgAvsluttet: QueryBuilder = QueryBuilders.matchAllQuery()

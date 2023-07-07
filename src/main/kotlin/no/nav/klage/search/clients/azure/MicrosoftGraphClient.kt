@@ -65,10 +65,10 @@ class MicrosoftGraphClient(
 
         return data.flatMap {
             it.value ?: emptyList()
-        }.mapNotNull {
-            secureLogger.debug("Display name: $it")
+        }.associate {
+            secureLogger.debug("Display name: {}", it)
             it.onPremisesSamAccountName to it.displayName
-        }.toMap()
+        }
     }
 
     private fun getDisplayNames(navIdents: String): Mono<AzureSlimUserList> {
