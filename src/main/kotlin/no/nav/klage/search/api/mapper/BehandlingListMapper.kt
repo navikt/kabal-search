@@ -49,7 +49,6 @@ class BehandlingListMapper {
                 medunderskriverFlyt = MedunderskriverFlyt.of(esBehandling.medunderskriverFlytId),
                 medunderskriverFlytId = esBehandling.medunderskriverFlytId,
                 tildeltSaksbehandlerident = esBehandling.tildeltSaksbehandlerident,
-                tildeltSaksbehandlerNavn = esBehandling.tildeltSaksbehandlernavn,
                 utfall = esBehandling.utfallId,
                 utfallId = esBehandling.utfallId,
                 avsluttetAvSaksbehandlerDate = esBehandling.avsluttetAvSaksbehandler?.toLocalDate(),
