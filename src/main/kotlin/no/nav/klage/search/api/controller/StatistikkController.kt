@@ -15,6 +15,7 @@ class StatistikkController(private val elasticsearchService: ElasticsearchServic
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
+    //TODO: Kan denne fjernes?
     @Unprotected
     @GetMapping("/statistikk/klagebehandlinger", produces = ["application/json"])
     fun getKlageStatistikk(): KlageStatistikk {

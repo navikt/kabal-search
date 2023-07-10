@@ -248,17 +248,17 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
 
     private fun countByStatusYtelseAndType(status: EsStatus, ytelse: Ytelse, type: Type): Long {
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
-        baseQuery.must(QueryBuilders.termQuery("status", status))
-        baseQuery.must(QueryBuilders.termQuery("ytelseId", ytelse.id))
-        baseQuery.must(QueryBuilders.termQuery("typeId", type.id))
+        baseQuery.must(QueryBuilders.termQuery(EsBehandling::status.name, status))
+        baseQuery.must(QueryBuilders.termQuery(EsBehandling::ytelseId.name, ytelse.id))
+        baseQuery.must(QueryBuilders.termQuery(EsBehandling::typeId.name, type.id))
         return esBehandlingRepository.count(baseQuery)
     }
 
     open fun countAntallSaksdokumenterIAvsluttedeBehandlingerMedian(ytelse: Ytelse, type: Type): Double {
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
-        baseQuery.must(QueryBuilders.termQuery("status", FULLFOERT))
-        baseQuery.must(QueryBuilders.termQuery("ytelseId", ytelse.id))
-        baseQuery.must(QueryBuilders.termQuery("typeId", type.id))
+        baseQuery.must(QueryBuilders.termQuery(EsBehandling::status.name, FULLFOERT))
+        baseQuery.must(QueryBuilders.termQuery(EsBehandling::ytelseId.name, ytelse.id))
+        baseQuery.must(QueryBuilders.termQuery(EsBehandling::typeId.name, type.id))
         val searchHits = esBehandlingRepository.search(baseQuery)
         val saksdokumenterPerAvsluttetBehandling = searchHits.map { e -> e.content }
             .map { e ->
@@ -277,19 +277,23 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         fun sortField(criteria: SortableSearchCriteria): String =
             when (criteria.sortField) {
                 SortField.MOTTATT -> {
-                    "sakMottattKaDato"
+                    EsBehandling::sakMottattKaDato.name
                 }
+
                 SortField.PAA_VENT_FROM -> {
-                    "sattPaaVent"
+                    EsBehandling::sattPaaVent.name
                 }
+
                 SortField.PAA_VENT_TO -> {
-                    "sattPaaVentExpires"
+                    EsBehandling::sattPaaVentExpires.name
                 }
+
                 SortField.AVSLUTTET_AV_SAKSBEHANDLER -> {
-                    "avsluttetAvSaksbehandler"
+                    EsBehandling::avsluttetAvSaksbehandler.name
                 }
+
                 else -> {
-                    "frist"
+                    EsBehandling::frist.name
                 }
             }
 
@@ -327,7 +331,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.addSecurityFilters(this)
 
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
-        baseQuery.must(QueryBuilders.termQuery("tildeltEnhet", enhet))
+        baseQuery.must(QueryBuilders.termQuery(EsBehandling::tildeltEnhet.name, enhet))
         baseQuery.must(beTildeltSaksbehandler())
         baseQuery.mustNot(beFeilregistrert())
 
@@ -515,7 +519,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
             val innerQueryType = QueryBuilders.boolQuery()
             this.must(innerQueryType)
             basicSearchCriteria.typer.forEach {
-                innerQueryType.should(QueryBuilders.termQuery("typeId", it.id))
+                innerQueryType.should(QueryBuilders.termQuery(EsBehandling::typeId.name, it.id))
             }
         }
 
@@ -523,7 +527,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
             val innerQueryYtelse = QueryBuilders.boolQuery()
             this.must(innerQueryYtelse)
             basicSearchCriteria.ytelser.forEach {
-                innerQueryYtelse.should(QueryBuilders.termQuery("ytelseId", it.id))
+                innerQueryYtelse.should(QueryBuilders.termQuery(EsBehandling::ytelseId.name, it.id))
             }
         }
 
@@ -531,7 +535,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
             val innerQueryHjemler = QueryBuilders.boolQuery()
             this.must(innerQueryHjemler)
             basicSearchCriteria.hjemler.forEach {
-                innerQueryHjemler.should(QueryBuilders.termQuery("hjemmelIdList", it.id))
+                innerQueryHjemler.should(QueryBuilders.termQuery(EsBehandling::hjemmelIdList.name, it.id))
             }
         }
     }
@@ -549,23 +553,23 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                 //Skipper de normale, altså de som ikke har noe.
                 //fortrolig og strengt fortrolig trumfer egen ansatt
                 //tolker dette som kun egen ansatt som også er strengt fortrolig eller fortrolig
-                filterQuery.should(QueryBuilders.termQuery("strengtFortrolig", true))
-                filterQuery.should(QueryBuilders.termQuery("fortrolig", true))
+                filterQuery.should(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
+                filterQuery.should(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
             }
 
             !kanBehandleEgenAnsatt && kanBehandleFortrolig && kanBehandleStrengtFortrolig -> {
                 //Case 2
                 //Er i praksis det samme som case 1
-                filterQuery.should(QueryBuilders.termQuery("strengtFortrolig", true))
-                filterQuery.should(QueryBuilders.termQuery("fortrolig", true))
+                filterQuery.should(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
+                filterQuery.should(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
             }
 
             kanBehandleEgenAnsatt && !kanBehandleFortrolig && kanBehandleStrengtFortrolig -> {
                 //Case 3
                 //tolker dette som kun egen ansatt som også er strengt fortrolig
                 //Skipper de normale, altså de som ikke har noe.
-                filterQuery.must(QueryBuilders.termQuery("strengtFortrolig", true))
-                filterQuery.mustNot(QueryBuilders.termQuery("fortrolig", true))
+                filterQuery.must(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
+                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
             }
 
             kanBehandleEgenAnsatt && kanBehandleFortrolig && !kanBehandleStrengtFortrolig -> {
@@ -573,14 +577,14 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                 //Skal inkludere de normale
                 //Skal inkludere egen ansatt
                 //Skal inkludere fortrolig
-                filterQuery.mustNot(QueryBuilders.termQuery("strengtFortrolig", true))
+                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
             }
 
             !kanBehandleEgenAnsatt && !kanBehandleFortrolig && kanBehandleStrengtFortrolig -> {
                 //Case 5.
                 //Er i praksis det samme som case 3. Inkluderer egen ansatte som også har strengt fortrolig, strengt fortrolig trumfer egen ansatt
-                filterQuery.must(QueryBuilders.termQuery("strengtFortrolig", true))
-                filterQuery.mustNot(QueryBuilders.termQuery("fortrolig", true))
+                filterQuery.must(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
+                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
             }
 
             !kanBehandleEgenAnsatt && kanBehandleFortrolig && !kanBehandleStrengtFortrolig -> {
@@ -589,26 +593,26 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                 //Skal inkludere fortrolig
                 //Skal inkludere fortrolige som også er egen ansatt, men ikke egen ansatte som ikke er fortrolige
                 val egenAnsattAndNotFortrolig = QueryBuilders.boolQuery()
-                egenAnsattAndNotFortrolig.must(QueryBuilders.termQuery("egenAnsatt", true))
-                egenAnsattAndNotFortrolig.mustNot(QueryBuilders.termQuery("fortrolig", true))
+                egenAnsattAndNotFortrolig.must(QueryBuilders.termQuery(EsBehandling::egenAnsatt.name, true))
+                egenAnsattAndNotFortrolig.mustNot(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
 
                 filterQuery.mustNot(egenAnsattAndNotFortrolig)
-                filterQuery.mustNot(QueryBuilders.termQuery("strengtFortrolig", true))
+                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
             }
 
             kanBehandleEgenAnsatt && !kanBehandleFortrolig && !kanBehandleStrengtFortrolig -> {
                 //Case 7
                 //Skal inkludere de normale
                 //Skal inkludere egen ansatt
-                filterQuery.mustNot(QueryBuilders.termQuery("strengtFortrolig", true))
-                filterQuery.mustNot(QueryBuilders.termQuery("fortrolig", true))
+                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
+                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
             }
 
             !kanBehandleEgenAnsatt && !kanBehandleFortrolig && !kanBehandleStrengtFortrolig -> {
                 //Case 8
-                filterQuery.mustNot(QueryBuilders.termQuery("strengtFortrolig", true))
-                filterQuery.mustNot(QueryBuilders.termQuery("fortrolig", true))
-                filterQuery.mustNot(QueryBuilders.termQuery("egenAnsatt", true))
+                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
+                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
+                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::egenAnsatt.name, true))
             }
         }
     }
@@ -623,17 +627,22 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
 
         val innsendtOgAvsluttetAggs = searchHitsInnsendtOgAvsluttet.aggregations
         val sumInnsendtYesterday =
-            innsendtOgAvsluttetAggs!!.get<ParsedDateRange>("innsendt_yesterday").buckets.firstOrNull()?.docCount ?: 0
+            innsendtOgAvsluttetAggs!!.get<ParsedDateRange>(DateRangeWithField.INNSENDT_YESTERDAY.name).buckets.firstOrNull()?.docCount
+                ?: 0
         val sumInnsendtLastSevenDays =
-            innsendtOgAvsluttetAggs.get<ParsedDateRange>("innsendt_last7days").buckets.firstOrNull()?.docCount ?: 0
+            innsendtOgAvsluttetAggs.get<ParsedDateRange>(DateRangeWithField.INNSENDT_LAST7DAYS.name).buckets.firstOrNull()?.docCount
+                ?: 0
         val sumInnsendtLastThirtyDays =
-            innsendtOgAvsluttetAggs.get<ParsedDateRange>("innsendt_last30days").buckets.firstOrNull()?.docCount ?: 0
+            innsendtOgAvsluttetAggs.get<ParsedDateRange>(DateRangeWithField.INNSENDT_LAST30DAYS.name).buckets.firstOrNull()?.docCount
+                ?: 0
         val sumAvsluttetYesterday =
-            innsendtOgAvsluttetAggs.get<ParsedDateRange>("avsluttet_yesterday").buckets.firstOrNull()?.docCount ?: 0
+            innsendtOgAvsluttetAggs.get<ParsedDateRange>(DateRangeWithField.AVSLUTTET_YESTERDAY.name).buckets.firstOrNull()?.docCount
+                ?: 0
         val sumAvsluttetLastSevenDays =
-            innsendtOgAvsluttetAggs.get<ParsedDateRange>("avsluttet_last7days").buckets.firstOrNull()?.docCount ?: 0
+            innsendtOgAvsluttetAggs.get<ParsedDateRange>(DateRangeWithField.AVSLUTTET_LAST7DAYS.name).buckets.firstOrNull()?.docCount
+                ?: 0
         val sumAvsluttetLastThirtyDays =
-            innsendtOgAvsluttetAggs.get<ParsedDateRange>("avsluttet_last30days").buckets.firstOrNull()?.docCount
+            innsendtOgAvsluttetAggs.get<ParsedDateRange>(DateRangeWithField.AVSLUTTET_LAST30DAYS.name).buckets.firstOrNull()?.docCount
                 ?: 0
 
         val baseQueryOverFrist: BoolQueryBuilder = QueryBuilders.boolQuery()
@@ -643,11 +652,11 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         val searchHitsOverFrist =
             esBehandlingRepository.search(baseQueryOverFrist, aggregationsForOverFrist)
         val sumOverFrist =
-            searchHitsOverFrist.aggregations!!.get<ParsedDateRange>("over_frist").buckets.firstOrNull()?.docCount
+            searchHitsOverFrist.aggregations!!.get<ParsedDateRange>(DateRangeWithField.OVER_FRIST.name).buckets.firstOrNull()?.docCount
                 ?: 0
-        searchHitsOverFrist.aggregations.get<ParsedDateRange>("over_frist").buckets.forEach {
-            logger.debug("from clause in over_frist is ${it.from}")
-            logger.debug("to clause in over_frist is ${it.to}")
+        searchHitsOverFrist.aggregations.get<ParsedDateRange>(DateRangeWithField.OVER_FRIST.name).buckets.forEach {
+            logger.debug("from clause in over_frist is {}", it.from)
+            logger.debug("to clause in over_frist is {}", it.to)
         }
         val sumUbehandlede = searchHitsOverFrist.totalHits
         return KlageStatistikk(
@@ -664,39 +673,18 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
 
     private fun addAggregationsForOverFrist(): List<AggregationBuilder> {
         return listOf(
-            AggregationBuilders.dateRange("over_frist").field("frist")
-                .timeZone(ZoneId.of(ZONEID_UTC))
-                .addUnboundedTo("now/d")
-                .format(ISO8601)
+            DateRangeWithField.OVER_FRIST.createUnboundedToAggregationBuilder(),
         )
     }
 
     private fun addAggregationsForInnsendtAndAvsluttet(): List<AggregationBuilder> {
         return listOf(
-            AggregationBuilders.dateRange("innsendt_yesterday").field("innsendt")
-                .timeZone(ZoneId.of(ZONEID_UTC))
-                .addRange("now-1d/d", "now/d")
-                .format(ISO8601),
-            AggregationBuilders.dateRange("innsendt_last7days").field("innsendt")
-                .timeZone(ZoneId.of(ZONEID_UTC))
-                .addRange("now-7d/d", "now/d")
-                .format(ISO8601),
-            AggregationBuilders.dateRange("innsendt_last30days").field("innsendt")
-                .timeZone(ZoneId.of(ZONEID_UTC))
-                .addRange("now-30d/d", "now/d")
-                .format(ISO8601),
-            AggregationBuilders.dateRange("avsluttet_yesterday").field("avsluttetAvSaksbehandler")
-                .timeZone(ZoneId.of(ZONEID_UTC))
-                .addRange("now-1d/d", "now/d")
-                .format(ISO8601),
-            AggregationBuilders.dateRange("avsluttet_last7days").field("avsluttetAvSaksbehandler")
-                .timeZone(ZoneId.of(ZONEID_UTC))
-                .addRange("now-7d/d", "now/d")
-                .format(ISO8601),
-            AggregationBuilders.dateRange("avsluttet_last30days").field("avsluttetAvSaksbehandler")
-                .timeZone(ZoneId.of(ZONEID_UTC))
-                .addRange("now-30d/d", "now/d")
-                .format(ISO8601)
+            DateRangeWithField.INNSENDT_YESTERDAY.createBoundedAggregationBuilder(),
+            DateRangeWithField.INNSENDT_LAST7DAYS.createBoundedAggregationBuilder(),
+            DateRangeWithField.INNSENDT_LAST30DAYS.createBoundedAggregationBuilder(),
+            DateRangeWithField.AVSLUTTET_YESTERDAY.createBoundedAggregationBuilder(),
+            DateRangeWithField.AVSLUTTET_LAST7DAYS.createBoundedAggregationBuilder(),
+            DateRangeWithField.AVSLUTTET_LAST30DAYS.createBoundedAggregationBuilder(),
         )
     }
 
@@ -704,51 +692,54 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         val queryBeSentToROL = QueryBuilders.boolQuery()
         queryBeSentToROL.must(
             QueryBuilders.termQuery(
-                "rolStateId",
+                EsBehandling::rolStateId.name,
                 ROLState.OVERSENDT_TIL_ROL.id
             )
         )
         return queryBeSentToROL
     }
 
-    private fun beAssignedToROL() = QueryBuilders.existsQuery("rolIdent")
+    private fun beAssignedToROL() = QueryBuilders.existsQuery(EsBehandling::rolIdent.name)
 
-    private fun beAssignedToROL(navIdent: String) = QueryBuilders.termQuery("rolIdent", navIdent)
+    private fun beAssignedToROL(navIdent: String) = QueryBuilders.termQuery(EsBehandling::rolIdent.name, navIdent)
 
-    private fun beAvsluttetAvSaksbehandler() = QueryBuilders.existsQuery("avsluttetAvSaksbehandler")
+    private fun beAvsluttetAvSaksbehandler() = QueryBuilders.existsQuery(EsBehandling::avsluttetAvSaksbehandler.name)
 
-    private fun beFeilregistrert() = QueryBuilders.existsQuery("feilregistrert")
+    private fun beFeilregistrert() = QueryBuilders.existsQuery(EsBehandling::feilregistrert.name)
 
-    private fun beSattPaaVent() = QueryBuilders.existsQuery("sattPaaVent")
+    private fun beSattPaaVent() = QueryBuilders.existsQuery(EsBehandling::sattPaaVent.name)
 
-    private fun beTildeltSaksbehandler() = QueryBuilders.existsQuery("tildeltSaksbehandlerident")
+    private fun beTildeltSaksbehandler() = QueryBuilders.existsQuery(EsBehandling::tildeltSaksbehandlerident.name)
 
     private fun beAvsluttetAvSaksbehandlerEtter(ferdigstiltFom: LocalDate) =
-        QueryBuilders.rangeQuery("avsluttetAvSaksbehandler").gte(ferdigstiltFom).format(ISO8601).timeZone(ZONEID_UTC)
+        QueryBuilders.rangeQuery(EsBehandling::avsluttetAvSaksbehandler.name).gte(ferdigstiltFom).format(ISO8601)
+            .timeZone(ZONEID_UTC)
 
     private fun beAvsluttetAvSaksbehandlerFoer(ferdigstiltTom: LocalDate) =
-        QueryBuilders.rangeQuery("avsluttetAvSaksbehandler").lte(ferdigstiltTom).format(ISO8601).timeZone(ZONEID_UTC)
+        QueryBuilders.rangeQuery(EsBehandling::avsluttetAvSaksbehandler.name).lte(ferdigstiltTom).format(ISO8601)
+            .timeZone(ZONEID_UTC)
 
     private fun haveFristMellom(fristFom: LocalDate, fristTom: LocalDate) =
-        QueryBuilders.rangeQuery("frist").gte(fristFom).lte(fristTom).format(ISO8601).timeZone(ZONEID_UTC)
+        QueryBuilders.rangeQuery(EsBehandling::frist.name).gte(fristFom).lte(fristTom).format(ISO8601)
+            .timeZone(ZONEID_UTC)
 
     private fun beTildeltSaksbehandler(saksbehandlere: List<String>): BoolQueryBuilder {
         val innerQuerySaksbehandler = QueryBuilders.boolQuery()
         saksbehandlere.forEach {
-            innerQuerySaksbehandler.should(QueryBuilders.termQuery("tildeltSaksbehandlerident", it))
+            innerQuerySaksbehandler.should(QueryBuilders.termQuery(EsBehandling::tildeltSaksbehandlerident.name, it))
         }
         return innerQuerySaksbehandler
     }
 
     private fun beTildeltSaksbehandler(navIdent: String) =
-        QueryBuilders.termQuery("tildeltSaksbehandlerident", navIdent)
+        QueryBuilders.termQuery(EsBehandling::tildeltSaksbehandlerident.name, navIdent)
 
     private fun beTildeltMedunderskriver(navIdent: String): BoolQueryBuilder {
         val innerQueryMedunderskriver = QueryBuilders.boolQuery()
-        innerQueryMedunderskriver.must(QueryBuilders.termQuery("medunderskriverident", navIdent))
+        innerQueryMedunderskriver.must(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, navIdent))
         innerQueryMedunderskriver.must(
             QueryBuilders.termQuery(
-                "medunderskriverFlytId",
+                EsBehandling::medunderskriverFlytId.name,
                 MedunderskriverFlyt.OVERSENDT_TIL_MEDUNDERSKRIVER.id
             )
         )
@@ -763,12 +754,43 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     private fun beTildeltEnhet(enhetId: String): TermQueryBuilder =
-        QueryBuilders.termQuery("tildeltEnhet", enhetId)
+        QueryBuilders.termQuery(EsBehandling::tildeltEnhet.name, enhetId)
 
     private fun haveSakenGjelder(fnr: String): TermQueryBuilder =
-        QueryBuilders.termQuery("sakenGjelderFnr", fnr)
+        QueryBuilders.termQuery(EsBehandling::sakenGjelderFnr.name, fnr)
 
     fun deleteBehandling(behandlingId: UUID) {
         esBehandlingRepository.deleteBehandling(behandlingId)
+    }
+
+    enum class DateRangeWithField(
+        val from: String?,
+        val to: String,
+        val field: String
+    ) {
+        INNSENDT_YESTERDAY(from = "now-1d/d", to = "now/d", field = EsBehandling::innsendt.name),
+        INNSENDT_LAST7DAYS(from = "now-7d/d", to = "now/d", field = EsBehandling::innsendt.name),
+        INNSENDT_LAST30DAYS(from = "now-30d/d", to = "now/d", field = EsBehandling::innsendt.name),
+        AVSLUTTET_YESTERDAY(from = "now-1d/d", to = "now/d", field = EsBehandling::avsluttetAvSaksbehandler.name),
+        AVSLUTTET_LAST7DAYS(from = "now-7d/d", to = "now/d", field = EsBehandling::avsluttetAvSaksbehandler.name),
+        AVSLUTTET_LAST30DAYS(from = "now-30d/d", to = "now/d", field = EsBehandling::avsluttetAvSaksbehandler.name),
+        OVER_FRIST(from = null, to = "now/d", field = EsBehandling::frist.name);
+
+
+        fun createBoundedAggregationBuilder(): AggregationBuilder {
+            return AggregationBuilders.dateRange(this.name)
+                .field(this.field)
+                .timeZone(ZoneId.of(ZONEID_UTC))
+                .addRange(this.from, this.to)
+                .format(ISO8601)
+        }
+
+        fun createUnboundedToAggregationBuilder(): AggregationBuilder {
+            return AggregationBuilders.dateRange(this.name)
+                .field(this.field)
+                .timeZone(ZoneId.of(ZONEID_UTC))
+                .addUnboundedTo(this.to)
+                .format(ISO8601)
+        }
     }
 }
