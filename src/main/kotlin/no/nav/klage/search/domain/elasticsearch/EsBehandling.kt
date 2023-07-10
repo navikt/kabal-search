@@ -20,61 +20,18 @@ enum class EsStatus {
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class EsBehandling(
-    override val id: String,
-
-    val klagerFnr: String? = null,
-    val klagerNavn: String? = null,
-    val klagerFornavn: String? = null,
-    val klagerMellomnavn: String? = null,
-    val klagerEtternavn: String? = null,
-    val klagerOrgnr: String? = null,
-    val klagerOrgnavn: String? = null,
+    override val behandlingId: String,
     val sakenGjelderFnr: String,
-    val sakenGjelderNavn: String? = null,
-    val sakenGjelderFornavn: String? = null,
-    val sakenGjelderMellomnavn: String? = null,
-    val sakenGjelderEtternavn: String? = null,
-    val sakenGjelderOrgnr: String? = null,
-    val sakenGjelderOrgnavn: String? = null,
-
-    override val tema: String,
     override val ytelseId: String,
-    override val type: String,
+    override val typeId: String,
 
-    val kildeReferanse: String? = null,
-    val sakFagsystem: String,
-    val sakFagsystemNavn: String? = null,
-    val sakFagsakId: String? = null,
+    val fagsystemId: String,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     val innsendt: LocalDate? = null,
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
-    val mottattFoersteinstans: LocalDate? = null,
-
-    //Tilsvarer de to under, beholder begge for redundans
-    val forrigeSaksbehandlerident: String? = null,
-    val forrigeBehandlendeEnhet: String? = null,
-
-    val avsenderSaksbehandleridentFoersteinstans: String? = null,
-    val avsenderEnhetFoersteinstans: String? = null,
-
-    //Nytt navn på mottattKlageinstans, beholder begge for redundans
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
-    val sakMottattKaDato: LocalDateTime,
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
-    override val mottattKlageinstans: LocalDateTime,
-
-    //Nytt felt, brukes kun til ankebehandling.
-    val forrigeVedtaksDato: LocalDate? = null,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
-    val tildelt: LocalDateTime? = null,
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
-    val sendtMedunderskriver: LocalDateTime? = null,
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
-    val avsluttet: LocalDateTime? = null,
+    override val sakMottattKaDato: LocalDateTime,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     override val avsluttetAvSaksbehandler: LocalDateTime? = null,
@@ -88,29 +45,13 @@ data class EsBehandling(
 
     override val medunderskriverident: String? = null,
 
-    override val medunderskriverNavn: String? = null,
-
-    override val medunderskriverFlyt: String,
+    override val medunderskriverFlytId: String,
 
     val tildeltEnhet: String?,
 
-    override val hjemler: List<String> = emptyList(),
-
-    val hjemlerNavn: List<String> = emptyList(),
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
-    val created: LocalDateTime,
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
-    var modified: LocalDateTime,
-
-    val kilde: String,
+    override val hjemmelIdList: List<String> = emptyList(),
 
     val saksdokumenter: List<EsSaksdokument> = emptyList(),
-
-    val saksdokumenterJournalpostId: List<String> = emptyList(),
-
-    val saksdokumenterJournalpostIdOgDokumentInfoId: List<String> = emptyList(),
 
     override val egenAnsatt: Boolean = false,
 
@@ -118,14 +59,7 @@ data class EsBehandling(
 
     override val strengtFortrolig: Boolean = false,
 
-    /* Enn så lenge har vi bare ett vedtak, og da er det enklere å søke på det når det er flatt her nede enn når det er nested i List<Vedtak>.. */
-    override val vedtakUtfall: String? = null,
-
-    val vedtakUtfallNavn: String? = null,
-
-    val vedtakHjemler: List<String> = emptyList(),
-
-    val vedtakHjemlerNavn: List<String> = emptyList(),
+    override val utfallId: String? = null,
 
     override val sattPaaVent: LocalDate? = null,
 
@@ -136,7 +70,11 @@ data class EsBehandling(
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     override val feilregistrert: LocalDateTime? = null,
 
-    val status: EsStatus
+    override val rolIdent: String?,
+
+    override val rolStateId: String?,
+
+    val status: EsStatus,
 ) : EsAnonymBehandling
 
 interface EsAnonymBehandling {
@@ -145,21 +83,21 @@ interface EsAnonymBehandling {
     val fortrolig: Boolean
     val egenAnsatt: Boolean
     val avsluttetAvSaksbehandler: LocalDateTime?
-    val vedtakUtfall: String?
+    val utfallId: String?
     val tildeltSaksbehandlernavn: String?
     val tildeltSaksbehandlerident: String?
-    val medunderskriverFlyt: String
+    val medunderskriverFlytId: String
     val medunderskriverident: String?
-    val medunderskriverNavn: String?
-    val mottattKlageinstans: LocalDateTime
+    val sakMottattKaDato: LocalDateTime
     val frist: LocalDate?
-    val hjemler: List<String>
+    val hjemmelIdList: List<String>
     val ytelseId: String
-    val tema: String
-    val type: String
-    val id: String
+    val typeId: String
+    val behandlingId: String
     val sattPaaVent: LocalDate?
     val sattPaaVentExpires: LocalDate?
     val sattPaaVentReason: String?
     val feilregistrert: LocalDateTime?
+    val rolIdent: String?
+    val rolStateId: String?
 }

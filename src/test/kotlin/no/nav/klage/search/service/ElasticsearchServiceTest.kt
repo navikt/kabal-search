@@ -1,7 +1,6 @@
 package no.nav.klage.search.service
 
 import no.nav.klage.kodeverk.MedunderskriverFlyt
-import no.nav.klage.kodeverk.Tema
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
@@ -63,53 +62,39 @@ class ElasticsearchServiceTest {
     fun `lagrer to oppgaver for senere tester`() {
 
         val klagebehandling1 = EsBehandling(
-            id = "1001L",
+            behandlingId = "1001L",
             tildeltEnhet = "4219",
-            tema = Tema.OMS.id,
             ytelseId = Ytelse.OMS_OMP.id,
-            type = Type.KLAGE.id,
+            typeId = Type.KLAGE.id,
             tildeltSaksbehandlerident = null,
             innsendt = LocalDate.of(2019, 10, 1),
-            mottattFoersteinstans = LocalDate.of(2019, 11, 1),
-            mottattKlageinstans = LocalDateTime.of(2019, 12, 1, 0, 0),
+            sakMottattKaDato = LocalDateTime.of(2019, 12, 1, 0, 0),
             frist = LocalDate.of(2020, 12, 1),
-            hjemler = listOf(),
-            created = LocalDateTime.now(),
-            modified = LocalDateTime.now(),
-            kilde = "K9",
+            hjemmelIdList = listOf(),
             status = IKKE_TILDELT,
-            medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
+            medunderskriverFlytId = MedunderskriverFlyt.IKKE_SENDT.name,
             sakenGjelderFnr = "12345678910",
-            sakenGjelderNavn = "Mitt Navn",
-            sakenGjelderFornavn = "abc",
-            sakenGjelderEtternavn = "def",
-            sakMottattKaDato = LocalDateTime.now(),
-            sakFagsystem = "1",
+            fagsystemId = "1",
+            rolIdent = "ROLIDENT",
+            rolStateId = "1",
         )
         val klagebehandling2 =
             EsBehandling(
-                id = "1002L",
+                behandlingId = "1002L",
                 tildeltEnhet = "4219",
-                tema = Tema.SYK.id,
                 ytelseId = Ytelse.SYK_SYK.id,
-                type = Type.KLAGE.id,
+                typeId = Type.KLAGE.id,
                 tildeltSaksbehandlerident = null,
                 innsendt = LocalDate.of(2018, 10, 1),
-                mottattFoersteinstans = LocalDate.of(2018, 11, 1),
-                mottattKlageinstans = LocalDateTime.of(2018, 12, 1, 0, 0),
+                sakMottattKaDato = LocalDateTime.of(2018, 12, 1, 0, 0),
                 frist = LocalDate.of(2019, 12, 1),
-                hjemler = listOf(),
-                created = LocalDateTime.now(),
-                modified = LocalDateTime.now(),
-                kilde = "K9",
+                hjemmelIdList = listOf(),
                 status = IKKE_TILDELT,
-                medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
+                medunderskriverFlytId = MedunderskriverFlyt.IKKE_SENDT.name,
                 sakenGjelderFnr = "12345678910",
-                sakenGjelderNavn = "Mitt Navn",
-                sakenGjelderFornavn = "abc",
-                sakenGjelderEtternavn = "def",
-                sakMottattKaDato = LocalDateTime.now(),
-                sakFagsystem = "1",
+                fagsystemId = "1",
+                rolIdent = "ROLIDENT",
+                rolStateId = "1",
             )
         repo.save(klagebehandling1)
         repo.save(klagebehandling2)
@@ -138,7 +123,7 @@ class ElasticsearchServiceTest {
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.size).isEqualTo(1L)
-        assertThat(klagebehandlinger.first().id).isEqualTo("1001L")
+        assertThat(klagebehandlinger.first().behandlingId).isEqualTo("1001L")
     }
 
     @Test

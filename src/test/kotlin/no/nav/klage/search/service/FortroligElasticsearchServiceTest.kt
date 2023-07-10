@@ -1,7 +1,6 @@
 package no.nav.klage.search.service
 
 import no.nav.klage.kodeverk.MedunderskriverFlyt
-import no.nav.klage.kodeverk.Tema
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
@@ -74,159 +73,117 @@ class FortroligElasticsearchServiceTest {
     fun `lagrer oppgaver for senere tester`() {
 
         val normalPerson = EsBehandling(
-            id = idNormal,
+            behandlingId = idNormal,
             tildeltEnhet = "4219",
-            tema = Tema.OMS.id,
             ytelseId = Ytelse.OMS_OMP.id,
-            type = Type.KLAGE.id,
+            typeId = Type.KLAGE.id,
             tildeltSaksbehandlerident = null,
             innsendt = LocalDate.of(2019, 10, 1),
-            mottattFoersteinstans = LocalDate.of(2019, 11, 1),
-            mottattKlageinstans = LocalDateTime.of(2019, 12, 1, 0, 0),
+            sakMottattKaDato = LocalDateTime.of(2019, 12, 1, 0, 0),
             frist = LocalDate.of(2020, 12, 1),
-            hjemler = listOf(),
-            created = LocalDateTime.now(),
-            modified = LocalDateTime.now(),
-            kilde = "K9",
+            hjemmelIdList = listOf(),
             status = IKKE_TILDELT,
             sakenGjelderFnr = "123",
-            medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
-            sakenGjelderNavn = "Mitt Navn",
-            sakenGjelderFornavn = "abc",
-            sakenGjelderEtternavn = "def",
-            sakMottattKaDato = LocalDateTime.now(),
-            sakFagsystem = "1",
+            medunderskriverFlytId = MedunderskriverFlyt.IKKE_SENDT.name,
+            fagsystemId = "1",
+            rolIdent = "ROLIDENT",
+            rolStateId = "1",
         )
         val fortroligPerson =
             EsBehandling(
-                id = idFortrolig,
+                behandlingId = idFortrolig,
                 tildeltEnhet = "4219",
-                tema = Tema.OMS.id,
                 ytelseId = Ytelse.OMS_OMP.id,
-                type = Type.KLAGE.id,
+                typeId = Type.KLAGE.id,
                 tildeltSaksbehandlerident = null,
                 innsendt = LocalDate.of(2018, 10, 1),
-                mottattFoersteinstans = LocalDate.of(2018, 11, 1),
-                mottattKlageinstans = LocalDateTime.of(2018, 12, 1, 0, 0),
+                sakMottattKaDato = LocalDateTime.of(2018, 12, 1, 0, 0),
                 frist = LocalDate.of(2019, 12, 1),
-                hjemler = listOf(),
-                created = LocalDateTime.now(),
-                modified = LocalDateTime.now(),
-                kilde = "K9",
+                hjemmelIdList = listOf(),
                 status = IKKE_TILDELT,
                 sakenGjelderFnr = "123",
                 fortrolig = true,
-                medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
-                sakenGjelderNavn = "Mitt Navn",
-                sakenGjelderFornavn = "abc",
-                sakenGjelderEtternavn = "def",
-                sakMottattKaDato = LocalDateTime.now(),
-                sakFagsystem = "1",
+                medunderskriverFlytId = MedunderskriverFlyt.IKKE_SENDT.name,
+                fagsystemId = "1",
+                rolIdent = "ROLIDENT",
+                rolStateId = "1",
             )
         val strengtFortroligPerson = EsBehandling(
-            id = idStrengtFortrolig,
+            behandlingId = idStrengtFortrolig,
             tildeltEnhet = "4219",
-            tema = Tema.OMS.id,
             ytelseId = Ytelse.OMS_OMP.id,
-            type = Type.KLAGE.id,
+            typeId = Type.KLAGE.id,
             tildeltSaksbehandlerident = null,
             innsendt = LocalDate.of(2019, 10, 1),
-            mottattFoersteinstans = LocalDate.of(2019, 11, 1),
-            mottattKlageinstans = LocalDateTime.of(2019, 12, 1, 0, 0),
+            sakMottattKaDato = LocalDateTime.of(2019, 12, 1, 0, 0),
             frist = LocalDate.of(2020, 12, 1),
-            hjemler = listOf(),
-            created = LocalDateTime.now(),
-            modified = LocalDateTime.now(),
-            kilde = "K9",
+            hjemmelIdList = listOf(),
             status = IKKE_TILDELT,
             sakenGjelderFnr = "123",
             strengtFortrolig = true,
-            medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
-            sakenGjelderNavn = "Mitt Navn",
-            sakenGjelderFornavn = "abc",
-            sakenGjelderEtternavn = "def",
-            sakMottattKaDato = LocalDateTime.now(),
-            sakFagsystem = "1",
+            medunderskriverFlytId = MedunderskriverFlyt.IKKE_SENDT.name,
+            fagsystemId = "1",
+            rolIdent = "ROLIDENT",
+            rolStateId = "1",
         )
         val egenAnsattPerson =
             EsBehandling(
-                id = idEgenAnsatt,
+                behandlingId = idEgenAnsatt,
                 tildeltEnhet = "4219",
-                tema = Tema.OMS.id,
                 ytelseId = Ytelse.OMS_OMP.id,
-                type = Type.KLAGE.id,
+                typeId = Type.KLAGE.id,
                 tildeltSaksbehandlerident = null,
                 innsendt = LocalDate.of(2018, 10, 1),
-                mottattFoersteinstans = LocalDate.of(2018, 11, 1),
-                mottattKlageinstans = LocalDateTime.of(2018, 12, 1, 0, 0),
+                sakMottattKaDato = LocalDateTime.of(2018, 12, 1, 0, 0),
                 frist = LocalDate.of(2019, 12, 1),
-                hjemler = listOf(),
-                created = LocalDateTime.now(),
-                modified = LocalDateTime.now(),
-                kilde = "K9",
+                hjemmelIdList = listOf(),
                 status = IKKE_TILDELT,
                 sakenGjelderFnr = "123",
                 egenAnsatt = true,
-                medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
-                sakenGjelderNavn = "Mitt Navn",
-                sakenGjelderFornavn = "abc",
-                sakenGjelderEtternavn = "def",
-                sakMottattKaDato = LocalDateTime.now(),
-                sakFagsystem = "1",
+                medunderskriverFlytId = MedunderskriverFlyt.IKKE_SENDT.name,
+                fagsystemId = "1",
+                rolIdent = "ROLIDENT",
+                rolStateId = "1",
             )
         val egenAnsattOgFortroligPerson =
             EsBehandling(
-                id = idEgenAnsattOgFortrolig,
+                behandlingId = idEgenAnsattOgFortrolig,
                 tildeltEnhet = "4219",
-                tema = Tema.OMS.id,
                 ytelseId = Ytelse.OMS_OMP.id,
-                type = Type.KLAGE.id,
+                typeId = Type.KLAGE.id,
                 tildeltSaksbehandlerident = null,
                 innsendt = LocalDate.of(2018, 10, 1),
-                mottattFoersteinstans = LocalDate.of(2018, 11, 1),
-                mottattKlageinstans = LocalDateTime.of(2018, 12, 1, 0, 0),
+                sakMottattKaDato = LocalDateTime.of(2018, 12, 1, 0, 0),
                 frist = LocalDate.of(2019, 12, 1),
-                hjemler = listOf(),
-                created = LocalDateTime.now(),
-                modified = LocalDateTime.now(),
-                kilde = "K9",
+                hjemmelIdList = listOf(),
                 status = IKKE_TILDELT,
                 sakenGjelderFnr = "123",
                 egenAnsatt = true,
                 fortrolig = true,
-                medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
-                sakenGjelderNavn = "Mitt Navn",
-                sakenGjelderFornavn = "abc",
-                sakenGjelderEtternavn = "def",
-                sakMottattKaDato = LocalDateTime.now(),
-                sakFagsystem = "1",
+                medunderskriverFlytId = MedunderskriverFlyt.IKKE_SENDT.name,
+                fagsystemId = "1",
+                rolIdent = "ROLIDENT",
+                rolStateId = "1",
             )
         val egenAnsattOgStrengtFortroligPerson =
             EsBehandling(
-                id = idEgenAnsattOgStrengtFortrolig,
+                behandlingId = idEgenAnsattOgStrengtFortrolig,
                 tildeltEnhet = "4219",
-                tema = Tema.OMS.id,
                 ytelseId = Ytelse.OMS_OMP.id,
-                type = Type.KLAGE.id,
+                typeId = Type.KLAGE.id,
                 tildeltSaksbehandlerident = null,
                 innsendt = LocalDate.of(2018, 10, 1),
-                mottattFoersteinstans = LocalDate.of(2018, 11, 1),
-                mottattKlageinstans = LocalDateTime.of(2018, 12, 1, 0, 0),
+                sakMottattKaDato = LocalDateTime.of(2018, 12, 1, 0, 0),
                 frist = LocalDate.of(2019, 12, 1),
-                hjemler = listOf(),
-                created = LocalDateTime.now(),
-                modified = LocalDateTime.now(),
-                kilde = "K9",
+                hjemmelIdList = listOf(),
                 status = IKKE_TILDELT,
                 sakenGjelderFnr = "123",
                 egenAnsatt = true,
                 strengtFortrolig = true,
-                medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
-                sakenGjelderNavn = "Mitt Navn",
-                sakenGjelderFornavn = "abc",
-                sakenGjelderEtternavn = "def",
-                sakMottattKaDato = LocalDateTime.now(),
-                sakFagsystem = "1",
+                medunderskriverFlytId = MedunderskriverFlyt.IKKE_SENDT.name,
+                fagsystemId = "1",
+                rolIdent = "ROLIDENT",
+                rolStateId = "1",
             )
         repo.save(normalPerson)
         repo.save(fortroligPerson)
@@ -258,7 +215,7 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleStrengtFortrolig = false,
                 )
             ).searchHits.map { it.content }
-        assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder(idNormal)
+        assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(idNormal)
     }
 
     @Test
@@ -279,7 +236,7 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleStrengtFortrolig = false,
                 )
             ).searchHits.map { it.content }
-        assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder(idNormal, idEgenAnsatt)
+        assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(idNormal, idEgenAnsatt)
     }
 
     @Test
@@ -300,7 +257,7 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleStrengtFortrolig = false,
                 )
             ).searchHits.map { it.content }
-        assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder(
+        assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
             idNormal, idFortrolig,
             idEgenAnsattOgFortrolig
         )
@@ -324,7 +281,7 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleStrengtFortrolig = false,
                 )
             ).searchHits.map { it.content }
-        assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder(
+        assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
             idNormal, idFortrolig, idEgenAnsatt,
             idEgenAnsattOgFortrolig
         )
@@ -348,7 +305,7 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleStrengtFortrolig = true,
                 )
             ).searchHits.map { it.content }
-        assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder(
+        assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
             idStrengtFortrolig, idEgenAnsattOgStrengtFortrolig
         )
     }
@@ -371,7 +328,7 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleStrengtFortrolig = true,
                 )
             ).searchHits.map { it.content }
-        assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder(
+        assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
             idStrengtFortrolig,
             idEgenAnsattOgStrengtFortrolig
         )
@@ -395,7 +352,7 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleStrengtFortrolig = true,
                 )
             ).searchHits.map { it.content }
-        assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder(
+        assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
             idStrengtFortrolig,
             idEgenAnsattOgStrengtFortrolig,
             idFortrolig,
@@ -421,7 +378,7 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleStrengtFortrolig = true,
                 )
             ).searchHits.map { it.content }
-        assertThat(klagebehandlinger.map { it.id }).containsExactlyInAnyOrder(
+        assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
             idStrengtFortrolig,
             idEgenAnsattOgStrengtFortrolig,
             idFortrolig,

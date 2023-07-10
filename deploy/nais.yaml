@@ -90,9 +90,7 @@ spec:
     - secret: pdl-apikey
     - secret: slack-url
     - secret: slack-channel-id
-    - secret: norg2
     - secret: elastic
-    - secret: ereg
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: {{springProfile}}

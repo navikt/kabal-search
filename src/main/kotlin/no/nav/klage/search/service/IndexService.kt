@@ -1,7 +1,6 @@
 package no.nav.klage.search.service
 
 import no.nav.klage.search.clients.klageendret.BehandlingSkjemaV2
-import no.nav.klage.search.clients.klageendret.KlagebehandlingSkjemaV1
 import no.nav.klage.search.service.mapper.EsBehandlingMapper
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getSecureLogger
@@ -19,10 +18,6 @@ class IndexService(
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
         private val securelogger = getSecureLogger()
-    }
-
-    fun deleteAllBehandlinger() {
-        elasticsearchService.deleteAll()
     }
 
     fun recreateIndex() {

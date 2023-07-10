@@ -67,6 +67,29 @@ class OppgaverListController(
     }
 
     @Operation(
+        summary = "Hent ledige ROL-oppgaver",
+        description = "Henter alle ledige ROL-oppgaver."
+    )
+    @GetMapping("/roloppgaver/ledige", produces = ["application/json"])
+    fun getLedigeRolOppgaver(
+        queryParams: MineLedigeOppgaverQueryParams
+    ): BehandlingerListResponse {
+        logger.debug("Params: {}", queryParams)
+
+        val searchCriteria = behandlingerSearchCriteriaMapper.toLedigeOppgaverSearchCriteria(
+            queryParams = queryParams,
+        )
+
+        val esResponse = elasticsearchService.findLedigeROLOppgaverByCriteria(searchCriteria)
+        return BehandlingerListResponse(
+            antallTreffTotalt = esResponse.totalHits.toInt(),
+            behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
+                esBehandlinger = esResponse.searchHits.map { it.content },
+            )
+        )
+    }
+
+    @Operation(
         summary = "Hent oppgave",
         description = "Hent oppgave."
     )
@@ -83,7 +106,6 @@ class OppgaverListController(
 
         val result = behandlingListMapper.mapEsBehandlingerToBehandlingView(
             esBehandlinger = esResponse.searchHits.map { it.content },
-            visePersonData = false,
         )
 
         return result.first()
@@ -99,12 +121,36 @@ class OppgaverListController(
     ): BehandlingerListResponse {
         logger.debug("Params: {}", queryParams)
 
-        val searchCriteria = behandlingerSearchCriteriaMapper.toSaksbehandlersFerdigstilteOppgaverSearchCriteria(
+        val searchCriteria = behandlingerSearchCriteriaMapper.toFerdigstilteOppgaverSearchCriteria(
             navIdent = oAuthTokenService.getInnloggetIdent(),
             queryParams = queryParams
         )
 
         val esResponse = elasticsearchService.findSaksbehandlersFerdigstilteOppgaverByCriteria(searchCriteria)
+        return BehandlingerListResponse(
+            antallTreffTotalt = esResponse.totalHits.toInt(),
+            behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
+                esBehandlinger = esResponse.searchHits.map { it.content },
+            ),
+        )
+    }
+
+    @Operation(
+        summary = "Hent ferdigstilte ROL-oppgaver for en ansatt",
+        description = "Henter alle ferdigstilte ROL-oppgaver som ROL har tilgang til."
+    )
+    @GetMapping("/roloppgaver/ferdigstilte", produces = ["application/json"])
+    fun getMineFerdigstilteROLOppgaver(
+        queryParams: MineFerdigstilteOppgaverQueryParams
+    ): BehandlingerListResponse {
+        logger.debug("Params: {}", queryParams)
+
+        val searchCriteria = behandlingerSearchCriteriaMapper.toFerdigstilteOppgaverSearchCriteria(
+            navIdent = oAuthTokenService.getInnloggetIdent(),
+            queryParams = queryParams
+        )
+
+        val esResponse = elasticsearchService.findROLsFerdigstilteOppgaverByCriteria(searchCriteria)
         return BehandlingerListResponse(
             antallTreffTotalt = esResponse.totalHits.toInt(),
             behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
@@ -123,12 +169,36 @@ class OppgaverListController(
     ): BehandlingerListResponse {
         logger.debug("Params: {}", queryParams)
 
-        val searchCriteria = behandlingerSearchCriteriaMapper.toSaksbehandlersUferdigeOppgaverSearchCriteria(
+        val searchCriteria = behandlingerSearchCriteriaMapper.toUferdigeOppgaverSearchCriteria(
             navIdent = oAuthTokenService.getInnloggetIdent(),
             queryParams = queryParams
         )
 
         val esResponse = elasticsearchService.findSaksbehandlersUferdigeOppgaverByCriteria(searchCriteria)
+        return BehandlingerListResponse(
+            antallTreffTotalt = esResponse.totalHits.toInt(),
+            behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
+                esBehandlinger = esResponse.searchHits.map { it.content },
+            ),
+        )
+    }
+
+    @Operation(
+        summary = "Hent uferdige ROL-oppgaver for en ansatt",
+        description = "Henter alle uferdige ROL-oppgaver som ROL har tilgang til."
+    )
+    @GetMapping("/roloppgaver/uferdige", produces = ["application/json"])
+    fun getMineUferdigeROLOppgaver(
+        queryParams: MineUferdigeOppgaverQueryParams
+    ): BehandlingerListResponse {
+        logger.debug("Params: {}", queryParams)
+
+        val searchCriteria = behandlingerSearchCriteriaMapper.toUferdigeOppgaverSearchCriteria(
+            navIdent = oAuthTokenService.getInnloggetIdent(),
+            queryParams = queryParams
+        )
+
+        val esResponse = elasticsearchService.findROLsUferdigeOppgaverByCriteria(searchCriteria)
         return BehandlingerListResponse(
             antallTreffTotalt = esResponse.totalHits.toInt(),
             behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
@@ -147,7 +217,7 @@ class OppgaverListController(
     ): BehandlingerListResponse {
         logger.debug("Params: {}", queryParams)
 
-        val searchCriteria = behandlingerSearchCriteriaMapper.toSaksbehandlersOppgaverPaaVentSearchCriteria(
+        val searchCriteria = behandlingerSearchCriteriaMapper.toOppgaverPaaVentSearchCriteria(
             navIdent = oAuthTokenService.getInnloggetIdent(),
             queryParams = queryParams
         )

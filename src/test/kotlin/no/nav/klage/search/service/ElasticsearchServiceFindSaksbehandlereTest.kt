@@ -1,7 +1,6 @@
 package no.nav.klage.search.service
 
 import no.nav.klage.kodeverk.MedunderskriverFlyt
-import no.nav.klage.kodeverk.Tema
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
@@ -153,30 +152,23 @@ class ElasticsearchServiceFindSaksbehandlereTest {
         avsluttetAvSaksbehandler: LocalDateTime?
     ): EsBehandling {
         return EsBehandling(
-            id = id,
+            behandlingId = id,
             tildeltEnhet = enhet,
-            tema = Tema.OMS.id,
             ytelseId = Ytelse.OMS_OMP.id,
-            type = Type.KLAGE.id,
+            typeId = Type.KLAGE.id,
             tildeltSaksbehandlerident = saksbehandlerIdent,
             tildeltSaksbehandlernavn = saksbehandlerNavn,
             innsendt = LocalDate.of(2019, 10, 1),
-            mottattFoersteinstans = LocalDate.of(2019, 11, 1),
-            mottattKlageinstans = LocalDateTime.of(2019, 12, 1, 0, 0),
+            sakMottattKaDato = LocalDateTime.of(2019, 12, 1, 0, 0),
             frist = LocalDate.of(2020, 12, 1),
-            hjemler = listOf(),
-            created = LocalDateTime.now(),
-            modified = LocalDateTime.now(),
-            kilde = "K9",
+            hjemmelIdList = listOf(),
             status = IKKE_TILDELT,
-            medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
+            medunderskriverFlytId = MedunderskriverFlyt.IKKE_SENDT.name,
             avsluttetAvSaksbehandler = avsluttetAvSaksbehandler,
             sakenGjelderFnr = "12345678910",
-            sakenGjelderNavn = "Mitt Navn",
-            sakenGjelderFornavn = "abc",
-            sakenGjelderEtternavn = "def",
-            sakMottattKaDato = LocalDateTime.now(),
-            sakFagsystem = "1",
+            fagsystemId = "1",
+            rolIdent = "ROLIDENT",
+            rolStateId = "1",
         )
     }
 

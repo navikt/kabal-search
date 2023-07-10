@@ -3,6 +3,7 @@ package no.nav.klage.search.repositories
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.klage.search.domain.elasticsearch.EsAnonymBehandling
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
@@ -50,7 +51,17 @@ class EsBehandlingRepository(val client: RestHighLevelClient) {
         private val securelogger = getSecureLogger()
 
         private val mapper =
-            ObjectMapper().registerModule(KotlinModule()).registerModule(JavaTimeModule())
+            ObjectMapper().registerModule(
+                KotlinModule.Builder()
+                    .withReflectionCacheSize(512)
+                    .configure(KotlinFeature.NullToEmptyCollection, false)
+                    .configure(KotlinFeature.NullToEmptyMap, false)
+                    .configure(KotlinFeature.NullIsSameAsDefault, false)
+                    .configure(KotlinFeature.SingletonSupport, false)
+                    .configure(KotlinFeature.StrictNullChecks, false)
+                    .
+                    build()
+            ).registerModule(JavaTimeModule())
         const val SETTINGS_CONFIG = "/elasticsearch/settings.json"
         const val MAPPING_CONFIG = "/elasticsearch/mapping.json"
         const val BEHANDLING_INDEX = "klagebehandling"
@@ -115,7 +126,7 @@ class EsBehandlingRepository(val client: RestHighLevelClient) {
     ) {
         try {
             val request = IndexRequest(BEHANDLING_INDEX)
-            request.id(behandling.id)
+            request.id(behandling.behandlingId)
             val jsonString = mapper.writeValueAsString(behandling)
             request.source(jsonString, XContentType.JSON)
             request.refreshPolicy = refreshPolicy
@@ -315,10 +326,10 @@ interface SearchHits<T> : Iterable<SearchHit<T>> {
 open class SearchHit<T>(val id: String, val content: T)
 
 class EsBehandlingSearchHit(content: EsBehandling) :
-    SearchHit<EsBehandling>(content.id, content)
+    SearchHit<EsBehandling>(content.behandlingId, content)
 
 class EsAnonymBehandlingSearchHit(content: EsBehandling) :
-    SearchHit<EsAnonymBehandling>(content.id, content)
+    SearchHit<EsAnonymBehandling>(content.behandlingId, content)
 
 
 class BehandlingerSearchHits(

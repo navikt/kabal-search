@@ -1,7 +1,6 @@
 package no.nav.klage.search.service
 
 import no.nav.klage.kodeverk.MedunderskriverFlyt
-import no.nav.klage.kodeverk.Tema
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
@@ -58,30 +57,22 @@ class StatistikkInElasticsearchServiceTest {
 
     private fun klagebehandling(id: Long, innsendt: LocalDate, frist: LocalDate, avsluttet: LocalDateTime? = null) =
         EsBehandling(
-            id = id.toString(),
+            behandlingId = id.toString(),
             tildeltEnhet = "4219",
-            tema = Tema.OMS.id,
             ytelseId = Ytelse.OMS_OMP.id,
-            type = Type.KLAGE.id,
+            typeId = Type.KLAGE.id,
             tildeltSaksbehandlerident = null,
             innsendt = innsendt,
-            mottattFoersteinstans = LocalDate.of(2018, 11, 1),
-            mottattKlageinstans = LocalDateTime.of(2018, 12, 1, 0, 0),
+            sakMottattKaDato = LocalDateTime.of(2018, 12, 1, 0, 0),
             frist = frist,
-            avsluttet = avsluttet,
             avsluttetAvSaksbehandler = avsluttet,
-            hjemler = listOf(),
-            created = LocalDateTime.now(),
-            modified = LocalDateTime.now(),
-            kilde = "K9",
+            hjemmelIdList = listOf(),
             status = UKJENT,
-            medunderskriverFlyt = MedunderskriverFlyt.IKKE_SENDT.name,
+            medunderskriverFlytId = MedunderskriverFlyt.IKKE_SENDT.name,
             sakenGjelderFnr = "12345678910",
-            sakenGjelderNavn = "Mitt Navn",
-            sakenGjelderFornavn = "abc",
-            sakenGjelderEtternavn = "def",
-            sakMottattKaDato = LocalDateTime.now(),
-            sakFagsystem = "1",
+            fagsystemId = "1",
+            rolIdent = "ROLIDENT",
+            rolStateId = "1",
         )
 
     @Test

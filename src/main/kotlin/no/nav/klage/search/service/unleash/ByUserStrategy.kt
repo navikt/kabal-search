@@ -17,7 +17,7 @@ class ByUserStrategy(private val oAuthTokenService: OAuthTokenService) : Strateg
         getEnabledUsers(parameters)?.any { isCurrentUserEnabled(it) } ?: false
 
     private fun getEnabledUsers(parameters: MutableMap<String, String>) =
-        parameters.get(PARAM)?.split(',')
+        parameters[PARAM]?.split(',')
 
     private fun isCurrentUserEnabled(ident: String): Boolean {
         return ident == oAuthTokenService.getInnloggetIdent()

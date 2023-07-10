@@ -5,38 +5,6 @@ import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.kodeverk.hjemmel.Hjemmel
 import java.time.LocalDate
 
-/*
-data class KlagebehandlingerSearchCriteria(
-    override val typer: List<Type> = emptyList(),
-    override val ytelser: List<Ytelse> = emptyList(),
-    override val hjemler: List<Hjemmel> = emptyList(),
-    val statuskategori: Statuskategori = Statuskategori.AAPEN,
-
-    val opprettetFom: LocalDateTime? = null,
-    val opprettetTom: LocalDateTime? = null,
-    val ferdigstiltFom: LocalDate? = null,
-    val ferdigstiltTom: LocalDate? = null,
-    val fristFom: LocalDate? = null,
-    val fristTom: LocalDate? = null,
-    val foedselsnr: String? = null,
-    val extraPersonWithYtelser: ExtraPersonWithYtelser? = null,
-    val raw: String = "",
-
-    override val order: Order = Order.ASC,
-    override val offset: Int,
-    override val limit: Int,
-    val erTildeltSaksbehandler: Boolean? = null,
-    val saksbehandlere: List<String> = emptyList(),
-    val enhetId: String? = null,
-    override val sortField: SortField = SortField.FRIST,
-    override val kanBehandleEgenAnsatt: Boolean,
-    override val kanBehandleFortrolig: Boolean,
-    override val kanBehandleStrengtFortrolig: Boolean,
-) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria
-*/
-
-//data class ExtraPersonWithYtelser(val foedselsnr: String, val ytelser: List<Ytelse>)
-
 enum class SortField {
     FRIST, MOTTATT, PAA_VENT_FROM, PAA_VENT_TO, AVSLUTTET_AV_SAKSBEHANDLER
 }
@@ -44,14 +12,6 @@ enum class SortField {
 enum class Order {
     ASC, DESC
 }
-
-//enum class Statuskategori {
-//    AAPEN, AVSLUTTET, ALLE
-//}
-
-//fun KlagebehandlingerSearchCriteria.isFnrSoek() = raw.isNumeric()
-
-//private fun String.isNumeric() = toLongOrNull() != null
 
 interface PageableSearchCriteria {
     val offset: Int
@@ -89,12 +49,12 @@ data class OppgaverOmPersonSearchCriteria(
     override val order: Order,
 ) : PageableSearchCriteria, SecuritySearchCriteria, SortableSearchCriteria
 
-data class SaksbehandlersFerdigstilteOppgaverSearchCriteria(
+data class FerdigstilteOppgaverSearchCriteria(
     override val typer: List<Type>,
     override val ytelser: List<Ytelse>,
     override val hjemler: List<Hjemmel>,
 
-    val saksbehandler: String,
+    val navIdent: String,
     val ferdigstiltFom: LocalDate,
     val ferdigstiltTom: LocalDate,
 
@@ -108,12 +68,12 @@ data class SaksbehandlersFerdigstilteOppgaverSearchCriteria(
     override val kanBehandleStrengtFortrolig: Boolean,
 ) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria
 
-data class SaksbehandlersUferdigeOppgaverSearchCriteria(
+data class UferdigeOppgaverSearchCriteria(
     override val typer: List<Type>,
     override val ytelser: List<Ytelse>,
     override val hjemler: List<Hjemmel>,
 
-    val saksbehandler: String,
+    val navIdent: String,
 
     override val sortField: SortField,
     override val order: Order,
@@ -125,12 +85,12 @@ data class SaksbehandlersUferdigeOppgaverSearchCriteria(
     override val kanBehandleStrengtFortrolig: Boolean,
 ) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria
 
-data class SaksbehandlersOppgaverPaaVentSearchCriteria(
+data class OppgaverPaaVentSearchCriteria(
     override val typer: List<Type>,
     override val ytelser: List<Ytelse>,
     override val hjemler: List<Hjemmel>,
 
-    val saksbehandler: String,
+    val navIdent: String,
 
     override val sortField: SortField,
     override val order: Order,
