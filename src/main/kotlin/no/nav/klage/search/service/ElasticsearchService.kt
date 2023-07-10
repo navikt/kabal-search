@@ -748,8 +748,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         innerQueryMedunderskriver.must(QueryBuilders.termQuery("medunderskriverident", navIdent))
         innerQueryMedunderskriver.must(
             QueryBuilders.termQuery(
-                "medunderskriverFlyt",
-                MedunderskriverFlyt.OVERSENDT_TIL_MEDUNDERSKRIVER.name
+                "medunderskriverFlytId",
+                MedunderskriverFlyt.OVERSENDT_TIL_MEDUNDERSKRIVER.id
             )
         )
         return innerQueryMedunderskriver
