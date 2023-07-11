@@ -24,20 +24,6 @@ class AdminController(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    @PostMapping("/internal/elasticadmin/rebuild", produces = ["application/json"])
-    @ResponseStatus(HttpStatus.OK)
-    fun resetElasticIndexWithPost() {
-        validateUserIsAdmin()
-        try {
-            adminService.recreateEsIndex()
-            //TODO: Dette kallet fungerer vel ikke nødvendigvis, det avhenger av å treffe riktig pod..
-            adminService.syncEsWithKafka()
-        } catch (e: Exception) {
-            logger.warn("Failed to reset ES index", e)
-            throw e
-        }
-    }
-
     @PostMapping("/internal/elasticadmin/recreate", produces = ["application/json"])
     @ResponseStatus(HttpStatus.OK)
     fun recreateElasticIndexWithPost() {
