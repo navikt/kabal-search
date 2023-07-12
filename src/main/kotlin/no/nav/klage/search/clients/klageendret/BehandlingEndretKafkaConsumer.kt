@@ -37,17 +37,6 @@ class BehandlingEndretKafkaConsumer(
         ).registerModule(JavaTimeModule())
     }
 
-    //Dokumentasjonen er her:
-    //https://docs.spring.io/spring-kafka/docs/2.5.5.RELEASE/reference/html/#seek
-    fun consumeFromBeginning() {
-        logger.info("Seeking to beginning of topic partitions")
-        seekCallbacks.forEach { (tp, callback) ->
-            logger.info("Seeking to beginning of topic ${tp.topic()} and partition ${tp.partition()}")
-            callback.seekToBeginning(tp.topic(), tp.partition())
-        }
-        logger.info("Finished consumeFromBeginning")
-    }
-
     @KafkaListener(
         id = "behandlingEndretListener",
         idIsGroup = false,
