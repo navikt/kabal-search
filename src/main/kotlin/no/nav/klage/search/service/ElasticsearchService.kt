@@ -8,7 +8,6 @@ import no.nav.klage.search.domain.*
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import no.nav.klage.search.domain.elasticsearch.EsStatus
 import no.nav.klage.search.domain.elasticsearch.EsStatus.*
-import no.nav.klage.search.domain.elasticsearch.KlageStatistikk
 import no.nav.klage.search.domain.saksbehandler.Saksbehandler
 import no.nav.klage.search.repositories.AnonymeBehandlingerSearchHits
 import no.nav.klage.search.repositories.BehandlingerSearchHits
@@ -21,16 +20,12 @@ import org.opensearch.index.query.BoolQueryBuilder
 import org.opensearch.index.query.QueryBuilder
 import org.opensearch.index.query.QueryBuilders
 import org.opensearch.index.query.TermQueryBuilder
-import org.opensearch.search.aggregations.AggregationBuilder
-import org.opensearch.search.aggregations.AggregationBuilders
-import org.opensearch.search.aggregations.bucket.range.ParsedDateRange
 import org.opensearch.search.builder.SearchSourceBuilder
 import org.opensearch.search.sort.SortBuilders
 import org.opensearch.search.sort.SortOrder
 import org.springframework.context.ApplicationListener
 import org.springframework.context.event.ContextRefreshedEvent
 import java.time.LocalDate
-import java.time.ZoneId
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -617,77 +612,6 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         }
     }
 
-    open fun statistikkQuery(): KlageStatistikk {
-
-        val baseQueryInnsendtOgAvsluttet: QueryBuilder = QueryBuilders.matchAllQuery()
-        val aggregationsForInnsendtAndAvsluttet = addAggregationsForInnsendtAndAvsluttet()
-
-        val searchHitsInnsendtOgAvsluttet =
-            esBehandlingRepository.search(baseQueryInnsendtOgAvsluttet, aggregationsForInnsendtAndAvsluttet)
-
-        val innsendtOgAvsluttetAggs = searchHitsInnsendtOgAvsluttet.aggregations
-        val sumInnsendtYesterday =
-            innsendtOgAvsluttetAggs!!.get<ParsedDateRange>(DateRangeWithField.INNSENDT_YESTERDAY.name).buckets.firstOrNull()?.docCount
-                ?: 0
-        val sumInnsendtLastSevenDays =
-            innsendtOgAvsluttetAggs.get<ParsedDateRange>(DateRangeWithField.INNSENDT_LAST7DAYS.name).buckets.firstOrNull()?.docCount
-                ?: 0
-        val sumInnsendtLastThirtyDays =
-            innsendtOgAvsluttetAggs.get<ParsedDateRange>(DateRangeWithField.INNSENDT_LAST30DAYS.name).buckets.firstOrNull()?.docCount
-                ?: 0
-        val sumAvsluttetYesterday =
-            innsendtOgAvsluttetAggs.get<ParsedDateRange>(DateRangeWithField.AVSLUTTET_YESTERDAY.name).buckets.firstOrNull()?.docCount
-                ?: 0
-        val sumAvsluttetLastSevenDays =
-            innsendtOgAvsluttetAggs.get<ParsedDateRange>(DateRangeWithField.AVSLUTTET_LAST7DAYS.name).buckets.firstOrNull()?.docCount
-                ?: 0
-        val sumAvsluttetLastThirtyDays =
-            innsendtOgAvsluttetAggs.get<ParsedDateRange>(DateRangeWithField.AVSLUTTET_LAST30DAYS.name).buckets.firstOrNull()?.docCount
-                ?: 0
-
-        val baseQueryOverFrist: BoolQueryBuilder = QueryBuilders.boolQuery()
-        baseQueryOverFrist.mustNot(beAvsluttetAvSaksbehandler())
-        val aggregationsForOverFrist = addAggregationsForOverFrist()
-
-        val searchHitsOverFrist =
-            esBehandlingRepository.search(baseQueryOverFrist, aggregationsForOverFrist)
-        val sumOverFrist =
-            searchHitsOverFrist.aggregations!!.get<ParsedDateRange>(DateRangeWithField.OVER_FRIST.name).buckets.firstOrNull()?.docCount
-                ?: 0
-        searchHitsOverFrist.aggregations.get<ParsedDateRange>(DateRangeWithField.OVER_FRIST.name).buckets.forEach {
-            logger.debug("from clause in over_frist is {}", it.from)
-            logger.debug("to clause in over_frist is {}", it.to)
-        }
-        val sumUbehandlede = searchHitsOverFrist.totalHits
-        return KlageStatistikk(
-            sumUbehandlede,
-            sumOverFrist,
-            sumInnsendtYesterday,
-            sumInnsendtLastSevenDays,
-            sumInnsendtLastThirtyDays,
-            sumAvsluttetYesterday,
-            sumAvsluttetLastSevenDays,
-            sumAvsluttetLastThirtyDays
-        )
-    }
-
-    private fun addAggregationsForOverFrist(): List<AggregationBuilder> {
-        return listOf(
-            DateRangeWithField.OVER_FRIST.createUnboundedToAggregationBuilder(),
-        )
-    }
-
-    private fun addAggregationsForInnsendtAndAvsluttet(): List<AggregationBuilder> {
-        return listOf(
-            DateRangeWithField.INNSENDT_YESTERDAY.createBoundedAggregationBuilder(),
-            DateRangeWithField.INNSENDT_LAST7DAYS.createBoundedAggregationBuilder(),
-            DateRangeWithField.INNSENDT_LAST30DAYS.createBoundedAggregationBuilder(),
-            DateRangeWithField.AVSLUTTET_YESTERDAY.createBoundedAggregationBuilder(),
-            DateRangeWithField.AVSLUTTET_LAST7DAYS.createBoundedAggregationBuilder(),
-            DateRangeWithField.AVSLUTTET_LAST30DAYS.createBoundedAggregationBuilder(),
-        )
-    }
-
     private fun beSentToROL(): BoolQueryBuilder {
         val queryBeSentToROL = QueryBuilders.boolQuery()
         queryBeSentToROL.must(
@@ -761,36 +685,5 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
 
     fun deleteBehandling(behandlingId: UUID) {
         esBehandlingRepository.deleteBehandling(behandlingId)
-    }
-
-    enum class DateRangeWithField(
-        val from: String?,
-        val to: String,
-        val field: String
-    ) {
-        INNSENDT_YESTERDAY(from = "now-1d/d", to = "now/d", field = EsBehandling::innsendt.name),
-        INNSENDT_LAST7DAYS(from = "now-7d/d", to = "now/d", field = EsBehandling::innsendt.name),
-        INNSENDT_LAST30DAYS(from = "now-30d/d", to = "now/d", field = EsBehandling::innsendt.name),
-        AVSLUTTET_YESTERDAY(from = "now-1d/d", to = "now/d", field = EsBehandling::avsluttetAvSaksbehandler.name),
-        AVSLUTTET_LAST7DAYS(from = "now-7d/d", to = "now/d", field = EsBehandling::avsluttetAvSaksbehandler.name),
-        AVSLUTTET_LAST30DAYS(from = "now-30d/d", to = "now/d", field = EsBehandling::avsluttetAvSaksbehandler.name),
-        OVER_FRIST(from = null, to = "now/d", field = EsBehandling::frist.name);
-
-
-        fun createBoundedAggregationBuilder(): AggregationBuilder {
-            return AggregationBuilders.dateRange(this.name)
-                .field(this.field)
-                .timeZone(ZoneId.of(ZONEID_UTC))
-                .addRange(this.from, this.to)
-                .format(ISO8601)
-        }
-
-        fun createUnboundedToAggregationBuilder(): AggregationBuilder {
-            return AggregationBuilders.dateRange(this.name)
-                .field(this.field)
-                .timeZone(ZoneId.of(ZONEID_UTC))
-                .addUnboundedTo(this.to)
-                .format(ISO8601)
-        }
     }
 }
