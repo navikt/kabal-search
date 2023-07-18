@@ -12,7 +12,7 @@ val threeTenExtraVersion = "1.7.2"
 val archunitVersion = "1.0.1"
 val opensearchVersion = "2.8.0"
 val reactorSpringVersion = "1.0.1.RELEASE"
-val kodeverkVersion = "1.4.0"
+val kodeverkVersion = "1.5.5"
 val ehcacheVersion = "3.10.8"
 val logbackSyslog4jVersion = "1.0.0"
 
@@ -24,7 +24,6 @@ repositories {
     mavenCentral()
     maven("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
     maven("https://packages.confluent.io/maven/")
-    maven("https://jitpack.io")
 }
 
 plugins {
@@ -64,7 +63,7 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
     implementation("no.nav.security:token-validation-spring:$tokenValidationVersion")
     implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
-    implementation("com.github.navikt:klage-kodeverk:$kodeverkVersion") {
+    implementation("no.nav.klage:klage-kodeverk:$kodeverkVersion") {
         exclude(group = "jakarta.persistence")
     }
     implementation("org.springframework.retry:spring-retry:$springRetryVersion")
