@@ -10,9 +10,9 @@ val springDocVersion = "2.1.0"
 val testContainersVersion = "1.18.3"
 val threeTenExtraVersion = "1.7.2"
 val archunitVersion = "1.0.1"
-val opensearchVersion = "2.8.0"
+val opensearchVersion = "2.9.0"
 val reactorSpringVersion = "1.0.1.RELEASE"
-val kodeverkVersion = "1.5.5"
+val kodeverkVersion = "1.5.7"
 val ehcacheVersion = "3.10.8"
 val logbackSyslog4jVersion = "1.0.0"
 
@@ -27,8 +27,8 @@ repositories {
 }
 
 plugins {
-    val kotlinVersion = "1.8.22"
-    id("org.springframework.boot") version "3.1.1"
+    val kotlinVersion = "1.9.0"
+    id("org.springframework.boot") version "3.1.2"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     idea
