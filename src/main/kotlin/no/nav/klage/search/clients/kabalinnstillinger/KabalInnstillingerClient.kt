@@ -8,7 +8,6 @@ import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
-import java.time.LocalDateTime
 
 @Component
 class KabalInnstillingerClient(
@@ -21,25 +20,23 @@ class KabalInnstillingerClient(
         private val secureLogger = getSecureLogger()
     }
 
-    fun getSaksbehandlersTildelteYtelser(navIdent: String): SaksbehandlerAccess {
-        logger.debug("Getting tildelte ytelser for $navIdent in kabal-innstillinger")
+    fun getInnloggetSaksbehandlersInnstillinger(): InnstillingerView {
+        logger.debug("Getting innstillinger for current saksbehandler in kabal-innstillinger")
         return kabalInnstillingerWebClient.get()
-            .uri { it.path("/ansatte/$navIdent/tildelteytelser").build() }
+            .uri { it.path("/me/innstillinger").build() }
             .header(
                 HttpHeaders.AUTHORIZATION,
                 "Bearer ${tokenUtil.getUserAccessTokenWithKabalInnstillingerScope()}"
             )
             .retrieve()
-            .bodyToMono<SaksbehandlerAccess>()
-            .block() ?: throw RuntimeException("Could not get tildelte ytelser")
+            .bodyToMono<InnstillingerView>()
+            .block() ?: throw RuntimeException("Could not get innstillinger for current saksbehandler")
     }
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class SaksbehandlerAccess(
-    val saksbehandlerIdent: String,
-    val saksbehandlerName: String,
-    val ytelseIdList: List<String>,
-    val created: LocalDateTime?,
-    val accessRightsModified: LocalDateTime?,
+data class InnstillingerView(
+    val hjemler: List<String>,
+    val ytelser: List<String>,
+    val typer: List<String>
 )

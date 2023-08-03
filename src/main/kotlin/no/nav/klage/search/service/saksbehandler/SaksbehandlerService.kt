@@ -1,6 +1,5 @@
 package no.nav.klage.search.service.saksbehandler
 
-import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.gateway.AzureGateway
 import no.nav.klage.search.service.KabalInnstillingerService
 import no.nav.klage.search.util.getLogger
@@ -41,8 +40,4 @@ class SaksbehandlerService(
 
     fun getNameForIdent(it: String) =
         getNamesForSaksbehandlere(setOf(it)).getOrDefault(it, "Ukjent navn")
-
-    fun getTildelteYtelserForSaksbehandler(navIdent: String): List<Ytelse> {
-        return kabalInnstillingerService.getTildelteYtelserForSaksbehandler(navIdent)
-    }
 }

@@ -1,6 +1,5 @@
 package no.nav.klage.search.service.saksbehandler
 
-import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.domain.saksbehandler.Enhet
 import no.nav.klage.search.gateway.AzureGateway
 import no.nav.klage.search.util.TokenUtil
@@ -21,10 +20,5 @@ class InnloggetSaksbehandlerService(
 
     fun getEnhetForSaksbehandler(): Enhet {
         return azureGateway.getDataOmInnloggetSaksbehandler().enhet
-    }
-
-    fun getTildelteYtelserForSaksbehandler(): List<Ytelse> {
-        val innloggetSaksbehandlerIdent = tokenUtil.getIdent()
-        return saksbehandlerService.getTildelteYtelserForSaksbehandler(innloggetSaksbehandlerIdent)
     }
 }

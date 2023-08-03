@@ -1,18 +1,28 @@
 package no.nav.klage.search.service
 
+import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
+import no.nav.klage.kodeverk.hjemmel.Hjemmel
+import no.nav.klage.search.clients.kabalinnstillinger.InnstillingerView
 import no.nav.klage.search.clients.kabalinnstillinger.KabalInnstillingerClient
+import no.nav.klage.search.domain.saksbehandler.Innstillinger
 import org.springframework.stereotype.Service
 
 @Service
 class KabalInnstillingerService(
     private val kabalInnstillingerClient: KabalInnstillingerClient,
 ) {
-
-    //TODO: Bør vi ha et cache her? Kan være et problem om leder gir nye tilganger, kanskje et kortere cache?
-    fun getTildelteYtelserForSaksbehandler(navIdent: String): List<Ytelse> {
-        return kabalInnstillingerClient.getSaksbehandlersTildelteYtelser(navIdent).ytelseIdList.map {
-            Ytelse.of(it)
-        }
+    fun getInnstillingerForCurrentSaksbehandler(): Innstillinger {
+        return mapToInnstillinger(kabalInnstillingerClient.getInnloggetSaksbehandlersInnstillinger())
     }
+
+    private fun mapToInnstillinger(innstillingerView: InnstillingerView): Innstillinger {
+        return Innstillinger(
+            hjemler = innstillingerView.hjemler.map { Hjemmel.of(it) },
+            ytelser = innstillingerView.ytelser.map { Ytelse.of(it) },
+            typer = innstillingerView.typer.map { Type.of(it) },
+        )
+    }
+
+
 }
