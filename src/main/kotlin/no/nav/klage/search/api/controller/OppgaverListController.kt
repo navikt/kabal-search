@@ -3,13 +3,13 @@ package no.nav.klage.search.api.controller
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
-import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.api.mapper.BehandlingListMapper
 import no.nav.klage.search.api.mapper.BehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.*
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.exceptions.MissingTilgangException
 import no.nav.klage.search.service.ElasticsearchService
+import no.nav.klage.search.service.OppgaverService
 import no.nav.klage.search.service.saksbehandler.InnloggetSaksbehandlerService
 import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import no.nav.klage.search.util.getLogger
@@ -27,6 +27,7 @@ class OppgaverListController(
     private val behandlingerSearchCriteriaMapper: BehandlingerSearchCriteriaMapper,
     private val oAuthTokenService: OAuthTokenService,
     private val innloggetSaksbehandlerService: InnloggetSaksbehandlerService,
+    private val oppgaverService: OppgaverService,
 ) {
 
     companion object {
@@ -43,27 +44,7 @@ class OppgaverListController(
         queryParams: MineLedigeOppgaverQueryParams
     ): BehandlingerListResponse {
         logger.debug("Params: {}", queryParams)
-
-        val ytelser = getYtelserQueryListForSaksbehandler(
-            ytelser = queryParams.ytelser,
-            tildelteYtelser = innloggetSaksbehandlerService.getTildelteYtelserForSaksbehandler()
-        )
-        //TODO: Dette hadde vært bedre å håndtere i ElasticsearchService enn her
-        if (ytelser.isEmpty()) {
-            return BehandlingerListResponse(antallTreffTotalt = 0, behandlinger = emptyList())
-        }
-
-        val searchCriteria = behandlingerSearchCriteriaMapper.toLedigeOppgaverSearchCriteria(
-            queryParams = queryParams.copy(ytelser = ytelser),
-        )
-
-        val esResponse = elasticsearchService.findLedigeOppgaverByCriteria(searchCriteria)
-        return BehandlingerListResponse(
-            antallTreffTotalt = esResponse.totalHits.toInt(),
-            behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
-                esBehandlinger = esResponse.searchHits.map { it.content },
-            )
-        )
+        return oppgaverService.getLedigeOppgaverForInnloggetSaksbehandler(queryParams = queryParams)
     }
 
     @Operation(
@@ -330,23 +311,7 @@ class OppgaverListController(
         queryParams: MineLedigeOppgaverCountQueryParams
     ): AntallUtgaatteFristerResponse {
         logger.debug("Params: {}", queryParams)
-
-        val ytelser = getYtelserQueryListForSaksbehandler(
-            ytelser = queryParams.ytelser,
-            tildelteYtelser = innloggetSaksbehandlerService.getTildelteYtelserForSaksbehandler()
-        )
-        //TODO: Dette hadde vært bedre å håndtere i ElasticsearchService enn her
-        if (ytelser.isEmpty()) {
-            return AntallUtgaatteFristerResponse(0)
-        }
-
-        return AntallUtgaatteFristerResponse(
-            antall = elasticsearchService.countLedigeOppgaverMedUtgaattFristByCriteria(
-                criteria = behandlingerSearchCriteriaMapper.toSearchCriteriaForLedigeMedUtgaattFrist(
-                    queryParams = queryParams.copy(ytelser = ytelser),
-                )
-            )
-        )
+        return oppgaverService.getUtgaatteFristerAvailableToSaksbehandlerCount(queryParams = queryParams)
     }
 
     private fun validateRettigheterForEnhetensTildelteOppgaver() {
@@ -356,16 +321,5 @@ class OppgaverListController(
             logger.warn(message)
             throw MissingTilgangException(message)
         }
-    }
-
-    private fun getYtelserQueryListForSaksbehandler(
-        ytelser: List<String>,
-        tildelteYtelser: List<Ytelse>
-    ): List<String> {
-        return if (ytelser.isEmpty()) {
-            tildelteYtelser.map { it.id }
-        } else {
-            tildelteYtelser.map { it.id }.intersect(ytelser.toSet())
-        }.toList()
     }
 }
