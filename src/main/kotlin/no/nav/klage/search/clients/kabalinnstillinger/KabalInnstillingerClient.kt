@@ -23,7 +23,7 @@ class KabalInnstillingerClient(
     fun getInnloggetSaksbehandlersInnstillinger(): InnstillingerView {
         logger.debug("Getting innstillinger for current saksbehandler in kabal-innstillinger")
         return kabalInnstillingerWebClient.get()
-            .uri { it.path("/ansatte/me/innstillinger").build() }
+            .uri { it.path("/me/innstillinger").build() }
             .header(
                 HttpHeaders.AUTHORIZATION,
                 "Bearer ${tokenUtil.getUserAccessTokenWithKabalInnstillingerScope()}"
