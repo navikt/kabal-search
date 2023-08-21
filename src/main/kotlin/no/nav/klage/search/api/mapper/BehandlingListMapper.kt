@@ -42,6 +42,7 @@ class BehandlingListMapper {
                 frist = esBehandling.frist,
                 mottatt = esBehandling.sakMottattKaDato.toLocalDate(),
                 medunderskriverident = esBehandling.medunderskriverident,
+                medunderskriverEnhet = esBehandling.medunderskriverEnhet,
                 medunderskriverFlyt = MedunderskriverFlyt.of(esBehandling.medunderskriverFlytId),
                 medunderskriverFlytId = esBehandling.medunderskriverFlytId,
                 tildeltSaksbehandlerident = esBehandling.tildeltSaksbehandlerident,

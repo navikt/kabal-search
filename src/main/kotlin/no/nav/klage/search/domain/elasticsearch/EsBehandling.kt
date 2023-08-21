@@ -47,6 +47,8 @@ data class EsBehandling(
 
     override val medunderskriverFlytId: String,
 
+    override val medunderskriverEnhet: String? = null,
+
     val tildeltEnhet: String?,
 
     override val hjemmelIdList: List<String> = emptyList(),
@@ -88,6 +90,7 @@ interface EsAnonymBehandling {
     val tildeltSaksbehandlerident: String?
     val medunderskriverFlytId: String
     val medunderskriverident: String?
+    val medunderskriverEnhet: String?
     val sakMottattKaDato: LocalDateTime
     val frist: LocalDate?
     val hjemmelIdList: List<String>

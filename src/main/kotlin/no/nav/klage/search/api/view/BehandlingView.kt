@@ -17,6 +17,7 @@ data class BehandlingView(
     val frist: LocalDate?,
     val mottatt: LocalDate,
     val medunderskriverident: String?,
+    val medunderskriverEnhet: String?,
     val medunderskriverFlyt: MedunderskriverFlyt,
     val medunderskriverFlytId: String,
     val utfallId: String?,

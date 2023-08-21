@@ -88,4 +88,24 @@ class MicrosoftGraphClient(
             Mono.empty()
         }
     }
+
+    @Retryable
+    fun getEnhetsnummerForNavIdent(navIdent: String): String {
+        logger.debug("findEnhetsnummerForNavIdent $navIdent")
+        return microsoftGraphWebClient.get()
+            .uri { uriBuilder ->
+                uriBuilder
+                    .path("/users")
+                    .queryParam("\$filter", "onPremisesSamAccountName eq '$navIdent'")
+                    .queryParam("\$select", userSelect)
+                    .queryParam("\$count", true)
+                    .build()
+            }
+            .header("Authorization", "Bearer ${tokenUtil.getAppAccessTokenWithGraphScope()}")
+            .header("ConsistencyLevel", "eventual")
+            .retrieve()
+            .bodyToMono<AzureUserList>().block()?.value?.firstOrNull()?.streetAddress
+            ?.let { secureLogger.debug("NavIdent enhet: {}", it); it }
+            ?: throw RuntimeException("AzureAD data about user by navIdent could not be fetched")
+    }
 }

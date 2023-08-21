@@ -40,4 +40,7 @@ class SaksbehandlerService(
 
     fun getNameForIdent(it: String) =
         getNamesForSaksbehandlere(setOf(it)).getOrDefault(it, "Ukjent navn")
+
+    fun getEnhetsnummerForNavIdent(navIdent: String): String = azureGateway.getEnhetsnummerForNavIdent(navIdent)
+
 }

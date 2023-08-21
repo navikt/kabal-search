@@ -497,11 +497,11 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.addBasicFilters(this)
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
         baseQuery.mustNot(beSattPaaVent())
-        baseQuery.must(beTildeltEnhet(enhetId))
+        baseQuery.should(beTildeltEnhet(enhetId))
         if (saksbehandlere.isNotEmpty()) {
-            //TODO: Skal man her ta med oppgaver hvor en saksbehandler i enheten er medunderskriver på en annen enhets oppgave?
-            // Det er ikke med nå, jeg inkluderer ikke medunderskrivere i det hele tatt
             baseQuery.must(beTildeltSaksbehandler(saksbehandlere))
+        } else {
+            baseQuery.should(beMedunderskriverIEnhet(enhetId))
         }
         baseQuery.mustNot(beFeilregistrert())
 
@@ -679,6 +679,9 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
 
     private fun beTildeltEnhet(enhetId: String): TermQueryBuilder =
         QueryBuilders.termQuery(EsBehandling::tildeltEnhet.name, enhetId)
+
+    private fun beMedunderskriverIEnhet(enhetId: String): TermQueryBuilder =
+        QueryBuilders.termQuery(EsBehandling::medunderskriverEnhet.name, enhetId)
 
     private fun haveSakenGjelder(fnr: String): TermQueryBuilder =
         QueryBuilders.termQuery(EsBehandling::sakenGjelderFnr.name, fnr)

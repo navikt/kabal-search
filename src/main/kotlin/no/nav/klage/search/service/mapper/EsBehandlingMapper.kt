@@ -46,6 +46,7 @@ class EsBehandlingMapper(
             tildeltSaksbehandlernavn = getSaksbehandlernavn(behandling.gjeldendeTildeling?.saksbehandler?.ident),
             medunderskriverident = behandling.medunderskriver?.saksbehandler?.ident,
             medunderskriverFlytId = behandling.medunderskriverFlytStatus.id,
+            medunderskriverEnhet = getEnhetsnummerForNavIdent(behandling.medunderskriver?.saksbehandler?.ident),
             tildeltEnhet = behandling.gjeldendeTildeling?.enhet?.nr,
             hjemmelIdList = behandling.hjemler.map { it.id },
 
@@ -67,6 +68,12 @@ class EsBehandlingMapper(
     private fun getSaksbehandlernavn(navIdent: String?): String? {
         return navIdent?.let {
             saksbehandlerService.getNameForIdent(it)
+        }
+    }
+
+    private fun getEnhetsnummerForNavIdent(navIdent: String?): String? {
+        return navIdent?.let {
+            saksbehandlerService.getEnhetsnummerForNavIdent(it)
         }
     }
 }
