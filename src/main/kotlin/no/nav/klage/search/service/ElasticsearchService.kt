@@ -501,7 +501,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         if (saksbehandlere.isNotEmpty()) {
             baseQuery.must(beTildeltSaksbehandler(saksbehandlere))
         } else {
-            baseQuery.should(beMedunderskriverIEnhet(enhetId))
+            baseQuery.should(beSendtTilMedunderskriverIEnhet(enhetId))
         }
         baseQuery.mustNot(beFeilregistrert())
 
@@ -680,8 +680,17 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     private fun beTildeltEnhet(enhetId: String): TermQueryBuilder =
         QueryBuilders.termQuery(EsBehandling::tildeltEnhet.name, enhetId)
 
-    private fun beMedunderskriverIEnhet(enhetId: String): TermQueryBuilder =
-        QueryBuilders.termQuery(EsBehandling::medunderskriverEnhet.name, enhetId)
+    private fun beSendtTilMedunderskriverIEnhet(enhetsnummer: String): BoolQueryBuilder {
+        val innerQueryMedunderskriver = QueryBuilders.boolQuery()
+        innerQueryMedunderskriver.should(QueryBuilders.termQuery(EsBehandling::medunderskriverEnhet.name, enhetsnummer))
+        innerQueryMedunderskriver.should(
+            QueryBuilders.termQuery(
+                EsBehandling::medunderskriverFlytId.name,
+                MedunderskriverFlyt.OVERSENDT_TIL_MEDUNDERSKRIVER.id
+            )
+        )
+        return innerQueryMedunderskriver
+    }
 
     private fun haveSakenGjelder(fnr: String): TermQueryBuilder =
         QueryBuilders.termQuery(EsBehandling::sakenGjelderFnr.name, fnr)
