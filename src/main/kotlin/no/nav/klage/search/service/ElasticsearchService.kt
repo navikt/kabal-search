@@ -682,8 +682,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
 
     private fun beSendtTilMedunderskriverIEnhet(enhetsnummer: String): BoolQueryBuilder {
         val innerQueryMedunderskriver = QueryBuilders.boolQuery()
-        innerQueryMedunderskriver.should(QueryBuilders.termQuery(EsBehandling::medunderskriverEnhet.name, enhetsnummer))
-        innerQueryMedunderskriver.should(
+        innerQueryMedunderskriver.must(QueryBuilders.termQuery(EsBehandling::medunderskriverEnhet.name, enhetsnummer))
+        innerQueryMedunderskriver.must(
             QueryBuilders.termQuery(
                 EsBehandling::medunderskriverFlytId.name,
                 MedunderskriverFlyt.OVERSENDT_TIL_MEDUNDERSKRIVER.id
