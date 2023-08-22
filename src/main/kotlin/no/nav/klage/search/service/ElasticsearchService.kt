@@ -15,6 +15,7 @@ import no.nav.klage.search.repositories.EsBehandlingRepository
 import no.nav.klage.search.repositories.SearchHits
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getMedian
+import no.nav.klage.search.util.getSecureLogger
 import org.opensearch.common.unit.TimeValue
 import org.opensearch.index.query.BoolQueryBuilder
 import org.opensearch.index.query.QueryBuilder
@@ -36,6 +37,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
+        private val secureLogger = getSecureLogger()
 
         private const val ISO8601 = "yyyy-MM-dd"
         private const val ZONEID_UTC = "Z"
@@ -316,7 +318,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
 
         baseQuery.must(haveSakenGjelder(fnr))
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -330,7 +332,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beTildeltSaksbehandler())
         baseQuery.mustNot(beFeilregistrert())
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -342,7 +344,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
         baseQuery.mustNot(beTildeltSaksbehandler())
         baseQuery.mustNot(beFeilregistrert())
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -356,7 +358,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(beSentToROL())
         baseQuery.mustNot(beAssignedToROL())
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -369,7 +371,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.mustNot(beTildeltSaksbehandler())
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(haveFristMellom(fristFom, fristTom))
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -384,7 +386,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beTildeltSaksbehandler(navIdent))
         baseQuery.mustNot(beFeilregistrert())
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -398,7 +400,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beAssignedToROL(navIdent = navIdent))
         baseQuery.mustNot(beFeilregistrert())
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -408,7 +410,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.addSecurityFilters(this)
         baseQuery.must(QueryBuilders.idsQuery().addIds(behandlingId))
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -422,7 +424,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beTildeltSaksbehandlerOrMedunderskriver(navIdent))
         baseQuery.mustNot(beFeilregistrert())
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -437,7 +439,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beSentToROL())
         baseQuery.must(beAssignedToROL(navIdent = navIdent))
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -451,7 +453,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beTildeltSaksbehandlerOrMedunderskriver(navIdent))
         baseQuery.mustNot(beFeilregistrert())
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -469,7 +471,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         }
         baseQuery.mustNot(beFeilregistrert())
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -486,7 +488,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         }
         baseQuery.mustNot(beFeilregistrert())
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -505,7 +507,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         }
         baseQuery.mustNot(beFeilregistrert())
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
