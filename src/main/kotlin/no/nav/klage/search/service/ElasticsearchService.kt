@@ -503,6 +503,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         if (saksbehandlere.isNotEmpty()) {
             baseQuery.must(beTildeltSaksbehandler(saksbehandlere))
         } else {
+            secureLogger.debug("Adding baseQuery.should(beSendtTilMedunderskriverIEnhet(enhetId))")
             baseQuery.should(beSendtTilMedunderskriverIEnhet(enhetId))
         }
         baseQuery.mustNot(beFeilregistrert())
