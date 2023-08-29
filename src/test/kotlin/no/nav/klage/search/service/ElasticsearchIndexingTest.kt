@@ -127,6 +127,7 @@ class ElasticsearchIndexingTest {
             feilregistrert = LocalDateTime.now(),
             rolIdent = "null",
             rolStateId = "1",
+            saksnummer = "123",
 
         )
 
@@ -158,6 +159,7 @@ class ElasticsearchIndexingTest {
             sattPaaVent = LocalDate.now(),
             rolIdent = "ROLIDENT",
             rolStateId = "1",
+            saksnummer = "123",
         )
     }
 }

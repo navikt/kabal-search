@@ -38,6 +38,7 @@ class EsBehandlingMapper(
             ytelseId = behandling.ytelse.id,
             typeId = behandling.type.id,
             fagsystemId = behandling.sakFagsystem.id,
+            saksnummer = behandling.sakFagsakId,
             innsendt = behandling.innsendtDato,
             sakMottattKaDato = behandling.sakMottattKaDato,
             avsluttetAvSaksbehandler = behandling.avsluttetAvSaksbehandlerTidspunkt,

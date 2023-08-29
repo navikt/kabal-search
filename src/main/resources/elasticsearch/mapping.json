@@ -61,6 +61,9 @@
         }
       }
     },
+    "saksnummer": {
+      "type": "keyword"
+    },
     "sattPaaVent": {
       "type": "date",
       "format": "date"

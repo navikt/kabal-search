@@ -88,6 +88,7 @@ class FortroligElasticsearchServiceTest {
             fagsystemId = "1",
             rolIdent = "ROLIDENT",
             rolStateId = "1",
+            saksnummer = "123",
         )
         val fortroligPerson =
             EsBehandling(
@@ -107,6 +108,7 @@ class FortroligElasticsearchServiceTest {
                 fagsystemId = "1",
                 rolIdent = "ROLIDENT",
                 rolStateId = "1",
+                saksnummer = "123",
             )
         val strengtFortroligPerson = EsBehandling(
             behandlingId = idStrengtFortrolig,
@@ -125,6 +127,7 @@ class FortroligElasticsearchServiceTest {
             fagsystemId = "1",
             rolIdent = "ROLIDENT",
             rolStateId = "1",
+            saksnummer = "123",
         )
         val egenAnsattPerson =
             EsBehandling(
@@ -144,6 +147,7 @@ class FortroligElasticsearchServiceTest {
                 fagsystemId = "1",
                 rolIdent = "ROLIDENT",
                 rolStateId = "1",
+                saksnummer = "123",
             )
         val egenAnsattOgFortroligPerson =
             EsBehandling(
@@ -164,6 +168,7 @@ class FortroligElasticsearchServiceTest {
                 fagsystemId = "1",
                 rolIdent = "ROLIDENT",
                 rolStateId = "1",
+                saksnummer = "123",
             )
         val egenAnsattOgStrengtFortroligPerson =
             EsBehandling(
@@ -184,6 +189,7 @@ class FortroligElasticsearchServiceTest {
                 fagsystemId = "1",
                 rolIdent = "ROLIDENT",
                 rolStateId = "1",
+                saksnummer = "123",
             )
         repo.save(normalPerson)
         repo.save(fortroligPerson)
