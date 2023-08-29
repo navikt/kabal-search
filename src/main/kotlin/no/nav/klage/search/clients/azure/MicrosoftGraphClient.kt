@@ -74,7 +74,7 @@ class MicrosoftGraphClient(
     }
 
     @Retryable
-    fun getEnhetensAnsattesNavIdentsWithKabalSaksbehandlerRole(enhetsnummer: String): List<String> {
+    fun getEnhetensAnsatteWithKabalSaksbehandlerRole(enhetsnummer: String): AzureSlimUserList {
         logger.debug("getEnhetensAnsattesNavIdentsWithKabalSaksbehandlerRole from Microsoft Graph")
         return microsoftGraphWebClient.get()
             .uri { uriBuilder ->
@@ -91,7 +91,6 @@ class MicrosoftGraphClient(
             .retrieve()
             .bodyToMono<AzureSlimUserList>()
             .block()
-            .let { userList -> userList?.value?.map { it.onPremisesSamAccountName } }
             ?: throw RuntimeException("AzureAD data about authenticated user could not be fetched")
     }
 
