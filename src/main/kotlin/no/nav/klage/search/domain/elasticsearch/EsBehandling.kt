@@ -26,6 +26,7 @@ data class EsBehandling(
     override val typeId: String,
 
     val fagsystemId: String,
+    val saksnummer: String,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     val innsendt: LocalDate? = null,

@@ -11,6 +11,7 @@ class BehandlingSkjemaV2(
     val ytelse: Kode,
     val type: Kode,
     val sakFagsystem: Kode,
+    val sakFagsakId: String,
     val innsendtDato: LocalDate?,
     val sakMottattKaDato: LocalDateTime,
     val avsluttetAvSaksbehandlerTidspunkt: LocalDateTime?,

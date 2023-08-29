@@ -52,6 +52,7 @@ class BehandlingListMapper {
                 sattPaaVent = esBehandling.toSattPaaVent(),
                 feilregistrert = esBehandling.feilregistrert,
                 fagsystemId = esBehandling.fagsystemId,
+                saksnummer = esBehandling.saksnummer,
             )
         }
     }

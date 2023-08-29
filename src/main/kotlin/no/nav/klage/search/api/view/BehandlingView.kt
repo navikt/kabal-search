@@ -27,6 +27,7 @@ data class BehandlingView(
     val sattPaaVent: SattPaaVent?,
     val feilregistrert: LocalDateTime?,
     val fagsystemId: String,
+    val saksnummer: String,
 )
 
 data class SattPaaVent(
