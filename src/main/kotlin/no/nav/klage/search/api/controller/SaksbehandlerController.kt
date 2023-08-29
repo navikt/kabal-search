@@ -11,6 +11,7 @@ import no.nav.klage.search.service.ElasticsearchService
 import no.nav.klage.search.service.saksbehandler.InnloggetSaksbehandlerService
 import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import no.nav.klage.search.service.saksbehandler.SaksbehandlerService
+import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getSecureLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
@@ -26,6 +27,7 @@ class SaksbehandlerController(
     private val oAuthTokenService: OAuthTokenService,
     private val innloggetSaksbehandlerService: InnloggetSaksbehandlerService,
     private val saksbehandlerService: SaksbehandlerService,
+    private val tokenUtil: TokenUtil,
 ) {
 
     companion object {
@@ -70,6 +72,7 @@ class SaksbehandlerController(
         val saksbehandlereFromMSGraph = saksbehandlerService.getSaksbehandlereForEnhet(enhetsnummer = enhet)
 
         secureLogger.debug("fromMS: {}", saksbehandlereFromMSGraph)
+        secureLogger.debug("MSGraph app token: {}", tokenUtil.getAppAccessTokenWithGraphScope())
 
         return SaksbehandlereListResponse(
             saksbehandlere = (saksbehandlereFromES + saksbehandlereFromMSGraph)
