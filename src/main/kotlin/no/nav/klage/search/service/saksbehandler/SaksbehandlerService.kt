@@ -42,7 +42,6 @@ class SaksbehandlerService(
 
     fun getSaksbehandlereForEnhet(enhetsnummer: String): List<SaksbehandlereListResponse.SaksbehandlerView> {
         val azureOutput = azureGateway.getEnhetensAnsattesNavIdentsWithKabalSaksbehandlerRole(enhetsnummer = enhetsnummer)
-        logger.debug("azureOutput: {}", azureOutput)
         return azureOutput.value?.map {
             SaksbehandlereListResponse.SaksbehandlerView(
                 navIdent = it.onPremisesSamAccountName,
