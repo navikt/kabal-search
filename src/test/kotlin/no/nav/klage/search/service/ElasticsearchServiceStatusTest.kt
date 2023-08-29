@@ -99,6 +99,7 @@ class ElasticsearchServiceStatusTest {
         fagsystemId = "1",
         rolIdent = "ROLIDENT",
         rolStateId = "1",
+        saksnummer = "123",
     )
 
 }

@@ -77,6 +77,7 @@ class ElasticsearchServiceTest {
             fagsystemId = "1",
             rolIdent = "ROLIDENT",
             rolStateId = "1",
+            saksnummer = "123",
         )
         val klagebehandling2 =
             EsBehandling(
@@ -95,6 +96,7 @@ class ElasticsearchServiceTest {
                 fagsystemId = "1",
                 rolIdent = "ROLIDENT",
                 rolStateId = "1",
+                saksnummer = "123",
             )
         repo.save(klagebehandling1)
         repo.save(klagebehandling2)
