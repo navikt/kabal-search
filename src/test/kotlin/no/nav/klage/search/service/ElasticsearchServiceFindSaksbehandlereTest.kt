@@ -57,7 +57,7 @@ class ElasticsearchServiceFindSaksbehandlereTest {
 
     @Test
     @Order(3)
-    fun `lagrer tre oppgaver for senere tester`() {
+    fun `lagrer oppgaver for senere tester`() {
         repo.save(
             createEsKlagebehandling(
                 id = "1001",
@@ -140,8 +140,6 @@ class ElasticsearchServiceFindSaksbehandlereTest {
                 )
             )
         assertThat(saksbehandlere.size).isEqualTo(4L)
-        assertThat(saksbehandlere.first().navn).isEqualTo("Kalle Anka")
-        assertThat(saksbehandlere.last().navn).isEqualTo("Kalle Dnka")
     }
 
     private fun createEsKlagebehandling(

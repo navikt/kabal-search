@@ -200,17 +200,16 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits.anonymize()
     }
 
-    open fun findSaksbehandlereByEnhetCriteria(criteria: SaksbehandlereByEnhetSearchCriteria): SortedSet<Saksbehandler> {
+    open fun findSaksbehandlereByEnhetCriteria(criteria: SaksbehandlereByEnhetSearchCriteria): Set<Saksbehandler> {
         val searchHits: SearchHits<EsBehandling> = esBehandlingRepository.search(criteria.toEsQuery())
 
-        //Sort results by etternavn
         return searchHits.map {
             Saksbehandler(
                 navIdent = it.content.tildeltSaksbehandlerident
                     ?: throw RuntimeException("tildeltSaksbehandlerident is null. Can't happen"),
                 navn = it.content.tildeltSaksbehandlernavn ?: "Navn mangler"
             )
-        }.toSortedSet(compareBy { it.navn.split(" ").last() })
+        }.toSet()
     }
 
     open fun countIkkeTildelt(ytelse: Ytelse, type: Type): Long {
