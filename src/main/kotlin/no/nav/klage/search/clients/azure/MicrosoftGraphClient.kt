@@ -80,7 +80,7 @@ class MicrosoftGraphClient(
             .uri { uriBuilder ->
                 uriBuilder
                     .path("/groups/$kabalSaksbehandlingRoleId/transitivemembers/microsoft.graph.user")
-                    .queryParam("\$filter", "streetAddress eq '$enhetsnummer' and")
+                    .queryParam("\$filter", "streetAddress eq '$enhetsnummer'")
                     .queryParam("\$count", true)
                     .queryParam("\$top", 500)
                     .queryParam("\$select", "userPrincipalName,onPremisesSamAccountName,displayName")
