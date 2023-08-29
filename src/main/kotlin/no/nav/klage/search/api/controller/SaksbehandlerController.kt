@@ -67,7 +67,7 @@ class SaksbehandlerController(
 
         return SaksbehandlereListResponse(
             saksbehandlere = (saksbehandlereFromES + saksbehandlereFromMSGraph)
-                .toSortedSet(compareBy { it.navn.split(" ").last() }).toList()
+                .toSortedSet(compareBy { it.navn }).toList()
         )
     }
 
