@@ -200,7 +200,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits.anonymize()
     }
 
-    open fun findSaksbehandlereByEnhetCriteria(criteria: SaksbehandlereByEnhetSearchCriteria): List<Saksbehandler> {
+    open fun findSaksbehandlereByEnhetCriteria(criteria: SaksbehandlereByEnhetSearchCriteria): Set<Saksbehandler> {
         val searchHits: SearchHits<EsBehandling> = esBehandlingRepository.search(criteria.toEsQuery())
 
         return searchHits.map {
@@ -209,7 +209,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                     ?: throw RuntimeException("tildeltSaksbehandlerident is null. Can't happen"),
                 navn = it.content.tildeltSaksbehandlernavn ?: "Navn mangler"
             )
-        }
+        }.toSet()
     }
 
     open fun countIkkeTildelt(ytelse: Ytelse, type: Type): Long {
