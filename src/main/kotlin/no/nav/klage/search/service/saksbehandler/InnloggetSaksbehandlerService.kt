@@ -2,15 +2,12 @@ package no.nav.klage.search.service.saksbehandler
 
 import no.nav.klage.search.domain.saksbehandler.Enhet
 import no.nav.klage.search.gateway.AzureGateway
-import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import org.springframework.stereotype.Service
 
 @Service
 class InnloggetSaksbehandlerService(
     private val azureGateway: AzureGateway,
-    private val tokenUtil: TokenUtil,
-    private val saksbehandlerService: SaksbehandlerService
 ) {
 
     companion object {

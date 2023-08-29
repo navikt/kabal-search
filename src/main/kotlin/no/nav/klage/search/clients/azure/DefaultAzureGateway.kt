@@ -48,6 +48,14 @@ class DefaultAzureGateway(
             throw e
         }
 
+    override fun getEnhetensAnsattesNavIdents(enhetsnummer: String): List<String> =
+        try {
+            microsoftGraphClient.getEnhetensAnsattesNavIdents(enhetsnummer = enhetsnummer)
+        } catch (e: Exception) {
+            logger.error("Failed to call getEnhetensAnsattesNavIdents", e)
+            throw e
+        }
+
     private fun mapToEnhet(enhetNr: String): Enhet =
         KodeverkEnhet.values().find { it.navn == enhetNr }
             ?.let { Enhet(it.navn, it.beskrivelse) }

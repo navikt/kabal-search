@@ -71,6 +71,28 @@ class MicrosoftGraphClient(
         }
     }
 
+    @Retryable
+    fun getEnhetensAnsattesNavIdents(enhetsnummer: String): List<String> {
+        logger.debug("getEnhetensAnsattesNavIdents from Microsoft Graph")
+        return microsoftGraphWebClient.get()
+            .uri { uriBuilder ->
+                uriBuilder
+                    .path("/users")
+                    .queryParam("\$filter", "streetAddress eq '$enhetsnummer'")
+                    .queryParam("\$count", true)
+                    .queryParam("\$top", 500)
+                    .queryParam("\$select", "userPrincipalName,onPremisesSamAccountName,displayName")
+                    .build()
+            }
+            .header("Authorization", "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithGraphScope()}")
+            .header("ConsistencyLevel", "eventual")
+            .retrieve()
+            .bodyToMono<AzureSlimUserList>()
+            .block()
+            .let { userList -> userList?.value?.map { it.onPremisesSamAccountName } }
+            ?: throw RuntimeException("AzureAD data about authenticated user could not be fetched")
+    }
+
     private fun getDisplayNames(navIdents: String): Mono<AzureSlimUserList> {
         return try {
             microsoftGraphWebClient.get()

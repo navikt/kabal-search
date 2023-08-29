@@ -1,7 +1,7 @@
 package no.nav.klage.search.service.saksbehandler
 
+import no.nav.klage.search.api.view.SaksbehandlereListResponse
 import no.nav.klage.search.gateway.AzureGateway
-import no.nav.klage.search.service.KabalInnstillingerService
 import no.nav.klage.search.util.getLogger
 import org.springframework.stereotype.Service
 import kotlin.system.measureTimeMillis
@@ -9,7 +9,6 @@ import kotlin.system.measureTimeMillis
 @Service
 class SaksbehandlerService(
     private val azureGateway: AzureGateway,
-    private val kabalInnstillingerService: KabalInnstillingerService
 ) {
 
     companion object {
@@ -40,4 +39,13 @@ class SaksbehandlerService(
 
     fun getNameForIdent(it: String) =
         getNamesForSaksbehandlere(setOf(it)).getOrDefault(it, "Ukjent navn")
+
+    fun getSaksbehandlereForEnhet(enhetsnummer: String): List<SaksbehandlereListResponse.SaksbehandlerView> {
+        return getNamesForSaksbehandlere(azureGateway.getEnhetensAnsattesNavIdents(enhetsnummer = enhetsnummer).toSet()).map {
+            SaksbehandlereListResponse.SaksbehandlerView(
+                navIdent = it.key,
+                navn = it.value,
+            )
+        }
+    }
 }
