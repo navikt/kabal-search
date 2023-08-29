@@ -10,6 +10,7 @@ import no.nav.klage.search.exceptions.MissingTilgangException
 import no.nav.klage.search.service.ElasticsearchService
 import no.nav.klage.search.service.saksbehandler.InnloggetSaksbehandlerService
 import no.nav.klage.search.service.saksbehandler.OAuthTokenService
+import no.nav.klage.search.service.saksbehandler.SaksbehandlerService
 import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.GetMapping
@@ -23,6 +24,7 @@ class SaksbehandlerController(
     private val elasticsearchService: ElasticsearchService,
     private val oAuthTokenService: OAuthTokenService,
     private val innloggetSaksbehandlerService: InnloggetSaksbehandlerService,
+    private val saksbehandlerService: SaksbehandlerService,
 ) {
 
     companion object {
@@ -53,15 +55,20 @@ class SaksbehandlerController(
                 kanBehandleStrengtFortrolig = oAuthTokenService.kanBehandleStrengtFortrolig(),
             )
         )
+
+        val saksbehandlereFromES = esResponse.map {
+            SaksbehandlereListResponse.SaksbehandlerView(
+                navIdent = it.navIdent,
+                navn = it.navn
+            )
+        }
+
+        val saksbehandlereFromMSGraph = saksbehandlerService.getSaksbehandlereForEnhet(enhetsnummer = enhet)
+
         return SaksbehandlereListResponse(
-            saksbehandlere = esResponse.map {
-                SaksbehandlereListResponse.SaksbehandlerView(
-                    navIdent = it.navIdent,
-                    navn = it.navn
-                )
-            }
+            saksbehandlere = (saksbehandlereFromES + saksbehandlereFromMSGraph)
+                .toSortedSet(compareBy { it.navn }).toList()
         )
     }
 
 }
-
