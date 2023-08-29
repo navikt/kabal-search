@@ -41,7 +41,8 @@ class SaksbehandlerService(
         getNamesForSaksbehandlere(setOf(it)).getOrDefault(it, "Ukjent navn")
 
     fun getSaksbehandlereForEnhet(enhetsnummer: String): List<SaksbehandlereListResponse.SaksbehandlerView> {
-        return getNamesForSaksbehandlere(azureGateway.getEnhetensAnsattesNavIdents(enhetsnummer = enhetsnummer).toSet()).map {
+        return getNamesForSaksbehandlere(azureGateway.getEnhetensAnsattesNavIdentsWithKabalSaksbehandlerRole(enhetsnummer = enhetsnummer)
+            .toSet()).map {
             SaksbehandlereListResponse.SaksbehandlerView(
                 navIdent = it.key,
                 navn = it.value,

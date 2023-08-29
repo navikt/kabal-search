@@ -48,9 +48,9 @@ class DefaultAzureGateway(
             throw e
         }
 
-    override fun getEnhetensAnsattesNavIdents(enhetsnummer: String): List<String> =
+    override fun getEnhetensAnsattesNavIdentsWithKabalSaksbehandlerRole(enhetsnummer: String): List<String> =
         try {
-            microsoftGraphClient.getEnhetensAnsattesNavIdents(enhetsnummer = enhetsnummer)
+            microsoftGraphClient.getEnhetensAnsattesNavIdentsWithKabalSaksbehandlerRole(enhetsnummer = enhetsnummer)
         } catch (e: Exception) {
             logger.error("Failed to call getEnhetensAnsattesNavIdents", e)
             throw e

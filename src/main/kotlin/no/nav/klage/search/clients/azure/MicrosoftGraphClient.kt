@@ -4,6 +4,7 @@ import no.nav.klage.search.config.CacheWithJCacheConfiguration
 import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getSecureLogger
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
@@ -16,7 +17,8 @@ import reactor.core.scheduler.Schedulers
 @Component
 class MicrosoftGraphClient(
     private val microsoftGraphWebClient: WebClient,
-    private val tokenUtil: TokenUtil
+    private val tokenUtil: TokenUtil,
+    @Value("\${KABAL_SAKSBEHANDLING_ROLE_ID}") private val kabalSaksbehandlingRoleId: String,
 ) {
 
     companion object {
@@ -72,19 +74,19 @@ class MicrosoftGraphClient(
     }
 
     @Retryable
-    fun getEnhetensAnsattesNavIdents(enhetsnummer: String): List<String> {
-        logger.debug("getEnhetensAnsattesNavIdents from Microsoft Graph")
+    fun getEnhetensAnsattesNavIdentsWithKabalSaksbehandlerRole(enhetsnummer: String): List<String> {
+        logger.debug("getEnhetensAnsattesNavIdentsWithKabalSaksbehandlerRole from Microsoft Graph")
         return microsoftGraphWebClient.get()
             .uri { uriBuilder ->
                 uriBuilder
-                    .path("/users")
-                    .queryParam("\$filter", "streetAddress eq '$enhetsnummer'")
+                    .path("/groups/$kabalSaksbehandlingRoleId/transitivemembers/microsoft.graph.user")
+                    .queryParam("\$filter", "streetAddress eq '$enhetsnummer' and")
                     .queryParam("\$count", true)
                     .queryParam("\$top", 500)
                     .queryParam("\$select", "userPrincipalName,onPremisesSamAccountName,displayName")
                     .build()
             }
-            .header("Authorization", "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithGraphScope()}")
+            .header("Authorization", "Bearer ${tokenUtil.getAppAccessTokenWithGraphScope()}")
             .header("ConsistencyLevel", "eventual")
             .retrieve()
             .bodyToMono<AzureSlimUserList>()
