@@ -67,11 +67,14 @@ class SaksbehandlerController(
             )
         }
 
+        //TODO: Remove when fixed
         secureLogger.debug("fromEs: {}", saksbehandlereFromES)
 
         val saksbehandlereFromMSGraph = saksbehandlerService.getSaksbehandlereForEnhet(enhetsnummer = enhet)
 
+        //TODO: Remove when fixed
         secureLogger.debug("fromMS: {}", saksbehandlereFromMSGraph)
+        //TODO: Remove when fixed
         secureLogger.debug("MSGraph app token: {}", tokenUtil.getAppAccessTokenWithGraphScope())
 
         return SaksbehandlereListResponse(

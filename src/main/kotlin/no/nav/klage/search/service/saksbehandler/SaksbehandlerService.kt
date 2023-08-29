@@ -20,7 +20,7 @@ class SaksbehandlerService(
         const val MAX_AMOUNT_IDENTS_IN_GRAPH_QUERY = 15
     }
 
-    fun getNamesForSaksbehandlere(identer: Set<String>): Map<String, String> {
+    private fun expandAndReturnSaksbehandlerNameCache(identer: Set<String>): Map<String, String> {
         logger.debug("Fetching names for saksbehandlere from Microsoft Graph")
 
         val identerNotInCache = identer.toMutableSet()
@@ -38,15 +38,15 @@ class SaksbehandlerService(
     }
 
     fun getNameForIdent(it: String) =
-        getNamesForSaksbehandlere(setOf(it)).getOrDefault(it, "Ukjent navn")
+        expandAndReturnSaksbehandlerNameCache(setOf(it)).getOrDefault(it, "Ukjent navn")
 
     fun getSaksbehandlereForEnhet(enhetsnummer: String): List<SaksbehandlereListResponse.SaksbehandlerView> {
-        return getNamesForSaksbehandlere(azureGateway.getEnhetensAnsattesNavIdentsWithKabalSaksbehandlerRole(enhetsnummer = enhetsnummer)
-            .toSet()).map {
+        val azureOutput = azureGateway.getEnhetensAnsattesNavIdentsWithKabalSaksbehandlerRole(enhetsnummer = enhetsnummer)
+        return azureOutput.value?.map {
             SaksbehandlereListResponse.SaksbehandlerView(
-                navIdent = it.key,
-                navn = it.value,
+                navIdent = it.onPremisesSamAccountName,
+                navn = it.displayName,
             )
-        }
+        } ?: emptyList()
     }
 }
