@@ -1,7 +1,7 @@
 package no.nav.klage.search.api.mapper
 
 
-import no.nav.klage.kodeverk.MedunderskriverFlyt
+import no.nav.klage.kodeverk.FlowState
 import no.nav.klage.search.api.view.BehandlingView
 import no.nav.klage.search.api.view.FnrSearchResponseWithoutPerson
 import no.nav.klage.search.api.view.SattPaaVent
@@ -41,9 +41,6 @@ class BehandlingListMapper {
                 hjemmelId = esBehandling.hjemmelIdList.firstOrNull(),
                 frist = esBehandling.frist,
                 mottatt = esBehandling.sakMottattKaDato.toLocalDate(),
-                medunderskriverident = esBehandling.medunderskriverident,
-                medunderskriverFlyt = MedunderskriverFlyt.of(esBehandling.medunderskriverFlytId),
-                medunderskriverFlytId = esBehandling.medunderskriverFlytId,
                 tildeltSaksbehandlerident = esBehandling.tildeltSaksbehandlerident,
                 utfallId = esBehandling.utfallId,
                 avsluttetAvSaksbehandlerDate = esBehandling.avsluttetAvSaksbehandler?.toLocalDate(),
@@ -53,8 +50,24 @@ class BehandlingListMapper {
                 feilregistrert = esBehandling.feilregistrert,
                 fagsystemId = esBehandling.fagsystemId,
                 saksnummer = esBehandling.saksnummer,
+                medunderskriver = esBehandling.toMedunderskriverView(),
+                rol = esBehandling.toROLView(),
             )
         }
+    }
+
+    private fun EsBehandling.toROLView(): BehandlingView.CombinedMedunderskriverAndROLView {
+        return BehandlingView.CombinedMedunderskriverAndROLView(
+            navIdent = rolIdent,
+            flowState = FlowState.of(rolFlowStateId),
+        )
+    }
+
+    private fun EsBehandling.toMedunderskriverView(): BehandlingView.CombinedMedunderskriverAndROLView {
+        return BehandlingView.CombinedMedunderskriverAndROLView(
+            navIdent = medunderskriverident,
+            flowState = FlowState.of(medunderskriverFlowStateId),
+        )
     }
 
     fun mapEsBehandlingerToListView(

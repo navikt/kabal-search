@@ -31,7 +31,7 @@
       "type": "date",
       "format": "date"
     },
-    "medunderskriverFlytId": {
+    "medunderskriverFlowStateId": {
       "type": "keyword"
     },
     "medunderskriverident": {
@@ -40,7 +40,7 @@
     "rolIdent": {
       "type": "keyword"
     },
-    "rolStateId": {
+    "rolFlowStateId": {
       "type": "keyword"
     },
     "sakMottattKaDato": {

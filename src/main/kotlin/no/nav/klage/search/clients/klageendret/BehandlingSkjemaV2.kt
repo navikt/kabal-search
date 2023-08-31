@@ -18,7 +18,7 @@ class BehandlingSkjemaV2(
     val fristDato: LocalDate?,
     val gjeldendeTildeling: TildeltSaksbehandler?,
     val medunderskriver: TildeltMedunderskriver?,
-    val medunderskriverFlytStatus: Kode,
+    val medunderskriverFlowStateId: String,
     val hjemler: List<Kode>,
 
     val saksdokumenter: List<Dokument>,
@@ -31,7 +31,7 @@ class BehandlingSkjemaV2(
 
     val feilregistrert: LocalDateTime?,
     val rolIdent: String?,
-    val rolStateId: String?,
+    val rolFlowStateId: String,
 ) {
 
     @JsonIgnoreProperties(ignoreUnknown = true)

@@ -1,6 +1,6 @@
 package no.nav.klage.search.service
 
-import no.nav.klage.kodeverk.MedunderskriverFlyt
+import no.nav.klage.kodeverk.FlowState
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
@@ -161,12 +161,12 @@ class ElasticsearchServiceFindSaksbehandlereTest {
             frist = LocalDate.of(2020, 12, 1),
             hjemmelIdList = listOf(),
             status = IKKE_TILDELT,
-            medunderskriverFlytId = MedunderskriverFlyt.IKKE_SENDT.name,
+            medunderskriverFlowStateId = FlowState.NOT_SENT.id,
             avsluttetAvSaksbehandler = avsluttetAvSaksbehandler,
             sakenGjelderFnr = "12345678910",
             fagsystemId = "1",
             rolIdent = "ROLIDENT",
-            rolStateId = "1",
+            rolFlowStateId = "1",
             saksnummer = "123",
         )
     }

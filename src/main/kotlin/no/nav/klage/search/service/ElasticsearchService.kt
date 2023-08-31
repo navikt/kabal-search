@@ -1,7 +1,6 @@
 package no.nav.klage.search.service
 
-import no.nav.klage.kodeverk.MedunderskriverFlyt
-import no.nav.klage.kodeverk.ROLState
+import no.nav.klage.kodeverk.FlowState
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.domain.*
@@ -615,8 +614,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         val queryBeSentToROL = QueryBuilders.boolQuery()
         queryBeSentToROL.must(
             QueryBuilders.termQuery(
-                EsBehandling::rolStateId.name,
-                ROLState.OVERSENDT_TIL_ROL.id
+                EsBehandling::rolFlowStateId.name,
+                FlowState.SENT.id
             )
         )
         return queryBeSentToROL
@@ -662,8 +661,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         innerQueryMedunderskriver.must(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, navIdent))
         innerQueryMedunderskriver.must(
             QueryBuilders.termQuery(
-                EsBehandling::medunderskriverFlytId.name,
-                MedunderskriverFlyt.OVERSENDT_TIL_MEDUNDERSKRIVER.id
+                EsBehandling::medunderskriverFlowStateId.name,
+                FlowState.SENT.id
             )
         )
         return innerQueryMedunderskriver
