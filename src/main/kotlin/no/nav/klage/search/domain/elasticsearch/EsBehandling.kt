@@ -46,7 +46,7 @@ data class EsBehandling(
 
     override val medunderskriverident: String? = null,
 
-    override val medunderskriverFlytId: String,
+    override val medunderskriverFlowStateId: String,
 
     val tildeltEnhet: String?,
 
@@ -73,7 +73,7 @@ data class EsBehandling(
 
     override val rolIdent: String?,
 
-    override val rolStateId: String?,
+    override val rolFlowStateId: String,
 
     val status: EsStatus,
 ) : EsAnonymBehandling
@@ -87,7 +87,7 @@ interface EsAnonymBehandling {
     val utfallId: String?
     val tildeltSaksbehandlernavn: String?
     val tildeltSaksbehandlerident: String?
-    val medunderskriverFlytId: String
+    val medunderskriverFlowStateId: String
     val medunderskriverident: String?
     val sakMottattKaDato: LocalDateTime
     val frist: LocalDate?
@@ -100,5 +100,5 @@ interface EsAnonymBehandling {
     val sattPaaVentReason: String?
     val feilregistrert: LocalDateTime?
     val rolIdent: String?
-    val rolStateId: String?
+    val rolFlowStateId: String?
 }

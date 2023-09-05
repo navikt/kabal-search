@@ -1,6 +1,6 @@
 package no.nav.klage.search.service
 
-import no.nav.klage.kodeverk.MedunderskriverFlyt
+import no.nav.klage.kodeverk.FlowState
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
@@ -84,10 +84,10 @@ class FortroligElasticsearchServiceTest {
             hjemmelIdList = listOf(),
             status = IKKE_TILDELT,
             sakenGjelderFnr = "123",
-            medunderskriverFlytId = MedunderskriverFlyt.IKKE_SENDT.name,
+            medunderskriverFlowStateId = FlowState.NOT_SENT.id,
             fagsystemId = "1",
             rolIdent = "ROLIDENT",
-            rolStateId = "1",
+            rolFlowStateId = "1",
             saksnummer = "123",
         )
         val fortroligPerson =
@@ -104,10 +104,10 @@ class FortroligElasticsearchServiceTest {
                 status = IKKE_TILDELT,
                 sakenGjelderFnr = "123",
                 fortrolig = true,
-                medunderskriverFlytId = MedunderskriverFlyt.IKKE_SENDT.name,
+                medunderskriverFlowStateId = FlowState.NOT_SENT.id,
                 fagsystemId = "1",
                 rolIdent = "ROLIDENT",
-                rolStateId = "1",
+                rolFlowStateId = "1",
                 saksnummer = "123",
             )
         val strengtFortroligPerson = EsBehandling(
@@ -123,10 +123,10 @@ class FortroligElasticsearchServiceTest {
             status = IKKE_TILDELT,
             sakenGjelderFnr = "123",
             strengtFortrolig = true,
-            medunderskriverFlytId = MedunderskriverFlyt.IKKE_SENDT.name,
+            medunderskriverFlowStateId = FlowState.NOT_SENT.id,
             fagsystemId = "1",
             rolIdent = "ROLIDENT",
-            rolStateId = "1",
+            rolFlowStateId = "1",
             saksnummer = "123",
         )
         val egenAnsattPerson =
@@ -143,10 +143,10 @@ class FortroligElasticsearchServiceTest {
                 status = IKKE_TILDELT,
                 sakenGjelderFnr = "123",
                 egenAnsatt = true,
-                medunderskriverFlytId = MedunderskriverFlyt.IKKE_SENDT.name,
+                medunderskriverFlowStateId = FlowState.NOT_SENT.id,
                 fagsystemId = "1",
                 rolIdent = "ROLIDENT",
-                rolStateId = "1",
+                rolFlowStateId = "1",
                 saksnummer = "123",
             )
         val egenAnsattOgFortroligPerson =
@@ -164,10 +164,10 @@ class FortroligElasticsearchServiceTest {
                 sakenGjelderFnr = "123",
                 egenAnsatt = true,
                 fortrolig = true,
-                medunderskriverFlytId = MedunderskriverFlyt.IKKE_SENDT.name,
+                medunderskriverFlowStateId = FlowState.NOT_SENT.id,
                 fagsystemId = "1",
                 rolIdent = "ROLIDENT",
-                rolStateId = "1",
+                rolFlowStateId = "1",
                 saksnummer = "123",
             )
         val egenAnsattOgStrengtFortroligPerson =
@@ -185,10 +185,10 @@ class FortroligElasticsearchServiceTest {
                 sakenGjelderFnr = "123",
                 egenAnsatt = true,
                 strengtFortrolig = true,
-                medunderskriverFlytId = MedunderskriverFlyt.IKKE_SENDT.name,
+                medunderskriverFlowStateId = FlowState.NOT_SENT.id,
                 fagsystemId = "1",
                 rolIdent = "ROLIDENT",
-                rolStateId = "1",
+                rolFlowStateId = "1",
                 saksnummer = "123",
             )
         repo.save(normalPerson)
