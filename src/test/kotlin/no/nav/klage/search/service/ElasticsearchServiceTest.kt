@@ -78,6 +78,8 @@ class ElasticsearchServiceTest {
             rolIdent = "ROLIDENT",
             rolFlowStateId = "1",
             saksnummer = "123",
+            avsluttetAvSaksbehandler = null,
+            returnertFraROL = null,
         )
         val klagebehandling2 =
             EsBehandling(
@@ -97,6 +99,8 @@ class ElasticsearchServiceTest {
                 rolIdent = "ROLIDENT",
                 rolFlowStateId = "1",
                 saksnummer = "123",
+                avsluttetAvSaksbehandler = null,
+                returnertFraROL = null,
             )
         repo.save(klagebehandling1)
         repo.save(klagebehandling2)

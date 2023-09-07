@@ -168,6 +168,7 @@ class ElasticsearchServiceFindSaksbehandlereTest {
             rolIdent = "ROLIDENT",
             rolFlowStateId = "1",
             saksnummer = "123",
+            returnertFraROL = null,
         )
     }
 

@@ -31,6 +31,7 @@ data class BehandlingView(
     data class CombinedMedunderskriverAndROLView(
         val navIdent: String?,
         val flowState: FlowState,
+        val returnertDate: LocalDate?,
     )
 }
 

@@ -100,6 +100,8 @@ class ElasticsearchServiceStatusTest {
         rolIdent = "ROLIDENT",
         rolFlowStateId = "1",
         saksnummer = "123",
+        avsluttetAvSaksbehandler = null,
+        returnertFraROL = null,
     )
 
 }

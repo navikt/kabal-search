@@ -89,6 +89,8 @@ class FortroligElasticsearchServiceTest {
             rolIdent = "ROLIDENT",
             rolFlowStateId = "1",
             saksnummer = "123",
+            avsluttetAvSaksbehandler = null,
+            returnertFraROL = null,
         )
         val fortroligPerson =
             EsBehandling(
@@ -109,6 +111,8 @@ class FortroligElasticsearchServiceTest {
                 rolIdent = "ROLIDENT",
                 rolFlowStateId = "1",
                 saksnummer = "123",
+                avsluttetAvSaksbehandler = null,
+                returnertFraROL = null,
             )
         val strengtFortroligPerson = EsBehandling(
             behandlingId = idStrengtFortrolig,
@@ -128,6 +132,8 @@ class FortroligElasticsearchServiceTest {
             rolIdent = "ROLIDENT",
             rolFlowStateId = "1",
             saksnummer = "123",
+            avsluttetAvSaksbehandler = null,
+            returnertFraROL = null,
         )
         val egenAnsattPerson =
             EsBehandling(
@@ -148,6 +154,8 @@ class FortroligElasticsearchServiceTest {
                 rolIdent = "ROLIDENT",
                 rolFlowStateId = "1",
                 saksnummer = "123",
+                avsluttetAvSaksbehandler = null,
+                returnertFraROL = null,
             )
         val egenAnsattOgFortroligPerson =
             EsBehandling(
@@ -169,6 +177,8 @@ class FortroligElasticsearchServiceTest {
                 rolIdent = "ROLIDENT",
                 rolFlowStateId = "1",
                 saksnummer = "123",
+                avsluttetAvSaksbehandler = null,
+                returnertFraROL = null,
             )
         val egenAnsattOgStrengtFortroligPerson =
             EsBehandling(
@@ -190,6 +200,8 @@ class FortroligElasticsearchServiceTest {
                 rolIdent = "ROLIDENT",
                 rolFlowStateId = "1",
                 saksnummer = "123",
+                avsluttetAvSaksbehandler = null,
+                returnertFraROL = null,
             )
         repo.save(normalPerson)
         repo.save(fortroligPerson)

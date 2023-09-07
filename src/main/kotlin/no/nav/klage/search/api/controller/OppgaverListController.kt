@@ -141,6 +141,30 @@ class OppgaverListController(
     }
 
     @Operation(
+        summary = "Hent returnert ROL-oppgaver for en ansatt",
+        description = "Henter alle returnerte ROL-oppgaver som ROL har tilgang til."
+    )
+    @GetMapping("/roloppgaver/returnerte", produces = ["application/json"])
+    fun getMineReturnerteROLOppgaver(
+        queryParams: MineReturnerteROLOppgaverQueryParams
+    ): BehandlingerListResponse {
+        logger.debug("Params: {}", queryParams)
+
+        val searchCriteria = behandlingerSearchCriteriaMapper.toReturnerteROLOppgaverSearchCriteria(
+            navIdent = oAuthTokenService.getInnloggetIdent(),
+            queryParams = queryParams
+        )
+
+        val esResponse = elasticsearchService.findROLsReturnerteOppgaverByCriteria(searchCriteria)
+        return BehandlingerListResponse(
+            antallTreffTotalt = esResponse.totalHits.toInt(),
+            behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
+                esBehandlinger = esResponse.searchHits.map { it.content },
+            ),
+        )
+    }
+
+    @Operation(
         summary = "Hent uferdige oppgaver for en ansatt",
         description = "Henter alle uferdige oppgaver som saksbehandler har tilgang til."
     )

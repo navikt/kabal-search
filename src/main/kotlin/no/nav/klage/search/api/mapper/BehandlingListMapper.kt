@@ -60,6 +60,7 @@ class BehandlingListMapper {
         return BehandlingView.CombinedMedunderskriverAndROLView(
             navIdent = rolIdent,
             flowState = FlowState.of(rolFlowStateId),
+            returnertDate = returnertFraROL?.toLocalDate(),
         )
     }
 
@@ -67,6 +68,7 @@ class BehandlingListMapper {
         return BehandlingView.CombinedMedunderskriverAndROLView(
             navIdent = medunderskriverident,
             flowState = FlowState.of(medunderskriverFlowStateId),
+            returnertDate = null,
         )
     }
 

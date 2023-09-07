@@ -35,7 +35,10 @@ data class EsBehandling(
     override val sakMottattKaDato: LocalDateTime,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
-    override val avsluttetAvSaksbehandler: LocalDateTime? = null,
+    override val avsluttetAvSaksbehandler: LocalDateTime?,
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
+    override val returnertFraROL: LocalDateTime?,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     override val frist: LocalDate?,
@@ -84,6 +87,7 @@ interface EsAnonymBehandling {
     val fortrolig: Boolean
     val egenAnsatt: Boolean
     val avsluttetAvSaksbehandler: LocalDateTime?
+    val returnertFraROL: LocalDateTime?
     val utfallId: String?
     val tildeltSaksbehandlernavn: String?
     val tildeltSaksbehandlerident: String?
