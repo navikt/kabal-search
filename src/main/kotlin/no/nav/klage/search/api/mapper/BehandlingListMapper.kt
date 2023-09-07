@@ -56,18 +56,19 @@ class BehandlingListMapper {
         }
     }
 
-    private fun EsBehandling.toROLView(): BehandlingView.ROLView {
-        return BehandlingView.ROLView(
+    private fun EsBehandling.toROLView(): BehandlingView.CombinedMedunderskriverAndROLView {
+        return BehandlingView.CombinedMedunderskriverAndROLView(
             navIdent = rolIdent,
             flowState = FlowState.of(rolFlowStateId),
             returnertDate = returnertFraROL?.toLocalDate(),
         )
     }
 
-    private fun EsBehandling.toMedunderskriverView(): BehandlingView.MedunderskriverView {
-        return BehandlingView.MedunderskriverView(
+    private fun EsBehandling.toMedunderskriverView(): BehandlingView.CombinedMedunderskriverAndROLView {
+        return BehandlingView.CombinedMedunderskriverAndROLView(
             navIdent = medunderskriverident,
             flowState = FlowState.of(medunderskriverFlowStateId),
+            returnertDate = null,
         )
     }
 
