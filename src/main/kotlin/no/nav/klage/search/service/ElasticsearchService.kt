@@ -127,6 +127,18 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits
     }
 
+    open fun findROLsReturnerteOppgaverByCriteria(criteria: ReturnerteROLOppgaverSearchCriteria): BehandlingerSearchHits {
+        val searchSourceBuilder = SearchSourceBuilder()
+        searchSourceBuilder.query(criteria.toROLEsQuery())
+        searchSourceBuilder.addPaging(criteria)
+        searchSourceBuilder.addSorting(criteria)
+        searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
+
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder)
+        logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
+        return searchHits
+    }
+
     open fun findSaksbehandlersUferdigeOppgaverByCriteria(criteria: UferdigeOppgaverSearchCriteria): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
@@ -285,6 +297,10 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                     EsBehandling::avsluttetAvSaksbehandler.name
                 }
 
+                SortField.RETURNERT_FRA_ROL -> {
+                    EsBehandling::returnertFraROL.name
+                }
+
                 else -> {
                     EsBehandling::frist.name
                 }
@@ -393,6 +409,21 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.addBasicFilters(this)
         baseQuery.must(beAvsluttetAvSaksbehandlerEtter(ferdigstiltFom))
         baseQuery.must(beAvsluttetAvSaksbehandlerFoer(ferdigstiltTom))
+        baseQuery.must(beAssignedToROL(navIdent = navIdent))
+        baseQuery.mustNot(beFeilregistrert())
+
+        logger.debug("Making search request with query {}", baseQuery.toString())
+        return baseQuery
+    }
+
+    private fun ReturnerteROLOppgaverSearchCriteria.toROLEsQuery(): QueryBuilder {
+        logger.debug("Search criteria: {}", this)
+        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
+        baseQuery.addSecurityFilters(this)
+        baseQuery.addBasicFilters(this)
+        baseQuery.must(beReturnedFromROL())
+        baseQuery.must(beReturnertFraROLEtter(returnertFom))
+        baseQuery.must(beReturnertFraROLFoer(returnertTom))
         baseQuery.must(beAssignedToROL(navIdent = navIdent))
         baseQuery.mustNot(beFeilregistrert())
 
@@ -621,6 +652,17 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return queryBeSentToROL
     }
 
+    private fun beReturnedFromROL(): BoolQueryBuilder {
+        val queryBeReturnedFromROL = QueryBuilders.boolQuery()
+        queryBeReturnedFromROL.must(
+            QueryBuilders.termQuery(
+                EsBehandling::rolFlowStateId.name,
+                FlowState.RETURNED.id
+            )
+        )
+        return queryBeReturnedFromROL
+    }
+
     private fun beAssignedToROL() = QueryBuilders.existsQuery(EsBehandling::rolIdent.name)
 
     private fun beAssignedToROL(navIdent: String) = QueryBuilders.termQuery(EsBehandling::rolIdent.name, navIdent)
@@ -639,6 +681,14 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
 
     private fun beAvsluttetAvSaksbehandlerFoer(ferdigstiltTom: LocalDate) =
         QueryBuilders.rangeQuery(EsBehandling::avsluttetAvSaksbehandler.name).lte(ferdigstiltTom).format(ISO8601)
+            .timeZone(ZONEID_UTC)
+
+    private fun beReturnertFraROLEtter(returnertFom: LocalDate) =
+        QueryBuilders.rangeQuery(EsBehandling::returnertFraROL.name).gte(returnertFom).format(ISO8601)
+            .timeZone(ZONEID_UTC)
+
+    private fun beReturnertFraROLFoer(returnertTom: LocalDate) =
+        QueryBuilders.rangeQuery(EsBehandling::returnertFraROL.name).lte(returnertTom).format(ISO8601)
             .timeZone(ZONEID_UTC)
 
     private fun haveFristMellom(fristFom: LocalDate, fristTom: LocalDate) =

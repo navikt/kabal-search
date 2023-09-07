@@ -45,8 +45,27 @@ class BehandlingerSearchCriteriaMapper(
         ytelser = queryParams.ytelser.map { Ytelse.of(it) },
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
         navIdent = navIdent,
-        ferdigstiltFom = mapFerdigstiltFom(queryParams),
+        ferdigstiltFom = mapFom(queryParams.ferdigstiltFrom),
         ferdigstiltTom = queryParams.ferdigstiltTo ?: LocalDate.now(),
+        sortField = mapSortField(queryParams.sortering),
+        order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+        offset = 0,
+        limit = 9_999,
+        kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
+        kanBehandleFortrolig = kanBehandleFortrolig(),
+        kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+    )
+
+    fun toReturnerteROLOppgaverSearchCriteria(
+        navIdent: String,
+        queryParams: MineReturnerteROLOppgaverQueryParams,
+    ) = ReturnerteROLOppgaverSearchCriteria(
+        typer = queryParams.typer.map { Type.of(it) },
+        ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+        hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+        navIdent = navIdent,
+        returnertFom = mapFom(queryParams.returnertFrom),
+        returnertTom = queryParams.returnertTo ?: LocalDate.now(),
         sortField = mapSortField(queryParams.sortering),
         order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
         offset = 0,
@@ -101,7 +120,7 @@ class BehandlingerSearchCriteriaMapper(
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
         enhetId = enhetId,
         saksbehandlere = queryParams.tildelteSaksbehandlere,
-        ferdigstiltFom = mapFerdigstiltFom(queryParams),
+        ferdigstiltFom = mapFom(queryParams.ferdigstiltFrom),
         ferdigstiltTom = queryParams.ferdigstiltTo ?: LocalDate.now(),
         sortField = mapSortField(queryParams.sortering),
         order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
@@ -129,6 +148,7 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleFortrolig = kanBehandleFortrolig(),
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
     )
+
     fun toEnhetensUferdigeOppgaverSearchCriteria(
         enhetId: String,
         queryParams: EnhetensUferdigeOppgaverQueryParams,
@@ -191,6 +211,7 @@ class BehandlingerSearchCriteriaMapper(
             Sortering.PAA_VENT_FROM -> SortField.PAA_VENT_FROM
             Sortering.PAA_VENT_TO -> SortField.PAA_VENT_TO
             Sortering.AVSLUTTET_AV_SAKSBEHANDLER -> SortField.AVSLUTTET_AV_SAKSBEHANDLER
+            Sortering.RETURNERT_FRA_ROL -> SortField.RETURNERT_FRA_ROL
             else -> SortField.FRIST
         }
 
@@ -209,12 +230,8 @@ class BehandlingerSearchCriteriaMapper(
             }
         }
 
-    private fun mapFerdigstiltFom(queryParams: FerdigstilteOppgaverQueryParams): LocalDate {
-        return if (queryParams.ferdigstiltFrom != null) {
-            queryParams.ferdigstiltFrom!!
-        } else {
-            LocalDate.now().minusDays(queryParams.ferdigstiltDaysAgo ?: 36500)
-        }
+    private fun mapFom(fom: LocalDate?): LocalDate {
+        return fom ?: LocalDate.now().minusDays(36500)
     }
 }
 

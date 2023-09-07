@@ -42,6 +42,7 @@ class EsBehandlingMapper(
             innsendt = behandling.innsendtDato,
             sakMottattKaDato = behandling.sakMottattKaDato,
             avsluttetAvSaksbehandler = behandling.avsluttetAvSaksbehandlerTidspunkt,
+            returnertFraROL = behandling.returnertFraROLTidspunkt,
             frist = behandling.fristDato,
             tildeltSaksbehandlerident = behandling.gjeldendeTildeling?.saksbehandler?.ident,
             tildeltSaksbehandlernavn = getSaksbehandlernavn(behandling.gjeldendeTildeling?.saksbehandler?.ident),

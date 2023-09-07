@@ -16,8 +16,8 @@ data class BehandlingView(
     val hjemmelId: String?,
     val frist: LocalDate?,
     val mottatt: LocalDate,
-    val medunderskriver: CombinedMedunderskriverAndROLView,
-    val rol: CombinedMedunderskriverAndROLView,
+    val medunderskriver: MedunderskriverView,
+    val rol: ROLView,
     val utfallId: String?,
     val avsluttetAvSaksbehandlerDate: LocalDate?,
     val isAvsluttetAvSaksbehandler: Boolean,
@@ -28,9 +28,15 @@ data class BehandlingView(
     val fagsystemId: String,
     val saksnummer: String,
 ) {
-    data class CombinedMedunderskriverAndROLView(
+    data class MedunderskriverView(
         val navIdent: String?,
         val flowState: FlowState,
+    )
+
+    data class ROLView(
+        val navIdent: String?,
+        val flowState: FlowState,
+        val returnetDate: LocalDate?
     )
 }
 

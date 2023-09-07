@@ -117,6 +117,7 @@ class ElasticsearchIndexingTest {
             fagsystemId = "1",
             sattPaaVent = LocalDate.now(),
             avsluttetAvSaksbehandler = LocalDateTime.now(),
+            returnertFraROL = null,
             tildeltSaksbehandlernavn = "null",
             medunderskriverident = "null",
             saksdokumenter = listOf(EsSaksdokument(journalpostId = "1", dokumentInfoId = "bc")),
@@ -126,9 +127,8 @@ class ElasticsearchIndexingTest {
             sattPaaVentReason = "null",
             feilregistrert = LocalDateTime.now(),
             rolIdent = "null",
-            rolFlowStateId = "1",
+            rolFlowStateId = FlowState.NOT_SENT.id,
             saksnummer = "123",
-
         )
 
         repo.save(esBehandlingWithAllData)
@@ -158,8 +158,10 @@ class ElasticsearchIndexingTest {
             fagsystemId = "1",
             sattPaaVent = LocalDate.now(),
             rolIdent = "ROLIDENT",
-            rolFlowStateId = "1",
+            rolFlowStateId = FlowState.NOT_SENT.id,
             saksnummer = "123",
+            avsluttetAvSaksbehandler = null,
+            returnertFraROL = null,
         )
     }
 }

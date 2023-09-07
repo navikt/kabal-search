@@ -15,6 +15,7 @@ class BehandlingSkjemaV2(
     val innsendtDato: LocalDate?,
     val sakMottattKaDato: LocalDateTime,
     val avsluttetAvSaksbehandlerTidspunkt: LocalDateTime?,
+    val returnertFraROLTidspunkt: LocalDateTime?,
     val fristDato: LocalDate?,
     val gjeldendeTildeling: TildeltSaksbehandler?,
     val medunderskriver: TildeltMedunderskriver?,

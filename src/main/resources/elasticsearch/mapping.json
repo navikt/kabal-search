@@ -43,6 +43,10 @@
     "rolFlowStateId": {
       "type": "keyword"
     },
+    "returnertFraROL": {
+      "type": "date",
+      "format": "date_time"
+    },
     "sakMottattKaDato": {
       "type": "date",
       "format": "date_time"

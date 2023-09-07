@@ -11,9 +11,13 @@ interface CommonOppgaverQueryParams {
 }
 
 interface FerdigstilteOppgaverQueryParams {
-    val ferdigstiltDaysAgo: Long?
     val ferdigstiltFrom: LocalDate?
     val ferdigstiltTo: LocalDate?
+}
+
+interface ReturnerteROLOppgaverQueryParams {
+    val returnertFrom: LocalDate?
+    val returnertTo: LocalDate?
 }
 
 data class MineFerdigstilteOppgaverQueryParams(
@@ -22,11 +26,19 @@ data class MineFerdigstilteOppgaverQueryParams(
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
     override val sortering: Sortering? = Sortering.AVSLUTTET_AV_SAKSBEHANDLER,
-    override val ferdigstiltDaysAgo: Long?,
     override val ferdigstiltFrom: LocalDate?,
     override val ferdigstiltTo: LocalDate?,
-
 ) : CommonOppgaverQueryParams, FerdigstilteOppgaverQueryParams
+
+data class MineReturnerteROLOppgaverQueryParams(
+    override var typer: List<String> = emptyList(),
+    override var ytelser: List<String> = emptyList(),
+    override var hjemler: List<String> = emptyList(),
+    override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
+    override val sortering: Sortering? = Sortering.RETURNERT_FRA_ROL,
+    override val returnertFrom: LocalDate?,
+    override val returnertTo: LocalDate?,
+) : CommonOppgaverQueryParams, ReturnerteROLOppgaverQueryParams
 
 data class MineUferdigeOppgaverQueryParams(
     override var typer: List<String> = emptyList(),
@@ -64,7 +76,6 @@ data class EnhetensFerdigstilteOppgaverQueryParams(
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
     override val sortering: Sortering? = Sortering.AVSLUTTET_AV_SAKSBEHANDLER,
-    override val ferdigstiltDaysAgo: Long?,
     override val ferdigstiltFrom: LocalDate?,
     override val ferdigstiltTo: LocalDate?,
     var tildelteSaksbehandlere: List<String> = emptyList(),
@@ -93,5 +104,5 @@ enum class Rekkefoelge {
 }
 
 enum class Sortering {
-    FRIST, MOTTATT, ALDER, PAA_VENT_FROM, PAA_VENT_TO, AVSLUTTET_AV_SAKSBEHANDLER
+    FRIST, MOTTATT, ALDER, PAA_VENT_FROM, PAA_VENT_TO, AVSLUTTET_AV_SAKSBEHANDLER, RETURNERT_FRA_ROL
 }
