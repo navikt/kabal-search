@@ -34,6 +34,9 @@ plugins {
     idea
 }
 
+//TODO: Fjern denne når spring boot er oppdatert.
+ext["spring-kafka.version"] = "3.0.11"
+
 apply(plugin = "io.spring.dependency-management")
 
 dependencies {
