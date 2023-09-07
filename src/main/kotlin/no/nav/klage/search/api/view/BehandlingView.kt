@@ -36,7 +36,7 @@ data class BehandlingView(
     data class ROLView(
         val navIdent: String?,
         val flowState: FlowState,
-        val returnetDate: LocalDate?
+        val returnertDate: LocalDate?
     )
 }
 

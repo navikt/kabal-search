@@ -60,7 +60,7 @@ class BehandlingListMapper {
         return BehandlingView.ROLView(
             navIdent = rolIdent,
             flowState = FlowState.of(rolFlowStateId),
-            returnetDate = returnertFraROL?.toLocalDate(),
+            returnertDate = returnertFraROL?.toLocalDate(),
         )
     }
 
