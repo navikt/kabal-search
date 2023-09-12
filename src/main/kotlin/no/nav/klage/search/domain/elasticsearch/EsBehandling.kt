@@ -26,6 +26,7 @@ data class EsBehandling(
     override val typeId: String,
 
     val fagsystemId: String,
+    val saksnummer: String,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     val innsendt: LocalDate? = null,
@@ -34,7 +35,10 @@ data class EsBehandling(
     override val sakMottattKaDato: LocalDateTime,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
-    override val avsluttetAvSaksbehandler: LocalDateTime? = null,
+    override val avsluttetAvSaksbehandler: LocalDateTime?,
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
+    override val returnertFraROL: LocalDateTime?,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     override val frist: LocalDate?,
@@ -45,7 +49,7 @@ data class EsBehandling(
 
     override val medunderskriverident: String? = null,
 
-    override val medunderskriverFlytId: String,
+    override val medunderskriverFlowStateId: String,
 
     override val medunderskriverEnhet: String? = null,
 
@@ -74,7 +78,7 @@ data class EsBehandling(
 
     override val rolIdent: String?,
 
-    override val rolStateId: String?,
+    override val rolFlowStateId: String,
 
     val status: EsStatus,
 ) : EsAnonymBehandling
@@ -85,10 +89,11 @@ interface EsAnonymBehandling {
     val fortrolig: Boolean
     val egenAnsatt: Boolean
     val avsluttetAvSaksbehandler: LocalDateTime?
+    val returnertFraROL: LocalDateTime?
     val utfallId: String?
     val tildeltSaksbehandlernavn: String?
     val tildeltSaksbehandlerident: String?
-    val medunderskriverFlytId: String
+    val medunderskriverFlowStateId: String
     val medunderskriverident: String?
     val medunderskriverEnhet: String?
     val sakMottattKaDato: LocalDateTime
@@ -102,5 +107,5 @@ interface EsAnonymBehandling {
     val sattPaaVentReason: String?
     val feilregistrert: LocalDateTime?
     val rolIdent: String?
-    val rolStateId: String?
+    val rolFlowStateId: String?
 }

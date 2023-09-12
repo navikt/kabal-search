@@ -31,7 +31,7 @@
       "type": "date",
       "format": "date"
     },
-    "medunderskriverFlytId": {
+    "medunderskriverFlowStateId": {
       "type": "keyword"
     },
     "medunderskriverident": {
@@ -43,8 +43,12 @@
     "rolIdent": {
       "type": "keyword"
     },
-    "rolStateId": {
+    "rolFlowStateId": {
       "type": "keyword"
+    },
+    "returnertFraROL": {
+      "type": "date",
+      "format": "date_time"
     },
     "sakMottattKaDato": {
       "type": "date",
@@ -63,6 +67,9 @@
           "type": "keyword"
         }
       }
+    },
+    "saksnummer": {
+      "type": "keyword"
     },
     "sattPaaVent": {
       "type": "date",

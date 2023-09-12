@@ -1,7 +1,6 @@
 package no.nav.klage.search.service
 
-import no.nav.klage.kodeverk.MedunderskriverFlyt
-import no.nav.klage.kodeverk.ROLState
+import no.nav.klage.kodeverk.FlowState
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.domain.*
@@ -130,6 +129,18 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits
     }
 
+    open fun findROLsReturnerteOppgaverByCriteria(criteria: ReturnerteROLOppgaverSearchCriteria): BehandlingerSearchHits {
+        val searchSourceBuilder = SearchSourceBuilder()
+        searchSourceBuilder.query(criteria.toROLEsQuery())
+        searchSourceBuilder.addPaging(criteria)
+        searchSourceBuilder.addSorting(criteria)
+        searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
+
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder)
+        logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
+        return searchHits
+    }
+
     open fun findSaksbehandlersUferdigeOppgaverByCriteria(criteria: UferdigeOppgaverSearchCriteria): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
@@ -202,17 +213,16 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits.anonymize()
     }
 
-    open fun findSaksbehandlereByEnhetCriteria(criteria: SaksbehandlereByEnhetSearchCriteria): SortedSet<Saksbehandler> {
+    open fun findSaksbehandlereByEnhetCriteria(criteria: SaksbehandlereByEnhetSearchCriteria): Set<Saksbehandler> {
         val searchHits: SearchHits<EsBehandling> = esBehandlingRepository.search(criteria.toEsQuery())
 
-        //Sort results by etternavn
         return searchHits.map {
             Saksbehandler(
                 navIdent = it.content.tildeltSaksbehandlerident
                     ?: throw RuntimeException("tildeltSaksbehandlerident is null. Can't happen"),
                 navn = it.content.tildeltSaksbehandlernavn ?: "Navn mangler"
             )
-        }.toSortedSet(compareBy { it.navn.split(" ").last() })
+        }.toSet()
     }
 
     open fun countIkkeTildelt(ytelse: Ytelse, type: Type): Long {
@@ -287,6 +297,10 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
 
                 SortField.AVSLUTTET_AV_SAKSBEHANDLER -> {
                     EsBehandling::avsluttetAvSaksbehandler.name
+                }
+
+                SortField.RETURNERT_FRA_ROL -> {
+                    EsBehandling::returnertFraROL.name
                 }
 
                 else -> {
@@ -401,6 +415,21 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.mustNot(beFeilregistrert())
 
         secureLogger.debug("Making search request with query {}", baseQuery.toString())
+        return baseQuery
+    }
+
+    private fun ReturnerteROLOppgaverSearchCriteria.toROLEsQuery(): QueryBuilder {
+        logger.debug("Search criteria: {}", this)
+        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
+        baseQuery.addSecurityFilters(this)
+        baseQuery.addBasicFilters(this)
+        baseQuery.must(beReturnedFromROL())
+        baseQuery.must(beReturnertFraROLEtter(returnertFom))
+        baseQuery.must(beReturnertFraROLFoer(returnertTom))
+        baseQuery.must(beAssignedToROL(navIdent = navIdent))
+        baseQuery.mustNot(beFeilregistrert())
+
+        logger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -621,11 +650,22 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         val queryBeSentToROL = QueryBuilders.boolQuery()
         queryBeSentToROL.must(
             QueryBuilders.termQuery(
-                EsBehandling::rolStateId.name,
-                ROLState.OVERSENDT_TIL_ROL.id
+                EsBehandling::rolFlowStateId.name,
+                FlowState.SENT.id
             )
         )
         return queryBeSentToROL
+    }
+
+    private fun beReturnedFromROL(): BoolQueryBuilder {
+        val queryBeReturnedFromROL = QueryBuilders.boolQuery()
+        queryBeReturnedFromROL.must(
+            QueryBuilders.termQuery(
+                EsBehandling::rolFlowStateId.name,
+                FlowState.RETURNED.id
+            )
+        )
+        return queryBeReturnedFromROL
     }
 
     private fun beAssignedToROL() = QueryBuilders.existsQuery(EsBehandling::rolIdent.name)
@@ -648,6 +688,14 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         QueryBuilders.rangeQuery(EsBehandling::avsluttetAvSaksbehandler.name).lte(ferdigstiltTom).format(ISO8601)
             .timeZone(ZONEID_UTC)
 
+    private fun beReturnertFraROLEtter(returnertFom: LocalDate) =
+        QueryBuilders.rangeQuery(EsBehandling::returnertFraROL.name).gte(returnertFom).format(ISO8601)
+            .timeZone(ZONEID_UTC)
+
+    private fun beReturnertFraROLFoer(returnertTom: LocalDate) =
+        QueryBuilders.rangeQuery(EsBehandling::returnertFraROL.name).lte(returnertTom).format(ISO8601)
+            .timeZone(ZONEID_UTC)
+
     private fun haveFristMellom(fristFom: LocalDate, fristTom: LocalDate) =
         QueryBuilders.rangeQuery(EsBehandling::frist.name).gte(fristFom).lte(fristTom).format(ISO8601)
             .timeZone(ZONEID_UTC)
@@ -668,8 +716,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         innerQueryMedunderskriver.must(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, navIdent))
         innerQueryMedunderskriver.must(
             QueryBuilders.termQuery(
-                EsBehandling::medunderskriverFlytId.name,
-                MedunderskriverFlyt.OVERSENDT_TIL_MEDUNDERSKRIVER.id
+                EsBehandling::medunderskriverFlowStateId.name,
+                FlowState.SENT.id
             )
         )
         return innerQueryMedunderskriver

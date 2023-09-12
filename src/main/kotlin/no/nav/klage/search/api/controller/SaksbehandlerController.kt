@@ -10,7 +10,10 @@ import no.nav.klage.search.exceptions.MissingTilgangException
 import no.nav.klage.search.service.ElasticsearchService
 import no.nav.klage.search.service.saksbehandler.InnloggetSaksbehandlerService
 import no.nav.klage.search.service.saksbehandler.OAuthTokenService
+import no.nav.klage.search.service.saksbehandler.SaksbehandlerService
+import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
+import no.nav.klage.search.util.getSecureLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -23,11 +26,14 @@ class SaksbehandlerController(
     private val elasticsearchService: ElasticsearchService,
     private val oAuthTokenService: OAuthTokenService,
     private val innloggetSaksbehandlerService: InnloggetSaksbehandlerService,
+    private val saksbehandlerService: SaksbehandlerService,
+    private val tokenUtil: TokenUtil,
 ) {
 
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
+        private val secureLogger = getSecureLogger()
     }
 
     @Operation(
@@ -53,15 +59,28 @@ class SaksbehandlerController(
                 kanBehandleStrengtFortrolig = oAuthTokenService.kanBehandleStrengtFortrolig(),
             )
         )
+
+        val saksbehandlereFromES = esResponse.map {
+            SaksbehandlereListResponse.SaksbehandlerView(
+                navIdent = it.navIdent,
+                navn = it.navn
+            )
+        }
+
+        //TODO: Remove when fixed
+        secureLogger.debug("fromEs: {}", saksbehandlereFromES)
+
+        val saksbehandlereFromMSGraph = saksbehandlerService.getSaksbehandlereForEnhet(enhetsnummer = enhet)
+
+        //TODO: Remove when fixed
+        secureLogger.debug("fromMS: {}", saksbehandlereFromMSGraph)
+        //TODO: Remove when fixed
+        secureLogger.debug("MSGraph app token: {}", tokenUtil.getAppAccessTokenWithGraphScope())
+
         return SaksbehandlereListResponse(
-            saksbehandlere = esResponse.map {
-                SaksbehandlereListResponse.SaksbehandlerView(
-                    navIdent = it.navIdent,
-                    navn = it.navn
-                )
-            }
+            saksbehandlere = (saksbehandlereFromES + saksbehandlereFromMSGraph)
+                .toSortedSet(compareBy { it.navn }).toList()
         )
     }
 
 }
-

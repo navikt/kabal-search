@@ -6,7 +6,7 @@ import no.nav.klage.kodeverk.hjemmel.Hjemmel
 import java.time.LocalDate
 
 enum class SortField {
-    FRIST, MOTTATT, PAA_VENT_FROM, PAA_VENT_TO, AVSLUTTET_AV_SAKSBEHANDLER
+    FRIST, MOTTATT, PAA_VENT_FROM, PAA_VENT_TO, AVSLUTTET_AV_SAKSBEHANDLER, RETURNERT_FRA_ROL,
 }
 
 enum class Order {
@@ -57,6 +57,25 @@ data class FerdigstilteOppgaverSearchCriteria(
     val navIdent: String,
     val ferdigstiltFom: LocalDate,
     val ferdigstiltTom: LocalDate,
+
+    override val sortField: SortField,
+    override val order: Order,
+    override val offset: Int,
+    override val limit: Int,
+
+    override val kanBehandleEgenAnsatt: Boolean,
+    override val kanBehandleFortrolig: Boolean,
+    override val kanBehandleStrengtFortrolig: Boolean,
+) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria
+
+data class ReturnerteROLOppgaverSearchCriteria(
+    override val typer: List<Type>,
+    override val ytelser: List<Ytelse>,
+    override val hjemler: List<Hjemmel>,
+
+    val navIdent: String,
+    val returnertFom: LocalDate,
+    val returnertTom: LocalDate,
 
     override val sortField: SortField,
     override val order: Order,

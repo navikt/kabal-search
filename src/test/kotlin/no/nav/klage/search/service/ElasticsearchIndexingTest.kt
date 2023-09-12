@@ -1,6 +1,6 @@
 package no.nav.klage.search.service
 
-import no.nav.klage.kodeverk.MedunderskriverFlyt
+import no.nav.klage.kodeverk.FlowState
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.kodeverk.hjemmel.Hjemmel
@@ -113,10 +113,11 @@ class ElasticsearchIndexingTest {
             egenAnsatt = false,
             fortrolig = false,
             status = IKKE_TILDELT,
-            medunderskriverFlytId = MedunderskriverFlyt.IKKE_SENDT.name,
+            medunderskriverFlowStateId = FlowState.NOT_SENT.id,
             fagsystemId = "1",
             sattPaaVent = LocalDate.now(),
             avsluttetAvSaksbehandler = LocalDateTime.now(),
+            returnertFraROL = null,
             tildeltSaksbehandlernavn = "null",
             medunderskriverident = "null",
             saksdokumenter = listOf(EsSaksdokument(journalpostId = "1", dokumentInfoId = "bc")),
@@ -126,8 +127,8 @@ class ElasticsearchIndexingTest {
             sattPaaVentReason = "null",
             feilregistrert = LocalDateTime.now(),
             rolIdent = "null",
-            rolStateId = "1",
-
+            rolFlowStateId = FlowState.NOT_SENT.id,
+            saksnummer = "123",
         )
 
         repo.save(esBehandlingWithAllData)
@@ -153,11 +154,14 @@ class ElasticsearchIndexingTest {
             egenAnsatt = false,
             fortrolig = false,
             status = IKKE_TILDELT,
-            medunderskriverFlytId = MedunderskriverFlyt.IKKE_SENDT.name,
+            medunderskriverFlowStateId = FlowState.NOT_SENT.id,
             fagsystemId = "1",
             sattPaaVent = LocalDate.now(),
             rolIdent = "ROLIDENT",
-            rolStateId = "1",
+            rolFlowStateId = FlowState.NOT_SENT.id,
+            saksnummer = "123",
+            avsluttetAvSaksbehandler = null,
+            returnertFraROL = null,
         )
     }
 }

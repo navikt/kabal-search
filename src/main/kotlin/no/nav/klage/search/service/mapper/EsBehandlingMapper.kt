@@ -38,13 +38,16 @@ class EsBehandlingMapper(
             ytelseId = behandling.ytelse.id,
             typeId = behandling.type.id,
             fagsystemId = behandling.sakFagsystem.id,
+            saksnummer = behandling.sakFagsakId,
             innsendt = behandling.innsendtDato,
             sakMottattKaDato = behandling.sakMottattKaDato,
             avsluttetAvSaksbehandler = behandling.avsluttetAvSaksbehandlerTidspunkt,
+            returnertFraROL = behandling.returnertFraROLTidspunkt,
             frist = behandling.fristDato,
             tildeltSaksbehandlerident = behandling.gjeldendeTildeling?.saksbehandler?.ident,
             tildeltSaksbehandlernavn = getSaksbehandlernavn(behandling.gjeldendeTildeling?.saksbehandler?.ident),
             medunderskriverident = behandling.medunderskriver?.saksbehandler?.ident,
+            medunderskriverFlowStateId = behandling.medunderskriverFlowStateId,
             medunderskriverFlytId = behandling.medunderskriverFlytStatus.id,
             medunderskriverEnhet = getEnhetsnummerForNavIdent(behandling.medunderskriver?.saksbehandler?.ident),
             tildeltEnhet = behandling.gjeldendeTildeling?.enhet?.nr,
@@ -61,7 +64,7 @@ class EsBehandlingMapper(
             status = EsStatus.valueOf(behandling.status.name),
             feilregistrert = behandling.feilregistrert,
             rolIdent = behandling.rolIdent,
-            rolStateId = behandling.rolStateId,
+            rolFlowStateId = behandling.rolFlowStateId,
         )
     }
 

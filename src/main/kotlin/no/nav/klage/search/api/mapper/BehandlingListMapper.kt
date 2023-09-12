@@ -1,7 +1,7 @@
 package no.nav.klage.search.api.mapper
 
 
-import no.nav.klage.kodeverk.MedunderskriverFlyt
+import no.nav.klage.kodeverk.FlowState
 import no.nav.klage.search.api.view.BehandlingView
 import no.nav.klage.search.api.view.FnrSearchResponseWithoutPerson
 import no.nav.klage.search.api.view.SattPaaVent
@@ -53,8 +53,27 @@ class BehandlingListMapper {
                 sattPaaVent = esBehandling.toSattPaaVent(),
                 feilregistrert = esBehandling.feilregistrert,
                 fagsystemId = esBehandling.fagsystemId,
+                saksnummer = esBehandling.saksnummer,
+                medunderskriver = esBehandling.toMedunderskriverView(),
+                rol = esBehandling.toROLView(),
             )
         }
+    }
+
+    private fun EsBehandling.toROLView(): BehandlingView.CombinedMedunderskriverAndROLView {
+        return BehandlingView.CombinedMedunderskriverAndROLView(
+            navIdent = rolIdent,
+            flowState = FlowState.of(rolFlowStateId),
+            returnertDate = returnertFraROL?.toLocalDate(),
+        )
+    }
+
+    private fun EsBehandling.toMedunderskriverView(): BehandlingView.CombinedMedunderskriverAndROLView {
+        return BehandlingView.CombinedMedunderskriverAndROLView(
+            navIdent = medunderskriverident,
+            flowState = FlowState.of(medunderskriverFlowStateId),
+            returnertDate = null,
+        )
     }
 
     fun mapEsBehandlingerToListView(
