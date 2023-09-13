@@ -97,6 +97,7 @@ data class EnhetensUferdigeOppgaverQueryParams(
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
     override val sortering: Sortering? = Sortering.FRIST,
     var tildelteSaksbehandlere: List<String> = emptyList(),
+    var medunderskrivere: List<String> = emptyList(),
 ) : CommonOppgaverQueryParams
 
 enum class Rekkefoelge {

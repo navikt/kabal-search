@@ -91,6 +91,10 @@ class FortroligElasticsearchServiceTest {
             saksnummer = "123",
             avsluttetAvSaksbehandler = null,
             returnertFraROL = null,
+            tildeltSaksbehandlernavn = null,
+            medunderskriverNavn = null,
+            medunderskriverEnhet = null,
+            medunderskriverident = null,
         )
         val fortroligPerson =
             EsBehandling(
@@ -113,6 +117,10 @@ class FortroligElasticsearchServiceTest {
                 saksnummer = "123",
                 avsluttetAvSaksbehandler = null,
                 returnertFraROL = null,
+                tildeltSaksbehandlernavn = null,
+                medunderskriverNavn = null,
+                medunderskriverEnhet = null,
+                medunderskriverident = null,
             )
         val strengtFortroligPerson = EsBehandling(
             behandlingId = idStrengtFortrolig,
@@ -134,6 +142,10 @@ class FortroligElasticsearchServiceTest {
             saksnummer = "123",
             avsluttetAvSaksbehandler = null,
             returnertFraROL = null,
+            tildeltSaksbehandlernavn = null,
+            medunderskriverNavn = null,
+            medunderskriverEnhet = null,
+            medunderskriverident = null,
         )
         val egenAnsattPerson =
             EsBehandling(
@@ -156,6 +168,10 @@ class FortroligElasticsearchServiceTest {
                 saksnummer = "123",
                 avsluttetAvSaksbehandler = null,
                 returnertFraROL = null,
+                tildeltSaksbehandlernavn = null,
+                medunderskriverNavn = null,
+                medunderskriverEnhet = null,
+                medunderskriverident = null,
             )
         val egenAnsattOgFortroligPerson =
             EsBehandling(
@@ -179,6 +195,10 @@ class FortroligElasticsearchServiceTest {
                 saksnummer = "123",
                 avsluttetAvSaksbehandler = null,
                 returnertFraROL = null,
+                tildeltSaksbehandlernavn = null,
+                medunderskriverNavn = null,
+                medunderskriverEnhet = null,
+                medunderskriverident = null,
             )
         val egenAnsattOgStrengtFortroligPerson =
             EsBehandling(
@@ -202,6 +222,10 @@ class FortroligElasticsearchServiceTest {
                 saksnummer = "123",
                 avsluttetAvSaksbehandler = null,
                 returnertFraROL = null,
+                tildeltSaksbehandlernavn = null,
+                medunderskriverNavn = null,
+                medunderskriverEnhet = null,
+                medunderskriverident = null,
             )
         repo.save(normalPerson)
         repo.save(fortroligPerson)

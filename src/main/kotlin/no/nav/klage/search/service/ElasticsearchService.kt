@@ -14,6 +14,7 @@ import no.nav.klage.search.repositories.EsBehandlingRepository
 import no.nav.klage.search.repositories.SearchHits
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getMedian
+import no.nav.klage.search.util.getSecureLogger
 import org.opensearch.common.unit.TimeValue
 import org.opensearch.index.query.BoolQueryBuilder
 import org.opensearch.index.query.QueryBuilder
@@ -35,6 +36,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
+        private val secureLogger = getSecureLogger()
 
         private const val ISO8601 = "yyyy-MM-dd"
         private const val ZONEID_UTC = "Z"
@@ -211,7 +213,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits.anonymize()
     }
 
-    open fun findSaksbehandlereByEnhetCriteria(criteria: SaksbehandlereByEnhetSearchCriteria): Set<Saksbehandler> {
+    open fun findSaksbehandlereByEnhetCriteria(criteria: SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria): Set<Saksbehandler> {
         val searchHits: SearchHits<EsBehandling> = esBehandlingRepository.search(criteria.toEsQuery())
 
         return searchHits.map {
@@ -220,6 +222,21 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                     ?: throw RuntimeException("tildeltSaksbehandlerident is null. Can't happen"),
                 navn = it.content.tildeltSaksbehandlernavn ?: "Navn mangler"
             )
+        }.toSet()
+    }
+
+    open fun findMedunderskrivereByEnhetCriteria(criteria: SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria): Set<Saksbehandler> {
+        val searchHits: SearchHits<EsBehandling> = esBehandlingRepository.search(criteria.toEsQuery())
+
+        return searchHits.mapNotNull {
+            if (it.content.medunderskriverident == null) {
+                null
+            } else {
+                Saksbehandler(
+                    navIdent = it.content.medunderskriverident,
+                    navn = it.content.medunderskriverNavn ?: "Navn mangler"
+                )
+            }
         }.toSet()
     }
 
@@ -330,21 +347,26 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
 
         baseQuery.must(haveSakenGjelder(fnr))
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
-    private fun SaksbehandlereByEnhetSearchCriteria.toEsQuery(): QueryBuilder {
+    private fun SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria.toEsQuery(): QueryBuilder {
         logger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
 
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
-        baseQuery.must(QueryBuilders.termQuery(EsBehandling::tildeltEnhet.name, enhet))
+
+        val innerQuery = QueryBuilders.boolQuery()
+        innerQuery.should(beTildeltEnhet(enhet))
+        innerQuery.should(beSendtTilMedunderskriverIEnhet(enhet))
+        baseQuery.must(innerQuery)
+
         baseQuery.must(beTildeltSaksbehandler())
         baseQuery.mustNot(beFeilregistrert())
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -356,7 +378,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
         baseQuery.mustNot(beTildeltSaksbehandler())
         baseQuery.mustNot(beFeilregistrert())
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -370,7 +392,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(beSentToROL())
         baseQuery.mustNot(beAssignedToROL())
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -383,7 +405,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.mustNot(beTildeltSaksbehandler())
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(haveFristMellom(fristFom, fristTom))
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -398,7 +420,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beTildeltSaksbehandler(navIdent))
         baseQuery.mustNot(beFeilregistrert())
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -412,7 +434,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beAssignedToROL(navIdent = navIdent))
         baseQuery.mustNot(beFeilregistrert())
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -437,7 +459,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.addSecurityFilters(this)
         baseQuery.must(QueryBuilders.idsQuery().addIds(behandlingId))
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -451,7 +473,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beTildeltSaksbehandlerOrMedunderskriver(navIdent))
         baseQuery.mustNot(beFeilregistrert())
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -466,7 +488,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beSentToROL())
         baseQuery.must(beAssignedToROL(navIdent = navIdent))
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -480,7 +502,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beTildeltSaksbehandlerOrMedunderskriver(navIdent))
         baseQuery.mustNot(beFeilregistrert())
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -494,11 +516,11 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beAvsluttetAvSaksbehandlerFoer(ferdigstiltTom))
         baseQuery.must(beTildeltEnhet(enhetId))
         if (saksbehandlere.isNotEmpty()) {
-            baseQuery.must(beTildeltSaksbehandler(saksbehandlere))
+            baseQuery.must(beTildeltSaksbehandlere(saksbehandlere))
         }
         baseQuery.mustNot(beFeilregistrert())
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -511,11 +533,11 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beSattPaaVent())
         baseQuery.must(beTildeltEnhet(enhetId))
         if (saksbehandlere.isNotEmpty()) {
-            baseQuery.must(beTildeltSaksbehandler(saksbehandlere))
+            baseQuery.must(beTildeltSaksbehandlere(saksbehandlere))
         }
         baseQuery.mustNot(beFeilregistrert())
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -526,15 +548,27 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.addBasicFilters(this)
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
         baseQuery.mustNot(beSattPaaVent())
-        baseQuery.must(beTildeltEnhet(enhetId))
+
+        val innerQuery = QueryBuilders.boolQuery()
+
+        val enhetQuery = QueryBuilders.boolQuery()
+        enhetQuery.should(beTildeltEnhet(enhetId))
+        enhetQuery.should(beSendtTilMedunderskriverIEnhet(enhetId))
+        innerQuery.must(enhetQuery)
+
         if (saksbehandlere.isNotEmpty()) {
-            //TODO: Skal man her ta med oppgaver hvor en saksbehandler i enheten er medunderskriver på en annen enhets oppgave?
-            // Det er ikke med nå, jeg inkluderer ikke medunderskrivere i det hele tatt
-            baseQuery.must(beTildeltSaksbehandler(saksbehandlere))
+            innerQuery.must(beTildeltSaksbehandlere(saksbehandlere))
         }
+
+        if (medunderskrivere.isNotEmpty()) {
+            innerQuery.must(beSentToMedunderskriver())
+            innerQuery.must(beTildeltMedunderskrivere(medunderskrivere))
+        }
+
+        baseQuery.must(innerQuery)
         baseQuery.mustNot(beFeilregistrert())
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
@@ -695,7 +729,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         QueryBuilders.rangeQuery(EsBehandling::frist.name).gte(fristFom).lte(fristTom).format(ISO8601)
             .timeZone(ZONEID_UTC)
 
-    private fun beTildeltSaksbehandler(saksbehandlere: List<String>): BoolQueryBuilder {
+    private fun beTildeltSaksbehandlere(saksbehandlere: List<String>): BoolQueryBuilder {
         val innerQuerySaksbehandler = QueryBuilders.boolQuery()
         saksbehandlere.forEach {
             innerQuerySaksbehandler.should(QueryBuilders.termQuery(EsBehandling::tildeltSaksbehandlerident.name, it))
@@ -703,18 +737,23 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return innerQuerySaksbehandler
     }
 
+    private fun beTildeltMedunderskrivere(medunderskrivere: List<String>): BoolQueryBuilder {
+        val innerQueryMedunderskriver = QueryBuilders.boolQuery()
+        medunderskrivere.forEach {
+            innerQueryMedunderskriver.should(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, it))
+        }
+        return innerQueryMedunderskriver
+    }
+
     private fun beTildeltSaksbehandler(navIdent: String) =
         QueryBuilders.termQuery(EsBehandling::tildeltSaksbehandlerident.name, navIdent)
+
 
     private fun beTildeltMedunderskriver(navIdent: String): BoolQueryBuilder {
         val innerQueryMedunderskriver = QueryBuilders.boolQuery()
         innerQueryMedunderskriver.must(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, navIdent))
-        innerQueryMedunderskriver.must(
-            QueryBuilders.termQuery(
-                EsBehandling::medunderskriverFlowStateId.name,
-                FlowState.SENT.id
-            )
-        )
+        innerQueryMedunderskriver.must(beSentToMedunderskriver())
+
         return innerQueryMedunderskriver
     }
 
@@ -727,6 +766,19 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
 
     private fun beTildeltEnhet(enhetId: String): TermQueryBuilder =
         QueryBuilders.termQuery(EsBehandling::tildeltEnhet.name, enhetId)
+
+    private fun beSentToMedunderskriver(): TermQueryBuilder =
+        QueryBuilders.termQuery(
+            EsBehandling::medunderskriverFlowStateId.name,
+            FlowState.SENT.id
+        )
+
+    private fun beSendtTilMedunderskriverIEnhet(enhetsnummer: String): BoolQueryBuilder {
+        val innerQueryMedunderskriver = QueryBuilders.boolQuery()
+        innerQueryMedunderskriver.must(QueryBuilders.termQuery(EsBehandling::medunderskriverEnhet.name, enhetsnummer))
+        innerQueryMedunderskriver.must(beSentToMedunderskriver())
+        return innerQueryMedunderskriver
+    }
 
     private fun haveSakenGjelder(fnr: String): TermQueryBuilder =
         QueryBuilders.termQuery(EsBehandling::sakenGjelderFnr.name, fnr)

@@ -7,4 +7,5 @@ interface AzureGateway {
     fun getDataOmInnloggetSaksbehandler(): SaksbehandlerPersonligInfo
     fun getAllDisplayNames(idents: List<List<String>>): Map<String, String>
     fun getEnhetensAnsattesNavIdentsWithKabalSaksbehandlerRole(enhetsnummer: String): AzureSlimUserList
+    fun getEnhetsnummerForNavIdent(ident: String): String
 }

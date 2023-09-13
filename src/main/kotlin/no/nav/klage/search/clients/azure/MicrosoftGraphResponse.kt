@@ -26,3 +26,5 @@ data class AzureSlimUser(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AzureSlimUserList(val value: List<AzureSlimUser>?)
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class AzureUserList(val value: List<AzureUser>?)

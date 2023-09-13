@@ -4,7 +4,7 @@ import no.nav.klage.kodeverk.FlowState
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
-import no.nav.klage.search.domain.SaksbehandlereByEnhetSearchCriteria
+import no.nav.klage.search.domain.SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import no.nav.klage.search.domain.elasticsearch.EsStatus.IKKE_TILDELT
 import no.nav.klage.search.repositories.EsBehandlingRepository
@@ -132,7 +132,7 @@ class ElasticsearchServiceFindSaksbehandlereTest {
     fun `find saksbehandlere based on enhet, but not including finished klagebehandlinger`() {
         val saksbehandlere =
             service.findSaksbehandlereByEnhetCriteria(
-                SaksbehandlereByEnhetSearchCriteria(
+                SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria(
                     enhet = "4219",
                     kanBehandleEgenAnsatt = false,
                     kanBehandleFortrolig = false,
@@ -169,6 +169,9 @@ class ElasticsearchServiceFindSaksbehandlereTest {
             rolFlowStateId = "1",
             saksnummer = "123",
             returnertFraROL = null,
+            medunderskriverNavn = null,
+            medunderskriverEnhet = null,
+            medunderskriverident = null,
         )
     }
 

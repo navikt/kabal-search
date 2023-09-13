@@ -113,6 +113,8 @@ class ElasticsearchIndexingTest {
             egenAnsatt = false,
             fortrolig = false,
             status = IKKE_TILDELT,
+            medunderskriverNavn = null,
+            medunderskriverEnhet = null,
             medunderskriverFlowStateId = FlowState.NOT_SENT.id,
             fagsystemId = "1",
             sattPaaVent = LocalDate.now(),
@@ -162,6 +164,10 @@ class ElasticsearchIndexingTest {
             saksnummer = "123",
             avsluttetAvSaksbehandler = null,
             returnertFraROL = null,
+            tildeltSaksbehandlernavn = null,
+            medunderskriverident = null,
+            medunderskriverNavn = null,
+            medunderskriverEnhet = null,
         )
     }
 }

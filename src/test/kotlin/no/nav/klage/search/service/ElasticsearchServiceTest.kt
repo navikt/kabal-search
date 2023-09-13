@@ -80,6 +80,10 @@ class ElasticsearchServiceTest {
             saksnummer = "123",
             avsluttetAvSaksbehandler = null,
             returnertFraROL = null,
+            tildeltSaksbehandlernavn = null,
+            medunderskriverNavn = null,
+            medunderskriverEnhet = null,
+            medunderskriverident = null,
         )
         val klagebehandling2 =
             EsBehandling(
@@ -101,6 +105,10 @@ class ElasticsearchServiceTest {
                 saksnummer = "123",
                 avsluttetAvSaksbehandler = null,
                 returnertFraROL = null,
+                tildeltSaksbehandlernavn = null,
+                medunderskriverNavn = null,
+                medunderskriverEnhet = null,
+                medunderskriverident = null,
             )
         repo.save(klagebehandling1)
         repo.save(klagebehandling2)

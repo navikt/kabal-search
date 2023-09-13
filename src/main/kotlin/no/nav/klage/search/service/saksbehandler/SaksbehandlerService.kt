@@ -1,6 +1,6 @@
 package no.nav.klage.search.service.saksbehandler
 
-import no.nav.klage.search.api.view.SaksbehandlereListResponse
+import no.nav.klage.search.api.view.SaksbehandlerView
 import no.nav.klage.search.gateway.AzureGateway
 import no.nav.klage.search.util.getLogger
 import org.springframework.stereotype.Service
@@ -40,13 +40,16 @@ class SaksbehandlerService(
     fun getNameForIdent(it: String) =
         expandAndReturnSaksbehandlerNameCache(setOf(it)).getOrDefault(it, "Ukjent navn")
 
-    fun getSaksbehandlereForEnhet(enhetsnummer: String): List<SaksbehandlereListResponse.SaksbehandlerView> {
+    fun getSaksbehandlereForEnhet(enhetsnummer: String): List<SaksbehandlerView> {
         val azureOutput = azureGateway.getEnhetensAnsattesNavIdentsWithKabalSaksbehandlerRole(enhetsnummer = enhetsnummer)
         return azureOutput.value?.map {
-            SaksbehandlereListResponse.SaksbehandlerView(
+            SaksbehandlerView(
                 navIdent = it.onPremisesSamAccountName,
                 navn = it.displayName,
             )
         } ?: emptyList()
     }
+
+    fun getEnhetsnummerForNavIdent(navIdent: String): String = azureGateway.getEnhetsnummerForNavIdent(navIdent)
+
 }
