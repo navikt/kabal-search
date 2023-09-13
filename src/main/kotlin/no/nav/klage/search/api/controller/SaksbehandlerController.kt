@@ -3,6 +3,8 @@ package no.nav.klage.search.api.controller
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
+import no.nav.klage.search.api.view.MedunderskrivereListResponse
+import no.nav.klage.search.api.view.SaksbehandlerView
 import no.nav.klage.search.api.view.SaksbehandlereListResponse
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.domain.SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria
@@ -61,7 +63,7 @@ class SaksbehandlerController(
         )
 
         val saksbehandlereFromES = esResponse.map {
-            SaksbehandlereListResponse.SaksbehandlerView(
+            SaksbehandlerView(
                 navIdent = it.navIdent,
                 navn = it.navn
             )
@@ -83,7 +85,7 @@ class SaksbehandlerController(
     fun getMedunderskrivereForEnhet(
         @Parameter(name = "Enhet")
         @PathVariable enhet: String
-    ): SaksbehandlereListResponse {
+    ): MedunderskrivereListResponse {
         logger.debug("getMedunderskrivereForEnhet")
 
         if (innloggetSaksbehandlerService.getEnhetForSaksbehandler().enhetId != enhet) {
@@ -100,7 +102,7 @@ class SaksbehandlerController(
         )
 
         val saksbehandlereFromES = esResponse.map {
-            SaksbehandlereListResponse.SaksbehandlerView(
+            SaksbehandlerView(
                 navIdent = it.navIdent,
                 navn = it.navn
             )
@@ -108,8 +110,8 @@ class SaksbehandlerController(
 
         val saksbehandlereFromMSGraph = saksbehandlerService.getSaksbehandlereForEnhet(enhetsnummer = enhet)
 
-        return SaksbehandlereListResponse(
-            saksbehandlere = (saksbehandlereFromES + saksbehandlereFromMSGraph)
+        return MedunderskrivereListResponse(
+            medunderskrivere = (saksbehandlereFromES + saksbehandlereFromMSGraph)
                 .toSortedSet(compareBy { it.navn }).toList()
         )
     }
