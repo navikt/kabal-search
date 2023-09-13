@@ -566,7 +566,10 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
             innerQuery.must(enhetQuery)
         } else if (medunderskrivere.isNotEmpty()) {
             innerQuery.must(beTildeltMedunderskrivere(medunderskrivere))
-            innerQuery.must(beTildeltEnhet(enhetId))
+            val enhetQuery = QueryBuilders.boolQuery()
+            enhetQuery.should(beTildeltEnhet(enhetId))
+            enhetQuery.should(beSendtTilMedunderskriverIEnhet(enhetId))
+            innerQuery.must(enhetQuery)
         } else {
             innerQuery.should(beTildeltEnhet(enhetId))
             innerQuery.should(beSendtTilMedunderskriverIEnhet(enhetId))
