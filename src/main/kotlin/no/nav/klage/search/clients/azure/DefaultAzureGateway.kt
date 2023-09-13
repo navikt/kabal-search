@@ -56,12 +56,12 @@ class DefaultAzureGateway(
             throw e
         }
 
-    override fun getEnhetsnummerForNavIdent(ident: String): String =
+    override fun getEnhetsnummerForNavIdent(ident: String): String? =
         try {
             microsoftGraphClient.getEnhetsnummerForNavIdent(ident)
         } catch (e: Exception) {
-            logger.error("Failed to call getEnhetsnummerForNavIdent", e)
-            throw e
+            logger.error("Failed to call getEnhetsnummerForNavIdent, returning null", e)
+            null
         }
 
     private fun mapToEnhet(enhetNr: String): Enhet =

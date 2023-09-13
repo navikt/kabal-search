@@ -50,6 +50,6 @@ class SaksbehandlerService(
         } ?: emptyList()
     }
 
-    fun getEnhetsnummerForNavIdent(navIdent: String): String = azureGateway.getEnhetsnummerForNavIdent(navIdent)
+    fun getEnhetsnummerForNavIdent(navIdent: String): String? = azureGateway.getEnhetsnummerForNavIdent(navIdent)
 
 }
