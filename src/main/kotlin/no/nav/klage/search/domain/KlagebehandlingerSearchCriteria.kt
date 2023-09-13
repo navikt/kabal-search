@@ -166,6 +166,7 @@ data class EnhetensUferdigeOppgaverSearchCriteria(
 
     val enhetId: String,
     val saksbehandlere: List<String>,
+    val medunderskrivere: List<String>,
 
     override val sortField: SortField,
     override val order: Order,

@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
 import no.nav.klage.search.api.view.SaksbehandlereListResponse
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
-import no.nav.klage.search.domain.SaksbehandlereByEnhetSearchCriteria
+import no.nav.klage.search.domain.SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria
 import no.nav.klage.search.exceptions.MissingTilgangException
 import no.nav.klage.search.service.ElasticsearchService
 import no.nav.klage.search.service.saksbehandler.InnloggetSaksbehandlerService
@@ -52,7 +52,7 @@ class SaksbehandlerController(
         }
 
         val esResponse = elasticsearchService.findSaksbehandlereByEnhetCriteria(
-            SaksbehandlereByEnhetSearchCriteria(
+            SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria(
                 enhet = enhet,
                 kanBehandleEgenAnsatt = oAuthTokenService.kanBehandleEgenAnsatt(),
                 kanBehandleFortrolig = oAuthTokenService.kanBehandleFortrolig(),
@@ -67,15 +67,7 @@ class SaksbehandlerController(
             )
         }
 
-        //TODO: Remove when fixed
-        secureLogger.debug("fromEs: {}", saksbehandlereFromES)
-
         val saksbehandlereFromMSGraph = saksbehandlerService.getSaksbehandlereForEnhet(enhetsnummer = enhet)
-
-        //TODO: Remove when fixed
-        secureLogger.debug("fromMS: {}", saksbehandlereFromMSGraph)
-        //TODO: Remove when fixed
-        secureLogger.debug("MSGraph app token: {}", tokenUtil.getAppAccessTokenWithGraphScope())
 
         return SaksbehandlereListResponse(
             saksbehandlere = (saksbehandlereFromES + saksbehandlereFromMSGraph)
@@ -83,4 +75,42 @@ class SaksbehandlerController(
         )
     }
 
+    @Operation(
+        summary = "Hent medunderskrivere i gitt enhet",
+        description = "Henter alle medunderskrivere fra aktive saker i gitt enhet."
+    )
+    @GetMapping("/enheter/{enhet}/medunderskrivere", produces = ["application/json"])
+    fun getMedunderskrivereForEnhet(
+        @Parameter(name = "Enhet")
+        @PathVariable enhet: String
+    ): SaksbehandlereListResponse {
+        logger.debug("getMedunderskrivereForEnhet")
+
+        if (innloggetSaksbehandlerService.getEnhetForSaksbehandler().enhetId != enhet) {
+            throw MissingTilgangException("Saksbehandler ${oAuthTokenService.getInnloggetIdent()} does not have access to enhet $enhet")
+        }
+
+        val esResponse = elasticsearchService.findMedunderskrivereByEnhetCriteria(
+            SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria(
+                enhet = enhet,
+                kanBehandleEgenAnsatt = oAuthTokenService.kanBehandleEgenAnsatt(),
+                kanBehandleFortrolig = oAuthTokenService.kanBehandleFortrolig(),
+                kanBehandleStrengtFortrolig = oAuthTokenService.kanBehandleStrengtFortrolig(),
+            )
+        )
+
+        val saksbehandlereFromES = esResponse.map {
+            SaksbehandlereListResponse.SaksbehandlerView(
+                navIdent = it.navIdent,
+                navn = it.navn
+            )
+        }
+
+        val saksbehandlereFromMSGraph = saksbehandlerService.getSaksbehandlereForEnhet(enhetsnummer = enhet)
+
+        return SaksbehandlereListResponse(
+            saksbehandlere = (saksbehandlereFromES + saksbehandlereFromMSGraph)
+                .toSortedSet(compareBy { it.navn }).toList()
+        )
+    }
 }

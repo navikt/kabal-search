@@ -102,6 +102,10 @@ class ElasticsearchServiceStatusTest {
         saksnummer = "123",
         avsluttetAvSaksbehandler = null,
         returnertFraROL = null,
+        tildeltSaksbehandlernavn = null,
+        medunderskriverNavn = null,
+        medunderskriverEnhet = null,
+        medunderskriverident = null,
     )
 
 }

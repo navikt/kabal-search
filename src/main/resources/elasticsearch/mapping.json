@@ -40,6 +40,9 @@
     "medunderskriverEnhet": {
       "type": "keyword"
     },
+    "medunderskriverNavn": {
+      "type": "keyword"
+    },
     "rolIdent": {
       "type": "keyword"
     },

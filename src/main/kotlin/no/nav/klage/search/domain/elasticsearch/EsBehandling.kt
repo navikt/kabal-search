@@ -43,15 +43,17 @@ data class EsBehandling(
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     override val frist: LocalDate?,
 
-    override val tildeltSaksbehandlerident: String? = null,
+    override val tildeltSaksbehandlerident: String?,
 
-    override val tildeltSaksbehandlernavn: String? = null,
+    override val tildeltSaksbehandlernavn: String?,
 
-    override val medunderskriverident: String? = null,
+    override val medunderskriverident: String?,
+
+    override val medunderskriverNavn: String?,
 
     override val medunderskriverFlowStateId: String,
 
-    override val medunderskriverEnhet: String? = null,
+    override val medunderskriverEnhet: String?,
 
     val tildeltEnhet: String?,
 
@@ -95,6 +97,7 @@ interface EsAnonymBehandling {
     val tildeltSaksbehandlerident: String?
     val medunderskriverFlowStateId: String
     val medunderskriverident: String?
+    val medunderskriverNavn: String?
     val medunderskriverEnhet: String?
     val sakMottattKaDato: LocalDateTime
     val frist: LocalDate?
