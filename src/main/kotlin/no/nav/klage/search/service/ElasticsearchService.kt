@@ -551,30 +551,18 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
 
         val innerQuery = QueryBuilders.boolQuery()
 
-        if (saksbehandlere.isNotEmpty() && medunderskrivere.isNotEmpty()) {
+        val enhetQuery = QueryBuilders.boolQuery()
+        enhetQuery.should(beTildeltEnhet(enhetId))
+        enhetQuery.should(beSendtTilMedunderskriverIEnhet(enhetId))
+        innerQuery.must(enhetQuery)
+
+        if (saksbehandlere.isNotEmpty()) {
+            innerQuery.must(beTildeltSaksbehandlere(saksbehandlere))
+        }
+
+        if (medunderskrivere.isNotEmpty()) {
             innerQuery.must(beSentToMedunderskriver())
             innerQuery.must(beTildeltMedunderskrivere(medunderskrivere))
-            innerQuery.must(beTildeltSaksbehandlere(saksbehandlere))
-            val enhetQuery = QueryBuilders.boolQuery()
-            enhetQuery.should(beTildeltEnhet(enhetId))
-            enhetQuery.should(beSendtTilMedunderskriverIEnhet(enhetId))
-            innerQuery.must(enhetQuery)
-        } else if (saksbehandlere.isNotEmpty()) {
-            innerQuery.must(beTildeltSaksbehandlere(saksbehandlere))
-            val enhetQuery = QueryBuilders.boolQuery()
-            enhetQuery.should(beTildeltEnhet(enhetId))
-            enhetQuery.should(beSendtTilMedunderskriverIEnhet(enhetId))
-            innerQuery.must(enhetQuery)
-        } else if (medunderskrivere.isNotEmpty()) {
-            innerQuery.must(beSentToMedunderskriver())
-            innerQuery.must(beTildeltMedunderskrivere(medunderskrivere))
-            val enhetQuery = QueryBuilders.boolQuery()
-            enhetQuery.should(beTildeltEnhet(enhetId))
-            enhetQuery.should(beSendtTilMedunderskriverIEnhet(enhetId))
-            innerQuery.must(enhetQuery)
-        } else {
-            innerQuery.should(beTildeltEnhet(enhetId))
-            innerQuery.should(beSendtTilMedunderskriverIEnhet(enhetId))
         }
 
         baseQuery.must(innerQuery)
@@ -753,7 +741,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         val innerQueryMedunderskriver = QueryBuilders.boolQuery()
         medunderskrivere.forEach {
             innerQueryMedunderskriver.should(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, it))
-        }        
+        }
         return innerQueryMedunderskriver
     }
 
