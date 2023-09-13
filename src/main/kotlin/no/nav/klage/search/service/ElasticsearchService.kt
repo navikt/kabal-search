@@ -556,11 +556,11 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
 
         if (saksbehandlere.isNotEmpty() && medunderskrivere.isNotEmpty()) {
             baseQuery.must(beTildeltSaksbehandler(saksbehandlere))
-            baseQuery.must(beTildeltMedunderskriver(medunderskrivere))
+            baseQuery.must(beTildeltMedunderskriver(medunderskrivere, enhetId))
         } else if (saksbehandlere.isNotEmpty()) {
             baseQuery.must(beTildeltSaksbehandler(saksbehandlere))
         } else if (medunderskrivere.isNotEmpty()) {
-            baseQuery.must(beTildeltMedunderskriver(medunderskrivere))
+            baseQuery.must(beTildeltMedunderskriver(medunderskrivere, enhetId))
         }
         baseQuery.mustNot(beFeilregistrert())
 
@@ -733,10 +733,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return innerQuerySaksbehandler
     }
 
-    private fun beTildeltSaksbehandler(navIdent: String) =
-        QueryBuilders.termQuery(EsBehandling::tildeltSaksbehandlerident.name, navIdent)
-
-    private fun beTildeltMedunderskriver(medunderskrivere: List<String>): BoolQueryBuilder {
+    private fun beTildeltMedunderskriver(medunderskrivere: List<String>, enhetId: String): BoolQueryBuilder {
         val innerQueryMedunderskriver = QueryBuilders.boolQuery()
         medunderskrivere.forEach {
             innerQueryMedunderskriver.should(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, it))
@@ -747,8 +744,16 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                 FlowState.SENT.id
             )
         )
+        innerQueryMedunderskriver.must(
+            beTildeltEnhet(enhetId)
+        )
+
         return innerQueryMedunderskriver
     }
+
+    private fun beTildeltSaksbehandler(navIdent: String) =
+        QueryBuilders.termQuery(EsBehandling::tildeltSaksbehandlerident.name, navIdent)
+
 
     private fun beTildeltMedunderskriver(navIdent: String): BoolQueryBuilder {
         val innerQueryMedunderskriver = QueryBuilders.boolQuery()
