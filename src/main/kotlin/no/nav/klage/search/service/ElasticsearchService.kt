@@ -552,6 +552,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         val innerQuery = QueryBuilders.boolQuery()
 
         if (saksbehandlere.isNotEmpty() && medunderskrivere.isNotEmpty()) {
+            innerQuery.must(beSentToMedunderskriver())
             innerQuery.must(beTildeltMedunderskrivere(medunderskrivere))
             innerQuery.must(beTildeltSaksbehandlere(saksbehandlere))
             val enhetQuery = QueryBuilders.boolQuery()
@@ -565,6 +566,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
             enhetQuery.should(beSendtTilMedunderskriverIEnhet(enhetId))
             innerQuery.must(enhetQuery)
         } else if (medunderskrivere.isNotEmpty()) {
+            innerQuery.must(beSentToMedunderskriver())
             innerQuery.must(beTildeltMedunderskrivere(medunderskrivere))
             val enhetQuery = QueryBuilders.boolQuery()
             enhetQuery.should(beTildeltEnhet(enhetId))
@@ -751,14 +753,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         val innerQueryMedunderskriver = QueryBuilders.boolQuery()
         medunderskrivere.forEach {
             innerQueryMedunderskriver.should(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, it))
-        }
-        innerQueryMedunderskriver.must(
-            QueryBuilders.termQuery(
-                EsBehandling::medunderskriverFlowStateId.name,
-                FlowState.SENT.id
-            )
-        )
-
+        }        
         return innerQueryMedunderskriver
     }
 
@@ -769,12 +764,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     private fun beTildeltMedunderskriver(navIdent: String): BoolQueryBuilder {
         val innerQueryMedunderskriver = QueryBuilders.boolQuery()
         innerQueryMedunderskriver.must(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, navIdent))
-        innerQueryMedunderskriver.must(
-            QueryBuilders.termQuery(
-                EsBehandling::medunderskriverFlowStateId.name,
-                FlowState.SENT.id
-            )
-        )
+        innerQueryMedunderskriver.must(beSentToMedunderskriver())
+
         return innerQueryMedunderskriver
     }
 
@@ -788,15 +779,16 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     private fun beTildeltEnhet(enhetId: String): TermQueryBuilder =
         QueryBuilders.termQuery(EsBehandling::tildeltEnhet.name, enhetId)
 
+    private fun beSentToMedunderskriver(): TermQueryBuilder =
+        QueryBuilders.termQuery(
+            EsBehandling::medunderskriverFlowStateId.name,
+            FlowState.SENT.id
+        )
+
     private fun beSendtTilMedunderskriverIEnhet(enhetsnummer: String): BoolQueryBuilder {
         val innerQueryMedunderskriver = QueryBuilders.boolQuery()
         innerQueryMedunderskriver.must(QueryBuilders.termQuery(EsBehandling::medunderskriverEnhet.name, enhetsnummer))
-        innerQueryMedunderskriver.must(
-            QueryBuilders.termQuery(
-                EsBehandling::medunderskriverFlowStateId.name,
-                FlowState.SENT.id
-            )
-        )
+        innerQueryMedunderskriver.must(beSentToMedunderskriver())
         return innerQueryMedunderskriver
     }
 
