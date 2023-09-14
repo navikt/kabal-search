@@ -60,7 +60,7 @@ class DefaultAzureGateway(
         try {
             microsoftGraphClient.getEnhetsnummerForNavIdent(ident)
         } catch (e: Exception) {
-            logger.error("Failed to call getEnhetsnummerForNavIdent, returning null", e)
+            logger.warn("Failed to call getEnhetsnummerForNavIdent, returning null", e)
             null
         }
 

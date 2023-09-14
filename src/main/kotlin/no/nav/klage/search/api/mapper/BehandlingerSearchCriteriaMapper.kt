@@ -140,6 +140,7 @@ class BehandlingerSearchCriteriaMapper(
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
         enhetId = enhetId,
         saksbehandlere = queryParams.tildelteSaksbehandlere,
+        medunderskrivere = queryParams.medunderskrivere,
         sortField = mapSortField(queryParams.sortering),
         order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
         offset = 0,

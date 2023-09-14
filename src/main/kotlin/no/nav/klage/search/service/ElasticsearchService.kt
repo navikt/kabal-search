@@ -531,10 +531,24 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.addBasicFilters(this)
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
         baseQuery.must(beSattPaaVent())
-        baseQuery.must(beTildeltEnhet(enhetId))
+
+        val innerQuery = QueryBuilders.boolQuery()
+
+        val enhetQuery = QueryBuilders.boolQuery()
+        enhetQuery.should(beTildeltEnhet(enhetId))
+        enhetQuery.should(beSendtTilMedunderskriverIEnhet(enhetId))
+        innerQuery.must(enhetQuery)
+
         if (saksbehandlere.isNotEmpty()) {
-            baseQuery.must(beTildeltSaksbehandlere(saksbehandlere))
+            innerQuery.must(beTildeltSaksbehandlere(saksbehandlere))
         }
+
+        if (medunderskrivere.isNotEmpty()) {
+            innerQuery.must(beSentToMedunderskriver())
+            innerQuery.must(beTildeltMedunderskrivere(medunderskrivere))
+        }
+
+        baseQuery.must(innerQuery)
         baseQuery.mustNot(beFeilregistrert())
 
         secureLogger.debug("Making search request with query {}", baseQuery.toString())
