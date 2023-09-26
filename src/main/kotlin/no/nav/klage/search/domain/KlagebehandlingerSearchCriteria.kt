@@ -141,6 +141,24 @@ data class EnhetensFerdigstilteOppgaverSearchCriteria(
     override val kanBehandleStrengtFortrolig: Boolean,
 ) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria
 
+data class KrolsReturnerteOppgaverSearchCriteria(
+    override val typer: List<Type>,
+    override val ytelser: List<Ytelse>,
+    override val hjemler: List<Hjemmel>,
+
+    val returnertFom: LocalDate,
+    val returnertTom: LocalDate,
+
+    override val sortField: SortField,
+    override val order: Order,
+    override val offset: Int,
+    override val limit: Int,
+
+    override val kanBehandleEgenAnsatt: Boolean,
+    override val kanBehandleFortrolig: Boolean,
+    override val kanBehandleStrengtFortrolig: Boolean,
+) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria
+
 data class EnhetensOppgaverPaaVentSearchCriteria(
     override val typer: List<Type>,
     override val ytelser: List<Ytelse>,
@@ -168,6 +186,23 @@ data class EnhetensUferdigeOppgaverSearchCriteria(
     val enhetId: String,
     val saksbehandlere: List<String>,
     val medunderskrivere: List<String>,
+
+    override val sortField: SortField,
+    override val order: Order,
+    override val offset: Int,
+    override val limit: Int,
+
+    override val kanBehandleEgenAnsatt: Boolean,
+    override val kanBehandleFortrolig: Boolean,
+    override val kanBehandleStrengtFortrolig: Boolean,
+) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria
+
+data class KrolsUferdigeOppgaverSearchCriteria(
+    override val typer: List<Type>,
+    override val ytelser: List<Ytelse>,
+    override val hjemler: List<Hjemmel>,
+
+    val rolList: List<String>,
 
     override val sortField: SortField,
     override val order: Order,

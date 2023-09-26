@@ -169,6 +169,39 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
     )
 
+    fun toKrolsUferdigeOppgaverSearchCriteria(
+        queryParams: KrolsUferdigeOppgaverQueryParams,
+    ) = KrolsUferdigeOppgaverSearchCriteria(
+        typer = queryParams.typer.map { Type.of(it) },
+        ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+        hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+        rolList = queryParams.tildelteRol,
+        sortField = mapSortField(queryParams.sortering),
+        order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+        offset = 0,
+        limit = 9_999,
+        kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
+        kanBehandleFortrolig = kanBehandleFortrolig(),
+        kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+    )
+
+    fun toKrolsReturnerteOppgaverSearchCriteria(
+        queryParams: KrolsReturnerteOppgaverQueryParams,
+    ) = KrolsReturnerteOppgaverSearchCriteria(
+        typer = queryParams.typer.map { Type.of(it) },
+        ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+        hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+        returnertFom = mapFom(queryParams.returnertFrom),
+        returnertTom = queryParams.returnertTo ?: LocalDate.now(),
+        sortField = mapSortField(queryParams.sortering),
+        order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+        offset = 0,
+        limit = 9_999,
+        kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
+        kanBehandleFortrolig = kanBehandleFortrolig(),
+        kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+    )
+
     //-- ledige oppgaver:
 
     fun toLedigeOppgaverSearchCriteria(queryParams: MineLedigeOppgaverQueryParams): LedigeOppgaverSearchCriteria =

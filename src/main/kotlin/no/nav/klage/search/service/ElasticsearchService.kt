@@ -189,6 +189,18 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits.anonymize()
     }
 
+    open fun findKrolsReturnerteOppgaverByCriteria(criteria: KrolsReturnerteOppgaverSearchCriteria): AnonymeBehandlingerSearchHits {
+        val searchSourceBuilder = SearchSourceBuilder()
+        searchSourceBuilder.query(criteria.toEsQuery())
+        searchSourceBuilder.addPaging(criteria)
+        searchSourceBuilder.addSorting(criteria)
+        searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
+
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder)
+        logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
+        return searchHits.anonymize()
+    }
+
     open fun findEnhetensOppgaverPaaVentByCriteria(criteria: EnhetensOppgaverPaaVentSearchCriteria): AnonymeBehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
@@ -202,6 +214,18 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     open fun findEnhetensUferdigeOppgaverByCriteria(criteria: EnhetensUferdigeOppgaverSearchCriteria): AnonymeBehandlingerSearchHits {
+        val searchSourceBuilder = SearchSourceBuilder()
+        searchSourceBuilder.query(criteria.toEsQuery())
+        searchSourceBuilder.addPaging(criteria)
+        searchSourceBuilder.addSorting(criteria)
+        searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
+
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder)
+        logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
+        return searchHits.anonymize()
+    }
+
+    open fun findKrolsUferdigeOppgaverByCriteria(criteria: KrolsUferdigeOppgaverSearchCriteria): AnonymeBehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
@@ -586,6 +610,38 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return baseQuery
     }
 
+    private fun KrolsUferdigeOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
+        logger.debug("Search criteria: {}", this)
+        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
+        baseQuery.addSecurityFilters(this)
+        baseQuery.addBasicFilters(this)
+        baseQuery.must(beAssignedToROL())
+
+        if (rolList.isNotEmpty()) {
+            baseQuery.must(beAssignedToROL(rolList))
+        }
+
+        baseQuery.mustNot(beFeilregistrert())
+
+        logger.debug("Making search request with query {}", baseQuery.toString())
+        return baseQuery
+    }
+
+    private fun KrolsReturnerteOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
+        logger.debug("Search criteria: {}", this)
+        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
+        baseQuery.addSecurityFilters(this)
+        baseQuery.addBasicFilters(this)
+        baseQuery.must(beReturnedFromROL())
+        baseQuery.must(beReturnertFraROLEtter(returnertFom))
+        baseQuery.must(beReturnertFraROLFoer(returnertTom))
+        baseQuery.must(beAssignedToROL())
+        baseQuery.mustNot(beFeilregistrert())
+
+        logger.debug("Making search request with query {}", baseQuery.toString())
+        return baseQuery
+    }
+
     private fun BoolQueryBuilder.addBasicFilters(basicSearchCriteria: BasicSearchCriteria) {
         if (basicSearchCriteria.typer.isNotEmpty()) {
             val innerQueryType = QueryBuilders.boolQuery()
@@ -749,6 +805,14 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
             innerQuerySaksbehandler.should(QueryBuilders.termQuery(EsBehandling::tildeltSaksbehandlerident.name, it))
         }
         return innerQuerySaksbehandler
+    }
+
+    private fun beAssignedToROL(rolList: List<String>): BoolQueryBuilder {
+        val innerQueryRol = QueryBuilders.boolQuery()
+        rolList.forEach {
+            innerQueryRol.should(QueryBuilders.termQuery(EsBehandling::rolIdent.name, it))
+        }
+        return innerQueryRol
     }
 
     private fun beTildeltMedunderskrivere(medunderskrivere: List<String>): BoolQueryBuilder {
