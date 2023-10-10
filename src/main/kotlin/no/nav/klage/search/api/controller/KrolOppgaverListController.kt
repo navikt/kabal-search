@@ -86,7 +86,7 @@ class KrolOppgaverListController(
     }
 
     private fun validateRettigheterForKrolOppgaver() {
-        if (!oAuthTokenService.isKabalOppgavestyringEgenEnhet()) {
+        if (!oAuthTokenService.isKROL()) {
             val message =
                 "${oAuthTokenService.getInnloggetIdent()} har ikke tilgang til å se alle oppgaver."
             logger.warn(message)
