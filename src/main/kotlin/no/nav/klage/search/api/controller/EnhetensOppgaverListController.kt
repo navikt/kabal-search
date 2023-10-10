@@ -99,7 +99,7 @@ class EnhetensOppgaverListController(
         description = "Henter alle uferdige oppgaver i enheten som saksbehandler har tilgang til."
     )
     @GetMapping(
-        "/enhet/{enhetId}/oppgaver/tildelte/uferdige",
+        "/enhet/{enhetId}/oppgaver/tildelte/uferdige", "/enheter/{enhetId}/oppgaver/tildelte/uferdige",
         produces = ["application/json"]
     )
     fun getEnhetensUferdigeOppgaver(
