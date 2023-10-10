@@ -11,12 +11,15 @@ class OAuthTokenService(
     @Value("\${FORTROLIG_ROLE_ID}") private val fortroligRoleId: String,
     @Value("\${STRENGT_FORTROLIG_ROLE_ID}") private val strengtFortroligRoleId: String,
     @Value("\${EGEN_ANSATT_ROLE_ID}") private val egenAnsattRoleId: String,
-    @Value("\${KABAL_ADMIN_ROLE_ID}") private val kabalAdminRoleId: String
+    @Value("\${KABAL_ADMIN_ROLE_ID}") private val kabalAdminRoleId: String,
+    @Value("\${KABAL_KROL_ROLE_ID}") private val kabalKrolRoleId: String,
 ) {
 
     fun getInnloggetIdent() = tokenUtil.getIdent()
 
     fun isAdmin(): Boolean = tokenUtil.getRoleIdsFromToken().contains(kabalAdminRoleId)
+
+    fun isKROL(): Boolean = tokenUtil.getRoleIdsFromToken().contains(kabalKrolRoleId)
 
     fun isKabalOppgavestyringEgenEnhet(): Boolean = tokenUtil.getRoleIdsFromToken().contains(kabalOppgavestyringEgenEnhetRoleId)
 

@@ -101,6 +101,25 @@ data class EnhetensUferdigeOppgaverQueryParams(
     var medunderskrivere: List<String> = emptyList(),
 ) : CommonOppgaverQueryParams
 
+data class KrolsUferdigeOppgaverQueryParams(
+    override var typer: List<String> = emptyList(),
+    override var ytelser: List<String> = emptyList(),
+    override var hjemler: List<String> = emptyList(),
+    override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
+    override val sortering: Sortering? = Sortering.FRIST,
+    var tildelteRol: List<String> = emptyList(),
+) : CommonOppgaverQueryParams
+
+data class KrolsReturnerteOppgaverQueryParams(
+    override var typer: List<String> = emptyList(),
+    override var ytelser: List<String> = emptyList(),
+    override var hjemler: List<String> = emptyList(),
+    override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
+    override val sortering: Sortering? = Sortering.RETURNERT_FRA_ROL,
+    override val returnertFrom: LocalDate?,
+    override val returnertTo: LocalDate?,
+) : CommonOppgaverQueryParams, ReturnerteROLOppgaverQueryParams
+
 enum class Rekkefoelge {
     STIGENDE, SYNKENDE
 }
