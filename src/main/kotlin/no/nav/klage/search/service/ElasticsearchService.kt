@@ -237,7 +237,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits.anonymize()
     }
 
-    open fun findSaksbehandlereByEnhetCriteria(criteria: SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria): Set<Saksbehandler> {
+    open fun findSaksbehandlereByEnhetCriteria(criteria: SaksbehandlereAndMedunderskrivereAndROLListByEnhetSearchCriteria): Set<Saksbehandler> {
         val searchHits: SearchHits<EsBehandling> = esBehandlingRepository.search(criteria.toEsQuery())
 
         return searchHits.map {
@@ -249,7 +249,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         }.toSet()
     }
 
-    open fun findMedunderskrivereByEnhetCriteria(criteria: SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria): Set<Saksbehandler> {
+    open fun findMedunderskrivereByEnhetCriteria(criteria: SaksbehandlereAndMedunderskrivereAndROLListByEnhetSearchCriteria): Set<Saksbehandler> {
         val searchHits: SearchHits<EsBehandling> = esBehandlingRepository.search(criteria.toEsQuery())
 
         return searchHits.mapNotNull {
@@ -259,6 +259,21 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                 Saksbehandler(
                     navIdent = it.content.medunderskriverident,
                     navn = it.content.medunderskriverNavn ?: "Navn mangler"
+                )
+            }
+        }.toSet()
+    }
+
+    open fun findROLListByEnhetCriteria(criteria: SaksbehandlereAndMedunderskrivereAndROLListByEnhetSearchCriteria): Set<Saksbehandler> {
+        val searchHits: SearchHits<EsBehandling> = esBehandlingRepository.search(criteria.toEsQuery())
+
+        return searchHits.mapNotNull {
+            if (it.content.rolIdent == null) {
+                null
+            } else {
+                Saksbehandler(
+                    navIdent = it.content.rolIdent,
+                    navn = it.content.rolNavn ?: "Navn mangler"
                 )
             }
         }.toSet()
@@ -375,7 +390,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return baseQuery
     }
 
-    private fun SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria.toEsQuery(): QueryBuilder {
+    private fun SaksbehandlereAndMedunderskrivereAndROLListByEnhetSearchCriteria.toEsQuery(): QueryBuilder {
         logger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)

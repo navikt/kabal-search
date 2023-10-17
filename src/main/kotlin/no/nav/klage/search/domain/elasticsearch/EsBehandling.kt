@@ -80,6 +80,8 @@ data class EsBehandling(
 
     override val rolIdent: String?,
 
+    override val rolNavn: String?,
+
     override val rolFlowStateId: String,
 
     val status: EsStatus,
@@ -110,5 +112,6 @@ interface EsAnonymBehandling {
     val sattPaaVentReason: String?
     val feilregistrert: LocalDateTime?
     val rolIdent: String?
+    val rolNavn: String?
     val rolFlowStateId: String?
 }

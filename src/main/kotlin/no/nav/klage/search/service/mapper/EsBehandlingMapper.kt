@@ -64,6 +64,7 @@ class EsBehandlingMapper(
             status = EsStatus.valueOf(behandling.status.name),
             feilregistrert = behandling.feilregistrert,
             rolIdent = behandling.rolIdent,
+            rolNavn = getSaksbehandlernavn(behandling.rolIdent),
             rolFlowStateId = behandling.rolFlowStateId,
         )
     }

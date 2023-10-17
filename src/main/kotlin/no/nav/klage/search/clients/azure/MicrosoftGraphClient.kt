@@ -19,6 +19,7 @@ class MicrosoftGraphClient(
     private val microsoftGraphWebClient: WebClient,
     private val tokenUtil: TokenUtil,
     @Value("\${KABAL_SAKSBEHANDLING_ROLE_ID}") private val kabalSaksbehandlingRoleId: String,
+    @Value("\${KABAL_ROL_ROLE_ID}") private val kabalROLRoleId: String,
 ) {
 
     companion object {
@@ -93,6 +94,28 @@ class MicrosoftGraphClient(
             .block()
             ?: throw RuntimeException("AzureAD data about authenticated user could not be fetched")
     }
+
+    @Retryable
+    fun getEnhetensAnsatteWithKabalROLRole(enhetsnummer: String): AzureSlimUserList {
+        logger.debug("getEnhetensAnsatteWithKabalROLRole from Microsoft Graph")
+        return microsoftGraphWebClient.get()
+            .uri { uriBuilder ->
+                uriBuilder
+                    .path("/groups/$kabalROLRoleId/transitivemembers/microsoft.graph.user")
+                    .queryParam("\$filter", "streetAddress eq '$enhetsnummer'")
+                    .queryParam("\$count", true)
+                    .queryParam("\$top", 500)
+                    .queryParam("\$select", "userPrincipalName,onPremisesSamAccountName,displayName")
+                    .build()
+            }
+            .header("Authorization", "Bearer ${tokenUtil.getAppAccessTokenWithGraphScope()}")
+            .header("ConsistencyLevel", "eventual")
+            .retrieve()
+            .bodyToMono<AzureSlimUserList>()
+            .block()
+            ?: throw RuntimeException("AzureAD data about authenticated user could not be fetched")
+    }
+
 
     private fun getDisplayNames(navIdents: String): Mono<AzureSlimUserList> {
         return try {

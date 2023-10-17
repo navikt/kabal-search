@@ -50,6 +50,16 @@ class SaksbehandlerService(
         } ?: emptyList()
     }
 
+    fun getROLListForEnhet(enhetsnummer: String): List<SaksbehandlerView> {
+        val azureOutput = azureGateway.getEnhetensAnsattesNavIdentsWithKabalROLRole(enhetsnummer = enhetsnummer)
+        return azureOutput.value?.map {
+            SaksbehandlerView(
+                navIdent = it.onPremisesSamAccountName,
+                navn = it.displayName,
+            )
+        } ?: emptyList()
+    }
+
     fun getEnhetsnummerForNavIdent(navIdent: String): String? = azureGateway.getEnhetsnummerForNavIdent(navIdent)
 
 }
