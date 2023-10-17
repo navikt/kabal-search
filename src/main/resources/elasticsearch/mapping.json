@@ -46,6 +46,9 @@
     "rolIdent": {
       "type": "keyword"
     },
+    "rolNavn": {
+      "type": "keyword"
+    },
     "rolFlowStateId": {
       "type": "keyword"
     },

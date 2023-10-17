@@ -129,6 +129,7 @@ class ElasticsearchIndexingTest {
             sattPaaVentReason = "null",
             feilregistrert = LocalDateTime.now(),
             rolIdent = "null",
+            rolNavn = null,
             rolFlowStateId = FlowState.NOT_SENT.id,
             saksnummer = "123",
         )
@@ -168,6 +169,7 @@ class ElasticsearchIndexingTest {
             medunderskriverident = null,
             medunderskriverNavn = null,
             medunderskriverEnhet = null,
+            rolNavn = null,
         )
     }
 }
