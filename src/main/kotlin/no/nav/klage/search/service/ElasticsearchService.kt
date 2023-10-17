@@ -615,7 +615,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
-        baseQuery.must(beAssignedToROL())
+        baseQuery.must(beSentToROL())
 
         if (rolList.isNotEmpty()) {
             baseQuery.must(beAssignedToROL(rolList))
