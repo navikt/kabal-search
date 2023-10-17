@@ -98,6 +98,7 @@ class ElasticsearchServiceStatusTest {
         sakenGjelderFnr = "12345678910",
         fagsystemId = "1",
         rolIdent = "ROLIDENT",
+        rolNavn = "ROLNAVN",
         rolFlowStateId = "1",
         saksnummer = "123",
         avsluttetAvSaksbehandler = null,
