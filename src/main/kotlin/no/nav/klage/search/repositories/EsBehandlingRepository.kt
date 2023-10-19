@@ -30,13 +30,13 @@ import org.opensearch.client.indices.CreateIndexRequest
 import org.opensearch.client.indices.CreateIndexResponse
 import org.opensearch.client.indices.GetIndexRequest
 import org.opensearch.common.xcontent.XContentType
+import org.opensearch.core.rest.RestStatus
 import org.opensearch.core.xcontent.NamedXContentRegistry
 import org.opensearch.index.VersionType
 import org.opensearch.index.query.QueryBuilder
 import org.opensearch.index.query.QueryBuilders
 import org.opensearch.index.reindex.BulkByScrollResponse
 import org.opensearch.index.reindex.DeleteByQueryRequest
-import org.opensearch.rest.RestStatus
 import org.opensearch.search.aggregations.AggregationBuilder
 import org.opensearch.search.aggregations.Aggregations
 import org.opensearch.search.builder.SearchSourceBuilder
