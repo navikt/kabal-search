@@ -12,7 +12,7 @@ val threeTenExtraVersion = "1.7.2"
 val archunitVersion = "1.1.0"
 val opensearchVersion = "2.11.0"
 val reactorSpringVersion = "1.0.1.RELEASE"
-val kodeverkVersion = "1.6.13"
+val kodeverkVersion = "1.6.14"
 val ehcacheVersion = "3.10.8"
 val logbackSyslog4jVersion = "1.0.0"
 
@@ -28,7 +28,7 @@ repositories {
 
 plugins {
     val kotlinVersion = "1.9.10"
-    id("org.springframework.boot") version "3.1.4"
+    id("org.springframework.boot") version "3.1.5"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     idea
