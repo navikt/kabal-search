@@ -8,7 +8,8 @@ import no.nav.klage.search.api.view.ROLListResponse
 import no.nav.klage.search.api.view.SaksbehandlerView
 import no.nav.klage.search.api.view.SaksbehandlereListResponse
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
-import no.nav.klage.search.domain.SaksbehandlereAndMedunderskrivereAndROLListByEnhetSearchCriteria
+import no.nav.klage.search.domain.ROLListSearchCriteria
+import no.nav.klage.search.domain.SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria
 import no.nav.klage.search.exceptions.MissingTilgangException
 import no.nav.klage.search.service.ElasticsearchService
 import no.nav.klage.search.service.saksbehandler.InnloggetSaksbehandlerService
@@ -53,7 +54,7 @@ class SaksbehandlerController(
         }
 
         val esResponse = elasticsearchService.findSaksbehandlereByEnhetCriteria(
-            SaksbehandlereAndMedunderskrivereAndROLListByEnhetSearchCriteria(
+            SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria(
                 enhet = enhet,
                 kanBehandleEgenAnsatt = oAuthTokenService.kanBehandleEgenAnsatt(),
                 kanBehandleFortrolig = oAuthTokenService.kanBehandleFortrolig(),
@@ -92,7 +93,7 @@ class SaksbehandlerController(
         }
 
         val esResponse = elasticsearchService.findMedunderskrivereByEnhetCriteria(
-            SaksbehandlereAndMedunderskrivereAndROLListByEnhetSearchCriteria(
+            SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria(
                 enhet = enhet,
                 kanBehandleEgenAnsatt = oAuthTokenService.kanBehandleEgenAnsatt(),
                 kanBehandleFortrolig = oAuthTokenService.kanBehandleFortrolig(),
@@ -119,20 +120,15 @@ class SaksbehandlerController(
         summary = "Hent ROL i gitt enhet",
         description = "Henter alle ROL fra aktive saker i gitt enhet."
     )
-    @GetMapping("/enheter/{enhet}/rol-list", produces = ["application/json"])
-    fun getRolForEnhet(
-        @Parameter(name = "Enhet")
-        @PathVariable enhet: String
+    @GetMapping("/rol-list", "/enheter/{enhet}/rol-list", produces = ["application/json"])
+    fun getRolList(
+//        @Parameter(name = "Enhet")
+//        @PathVariable enhet: String
     ): ROLListResponse {
-        logger.debug("getRolForEnhet")
-
-        if (innloggetSaksbehandlerService.getEnhetForSaksbehandler().enhetId != enhet) {
-            throw MissingTilgangException("Saksbehandler ${oAuthTokenService.getInnloggetIdent()} does not have access to enhet $enhet")
-        }
+        logger.debug("getRolList")
 
         val esResponse = elasticsearchService.findROLListByEnhetCriteria(
-            SaksbehandlereAndMedunderskrivereAndROLListByEnhetSearchCriteria(
-                enhet = enhet,
+            ROLListSearchCriteria(
                 kanBehandleEgenAnsatt = oAuthTokenService.kanBehandleEgenAnsatt(),
                 kanBehandleFortrolig = oAuthTokenService.kanBehandleFortrolig(),
                 kanBehandleStrengtFortrolig = oAuthTokenService.kanBehandleStrengtFortrolig(),
@@ -146,7 +142,7 @@ class SaksbehandlerController(
             )
         }
 
-        val rolListFromMSGraph = saksbehandlerService.getROLListForEnhet(enhetsnummer = enhet)
+        val rolListFromMSGraph = saksbehandlerService.getROLList()
 
         return ROLListResponse(
             rolList = (rolListFromES + rolListFromMSGraph)

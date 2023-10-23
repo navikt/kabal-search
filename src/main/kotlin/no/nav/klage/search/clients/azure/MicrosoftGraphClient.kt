@@ -96,13 +96,12 @@ class MicrosoftGraphClient(
     }
 
     @Retryable
-    fun getEnhetensAnsatteWithKabalROLRole(enhetsnummer: String): AzureSlimUserList {
+    fun getAnsatteWithKabalROLRole(): AzureSlimUserList {
         logger.debug("getEnhetensAnsatteWithKabalROLRole from Microsoft Graph")
         return microsoftGraphWebClient.get()
             .uri { uriBuilder ->
                 uriBuilder
                     .path("/groups/$kabalROLRoleId/transitivemembers/microsoft.graph.user")
-                    .queryParam("\$filter", "streetAddress eq '$enhetsnummer'")
                     .queryParam("\$count", true)
                     .queryParam("\$top", 500)
                     .queryParam("\$select", "userPrincipalName,onPremisesSamAccountName,displayName")
