@@ -56,9 +56,9 @@ class DefaultAzureGateway(
             throw e
         }
 
-    override fun getEnhetensAnsattesNavIdentsWithKabalROLRole(enhetsnummer: String): AzureSlimUserList =
+    override fun getAnsattesNavIdentsWithKabalROLRole(): AzureSlimUserList =
         try {
-            microsoftGraphClient.getEnhetensAnsatteWithKabalROLRole(enhetsnummer = enhetsnummer)
+            microsoftGraphClient.getAnsatteWithKabalROLRole()
         } catch (e: Exception) {
             logger.error("Failed to call getEnhetensAnsattesNavIdents", e)
             throw e
