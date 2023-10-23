@@ -120,10 +120,9 @@ class SaksbehandlerController(
         summary = "Hent ROL i gitt enhet",
         description = "Henter alle ROL fra aktive saker i gitt enhet."
     )
+    //TODO: Remove old version when FE are ready.
     @GetMapping("/rol-list", "/enheter/{enhet}/rol-list", produces = ["application/json"])
     fun getRolList(
-//        @Parameter(name = "Enhet")
-//        @PathVariable enhet: String
     ): ROLListResponse {
         logger.debug("getRolList")
 
