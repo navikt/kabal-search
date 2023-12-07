@@ -14,6 +14,7 @@ data class BehandlingView(
     val typeId: String,
     val ytelseId: String,
     val hjemmelId: String?,
+    val hjemmelIdList: List<String>,
     val frist: LocalDate?,
     val mottatt: LocalDate,
     val medunderskriver: CombinedMedunderskriverAndROLView,
