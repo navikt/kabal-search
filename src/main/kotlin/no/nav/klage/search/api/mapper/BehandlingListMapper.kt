@@ -39,6 +39,7 @@ class BehandlingListMapper {
                 typeId = esBehandling.typeId,
                 ytelseId = esBehandling.ytelseId,
                 hjemmelId = esBehandling.hjemmelIdList.firstOrNull(),
+                hjemmelIdList = esBehandling.hjemmelIdList,
                 frist = esBehandling.frist,
                 mottatt = esBehandling.sakMottattKaDato.toLocalDate(),
                 tildeltSaksbehandlerident = esBehandling.tildeltSaksbehandlerident,
