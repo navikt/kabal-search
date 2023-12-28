@@ -48,8 +48,8 @@ spec:
       cpu: 2000m
       memory: 5000Mi
     requests:
-      cpu: 2000m
-      memory: 5000Mi
+      cpu: 500m
+      memory: 1500Mi
   ingresses:
   {{#each ingresses as |ingress|}}
     - {{ingress}}
