@@ -1,5 +1,5 @@
 package no.nav.klage.search.api.controller
-
+/*
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import no.finn.unleash.Unleash
@@ -49,3 +49,5 @@ class FeatureToggleControllerTest {
         this.mockMvc.perform(get("/featuretoggle/testing")).andDo(print()).andExpect(status().is4xxClientError())
     }
 }
+
+ */

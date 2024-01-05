@@ -1,5 +1,5 @@
 package no.nav.klage.search.service.unleash
-
+/*
 import no.finn.unleash.strategy.Strategy
 import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import org.springframework.stereotype.Component
@@ -24,3 +24,5 @@ class ByUserStrategy(private val oAuthTokenService: OAuthTokenService) : Strateg
     }
 
 }
+
+ */

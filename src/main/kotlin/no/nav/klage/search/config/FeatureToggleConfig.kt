@@ -1,5 +1,5 @@
 package no.nav.klage.search.config
-
+/*
 import no.finn.unleash.DefaultUnleash
 import no.finn.unleash.FakeUnleash
 import no.finn.unleash.Unleash
@@ -61,3 +61,6 @@ class FeatureToggleConfig {
         return fakeUnleash
     }
 }
+
+
+ */
