@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val mockkVersion = "1.13.8"
 val tokenValidationVersion = "3.2.0"
 val logstashVersion = "7.4"
-val unleashVersion = "4.4.1"
+//val unleashVersion = "4.4.1"
 val springRetryVersion = "2.0.5"
 val springMockkVersion = "4.0.2"
 val springDocVersion = "2.3.0"
@@ -70,7 +70,7 @@ dependencies {
         exclude(group = "jakarta.persistence")
     }
     implementation("org.springframework.retry:spring-retry:$springRetryVersion")
-    implementation("no.finn.unleash:unleash-client-java:$unleashVersion")
+//    implementation("no.finn.unleash:unleash-client-java:$unleashVersion")
 
     //Test
     //Managed by Spring:

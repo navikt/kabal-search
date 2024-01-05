@@ -1,8 +1,6 @@
 package no.nav.klage.search.api.controller
 
 import io.swagger.v3.oas.annotations.Hidden
-import no.finn.unleash.Unleash
-import no.finn.unleash.UnleashContext
 import no.nav.klage.search.config.SecurityConfiguration
 import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import no.nav.klage.search.util.getLogger
