@@ -3,7 +3,7 @@ ingresses:
 externalHosts:
   - host: login.microsoftonline.com
   - host: hooks.slack.com
-  - host: unleash.nais.io
+#  - host: unleash.nais.io
   - host: klage-fss-proxy.prod-fss-pub.nais.io
   - host: kafka-schema-registry.nais.adeo.no
   - host: pdl-api.prod-fss-pub.nais.io

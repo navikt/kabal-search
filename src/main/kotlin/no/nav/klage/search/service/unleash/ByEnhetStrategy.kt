@@ -1,5 +1,5 @@
 package no.nav.klage.search.service.unleash
-
+/*
 import no.finn.unleash.UnleashContext
 import no.finn.unleash.strategy.Strategy
 import no.nav.klage.search.gateway.AzureGateway
@@ -46,3 +46,5 @@ class ByEnhetStrategy(private val azureGateway: AzureGateway) : Strategy {
         parameters?.get(PARAM)?.split(',')
 
 }
+
+ */

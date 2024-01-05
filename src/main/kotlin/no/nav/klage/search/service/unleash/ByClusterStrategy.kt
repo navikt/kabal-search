@@ -1,5 +1,5 @@
 package no.nav.klage.search.service.unleash
-
+/*
 import no.finn.unleash.strategy.Strategy
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -23,3 +23,5 @@ class ByClusterStrategy(@Value("\${nais.cluster.name}") val currentCluster: Stri
         return currentCluster == cluster
     }
 }
+
+ */
