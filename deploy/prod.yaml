@@ -6,10 +6,6 @@ externalHosts:
   - host: klage-fss-proxy.prod-fss-pub.nais.io
   - host: kafka-schema-registry.nais.adeo.no
   - host: pdl-api.prod-fss-pub.nais.io
-    ports:
-      - name: https
-        port: 26482
-        protocol: TCP
 springProfile: prod-gcp
 tenant: nav.no
 db_tier: db-custom-4-15360
