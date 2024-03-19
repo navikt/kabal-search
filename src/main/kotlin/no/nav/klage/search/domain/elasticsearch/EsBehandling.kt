@@ -69,8 +69,10 @@ data class EsBehandling(
 
     override val utfallId: String? = null,
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     override val sattPaaVent: LocalDate? = null,
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     override val sattPaaVentExpires: LocalDate? = null,
 
     override val sattPaaVentReason: String? = null,
