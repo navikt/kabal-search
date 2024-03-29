@@ -9,15 +9,13 @@ val springDocVersion = "2.4.0"
 val testContainersVersion = "1.19.7"
 val threeTenExtraVersion = "1.7.2"
 val archunitVersion = "1.2.1"
-val opensearchVersion = "2.12.0"
+val opensearchVersion = "2.11.1"
 val reactorSpringVersion = "1.0.1.RELEASE"
 val kodeverkVersion = "1.8.7"
 val ehcacheVersion = "3.10.8"
 val logbackSyslog4jVersion = "1.0.0"
 
-java.sourceCompatibility = JavaVersion.VERSION_17
-
-ext["elasticsearch.version"] = "7.10.2"
+java.sourceCompatibility = JavaVersion.VERSION_21
 
 repositories {
     mavenCentral()
@@ -96,7 +94,7 @@ idea {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "17"
+        jvmTarget = "21"
     }
 }
 

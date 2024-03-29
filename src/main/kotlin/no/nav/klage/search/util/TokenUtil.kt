@@ -20,41 +20,41 @@ class TokenUtil(
     }
 
     fun getSaksbehandlerAccessTokenWithPdlScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["pdl-onbehalfof"]
+        val clientProperties = clientConfigurationProperties.registration["pdl-onbehalfof"]!!
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.accessToken
+        return response.accessToken!!
     }
 
     fun getAppAccessTokenWithPdlScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["pdl-maskintilmaskin"]
+        val clientProperties = clientConfigurationProperties.registration["pdl-maskintilmaskin"]!!
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.accessToken
+        return response.accessToken!!
     }
 
     fun getUserAccessTokenWithKabalInnstillingerScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["kabal-innstillinger-onbehalfof"]
+        val clientProperties = clientConfigurationProperties.registration["kabal-innstillinger-onbehalfof"]!!
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.accessToken
+        return response.accessToken!!
     }
 
     fun getSaksbehandlerAccessTokenWithGraphScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["azure-onbehalfof"]
+        val clientProperties = clientConfigurationProperties.registration["azure-onbehalfof"]!!
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.accessToken
+        return response.accessToken!!
     }
 
     fun getAppAccessTokenWithGraphScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["app"]
+        val clientProperties = clientConfigurationProperties.registration["app"]!!
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.accessToken
+        return response.accessToken!!
     }
 
     fun getIdent(): String =
-        tokenValidationContextHolder.tokenValidationContext.getJwtToken(SecurityConfiguration.ISSUER_AAD)
-            .jwtTokenClaims?.get("NAVident")?.toString()
+        tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
+            ?.jwtTokenClaims?.get("NAVident")?.toString()
             ?: throw RuntimeException("Ident not found in token")
 
     fun getRoleIdsFromToken(): List<String> =
-        tokenValidationContextHolder.tokenValidationContext.getJwtToken(SecurityConfiguration.ISSUER_AAD)
-            .jwtTokenClaims?.getAsList("groups").orEmpty().toList()
+        tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
+            ?.jwtTokenClaims?.getAsList("groups").orEmpty().toList()
 }
