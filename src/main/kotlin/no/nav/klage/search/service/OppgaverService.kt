@@ -33,10 +33,9 @@ class OppgaverService(
             innstillingerHjemler = saksbehandlerInnstillinger.hjemler
         )
 
-        val typer = getTyperQueryListForSaksbehandler(
-            queryTyper = queryParams.typer,
-            innstillingerTyper = saksbehandlerInnstillinger.typer
-        )
+        val typer = queryParams.typer.ifEmpty {
+            Type.entries.map { it.id }
+        }
 
         val searchCriteria = behandlingerSearchCriteriaMapper.toLedigeOppgaverSearchCriteria(
             queryParams = queryParams.copy(
@@ -70,10 +69,9 @@ class OppgaverService(
             innstillingerHjemler = saksbehandlerInnstillinger.hjemler
         )
 
-        val typer = getTyperQueryListForSaksbehandler(
-            queryTyper = queryParams.typer,
-            innstillingerTyper = saksbehandlerInnstillinger.typer
-        )
+        val typer = queryParams.typer.ifEmpty {
+            Type.entries.map { it.id }
+        }
 
         val searchCriteria = behandlingerSearchCriteriaMapper.toSearchCriteriaForLedigeMedUtgaattFrist(
             queryParams = queryParams.copy(
@@ -111,17 +109,6 @@ class OppgaverService(
             innstillingerHjemler.map { it.id }
         } else {
             innstillingerHjemler.map { it.id }.intersect(queryHjemler.toSet())
-        }.toList()
-    }
-
-    private fun getTyperQueryListForSaksbehandler(
-        queryTyper: List<String>,
-        innstillingerTyper: List<Type>
-    ): List<String> {
-        return if (queryTyper.isEmpty()) {
-            innstillingerTyper.map { it.id }
-        } else {
-            innstillingerTyper.map { it.id }.intersect(queryTyper.toSet())
         }.toList()
     }
 }
