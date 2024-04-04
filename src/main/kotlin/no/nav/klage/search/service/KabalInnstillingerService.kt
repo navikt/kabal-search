@@ -1,6 +1,5 @@
 package no.nav.klage.search.service
 
-import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Ytelse
 import no.nav.klage.kodeverk.hjemmel.Hjemmel
 import no.nav.klage.search.clients.kabalinnstillinger.InnstillingerView
@@ -20,7 +19,6 @@ class KabalInnstillingerService(
         return Innstillinger(
             hjemler = innstillingerView.hjemler.map { Hjemmel.of(it) },
             ytelser = innstillingerView.ytelser.map { Ytelse.of(it) },
-            typer = innstillingerView.typer.map { Type.of(it) },
         )
     }
 

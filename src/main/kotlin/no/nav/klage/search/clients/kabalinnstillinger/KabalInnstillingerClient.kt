@@ -38,5 +38,4 @@ class KabalInnstillingerClient(
 data class InnstillingerView(
     val hjemler: List<String>,
     val ytelser: List<String>,
-    val typer: List<String>
 )
