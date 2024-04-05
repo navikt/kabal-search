@@ -34,7 +34,7 @@ class OppgaverService(
         )
 
         val typer = queryParams.typer.ifEmpty {
-            Type.entries.map { it.id }
+            listOf(Type.KLAGE.id, Type.ANKE.id)
         }
 
         val searchCriteria = behandlingerSearchCriteriaMapper.toLedigeOppgaverSearchCriteria(
@@ -70,7 +70,7 @@ class OppgaverService(
         )
 
         val typer = queryParams.typer.ifEmpty {
-            Type.entries.map { it.id }
+            listOf(Type.KLAGE.id, Type.ANKE.id)
         }
 
         val searchCriteria = behandlingerSearchCriteriaMapper.toSearchCriteriaForLedigeMedUtgaattFrist(
