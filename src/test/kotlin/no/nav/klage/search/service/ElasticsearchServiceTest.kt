@@ -136,6 +136,8 @@ class ElasticsearchServiceTest {
                     kanBehandleEgenAnsatt = false,
                     kanBehandleFortrolig = false,
                     kanBehandleStrengtFortrolig = false,
+                    fristFrom = LocalDate.now().minusDays(3650),
+                    fristTo = LocalDate.now().plusDays(3650),
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.size).isEqualTo(1L)
@@ -151,8 +153,8 @@ class ElasticsearchServiceTest {
                     typer = emptyList(),
                     ytelser = emptyList(),
                     hjemler = emptyList(),
-                    fristFom = LocalDate.of(2020, 12, 1),
-                    fristTom = LocalDate.now(),
+                    fristFrom = LocalDate.of(2020, 12, 1),
+                    fristTo = LocalDate.now(),
                     kanBehandleEgenAnsatt = false,
                     kanBehandleFortrolig = false,
                     kanBehandleStrengtFortrolig = false,

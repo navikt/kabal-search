@@ -261,6 +261,8 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleEgenAnsatt = false,
                     kanBehandleFortrolig = false,
                     kanBehandleStrengtFortrolig = false,
+                    fristFrom = LocalDate.now().minusDays(3650),
+                    fristTo = LocalDate.now().plusDays(3650),
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(idNormal)
@@ -282,6 +284,8 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleEgenAnsatt = true,
                     kanBehandleFortrolig = false,
                     kanBehandleStrengtFortrolig = false,
+                    fristFrom = LocalDate.now().minusDays(3650),
+                    fristTo = LocalDate.now().plusDays(3650),
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(idNormal, idEgenAnsatt)
@@ -303,6 +307,8 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleEgenAnsatt = false,
                     kanBehandleFortrolig = true,
                     kanBehandleStrengtFortrolig = false,
+                    fristFrom = LocalDate.now().minusDays(3650),
+                    fristTo = LocalDate.now().plusDays(3650),
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
@@ -327,6 +333,8 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleEgenAnsatt = true,
                     kanBehandleFortrolig = true,
                     kanBehandleStrengtFortrolig = false,
+                    fristFrom = LocalDate.now().minusDays(3650),
+                    fristTo = LocalDate.now().plusDays(3650),
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
@@ -351,6 +359,8 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleEgenAnsatt = true,
                     kanBehandleFortrolig = false,
                     kanBehandleStrengtFortrolig = true,
+                    fristFrom = LocalDate.now().minusDays(3650),
+                    fristTo = LocalDate.now().plusDays(3650),
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
@@ -374,6 +384,8 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleEgenAnsatt = false,
                     kanBehandleFortrolig = false,
                     kanBehandleStrengtFortrolig = true,
+                    fristFrom = LocalDate.now().minusDays(3650),
+                    fristTo = LocalDate.now().plusDays(3650),
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
@@ -398,6 +410,8 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleEgenAnsatt = false,
                     kanBehandleFortrolig = true,
                     kanBehandleStrengtFortrolig = true,
+                    fristFrom = LocalDate.now().minusDays(3650),
+                    fristTo = LocalDate.now().plusDays(3650),
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
@@ -424,6 +438,8 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleEgenAnsatt = true,
                     kanBehandleFortrolig = true,
                     kanBehandleStrengtFortrolig = true,
+                    fristFrom = LocalDate.now().minusDays(3650),
+                    fristTo = LocalDate.now().plusDays(3650),
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
