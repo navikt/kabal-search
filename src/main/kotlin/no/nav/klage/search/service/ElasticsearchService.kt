@@ -16,10 +16,7 @@ import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getMedian
 import no.nav.klage.search.util.getSecureLogger
 import org.opensearch.common.unit.TimeValue
-import org.opensearch.index.query.BoolQueryBuilder
-import org.opensearch.index.query.QueryBuilder
-import org.opensearch.index.query.QueryBuilders
-import org.opensearch.index.query.TermQueryBuilder
+import org.opensearch.index.query.*
 import org.opensearch.search.builder.SearchSourceBuilder
 import org.opensearch.search.sort.SortBuilders
 import org.opensearch.search.sort.SortOrder
@@ -837,9 +834,15 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         QueryBuilders.rangeQuery(EsBehandling::returnertFraROL.name).lte(returnertTom).format(ISO8601)
             .timeZone(ZONEID_UTC)
 
-    private fun haveFristBetween(fristFom: LocalDate, fristTom: LocalDate) =
-        QueryBuilders.rangeQuery(EsBehandling::frist.name).gte(fristFom).lte(fristTom).format(ISO8601)
-            .timeZone(ZONEID_UTC)
+    private fun haveFristBetween(fristFom: LocalDate, fristTom: LocalDate): BoolQueryBuilder {
+        val innerQuery = QueryBuilders.boolQuery()
+
+        innerQuery.should(QueryBuilders.rangeQuery(EsBehandling::frist.name).gte(fristFom).lte(fristTom).format(ISO8601)
+            .timeZone(ZONEID_UTC))
+        innerQuery.should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery(EsBehandling::frist.name)));
+
+        return innerQuery
+    }
 
     private fun beTildeltSaksbehandlere(saksbehandlere: List<String>): BoolQueryBuilder {
         val innerQuerySaksbehandler = QueryBuilders.boolQuery()
