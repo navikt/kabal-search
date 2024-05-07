@@ -45,7 +45,7 @@ class BehandlingerSearchCriteriaMapper(
         ytelser = queryParams.ytelser.map { Ytelse.of(it) },
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
         navIdent = navIdent,
-        ferdigstiltFom = mapFom(queryParams.ferdigstiltFrom),
+        ferdigstiltFom = mapFrom(queryParams.ferdigstiltFrom),
         ferdigstiltTom = queryParams.ferdigstiltTo ?: LocalDate.now(),
         sortField = mapSortField(queryParams.sortering),
         order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
@@ -54,6 +54,8 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
         kanBehandleFortrolig = kanBehandleFortrolig(),
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+        fristFrom = mapFrom(queryParams.fristFrom),
+        fristTo = mapFristTo(queryParams.fristTo),
     )
 
     fun toReturnerteROLOppgaverSearchCriteria(
@@ -64,7 +66,7 @@ class BehandlingerSearchCriteriaMapper(
         ytelser = queryParams.ytelser.map { Ytelse.of(it) },
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
         navIdent = navIdent,
-        returnertFom = mapFom(queryParams.returnertFrom),
+        returnertFom = mapFrom(queryParams.returnertFrom),
         returnertTom = queryParams.returnertTo ?: LocalDate.now(),
         sortField = mapSortField(queryParams.sortering),
         order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
@@ -73,6 +75,8 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
         kanBehandleFortrolig = kanBehandleFortrolig(),
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+        fristFrom = mapFrom(queryParams.fristFrom),
+        fristTo = mapFristTo(queryParams.fristTo),
     )
 
     fun toUferdigeOppgaverSearchCriteria(
@@ -90,6 +94,8 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
         kanBehandleFortrolig = kanBehandleFortrolig(),
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+        fristFrom = mapFrom(queryParams.fristFrom),
+        fristTo = mapFristTo(queryParams.fristTo),
     )
 
     fun toOppgaverPaaVentSearchCriteria(
@@ -107,6 +113,8 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
         kanBehandleFortrolig = kanBehandleFortrolig(),
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+        fristFrom = mapFrom(queryParams.fristFrom),
+        fristTo = mapFristTo(queryParams.fristTo),
     )
 
     //-- enhetens oppgaver:
@@ -120,7 +128,7 @@ class BehandlingerSearchCriteriaMapper(
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
         enhetId = enhetId,
         saksbehandlere = queryParams.tildelteSaksbehandlere,
-        ferdigstiltFom = mapFom(queryParams.ferdigstiltFrom),
+        ferdigstiltFom = mapFrom(queryParams.ferdigstiltFrom),
         ferdigstiltTom = queryParams.ferdigstiltTo ?: LocalDate.now(),
         sortField = mapSortField(queryParams.sortering),
         order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
@@ -129,6 +137,8 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
         kanBehandleFortrolig = kanBehandleFortrolig(),
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+        fristFrom = mapFrom(queryParams.fristFrom),
+        fristTo = mapFristTo(queryParams.fristTo),
     )
 
     fun toEnhetensOppgaverPaaVentSearchCriteria(
@@ -148,6 +158,8 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
         kanBehandleFortrolig = kanBehandleFortrolig(),
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+        fristFrom = mapFrom(queryParams.fristFrom),
+        fristTo = mapFristTo(queryParams.fristTo),
     )
 
     fun toEnhetensUferdigeOppgaverSearchCriteria(
@@ -167,6 +179,8 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
         kanBehandleFortrolig = kanBehandleFortrolig(),
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+        fristFrom = mapFrom(queryParams.fristFrom),
+        fristTo = mapFristTo(queryParams.fristTo),
     )
 
     fun toKrolsUferdigeOppgaverSearchCriteria(
@@ -183,6 +197,8 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
         kanBehandleFortrolig = kanBehandleFortrolig(),
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+        fristFrom = mapFrom(queryParams.fristFrom),
+        fristTo = mapFristTo(queryParams.fristTo),
     )
 
     fun toKrolsReturnerteOppgaverSearchCriteria(
@@ -191,7 +207,7 @@ class BehandlingerSearchCriteriaMapper(
         typer = queryParams.typer.map { Type.of(it) },
         ytelser = queryParams.ytelser.map { Ytelse.of(it) },
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
-        returnertFom = mapFom(queryParams.returnertFrom),
+        returnertFom = mapFrom(queryParams.returnertFrom),
         returnertTom = queryParams.returnertTo ?: LocalDate.now(),
         sortField = mapSortField(queryParams.sortering),
         order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
@@ -200,6 +216,8 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
         kanBehandleFortrolig = kanBehandleFortrolig(),
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+        fristFrom = mapFrom(queryParams.fristFrom),
+        fristTo = mapFristTo(queryParams.fristTo),
     )
 
     //-- ledige oppgaver:
@@ -216,6 +234,8 @@ class BehandlingerSearchCriteriaMapper(
             kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
             kanBehandleFortrolig = kanBehandleFortrolig(),
             kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+            fristFrom = mapFrom(queryParams.fristFrom),
+            fristTo = mapFristTo(queryParams.fristTo),
         )
 
     fun toSearchCriteriaForLedigeMedUtgaattFrist(queryParams: MineLedigeOppgaverCountQueryParams) =
@@ -223,8 +243,8 @@ class BehandlingerSearchCriteriaMapper(
             typer = queryParams.typer.map { Type.of(it) },
             ytelser = queryParams.ytelser.map { Ytelse.of(it) },
             hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
-            fristFom = LocalDate.now().minusYears(15),
-            fristTom = LocalDate.now().minusDays(1),
+            fristFrom = LocalDate.now().minusYears(15),
+            fristTo = LocalDate.now().minusDays(1),
             kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
             kanBehandleFortrolig = kanBehandleFortrolig(),
             kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
@@ -265,9 +285,11 @@ class BehandlingerSearchCriteriaMapper(
             }
         }
 
-    private fun mapFom(fom: LocalDate?): LocalDate {
-        return fom ?: LocalDate.now().minusDays(36500)
+    private fun mapFrom(from: LocalDate?): LocalDate {
+        return from ?: LocalDate.now().minusDays(36500)
+    }
+
+    private fun mapFristTo(fristTo: LocalDate?): LocalDate {
+        return fristTo ?: LocalDate.now().plusDays(36500)
     }
 }
-
-

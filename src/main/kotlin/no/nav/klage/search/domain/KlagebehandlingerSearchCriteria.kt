@@ -22,6 +22,8 @@ interface BasicSearchCriteria {
     val typer: List<Type>
     val ytelser: List<Ytelse>
     val hjemler: List<Hjemmel>
+    val fristFrom: LocalDate
+    val fristTo: LocalDate
 }
 
 interface SortableSearchCriteria {
@@ -63,6 +65,9 @@ data class FerdigstilteOppgaverSearchCriteria(
     override val offset: Int,
     override val limit: Int,
 
+    override val fristFrom: LocalDate,
+    override val fristTo: LocalDate,
+
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
     override val kanBehandleStrengtFortrolig: Boolean,
@@ -76,6 +81,9 @@ data class ReturnerteROLOppgaverSearchCriteria(
     val navIdent: String,
     val returnertFom: LocalDate,
     val returnertTom: LocalDate,
+
+    override val fristFrom: LocalDate,
+    override val fristTo: LocalDate,
 
     override val sortField: SortField,
     override val order: Order,
@@ -99,6 +107,9 @@ data class UferdigeOppgaverSearchCriteria(
     override val offset: Int,
     override val limit: Int,
 
+    override val fristFrom: LocalDate,
+    override val fristTo: LocalDate,
+
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
     override val kanBehandleStrengtFortrolig: Boolean,
@@ -115,6 +126,9 @@ data class OppgaverPaaVentSearchCriteria(
     override val order: Order,
     override val offset: Int,
     override val limit: Int,
+
+    override val fristFrom: LocalDate,
+    override val fristTo: LocalDate,
 
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
@@ -136,6 +150,9 @@ data class EnhetensFerdigstilteOppgaverSearchCriteria(
     override val offset: Int,
     override val limit: Int,
 
+    override val fristFrom: LocalDate,
+    override val fristTo: LocalDate,
+
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
     override val kanBehandleStrengtFortrolig: Boolean,
@@ -153,6 +170,9 @@ data class KrolsReturnerteOppgaverSearchCriteria(
     override val order: Order,
     override val offset: Int,
     override val limit: Int,
+
+    override val fristFrom: LocalDate,
+    override val fristTo: LocalDate,
 
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
@@ -173,6 +193,9 @@ data class EnhetensOppgaverPaaVentSearchCriteria(
     override val offset: Int,
     override val limit: Int,
 
+    override val fristFrom: LocalDate,
+    override val fristTo: LocalDate,
+
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
     override val kanBehandleStrengtFortrolig: Boolean,
@@ -192,6 +215,9 @@ data class EnhetensUferdigeOppgaverSearchCriteria(
     override val offset: Int,
     override val limit: Int,
 
+    override val fristFrom: LocalDate,
+    override val fristTo: LocalDate,
+
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
     override val kanBehandleStrengtFortrolig: Boolean,
@@ -209,6 +235,9 @@ data class KrolsUferdigeOppgaverSearchCriteria(
     override val offset: Int,
     override val limit: Int,
 
+    override val fristFrom: LocalDate,
+    override val fristTo: LocalDate,
+
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
     override val kanBehandleStrengtFortrolig: Boolean,
@@ -223,6 +252,9 @@ data class LedigeOppgaverSearchCriteria(
     override val order: Order,
     override val offset: Int,
     override val limit: Int,
+
+    override val fristFrom: LocalDate,
+    override val fristTo: LocalDate,
 
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
@@ -242,8 +274,8 @@ data class CountLedigeOppgaverMedUtgaattFristSearchCriteria(
     override val ytelser: List<Ytelse>,
     override val hjemler: List<Hjemmel>,
 
-    val fristFom: LocalDate,
-    val fristTom: LocalDate,
+    override val fristFrom: LocalDate,
+    override val fristTo: LocalDate,
 
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,

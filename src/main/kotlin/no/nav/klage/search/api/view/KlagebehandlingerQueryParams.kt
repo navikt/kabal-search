@@ -8,6 +8,8 @@ interface CommonOppgaverQueryParams {
     var hjemler: List<String>
     val rekkefoelge: Rekkefoelge?
     val sortering: Sortering?
+    val fristFrom: LocalDate?
+    val fristTo: LocalDate?
 }
 
 interface FerdigstilteOppgaverQueryParams {
@@ -28,6 +30,8 @@ data class MineFerdigstilteOppgaverQueryParams(
     override val sortering: Sortering? = Sortering.AVSLUTTET_AV_SAKSBEHANDLER,
     override val ferdigstiltFrom: LocalDate?,
     override val ferdigstiltTo: LocalDate?,
+    override val fristFrom: LocalDate?,
+    override val fristTo: LocalDate?,
 ) : CommonOppgaverQueryParams, FerdigstilteOppgaverQueryParams
 
 data class MineReturnerteROLOppgaverQueryParams(
@@ -38,6 +42,8 @@ data class MineReturnerteROLOppgaverQueryParams(
     override val sortering: Sortering? = Sortering.RETURNERT_FRA_ROL,
     override val returnertFrom: LocalDate?,
     override val returnertTo: LocalDate?,
+    override val fristFrom: LocalDate?,
+    override val fristTo: LocalDate?,
 ) : CommonOppgaverQueryParams, ReturnerteROLOppgaverQueryParams
 
 data class MineUferdigeOppgaverQueryParams(
@@ -46,6 +52,8 @@ data class MineUferdigeOppgaverQueryParams(
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
     override val sortering: Sortering? = Sortering.FRIST,
+    override val fristFrom: LocalDate?,
+    override val fristTo: LocalDate?,
 ) : CommonOppgaverQueryParams
 
 data class MineLedigeOppgaverQueryParams(
@@ -54,6 +62,8 @@ data class MineLedigeOppgaverQueryParams(
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
     override val sortering: Sortering? = Sortering.FRIST,
+    override val fristFrom: LocalDate?,
+    override val fristTo: LocalDate?,
 ) : CommonOppgaverQueryParams
 
 data class MineLedigeOppgaverCountQueryParams(
@@ -68,6 +78,8 @@ data class MineOppgaverPaaVentQueryParams(
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
     override val sortering: Sortering? = Sortering.FRIST,
+    override val fristFrom: LocalDate?,
+    override val fristTo: LocalDate?,
 ) : CommonOppgaverQueryParams
 
 data class EnhetensFerdigstilteOppgaverQueryParams(
@@ -78,6 +90,8 @@ data class EnhetensFerdigstilteOppgaverQueryParams(
     override val sortering: Sortering? = Sortering.AVSLUTTET_AV_SAKSBEHANDLER,
     override val ferdigstiltFrom: LocalDate?,
     override val ferdigstiltTo: LocalDate?,
+    override val fristFrom: LocalDate?,
+    override val fristTo: LocalDate?,
     var tildelteSaksbehandlere: List<String> = emptyList(),
 ) : CommonOppgaverQueryParams, FerdigstilteOppgaverQueryParams
 
@@ -87,6 +101,8 @@ data class EnhetensOppgaverPaaVentQueryParams(
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
     override val sortering: Sortering? = Sortering.FRIST,
+    override val fristFrom: LocalDate?,
+    override val fristTo: LocalDate?,
     var tildelteSaksbehandlere: List<String> = emptyList(),
     var medunderskrivere: List<String> = emptyList(),
 ) : CommonOppgaverQueryParams
@@ -97,6 +113,8 @@ data class EnhetensUferdigeOppgaverQueryParams(
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
     override val sortering: Sortering? = Sortering.FRIST,
+    override val fristFrom: LocalDate?,
+    override val fristTo: LocalDate?,
     var tildelteSaksbehandlere: List<String> = emptyList(),
     var medunderskrivere: List<String> = emptyList(),
 ) : CommonOppgaverQueryParams
@@ -107,6 +125,8 @@ data class KrolsUferdigeOppgaverQueryParams(
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
     override val sortering: Sortering? = Sortering.FRIST,
+    override val fristFrom: LocalDate?,
+    override val fristTo: LocalDate?,
     var tildelteRol: List<String> = emptyList(),
 ) : CommonOppgaverQueryParams
 
@@ -118,6 +138,8 @@ data class KrolsReturnerteOppgaverQueryParams(
     override val sortering: Sortering? = Sortering.RETURNERT_FRA_ROL,
     override val returnertFrom: LocalDate?,
     override val returnertTo: LocalDate?,
+    override val fristFrom: LocalDate?,
+    override val fristTo: LocalDate?,
 ) : CommonOppgaverQueryParams, ReturnerteROLOppgaverQueryParams
 
 enum class Rekkefoelge {
