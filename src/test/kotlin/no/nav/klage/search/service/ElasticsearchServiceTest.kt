@@ -112,12 +112,40 @@ class ElasticsearchServiceTest {
                 medunderskriverEnhet = null,
                 medunderskriverident = null,
             )
+
+        val klagebehandling3 =
+            EsBehandling(
+                behandlingId = "1003L",
+                tildeltEnhet = "4219",
+                ytelseId = Ytelse.SYK_SYK.id,
+                typeId = Type.ANKE_I_TRYGDERETTEN.id,
+                tildeltSaksbehandlerident = null,
+                innsendt = LocalDate.of(2018, 10, 1),
+                sakMottattKaDato = LocalDateTime.of(2018, 12, 1, 0, 0),
+                frist = null,
+                hjemmelIdList = listOf(),
+                status = IKKE_TILDELT,
+                medunderskriverFlowStateId = FlowState.NOT_SENT.id,
+                sakenGjelderFnr = "12345678910",
+                fagsystemId = "1",
+                rolIdent = "ROLIDENT",
+                rolNavn = "ROLNAVN",
+                rolFlowStateId = "1",
+                saksnummer = "123",
+                avsluttetAvSaksbehandler = null,
+                returnertFraROL = null,
+                tildeltSaksbehandlernavn = null,
+                medunderskriverNavn = null,
+                medunderskriverEnhet = null,
+                medunderskriverident = null,
+            )
         repo.save(klagebehandling1)
         repo.save(klagebehandling2)
+        repo.save(klagebehandling3)
 
         val query = QueryBuilders.matchAllQuery()
         val searchHits: SearchHits<EsBehandling> = repo.search(query)
-        assertThat(searchHits.totalHits).isEqualTo(2L)
+        assertThat(searchHits.totalHits).isEqualTo(3L)
     }
 
     @Test
@@ -136,6 +164,8 @@ class ElasticsearchServiceTest {
                     kanBehandleEgenAnsatt = false,
                     kanBehandleFortrolig = false,
                     kanBehandleStrengtFortrolig = false,
+                    fristFrom = LocalDate.now().minusDays(3650),
+                    fristTo = LocalDate.now().plusDays(3650),
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.size).isEqualTo(1L)
@@ -148,17 +178,40 @@ class ElasticsearchServiceTest {
         val antall =
             service.countLedigeOppgaverMedUtgaattFristByCriteria(
                 CountLedigeOppgaverMedUtgaattFristSearchCriteria(
-                    typer = emptyList(),
+                    typer = listOf(Type.KLAGE, Type.ANKE),
                     ytelser = emptyList(),
                     hjemler = emptyList(),
-                    fristFom = LocalDate.of(2020, 12, 1),
-                    fristTom = LocalDate.now(),
+                    fristFrom = LocalDate.of(2020, 12, 1),
+                    fristTo = LocalDate.now(),
                     kanBehandleEgenAnsatt = false,
                     kanBehandleFortrolig = false,
                     kanBehandleStrengtFortrolig = false,
                 )
             )
         assertThat(antall).isEqualTo(1L)
+    }
+
+    @Test
+    @Order(6)
+    fun `include frist with null`() {
+        val oppgaver =
+            service.findLedigeOppgaverByCriteria(
+                LedigeOppgaverSearchCriteria(
+                    typer = emptyList(),
+                    ytelser = emptyList(),
+                    hjemler = emptyList(),
+                    fristFrom = LocalDate.now().minusDays(3650),
+                    fristTo = LocalDate.now().plusDays(3650),
+                    kanBehandleEgenAnsatt = false,
+                    kanBehandleFortrolig = false,
+                    kanBehandleStrengtFortrolig = false,
+                    sortField = SortField.PAA_VENT_TO,
+                    order = no.nav.klage.search.domain.Order.ASC,
+                    offset = 0,
+                    limit = 1000,
+                )
+            )
+        assertThat(oppgaver).hasSize(3)
     }
 
 }
