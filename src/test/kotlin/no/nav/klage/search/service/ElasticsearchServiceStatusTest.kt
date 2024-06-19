@@ -92,6 +92,7 @@ class ElasticsearchServiceStatusTest {
         innsendt = LocalDate.of(2019, 10, 1),
         sakMottattKaDato = LocalDateTime.of(2019, 12, 1, 0, 0),
         frist = LocalDate.of(2020, 12, 1),
+        varsletFrist = LocalDate.of(2020, 12, 1),
         hjemmelIdList = listOf(),
         status = status,
         medunderskriverFlowStateId = FlowState.NOT_SENT.id,
