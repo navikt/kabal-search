@@ -24,6 +24,10 @@
       "type": "date",
       "format": "date"
     },
+    "varsletFrist": {
+      "type": "date",
+      "format": "date"
+    },
     "hjemmelIdList": {
       "type": "keyword"
     },

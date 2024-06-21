@@ -17,6 +17,7 @@ class BehandlingSkjemaV2(
     val avsluttetAvSaksbehandlerTidspunkt: LocalDateTime?,
     val returnertFraROLTidspunkt: LocalDateTime?,
     val fristDato: LocalDate?,
+    val varsletFristDato: LocalDate?,
     val gjeldendeTildeling: TildeltSaksbehandler?,
     val medunderskriver: TildeltMedunderskriver?,
     val medunderskriverFlowStateId: String,
