@@ -81,6 +81,7 @@ class FortroligElasticsearchServiceTest {
             innsendt = LocalDate.of(2019, 10, 1),
             sakMottattKaDato = LocalDateTime.of(2019, 12, 1, 0, 0),
             frist = LocalDate.of(2020, 12, 1),
+            varsletFrist = LocalDate.of(2020, 12, 1),
             hjemmelIdList = listOf(),
             status = IKKE_TILDELT,
             sakenGjelderFnr = "123",
@@ -107,6 +108,7 @@ class FortroligElasticsearchServiceTest {
                 innsendt = LocalDate.of(2018, 10, 1),
                 sakMottattKaDato = LocalDateTime.of(2018, 12, 1, 0, 0),
                 frist = LocalDate.of(2019, 12, 1),
+                varsletFrist = LocalDate.of(2019, 12, 1),
                 hjemmelIdList = listOf(),
                 status = IKKE_TILDELT,
                 sakenGjelderFnr = "123",
@@ -133,6 +135,7 @@ class FortroligElasticsearchServiceTest {
             innsendt = LocalDate.of(2019, 10, 1),
             sakMottattKaDato = LocalDateTime.of(2019, 12, 1, 0, 0),
             frist = LocalDate.of(2020, 12, 1),
+            varsletFrist = LocalDate.of(2020, 12, 1),
             hjemmelIdList = listOf(),
             status = IKKE_TILDELT,
             sakenGjelderFnr = "123",
@@ -160,6 +163,7 @@ class FortroligElasticsearchServiceTest {
                 innsendt = LocalDate.of(2018, 10, 1),
                 sakMottattKaDato = LocalDateTime.of(2018, 12, 1, 0, 0),
                 frist = LocalDate.of(2019, 12, 1),
+                varsletFrist = LocalDate.of(2019, 12, 1),
                 hjemmelIdList = listOf(),
                 status = IKKE_TILDELT,
                 sakenGjelderFnr = "123",
@@ -187,6 +191,7 @@ class FortroligElasticsearchServiceTest {
                 innsendt = LocalDate.of(2018, 10, 1),
                 sakMottattKaDato = LocalDateTime.of(2018, 12, 1, 0, 0),
                 frist = LocalDate.of(2019, 12, 1),
+                varsletFrist = LocalDate.of(2019, 12, 1),
                 hjemmelIdList = listOf(),
                 status = IKKE_TILDELT,
                 sakenGjelderFnr = "123",
@@ -215,6 +220,7 @@ class FortroligElasticsearchServiceTest {
                 innsendt = LocalDate.of(2018, 10, 1),
                 sakMottattKaDato = LocalDateTime.of(2018, 12, 1, 0, 0),
                 frist = LocalDate.of(2019, 12, 1),
+                varsletFrist = LocalDate.of(2019, 12, 1),
                 hjemmelIdList = listOf(),
                 status = IKKE_TILDELT,
                 sakenGjelderFnr = "123",
@@ -263,6 +269,8 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleStrengtFortrolig = false,
                     fristFrom = LocalDate.now().minusDays(3650),
                     fristTo = LocalDate.now().plusDays(3650),
+                    varsletFristFrom = LocalDate.now().minusDays(3650),
+                    varsletFristTo = LocalDate.now().plusDays(3650),
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(idNormal)
@@ -286,6 +294,8 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleStrengtFortrolig = false,
                     fristFrom = LocalDate.now().minusDays(3650),
                     fristTo = LocalDate.now().plusDays(3650),
+                    varsletFristFrom = LocalDate.now().minusDays(3650),
+                    varsletFristTo = LocalDate.now().plusDays(3650),
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(idNormal, idEgenAnsatt)
@@ -309,6 +319,8 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleStrengtFortrolig = false,
                     fristFrom = LocalDate.now().minusDays(3650),
                     fristTo = LocalDate.now().plusDays(3650),
+                    varsletFristFrom = LocalDate.now().minusDays(3650),
+                    varsletFristTo = LocalDate.now().plusDays(3650),
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
@@ -335,6 +347,8 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleStrengtFortrolig = false,
                     fristFrom = LocalDate.now().minusDays(3650),
                     fristTo = LocalDate.now().plusDays(3650),
+                    varsletFristFrom = LocalDate.now().minusDays(3650),
+                    varsletFristTo = LocalDate.now().plusDays(3650),
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
@@ -361,6 +375,8 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleStrengtFortrolig = true,
                     fristFrom = LocalDate.now().minusDays(3650),
                     fristTo = LocalDate.now().plusDays(3650),
+                    varsletFristFrom = LocalDate.now().minusDays(3650),
+                    varsletFristTo = LocalDate.now().plusDays(3650),
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
@@ -386,6 +402,8 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleStrengtFortrolig = true,
                     fristFrom = LocalDate.now().minusDays(3650),
                     fristTo = LocalDate.now().plusDays(3650),
+                    varsletFristFrom = LocalDate.now().minusDays(3650),
+                    varsletFristTo = LocalDate.now().plusDays(3650),
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
@@ -412,6 +430,8 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleStrengtFortrolig = true,
                     fristFrom = LocalDate.now().minusDays(3650),
                     fristTo = LocalDate.now().plusDays(3650),
+                    varsletFristFrom = LocalDate.now().minusDays(3650),
+                    varsletFristTo = LocalDate.now().plusDays(3650),
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
@@ -440,6 +460,8 @@ class FortroligElasticsearchServiceTest {
                     kanBehandleStrengtFortrolig = true,
                     fristFrom = LocalDate.now().minusDays(3650),
                     fristTo = LocalDate.now().plusDays(3650),
+                    varsletFristFrom = LocalDate.now().minusDays(3650),
+                    varsletFristTo = LocalDate.now().plusDays(3650),
                 )
             ).searchHits.map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(

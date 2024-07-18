@@ -10,6 +10,8 @@ interface CommonOppgaverQueryParams {
     val sortering: Sortering?
     val fristFrom: LocalDate?
     val fristTo: LocalDate?
+    val varsletFristFrom: LocalDate?
+    val varsletFristTo: LocalDate?
 }
 
 interface FerdigstilteOppgaverQueryParams {
@@ -32,6 +34,8 @@ data class MineFerdigstilteOppgaverQueryParams(
     override val ferdigstiltTo: LocalDate?,
     override val fristFrom: LocalDate?,
     override val fristTo: LocalDate?,
+    override val varsletFristFrom: LocalDate?,
+    override val varsletFristTo: LocalDate?,
 ) : CommonOppgaverQueryParams, FerdigstilteOppgaverQueryParams
 
 data class MineReturnerteROLOppgaverQueryParams(
@@ -44,6 +48,8 @@ data class MineReturnerteROLOppgaverQueryParams(
     override val returnertTo: LocalDate?,
     override val fristFrom: LocalDate?,
     override val fristTo: LocalDate?,
+    override val varsletFristFrom: LocalDate?,
+    override val varsletFristTo: LocalDate?,
 ) : CommonOppgaverQueryParams, ReturnerteROLOppgaverQueryParams
 
 data class MineUferdigeOppgaverQueryParams(
@@ -54,6 +60,8 @@ data class MineUferdigeOppgaverQueryParams(
     override val sortering: Sortering? = Sortering.FRIST,
     override val fristFrom: LocalDate?,
     override val fristTo: LocalDate?,
+    override val varsletFristFrom: LocalDate?,
+    override val varsletFristTo: LocalDate?,
 ) : CommonOppgaverQueryParams
 
 data class MineLedigeOppgaverQueryParams(
@@ -64,6 +72,8 @@ data class MineLedigeOppgaverQueryParams(
     override val sortering: Sortering? = Sortering.FRIST,
     override val fristFrom: LocalDate?,
     override val fristTo: LocalDate?,
+    override val varsletFristFrom: LocalDate?,
+    override val varsletFristTo: LocalDate?,
 ) : CommonOppgaverQueryParams
 
 data class MineLedigeOppgaverCountQueryParams(
@@ -80,6 +90,8 @@ data class MineOppgaverPaaVentQueryParams(
     override val sortering: Sortering? = Sortering.FRIST,
     override val fristFrom: LocalDate?,
     override val fristTo: LocalDate?,
+    override val varsletFristFrom: LocalDate?,
+    override val varsletFristTo: LocalDate?,
 ) : CommonOppgaverQueryParams
 
 data class EnhetensFerdigstilteOppgaverQueryParams(
@@ -92,6 +104,8 @@ data class EnhetensFerdigstilteOppgaverQueryParams(
     override val ferdigstiltTo: LocalDate?,
     override val fristFrom: LocalDate?,
     override val fristTo: LocalDate?,
+    override val varsletFristFrom: LocalDate?,
+    override val varsletFristTo: LocalDate?,
     var tildelteSaksbehandlere: List<String> = emptyList(),
 ) : CommonOppgaverQueryParams, FerdigstilteOppgaverQueryParams
 
@@ -103,6 +117,8 @@ data class EnhetensOppgaverPaaVentQueryParams(
     override val sortering: Sortering? = Sortering.FRIST,
     override val fristFrom: LocalDate?,
     override val fristTo: LocalDate?,
+    override val varsletFristFrom: LocalDate?,
+    override val varsletFristTo: LocalDate?,
     var tildelteSaksbehandlere: List<String> = emptyList(),
     var medunderskrivere: List<String> = emptyList(),
 ) : CommonOppgaverQueryParams
@@ -115,6 +131,8 @@ data class EnhetensUferdigeOppgaverQueryParams(
     override val sortering: Sortering? = Sortering.FRIST,
     override val fristFrom: LocalDate?,
     override val fristTo: LocalDate?,
+    override val varsletFristFrom: LocalDate?,
+    override val varsletFristTo: LocalDate?,
     var tildelteSaksbehandlere: List<String> = emptyList(),
     var medunderskrivere: List<String> = emptyList(),
 ) : CommonOppgaverQueryParams
@@ -127,6 +145,8 @@ data class KrolsUferdigeOppgaverQueryParams(
     override val sortering: Sortering? = Sortering.FRIST,
     override val fristFrom: LocalDate?,
     override val fristTo: LocalDate?,
+    override val varsletFristFrom: LocalDate?,
+    override val varsletFristTo: LocalDate?,
     var tildelteRol: List<String> = emptyList(),
 ) : CommonOppgaverQueryParams
 
@@ -140,6 +160,8 @@ data class KrolsReturnerteOppgaverQueryParams(
     override val returnertTo: LocalDate?,
     override val fristFrom: LocalDate?,
     override val fristTo: LocalDate?,
+    override val varsletFristFrom: LocalDate?,
+    override val varsletFristTo: LocalDate?,
 ) : CommonOppgaverQueryParams, ReturnerteROLOppgaverQueryParams
 
 enum class Rekkefoelge {
@@ -147,5 +169,5 @@ enum class Rekkefoelge {
 }
 
 enum class Sortering {
-    FRIST, MOTTATT, ALDER, PAA_VENT_FROM, PAA_VENT_TO, AVSLUTTET_AV_SAKSBEHANDLER, RETURNERT_FRA_ROL
+    FRIST, MOTTATT, ALDER, PAA_VENT_FROM, PAA_VENT_TO, AVSLUTTET_AV_SAKSBEHANDLER, RETURNERT_FRA_ROL, VARSLET_FRIST
 }

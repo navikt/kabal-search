@@ -354,6 +354,10 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                     EsBehandling::returnertFraROL.name
                 }
 
+                SortField.VARSLET_FRIST -> {
+                    EsBehandling::varsletFrist.name
+                }
+
                 else -> {
                     EsBehandling::frist.name
                 }
@@ -430,6 +434,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.mustNot(beTildeltSaksbehandler())
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
         secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
@@ -445,6 +450,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beSentToROL())
         baseQuery.mustNot(beAssignedToROL())
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
         secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
@@ -458,6 +464,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.mustNot(beTildeltSaksbehandler())
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
         secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
@@ -473,6 +480,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beTildeltSaksbehandler(navIdent))
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
         secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -488,6 +496,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beAssignedToROL(navIdent = navIdent))
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
         secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -504,6 +513,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beAssignedToROL(navIdent = navIdent))
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
         logger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -529,6 +539,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beTildeltSaksbehandlerOrMedunderskriver(navIdent))
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
         secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -544,6 +555,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beSentToROL())
         baseQuery.must(beAssignedToROL(navIdent = navIdent))
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
         secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -559,6 +571,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beTildeltSaksbehandlerOrMedunderskriver(navIdent))
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
         secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -578,6 +591,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         }
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
         secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -610,6 +624,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(innerQuery)
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
         secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -642,6 +657,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(innerQuery)
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
         secureLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -660,6 +676,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
 
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
         logger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -676,6 +693,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beAssignedToROL())
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
         logger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -837,9 +855,26 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     private fun haveFristBetween(fristFom: LocalDate, fristTom: LocalDate): BoolQueryBuilder {
         val innerQuery = QueryBuilders.boolQuery()
 
-        innerQuery.should(QueryBuilders.rangeQuery(EsBehandling::frist.name).gte(fristFom).lte(fristTom).format(ISO8601)
-            .timeZone(ZONEID_UTC))
+        innerQuery.should(
+            QueryBuilders.rangeQuery(EsBehandling::frist.name).gte(fristFom).lte(fristTom).format(ISO8601)
+                .timeZone(ZONEID_UTC)
+        )
         innerQuery.should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery(EsBehandling::frist.name)));
+
+        return innerQuery
+    }
+
+    private fun haveVarsletFristBetween(varsletFristFom: LocalDate, varsletFristTom: LocalDate): BoolQueryBuilder {
+        val innerQuery = QueryBuilders.boolQuery()
+
+        innerQuery.should(
+            QueryBuilders.rangeQuery(EsBehandling::varsletFrist.name).gte(varsletFristFom).lte(varsletFristTom)
+                .format(ISO8601)
+                .timeZone(ZONEID_UTC)
+        )
+        innerQuery.should(
+            QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery(EsBehandling::varsletFrist.name))
+        );
 
         return innerQuery
     }
