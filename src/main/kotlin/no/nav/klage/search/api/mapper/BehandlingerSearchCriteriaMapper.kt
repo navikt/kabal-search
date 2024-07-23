@@ -56,6 +56,8 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
         fristFrom = mapFrom(queryParams.fristFrom),
         fristTo = mapFristTo(queryParams.fristTo),
+        varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+        varsletFristTo = mapFristTo(queryParams.varsletFristTo),
     )
 
     fun toReturnerteROLOppgaverSearchCriteria(
@@ -77,6 +79,8 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
         fristFrom = mapFrom(queryParams.fristFrom),
         fristTo = mapFristTo(queryParams.fristTo),
+        varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+        varsletFristTo = mapFristTo(queryParams.varsletFristTo),
     )
 
     fun toUferdigeOppgaverSearchCriteria(
@@ -96,6 +100,8 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
         fristFrom = mapFrom(queryParams.fristFrom),
         fristTo = mapFristTo(queryParams.fristTo),
+        varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+        varsletFristTo = mapFristTo(queryParams.varsletFristTo),
     )
 
     fun toOppgaverPaaVentSearchCriteria(
@@ -115,6 +121,8 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
         fristFrom = mapFrom(queryParams.fristFrom),
         fristTo = mapFristTo(queryParams.fristTo),
+        varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+        varsletFristTo = mapFristTo(queryParams.varsletFristTo),
     )
 
     //-- enhetens oppgaver:
@@ -139,6 +147,8 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
         fristFrom = mapFrom(queryParams.fristFrom),
         fristTo = mapFristTo(queryParams.fristTo),
+        varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+        varsletFristTo = mapFristTo(queryParams.varsletFristTo),
     )
 
     fun toEnhetensOppgaverPaaVentSearchCriteria(
@@ -160,6 +170,8 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
         fristFrom = mapFrom(queryParams.fristFrom),
         fristTo = mapFristTo(queryParams.fristTo),
+        varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+        varsletFristTo = mapFristTo(queryParams.varsletFristTo),
     )
 
     fun toEnhetensUferdigeOppgaverSearchCriteria(
@@ -181,6 +193,8 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
         fristFrom = mapFrom(queryParams.fristFrom),
         fristTo = mapFristTo(queryParams.fristTo),
+        varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+        varsletFristTo = mapFristTo(queryParams.varsletFristTo),
     )
 
     fun toKrolsUferdigeOppgaverSearchCriteria(
@@ -199,6 +213,8 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
         fristFrom = mapFrom(queryParams.fristFrom),
         fristTo = mapFristTo(queryParams.fristTo),
+        varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+        varsletFristTo = mapFristTo(queryParams.varsletFristTo),
     )
 
     fun toKrolsReturnerteOppgaverSearchCriteria(
@@ -218,6 +234,8 @@ class BehandlingerSearchCriteriaMapper(
         kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
         fristFrom = mapFrom(queryParams.fristFrom),
         fristTo = mapFristTo(queryParams.fristTo),
+        varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+        varsletFristTo = mapFristTo(queryParams.varsletFristTo),
     )
 
     //-- ledige oppgaver:
@@ -236,6 +254,8 @@ class BehandlingerSearchCriteriaMapper(
             kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
             fristFrom = mapFrom(queryParams.fristFrom),
             fristTo = mapFristTo(queryParams.fristTo),
+            varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+            varsletFristTo = mapFristTo(queryParams.varsletFristTo),
         )
 
     fun toSearchCriteriaForLedigeMedUtgaattFrist(queryParams: MineLedigeOppgaverCountQueryParams) =
@@ -245,6 +265,8 @@ class BehandlingerSearchCriteriaMapper(
             hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
             fristFrom = LocalDate.now().minusYears(15),
             fristTo = LocalDate.now().minusDays(1),
+            varsletFristFrom = LocalDate.now().minusYears(15),
+            varsletFristTo = LocalDate.now().plusYears(15),
             kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
             kanBehandleFortrolig = kanBehandleFortrolig(),
             kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
@@ -267,6 +289,7 @@ class BehandlingerSearchCriteriaMapper(
             Sortering.PAA_VENT_TO -> SortField.PAA_VENT_TO
             Sortering.AVSLUTTET_AV_SAKSBEHANDLER -> SortField.AVSLUTTET_AV_SAKSBEHANDLER
             Sortering.RETURNERT_FRA_ROL -> SortField.RETURNERT_FRA_ROL
+            Sortering.VARSLET_FRIST -> SortField.VARSLET_FRIST
             else -> SortField.FRIST
         }
 

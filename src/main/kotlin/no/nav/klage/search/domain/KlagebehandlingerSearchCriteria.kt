@@ -6,7 +6,7 @@ import no.nav.klage.kodeverk.hjemmel.Hjemmel
 import java.time.LocalDate
 
 enum class SortField {
-    FRIST, MOTTATT, PAA_VENT_FROM, PAA_VENT_TO, AVSLUTTET_AV_SAKSBEHANDLER, RETURNERT_FRA_ROL,
+    FRIST, MOTTATT, PAA_VENT_FROM, PAA_VENT_TO, AVSLUTTET_AV_SAKSBEHANDLER, RETURNERT_FRA_ROL, VARSLET_FRIST
 }
 
 enum class Order {
@@ -24,6 +24,8 @@ interface BasicSearchCriteria {
     val hjemler: List<Hjemmel>
     val fristFrom: LocalDate
     val fristTo: LocalDate
+    val varsletFristFrom: LocalDate
+    val varsletFristTo: LocalDate
 }
 
 interface SortableSearchCriteria {
@@ -68,6 +70,9 @@ data class FerdigstilteOppgaverSearchCriteria(
     override val fristFrom: LocalDate,
     override val fristTo: LocalDate,
 
+    override val varsletFristFrom: LocalDate,
+    override val varsletFristTo: LocalDate,
+
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
     override val kanBehandleStrengtFortrolig: Boolean,
@@ -84,6 +89,9 @@ data class ReturnerteROLOppgaverSearchCriteria(
 
     override val fristFrom: LocalDate,
     override val fristTo: LocalDate,
+
+    override val varsletFristFrom: LocalDate,
+    override val varsletFristTo: LocalDate,
 
     override val sortField: SortField,
     override val order: Order,
@@ -110,6 +118,9 @@ data class UferdigeOppgaverSearchCriteria(
     override val fristFrom: LocalDate,
     override val fristTo: LocalDate,
 
+    override val varsletFristFrom: LocalDate,
+    override val varsletFristTo: LocalDate,
+
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
     override val kanBehandleStrengtFortrolig: Boolean,
@@ -129,6 +140,9 @@ data class OppgaverPaaVentSearchCriteria(
 
     override val fristFrom: LocalDate,
     override val fristTo: LocalDate,
+
+    override val varsletFristFrom: LocalDate,
+    override val varsletFristTo: LocalDate,
 
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
@@ -153,6 +167,9 @@ data class EnhetensFerdigstilteOppgaverSearchCriteria(
     override val fristFrom: LocalDate,
     override val fristTo: LocalDate,
 
+    override val varsletFristFrom: LocalDate,
+    override val varsletFristTo: LocalDate,
+
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
     override val kanBehandleStrengtFortrolig: Boolean,
@@ -173,6 +190,9 @@ data class KrolsReturnerteOppgaverSearchCriteria(
 
     override val fristFrom: LocalDate,
     override val fristTo: LocalDate,
+
+    override val varsletFristFrom: LocalDate,
+    override val varsletFristTo: LocalDate,
 
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
@@ -196,6 +216,9 @@ data class EnhetensOppgaverPaaVentSearchCriteria(
     override val fristFrom: LocalDate,
     override val fristTo: LocalDate,
 
+    override val varsletFristFrom: LocalDate,
+    override val varsletFristTo: LocalDate,
+
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
     override val kanBehandleStrengtFortrolig: Boolean,
@@ -218,6 +241,9 @@ data class EnhetensUferdigeOppgaverSearchCriteria(
     override val fristFrom: LocalDate,
     override val fristTo: LocalDate,
 
+    override val varsletFristFrom: LocalDate,
+    override val varsletFristTo: LocalDate,
+
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
     override val kanBehandleStrengtFortrolig: Boolean,
@@ -238,6 +264,9 @@ data class KrolsUferdigeOppgaverSearchCriteria(
     override val fristFrom: LocalDate,
     override val fristTo: LocalDate,
 
+    override val varsletFristFrom: LocalDate,
+    override val varsletFristTo: LocalDate,
+
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
     override val kanBehandleStrengtFortrolig: Boolean,
@@ -255,6 +284,9 @@ data class LedigeOppgaverSearchCriteria(
 
     override val fristFrom: LocalDate,
     override val fristTo: LocalDate,
+
+    override val varsletFristFrom: LocalDate,
+    override val varsletFristTo: LocalDate,
 
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
@@ -276,6 +308,9 @@ data class CountLedigeOppgaverMedUtgaattFristSearchCriteria(
 
     override val fristFrom: LocalDate,
     override val fristTo: LocalDate,
+
+    override val varsletFristFrom: LocalDate,
+    override val varsletFristTo: LocalDate,
 
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
