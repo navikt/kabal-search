@@ -25,14 +25,11 @@ repositories {
 
 plugins {
     val kotlinVersion = "2.0.0"
-    id("org.springframework.boot") version "3.3.1"
+    id("org.springframework.boot") version "3.3.2"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     idea
 }
-
-//TODO: Fjern denne når spring boot er oppdatert.
-ext["spring-kafka.version"] = "3.0.11"
 
 apply(plugin = "io.spring.dependency-management")
 
