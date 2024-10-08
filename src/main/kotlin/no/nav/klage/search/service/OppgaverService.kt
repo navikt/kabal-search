@@ -9,6 +9,7 @@ import no.nav.klage.search.api.view.AntallUtgaatteFristerResponse
 import no.nav.klage.search.api.view.BehandlingerListResponse
 import no.nav.klage.search.api.view.MineLedigeOppgaverCountQueryParams
 import no.nav.klage.search.api.view.MineLedigeOppgaverQueryParams
+import no.nav.klage.search.util.getLogger
 import org.springframework.stereotype.Service
 
 @Service
@@ -18,6 +19,12 @@ class OppgaverService(
     private val elasticsearchService: ElasticsearchService,
     private val behandlingListMapper: BehandlingListMapper,
 ) {
+
+    companion object {
+        @Suppress("JAVA_CLASS_ON_COMPANION")
+        private val logger = getLogger(javaClass.enclosingClass)
+    }
+
     fun getLedigeOppgaverForInnloggetSaksbehandler(
         queryParams: MineLedigeOppgaverQueryParams,
     ): BehandlingerListResponse {
@@ -34,7 +41,7 @@ class OppgaverService(
         )
 
         val typer = queryParams.typer.ifEmpty {
-            listOf(Type.KLAGE.id, Type.ANKE.id, Type.BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET.id)
+            getDefaultSearchTypes()
         }
 
         val searchCriteria = behandlingerSearchCriteriaMapper.toLedigeOppgaverSearchCriteria(
@@ -70,7 +77,7 @@ class OppgaverService(
         )
 
         val typer = queryParams.typer.ifEmpty {
-            listOf(Type.KLAGE.id, Type.ANKE.id, Type.BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET.id)
+            getDefaultSearchTypes()
         }
 
         val searchCriteria = behandlingerSearchCriteriaMapper.toSearchCriteriaForLedigeMedUtgaattFrist(
@@ -87,6 +94,15 @@ class OppgaverService(
 
         return AntallUtgaatteFristerResponse(
             antall = esResponse
+        )
+    }
+
+    private fun getDefaultSearchTypes(): List<String> {
+        return listOf(
+            Type.KLAGE.id,
+            Type.ANKE.id,
+            Type.BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET.id,
+            Type.OMGJOERINGSKRAV.id,
         )
     }
 
