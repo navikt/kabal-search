@@ -11,7 +11,7 @@ val threeTenExtraVersion = "1.8.0"
 val archunitVersion = "1.3.0"
 val opensearchVersion = "2.17.1"
 val reactorSpringVersion = "1.0.1.RELEASE"
-val kodeverkVersion = "1.8.56"
+val kodeverkVersion = "1.8.58"
 val ehcacheVersion = "3.10.8"
 val logbackSyslog4jVersion = "1.0.0"
 
