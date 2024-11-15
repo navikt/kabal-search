@@ -22,31 +22,31 @@ class TokenUtil(
     fun getSaksbehandlerAccessTokenWithPdlScope(): String {
         val clientProperties = clientConfigurationProperties.registration["pdl-onbehalfof"]!!
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.accessToken!!
+        return response.access_token!!
     }
 
     fun getAppAccessTokenWithPdlScope(): String {
         val clientProperties = clientConfigurationProperties.registration["pdl-maskintilmaskin"]!!
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.accessToken!!
+        return response.access_token!!
     }
 
     fun getUserAccessTokenWithKabalInnstillingerScope(): String {
         val clientProperties = clientConfigurationProperties.registration["kabal-innstillinger-onbehalfof"]!!
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.accessToken!!
+        return response.access_token!!
     }
 
     fun getSaksbehandlerAccessTokenWithGraphScope(): String {
         val clientProperties = clientConfigurationProperties.registration["azure-onbehalfof"]!!
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.accessToken!!
+        return response.access_token!!
     }
 
     fun getAppAccessTokenWithGraphScope(): String {
         val clientProperties = clientConfigurationProperties.registration["app"]!!
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.accessToken!!
+        return response.access_token!!
     }
 
     fun getIdent(): String =
