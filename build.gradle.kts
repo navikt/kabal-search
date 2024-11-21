@@ -6,7 +6,7 @@ val logstashVersion = "8.0"
 val springRetryVersion = "2.0.10"
 val springMockkVersion = "4.0.2"
 val springDocVersion = "2.6.0"
-val testContainersVersion = "1.20.3"
+val testContainersVersion = "1.20.4"
 val threeTenExtraVersion = "1.8.0"
 val archunitVersion = "1.3.0"
 val opensearchVersion = "2.18.0"
@@ -25,7 +25,7 @@ repositories {
 
 plugins {
     val kotlinVersion = "2.0.21"
-    id("org.springframework.boot") version "3.3.5"
+    id("org.springframework.boot") version "3.4.0"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     idea
