@@ -7,9 +7,8 @@ import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.ResponseStatus
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import java.util.*
 
 @RestController
 
@@ -32,6 +31,19 @@ class AdminController(
             adminService.recreateEsIndex()
         } catch (e: Exception) {
             logger.warn("Failed to recreate ES index", e)
+            throw e
+        }
+    }
+
+    @GetMapping("/internal/behandlinger/{id}/delete", produces = ["application/json"])
+    fun deleteBehandlingFromElasticIndex(
+        @PathVariable("id") behandlingId: UUID,
+    ) {
+        validateUserIsAdmin()
+        try {
+            adminService.deleteBehandling(behandlingId)
+        } catch (e: Exception) {
+            logger.warn("Failed to delete behandling with id $behandlingId", e)
             throw e
         }
     }
