@@ -381,7 +381,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     private fun OppgaverOmPersonSearchCriteria.toEsQuery(): QueryBuilder {
-        logger.debug("Search criteria: {}", this)
+        secureLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
 
@@ -392,7 +392,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     private fun SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria.toEsQuery(): QueryBuilder {
-        logger.debug("Search criteria: {}", this)
+        secureLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
 
@@ -411,7 +411,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     private fun ROLListSearchCriteria.toEsQuery(): QueryBuilder {
-        logger.debug("Search criteria: {}", this)
+        secureLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
 
@@ -426,7 +426,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     private fun LedigeOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
-        logger.debug("Search criteria: {}", this)
+        secureLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -440,7 +440,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     private fun LedigeOppgaverSearchCriteria.toROLEsQuery(): QueryBuilder {
-        logger.debug("Search criteria: {}", this)
+        secureLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -456,7 +456,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     private fun CountLedigeOppgaverMedUtgaattFristSearchCriteria.toEsQuery(): QueryBuilder {
-        logger.debug("Search criteria: {}", this)
+        secureLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -470,7 +470,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     private fun FerdigstilteOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
-        logger.debug("Search criteria: {}", this)
+        secureLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -487,7 +487,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     private fun FerdigstilteOppgaverSearchCriteria.toROLEsQuery(): QueryBuilder {
-        logger.debug("Search criteria: {}", this)
+        secureLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -503,7 +503,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     private fun ReturnerteROLOppgaverSearchCriteria.toROLEsQuery(): QueryBuilder {
-        logger.debug("Search criteria: {}", this)
+        secureLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -520,7 +520,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     private fun BehandlingIdSearchCriteria.toEsQuery(): QueryBuilder {
-        logger.debug("Search criteria: {}", this)
+        secureLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.must(QueryBuilders.idsQuery().addIds(behandlingId))
@@ -530,7 +530,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     private fun UferdigeOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
-        logger.debug("Search criteria: {}", this)
+        secureLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -546,7 +546,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     private fun UferdigeOppgaverSearchCriteria.toROLEsQuery(): QueryBuilder {
-        logger.debug("Search criteria: {}", this)
+        secureLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -562,7 +562,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     private fun OppgaverPaaVentSearchCriteria.toEsQuery(): QueryBuilder {
-        logger.debug("Search criteria: {}", this)
+        secureLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -578,7 +578,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     private fun EnhetensFerdigstilteOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
-        logger.debug("Search criteria: {}", this)
+        secureLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -598,7 +598,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     private fun EnhetensOppgaverPaaVentSearchCriteria.toEsQuery(): QueryBuilder {
-        logger.debug("Search criteria: {}", this)
+        secureLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -631,7 +631,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     private fun EnhetensUferdigeOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
-        logger.debug("Search criteria: {}", this)
+        secureLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -664,7 +664,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     private fun KrolsUferdigeOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
-        logger.debug("Search criteria: {}", this)
+        secureLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -683,7 +683,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     private fun KrolsReturnerteOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
-        logger.debug("Search criteria: {}", this)
+        secureLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
