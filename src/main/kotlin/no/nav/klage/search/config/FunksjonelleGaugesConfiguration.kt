@@ -4,7 +4,7 @@ import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.binder.MeterBinder
 import no.nav.klage.kodeverk.Type
-import no.nav.klage.kodeverk.Ytelse
+import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.search.service.ElasticsearchService
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getSecureLogger
