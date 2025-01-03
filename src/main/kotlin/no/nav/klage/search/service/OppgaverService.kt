@@ -1,7 +1,7 @@
 package no.nav.klage.search.service
 
 import no.nav.klage.kodeverk.Type
-import no.nav.klage.kodeverk.Ytelse
+import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.kodeverk.hjemmel.Hjemmel
 import no.nav.klage.search.api.mapper.BehandlingListMapper
 import no.nav.klage.search.api.mapper.BehandlingerSearchCriteriaMapper

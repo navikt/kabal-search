@@ -2,7 +2,7 @@ package no.nav.klage.search.service
 
 import no.nav.klage.kodeverk.FlowState
 import no.nav.klage.kodeverk.Type
-import no.nav.klage.kodeverk.Ytelse
+import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
 import no.nav.klage.search.domain.CountLedigeOppgaverMedUtgaattFristSearchCriteria
 import no.nav.klage.search.domain.LedigeOppgaverSearchCriteria

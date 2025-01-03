@@ -1,7 +1,7 @@
 package no.nav.klage.search.domain
 
 import no.nav.klage.kodeverk.Type
-import no.nav.klage.kodeverk.Ytelse
+import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.kodeverk.hjemmel.Hjemmel
 import java.time.LocalDate
 

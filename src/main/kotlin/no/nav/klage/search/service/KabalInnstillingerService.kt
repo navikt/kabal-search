@@ -1,6 +1,6 @@
 package no.nav.klage.search.service
 
-import no.nav.klage.kodeverk.Ytelse
+import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.kodeverk.hjemmel.Hjemmel
 import no.nav.klage.search.clients.kabalinnstillinger.InnstillingerView
 import no.nav.klage.search.clients.kabalinnstillinger.KabalInnstillingerClient
