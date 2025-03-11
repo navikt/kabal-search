@@ -247,7 +247,7 @@ class EsBehandlingRepository(val client: RestHighLevelClient) {
         val successfulShards = response.successfulShards
         val failedShards = response.failedShards
         val failures = response.shardFailures
-        logger.debug("Response result; totalshards: $totalShards, successfulshards: $successfulShards")
+        logger.trace("Response result; totalshards: $totalShards, successfulshards: $successfulShards")
         if (failedShards > 0) {
             logger.warn("Failures in response result, totalshards: $totalShards, failedshards: $failedShards")
             for (failure in failures) {
@@ -262,7 +262,7 @@ class EsBehandlingRepository(val client: RestHighLevelClient) {
         val successfulShards = shardInfo.successful
         val failedShards = shardInfo.failed
         val failures = shardInfo.failures
-        logger.debug("Response result; totalshards: $totalShards, successfulshards: $successfulShards")
+        logger.trace("Response result; totalshards: $totalShards, successfulshards: $successfulShards")
         if (failedShards > 0) {
             logger.warn("Failures in response result, totalshards: $totalShards, failedshards: $failedShards")
             for (failure in failures) {
@@ -277,7 +277,7 @@ class EsBehandlingRepository(val client: RestHighLevelClient) {
         val successfulShards = response.successfulShards
         val failedShards = response.failedShards
         val failures = response.shardFailures
-        logger.debug("Response result; totalshards: $totalShards, successfulshards: $successfulShards")
+        logger.trace("Response result; totalshards: $totalShards, successfulshards: $successfulShards")
         if (failedShards > 0) {
             logger.warn("Failures in response result, totalshards: $totalShards, failedshards: $failedShards")
             for (failure in failures) {
@@ -292,7 +292,7 @@ class EsBehandlingRepository(val client: RestHighLevelClient) {
         val successfulShards = response.successfulShards
         val failedShards = response.failedShards
         val failures = response.shardFailures
-        logger.debug("Response result; totalshards: $totalShards, successfulshards: $successfulShards")
+        logger.trace("Response result; totalshards: $totalShards, successfulshards: $successfulShards")
         if (failedShards > 0) {
             logger.warn("Failures in response result, totalshards: $totalShards, failedshards: $failedShards")
             failures.forEach { logger.warn("Reason for failure: ${it.reason()}") }
