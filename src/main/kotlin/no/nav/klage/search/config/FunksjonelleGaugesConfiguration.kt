@@ -26,8 +26,8 @@ class FunksjonelleGaugesConfiguration {
     fun registerFunctionalStats(elasticsearchService: ElasticsearchService): MeterBinder {
         return try {
             MeterBinder { registry: MeterRegistry ->
-                Ytelse.values().forEach { ytelse ->
-                    Type.values().forEach { type ->
+                Ytelse.entries.forEach { ytelse ->
+                    Type.entries.forEach { type ->
                         Gauge.builder("funksjonell.ikketildelt") { elasticsearchService.countIkkeTildelt(ytelse, type) }
                             .tag("ytelse", ytelse.navn)
                             .tag("type", type.navn)
