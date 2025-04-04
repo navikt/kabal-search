@@ -52,5 +52,6 @@ class AdminController(
         if (!oAuthTokenService.isAdmin()) {
             throw MissingTilgangException("Not an admin")
         }
+        logger.info("Remove later.")
     }
 }
