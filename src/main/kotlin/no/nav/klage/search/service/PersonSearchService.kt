@@ -8,7 +8,7 @@ import no.nav.klage.search.domain.personsoek.Navn
 import no.nav.klage.search.domain.personsoek.Person
 import no.nav.klage.search.domain.personsoek.PersonSearchResponse
 import no.nav.klage.search.util.getLogger
-import no.nav.klage.search.util.getSecureLogger
+import no.nav.klage.search.util.getTeamLogger
 import org.springframework.stereotype.Service
 
 @Service
@@ -19,7 +19,7 @@ class PersonSearchService(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        private val secureLogger = getSecureLogger()
+        private val teamLogger = getTeamLogger()
     }
 
     fun fnrSearch(input: OppgaverOmPersonSearchCriteria): PersonSearchResponse? {
@@ -36,7 +36,6 @@ class PersonSearchService(
 
     fun nameSearch(name: String): List<Person> {
         val pdlResponse = pdlClient.personsok(name)
-        secureLogger.debug("Fetched data from PDL søk: $pdlResponse")
         verifyPdlResponse(pdlResponse)
 
         val people = pdlResponse.data?.sokPerson?.hits
@@ -61,8 +60,8 @@ class PersonSearchService(
 
     private fun verifyPdlResponse(response: SoekPersonResponse) {
         if (response.errors != null) {
-            logger.error("Error from PDL, see secure logs")
-            secureLogger.error("Error from pdl ${response.errors}")
+            logger.error("Error from PDL, see team-logs for details")
+            teamLogger.error("Error from pdl ${response.errors}")
             throw RuntimeException("Søkefeil i PDL")
         }
     }

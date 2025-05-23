@@ -3,7 +3,6 @@ package no.nav.klage.search.clients.azure
 import no.nav.klage.search.config.CacheWithJCacheConfiguration
 import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
-import no.nav.klage.search.util.getSecureLogger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.retry.annotation.Retryable
@@ -25,7 +24,6 @@ class MicrosoftGraphClient(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        private val secureLogger = getSecureLogger()
 
         private const val userSelect =
             "onPremisesSamAccountName,displayName,givenName,surname,mail,officeLocation,userPrincipalName,id,jobTitle,streetAddress"
@@ -45,10 +43,9 @@ class MicrosoftGraphClient(
                     .queryParam("\$select", userSelect)
                     .build()
             }.header("Authorization", "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithGraphScope()}")
-
             .retrieve()
             .bodyToMono<AzureUser>()
-            .block().let { secureLogger.debug("me: $it"); it }
+            .block()
             ?: throw RuntimeException("AzureAD data about authenticated user could not be fetched")
     }
 
@@ -69,7 +66,6 @@ class MicrosoftGraphClient(
         return data.flatMap {
             it.value ?: emptyList()
         }.associate {
-            secureLogger.debug("Display name: {}", it)
             it.onPremisesSamAccountName to it.displayName
         }
     }
@@ -150,7 +146,6 @@ class MicrosoftGraphClient(
             .header("ConsistencyLevel", "eventual")
             .retrieve()
             .bodyToMono<AzureUserList>().block()?.value?.firstOrNull()?.streetAddress
-            ?.let { secureLogger.debug("NavIdent enhet: {}", it); it }
             ?: throw RuntimeException("AzureAD data about user by navIdent could not be fetched")
     }
 }

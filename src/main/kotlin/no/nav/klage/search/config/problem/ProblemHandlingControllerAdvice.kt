@@ -1,7 +1,8 @@
 package no.nav.klage.search.config.problem
 
 import no.nav.klage.search.exceptions.*
-import no.nav.klage.search.util.getSecureLogger
+import no.nav.klage.search.util.getLogger
+import no.nav.klage.search.util.getTeamLogger
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -14,7 +15,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 class ProblemHandlingControllerAdvice : ResponseEntityExceptionHandler() {
 
     companion object {
-        private val secureLogger = getSecureLogger()
+        @Suppress("JAVA_CLASS_ON_COMPANION")
+        private val ourLogger = getLogger(javaClass.enclosingClass)
+        private val teamLogger = getTeamLogger()
     }
 
     @ExceptionHandler
@@ -88,11 +91,13 @@ class ProblemHandlingControllerAdvice : ResponseEntityExceptionHandler() {
     private fun logError(httpStatus: HttpStatus, errorMessage: String, exception: Exception) {
         when {
             httpStatus.is5xxServerError -> {
-                secureLogger.error("Exception thrown to client: ${httpStatus.reasonPhrase}, $errorMessage", exception)
+                ourLogger.error("Exception thrown to client: ${exception.javaClass.name}. See more in team-logs.")
+                teamLogger.error("Exception thrown to client: ${httpStatus.reasonPhrase}, $errorMessage", exception)
             }
 
             else -> {
-                secureLogger.warn("Exception thrown to client: ${httpStatus.reasonPhrase}, $errorMessage", exception)
+                ourLogger.warn("Exception thrown to client: ${exception.javaClass.name}. See more in team-logs.")
+                teamLogger.warn("Exception thrown to client: ${httpStatus.reasonPhrase}, $errorMessage", exception)
             }
         }
     }

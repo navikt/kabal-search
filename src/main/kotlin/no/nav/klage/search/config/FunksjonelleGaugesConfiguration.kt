@@ -3,14 +3,13 @@ package no.nav.klage.search.config
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.binder.MeterBinder
+import jakarta.annotation.PreDestroy
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.search.service.ElasticsearchService
 import no.nav.klage.search.util.getLogger
-import no.nav.klage.search.util.getSecureLogger
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import jakarta.annotation.PreDestroy
 
 
 @Configuration
@@ -19,7 +18,6 @@ class FunksjonelleGaugesConfiguration {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        private val secureLogger = getSecureLogger()
     }
 
     @Bean
@@ -71,8 +69,8 @@ class FunksjonelleGaugesConfiguration {
                 }
             }
         } catch (e: Exception) {
-            secureLogger.error("Could not setup gauges", e)
-            throw RuntimeException("Could not setup gauges. See details in secure logs.")
+            logger.error("Could not setup gauges.", e)
+            throw RuntimeException("Could not setup gauges.", e)
         }
     }
 }

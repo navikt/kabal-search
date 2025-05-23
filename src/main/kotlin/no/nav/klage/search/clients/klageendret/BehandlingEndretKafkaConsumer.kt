@@ -6,7 +6,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.klage.search.service.IndexService
 import no.nav.klage.search.util.getLogger
-import no.nav.klage.search.util.getSecureLogger
+import no.nav.klage.search.util.getTeamLogger
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.listener.AbstractConsumerSeekAware
@@ -24,7 +24,7 @@ class BehandlingEndretKafkaConsumer(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        private val secureLogger = getSecureLogger()
+        private val teamLogger = getTeamLogger()
         private val mapper = ObjectMapper().registerModule(
             KotlinModule.Builder()
                 .withReflectionCacheSize(512)
@@ -64,8 +64,8 @@ class BehandlingEndretKafkaConsumer(
                 //ack.acknowledge()
             }
         }.onFailure {
-            secureLogger.error("Failed to process endret behandling record", it)
-            throw RuntimeException("Could not process endret behandling record. See more details in secure log.")
+            teamLogger.error("Failed to process endret behandling record", it)
+            throw RuntimeException("Could not process endret behandling record. See more details in team-logs.")
         }
     }
 
