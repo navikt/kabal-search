@@ -3,7 +3,7 @@ package no.nav.klage.search.service
 import no.nav.klage.search.clients.klageendret.BehandlingSkjemaV2
 import no.nav.klage.search.service.mapper.EsBehandlingMapper
 import no.nav.klage.search.util.getLogger
-import no.nav.klage.search.util.getSecureLogger
+import no.nav.klage.search.util.getTeamLogger
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Service
 import java.util.*
@@ -17,7 +17,7 @@ class IndexService(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        private val securelogger = getSecureLogger()
+        private val teamLogger = getTeamLogger()
     }
 
     fun recreateIndex() {
@@ -34,9 +34,9 @@ class IndexService(
             if (e.message?.contains("version_conflict_engine_exception") == true) {
                 logger.info("Later version already indexed, ignoring this..")
             } else {
-                logger.error("Unable to index behandling ${behandling.id}, see securelogs for details")
-                securelogger.error("Unable to index behandling ${behandling.id}", e)
-                throw e
+                logger.error("Unable to index behandling ${behandling.id}, see team-logs for details")
+                teamLogger.error("Unable to index behandling ${behandling.id}", e)
+                throw RuntimeException("Unable to index behandling ${behandling.id}")
             }
         }
     }

@@ -9,7 +9,6 @@ import no.nav.klage.search.domain.elasticsearch.EsSaksdokument
 import no.nav.klage.search.domain.elasticsearch.EsStatus
 import no.nav.klage.search.service.saksbehandler.SaksbehandlerService
 import no.nav.klage.search.util.getLogger
-import no.nav.klage.search.util.getSecureLogger
 import org.springframework.stereotype.Service
 
 @Service
@@ -22,7 +21,6 @@ class EsBehandlingMapper(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        private val secureLogger = getSecureLogger()
     }
 
     fun mapBehandlingToEsBehandling(behandling: BehandlingSkjemaV2): EsBehandling {

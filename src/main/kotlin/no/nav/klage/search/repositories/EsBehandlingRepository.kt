@@ -8,7 +8,6 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.klage.search.domain.elasticsearch.EsAnonymBehandling
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import no.nav.klage.search.util.getLogger
-import no.nav.klage.search.util.getSecureLogger
 import org.apache.lucene.search.TotalHits
 import org.opensearch.OpenSearchException
 import org.opensearch.action.DocWriteResponse
@@ -48,7 +47,6 @@ class EsBehandlingRepository(val client: RestHighLevelClient) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        private val securelogger = getSecureLogger()
 
         private val mapper =
             ObjectMapper().registerModule(

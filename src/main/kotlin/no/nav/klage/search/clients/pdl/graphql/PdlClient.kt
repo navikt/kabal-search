@@ -2,7 +2,6 @@ package no.nav.klage.search.clients.pdl.graphql
 
 import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
-import no.nav.klage.search.util.getSecureLogger
 import org.springframework.http.HttpHeaders
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
@@ -19,7 +18,6 @@ class PdlClient(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        private val secureLogger = getSecureLogger()
     }
 
     fun <T> runWithTiming(block: () -> T): T {

@@ -6,7 +6,6 @@ import no.nav.klage.search.exceptions.EnhetNotFoundForSaksbehandlerException
 import no.nav.klage.search.gateway.AzureGateway
 import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
-import no.nav.klage.search.util.getSecureLogger
 import org.springframework.stereotype.Service
 import no.nav.klage.kodeverk.Enhet as KodeverkEnhet
 
@@ -19,7 +18,6 @@ class DefaultAzureGateway(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        private val securelogger = getSecureLogger()
     }
 
     override fun getDataOmInnloggetSaksbehandler(): SaksbehandlerPersonligInfo {
