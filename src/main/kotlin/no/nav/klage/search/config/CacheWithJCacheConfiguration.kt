@@ -19,40 +19,25 @@ class CacheWithJCacheConfiguration(private val environment: Environment) : JCach
 
     companion object {
 
-        const val ENHET_CACHE = "enhet"
-        const val TILGANGER_CACHE = "tilganger"
-        const val ROLLER_CACHE = "roller"
-        const val SAKSBEHANDLERE_I_ENHET_CACHE = "saksbehandlereienhet"
-        const val GROUPMEMBERS_CACHE = "groupmembers"
         const val AZUREUSER_CACHE = "azureuser"
-
-        val cacheKeys =
-            listOf(
-                ENHET_CACHE,
-                TILGANGER_CACHE,
-                ROLLER_CACHE,
-                SAKSBEHANDLERE_I_ENHET_CACHE,
-                GROUPMEMBERS_CACHE,
-                AZUREUSER_CACHE
-            )
+        const val METRICS_CACHE = "metrics"
 
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
     override fun customize(cacheManager: CacheManager) {
-        cacheKeys.forEach { cacheName ->
-            cacheManager.createCache(cacheName, cacheConfiguration())
-        }
+        cacheManager.createCache(AZUREUSER_CACHE, cacheConfiguration())
+        cacheManager.createCache(METRICS_CACHE, cacheConfiguration(10L))
     }
 
-    private fun cacheConfiguration() =
+    private fun cacheConfiguration(duration: Long? = null) =
         MutableConfiguration<Any, Any>()
-            .setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(Duration(TimeUnit.MINUTES, duration())))
+            .setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(Duration(TimeUnit.MINUTES, duration ?: commonDuration())))
             .setStoreByValue(false)
             .setStatisticsEnabled(true)
 
-    private fun duration() =
+    private fun commonDuration() =
         if (environment.activeProfiles.contains("prod-gcp")) {
             480L
         } else {

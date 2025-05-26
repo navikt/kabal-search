@@ -14,9 +14,12 @@ import no.nav.klage.search.repositories.EsBehandlingRepository
 import no.nav.klage.search.repositories.SearchHits
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getMedian
-import no.nav.klage.search.util.getSecureLogger
+import no.nav.klage.search.util.getTeamLogger
 import org.opensearch.common.unit.TimeValue
-import org.opensearch.index.query.*
+import org.opensearch.index.query.BoolQueryBuilder
+import org.opensearch.index.query.QueryBuilder
+import org.opensearch.index.query.QueryBuilders
+import org.opensearch.index.query.TermQueryBuilder
 import org.opensearch.search.builder.SearchSourceBuilder
 import org.opensearch.search.sort.SortBuilders
 import org.opensearch.search.sort.SortOrder
@@ -34,7 +37,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        private val secureLogger = getSecureLogger()
+        private val teamLogger = getTeamLogger()
 
         private const val ISO8601 = "yyyy-MM-dd"
         private const val ZONEID_UTC = "Z"
@@ -414,18 +417,18 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     private fun OppgaverOmPersonSearchCriteria.toEsQuery(): QueryBuilder {
-        secureLogger.debug("Search criteria: {}", this)
+        teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
 
         baseQuery.must(haveSakenGjelder(fnr))
 
-        secureLogger.debug("Making search request with query {}", baseQuery.toString())
+        teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
     private fun SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria.toEsQuery(): QueryBuilder {
-        secureLogger.debug("Search criteria: {}", this)
+        teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
 
@@ -439,12 +442,12 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beTildeltSaksbehandler())
         baseQuery.mustNot(beFeilregistrert())
 
-        secureLogger.debug("Making search request with query {}", baseQuery.toString())
+        teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
     private fun ROLListSearchCriteria.toEsQuery(): QueryBuilder {
-        secureLogger.debug("Search criteria: {}", this)
+        teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
 
@@ -454,12 +457,12 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beTildeltSaksbehandler())
         baseQuery.mustNot(beFeilregistrert())
 
-        secureLogger.debug("Making search request with query {}", baseQuery.toString())
+        teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
     private fun LedigeOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
-        secureLogger.debug("Search criteria: {}", this)
+        teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -468,12 +471,12 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
         baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
-        secureLogger.debug("Making search request with query {}", baseQuery.toString())
+        teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
     private fun LedigeOppgaverSearchCriteria.toROLEsQuery(): QueryBuilder {
-        secureLogger.debug("Search criteria: {}", this)
+        teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -484,12 +487,12 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.mustNot(beAssignedToROL())
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
         baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
-        secureLogger.debug("Making search request with query {}", baseQuery.toString())
+        teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
     private fun CountLedigeOppgaverMedUtgaattFristSearchCriteria.toEsQuery(): QueryBuilder {
-        secureLogger.debug("Search criteria: {}", this)
+        teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -498,12 +501,12 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
         baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
-        secureLogger.debug("Making search request with query {}", baseQuery.toString())
+        teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
     private fun FerdigstilteOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
-        secureLogger.debug("Search criteria: {}", this)
+        teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -515,12 +518,12 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
         baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
-        secureLogger.debug("Making search request with query {}", baseQuery.toString())
+        teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
     private fun FerdigstilteOppgaverSearchCriteria.toROLEsQuery(): QueryBuilder {
-        secureLogger.debug("Search criteria: {}", this)
+        teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -531,12 +534,12 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
         baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
-        secureLogger.debug("Making search request with query {}", baseQuery.toString())
+        teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
     private fun ReturnerteROLOppgaverSearchCriteria.toROLEsQuery(): QueryBuilder {
-        secureLogger.debug("Search criteria: {}", this)
+        teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -548,22 +551,22 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
         baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
     private fun BehandlingIdSearchCriteria.toEsQuery(): QueryBuilder {
-        secureLogger.debug("Search criteria: {}", this)
+        teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.must(QueryBuilders.idsQuery().addIds(behandlingId))
 
-        secureLogger.debug("Making search request with query {}", baseQuery.toString())
+        teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
     private fun UferdigeOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
-        secureLogger.debug("Search criteria: {}", this)
+        teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -574,12 +577,12 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
         baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
-        secureLogger.debug("Making search request with query {}", baseQuery.toString())
+        teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
     private fun UferdigeOppgaverSearchCriteria.toROLEsQuery(): QueryBuilder {
-        secureLogger.debug("Search criteria: {}", this)
+        teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -590,12 +593,12 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
         baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
-        secureLogger.debug("Making search request with query {}", baseQuery.toString())
+        teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
     private fun OppgaverPaaVentSearchCriteria.toEsQuery(): QueryBuilder {
-        secureLogger.debug("Search criteria: {}", this)
+        teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -606,12 +609,12 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
         baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
-        secureLogger.debug("Making search request with query {}", baseQuery.toString())
+        teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
     private fun EnhetensFerdigstilteOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
-        secureLogger.debug("Search criteria: {}", this)
+        teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -626,12 +629,12 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
         baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
-        secureLogger.debug("Making search request with query {}", baseQuery.toString())
+        teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
     private fun EnhetensOppgaverPaaVentSearchCriteria.toEsQuery(): QueryBuilder {
-        secureLogger.debug("Search criteria: {}", this)
+        teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -659,12 +662,12 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
         baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
-        secureLogger.debug("Making search request with query {}", baseQuery.toString())
+        teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
     private fun EnhetensUferdigeOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
-        secureLogger.debug("Search criteria: {}", this)
+        teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -692,12 +695,12 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
         baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
-        secureLogger.debug("Making search request with query {}", baseQuery.toString())
+        teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
     private fun KrolsUferdigeOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
-        secureLogger.debug("Search criteria: {}", this)
+        teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -711,12 +714,12 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
         baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 
     private fun KrolsReturnerteOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
-        secureLogger.debug("Search criteria: {}", this)
+        teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
@@ -728,7 +731,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
         baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
-        logger.debug("Making search request with query {}", baseQuery.toString())
+        teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
 

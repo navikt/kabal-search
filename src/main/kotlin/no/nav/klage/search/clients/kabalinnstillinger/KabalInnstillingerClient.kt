@@ -3,7 +3,6 @@ package no.nav.klage.search.clients.kabalinnstillinger
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
-import no.nav.klage.search.util.getSecureLogger
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
@@ -17,7 +16,6 @@ class KabalInnstillingerClient(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        private val secureLogger = getSecureLogger()
     }
 
     fun getInnloggetSaksbehandlersInnstillinger(): InnstillingerView {
