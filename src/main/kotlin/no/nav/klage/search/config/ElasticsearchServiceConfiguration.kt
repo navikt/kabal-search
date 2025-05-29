@@ -2,11 +2,11 @@ package no.nav.klage.search.config
 
 import no.nav.klage.search.repositories.EsBehandlingRepository
 import no.nav.klage.search.service.ElasticsearchService
-import org.apache.http.HttpHost
-import org.apache.http.auth.AuthScope
-import org.apache.http.auth.UsernamePasswordCredentials
-import org.apache.http.client.CredentialsProvider
-import org.apache.http.impl.client.BasicCredentialsProvider
+import org.apache.hc.client5.http.auth.AuthScope
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider
+import org.apache.hc.core5.http.HttpHost
+import org.apache.hc.core5.util.Timeout
 import org.opensearch.client.RestClient
 import org.opensearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Value
@@ -30,13 +30,19 @@ class ElasticsearchServiceConfiguration(
 
     @Bean
     fun restHighLevelClient(): RestHighLevelClient {
-        val credentialsProvider: CredentialsProvider = BasicCredentialsProvider()
-        credentialsProvider.setCredentials(AuthScope.ANY, UsernamePasswordCredentials(username, password))
+        val httpHost = HttpHost.create(uri)
+
+        val credentialsProvider = BasicCredentialsProvider()
+        credentialsProvider.setCredentials(
+            AuthScope(httpHost, null, null),
+            UsernamePasswordCredentials(username, password.toCharArray())
+        )
 
         return RestHighLevelClient(
-            RestClient.builder(HttpHost.create(uri))
+            RestClient.builder(httpHost)
                 .setRequestConfigCallback {
-                    it.setConnectionRequestTimeout(5000).setConnectTimeout(10000).setSocketTimeout(10000)
+                    it.setConnectionRequestTimeout(Timeout.ofMilliseconds(5000))
+                        .setConnectTimeout(Timeout.ofMilliseconds(10000))
                 }
                 .setHttpClientConfigCallback { it.setDefaultCredentialsProvider(credentialsProvider) }
         )

@@ -2,7 +2,7 @@ package no.nav.klage.search.service
 
 
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
-import org.apache.http.util.EntityUtils
+import org.apache.hc.core5.http.io.entity.EntityUtils
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order

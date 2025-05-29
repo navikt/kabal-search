@@ -19,7 +19,6 @@ import org.opensearch.action.search.SearchRequest
 import org.opensearch.action.search.SearchResponse
 import org.opensearch.action.support.WriteRequest
 import org.opensearch.action.support.broadcast.BroadcastResponse
-import org.opensearch.action.support.master.AcknowledgedResponse
 import org.opensearch.action.support.replication.ReplicationResponse
 import org.opensearch.client.RequestOptions
 import org.opensearch.client.RestHighLevelClient
@@ -94,7 +93,7 @@ class EsBehandlingRepository(val client: RestHighLevelClient) {
     fun deleteIndex() {
         logger.info("Deleting index $BEHANDLING_INDEX")
         val request = DeleteIndexRequest(BEHANDLING_INDEX)
-        val deleteIndexResponse: AcknowledgedResponse = client.indices().delete(request, RequestOptions.DEFAULT)
+        val deleteIndexResponse = client.indices().delete(request, RequestOptions.DEFAULT)
         logger.info("Deletion of ES index $BEHANDLING_INDEX is acknowledged: ${deleteIndexResponse.isAcknowledged}")
     }
 
