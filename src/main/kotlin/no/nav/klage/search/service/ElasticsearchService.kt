@@ -96,31 +96,9 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits
     }
 
-    open fun findOppgaveByBehandlingId(criteria: BehandlingIdSearchCriteria): BehandlingerSearchHits {
-        val searchSourceBuilder = SearchSourceBuilder()
-        searchSourceBuilder.query(criteria.toEsQuery())
-        searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
-
-        val searchHits = esBehandlingRepository.search(searchSourceBuilder)
-        logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
-        return searchHits
-    }
-
     open fun findSaksbehandlersFerdigstilteOppgaverByCriteria(criteria: FerdigstilteOppgaverSearchCriteria): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
-        searchSourceBuilder.addPaging(criteria)
-        searchSourceBuilder.addSorting(criteria)
-        searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
-
-        val searchHits = esBehandlingRepository.search(searchSourceBuilder)
-        logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
-        return searchHits
-    }
-
-    open fun findROLsFerdigstilteOppgaverByCriteria(criteria: FerdigstilteOppgaverSearchCriteria): BehandlingerSearchHits {
-        val searchSourceBuilder = SearchSourceBuilder()
-        searchSourceBuilder.query(criteria.toROLEsQuery())
         searchSourceBuilder.addPaging(criteria)
         searchSourceBuilder.addSorting(criteria)
         searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
@@ -522,22 +500,6 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return baseQuery
     }
 
-    private fun FerdigstilteOppgaverSearchCriteria.toROLEsQuery(): QueryBuilder {
-        teamLogger.debug("Search criteria: {}", this)
-        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
-        baseQuery.addSecurityFilters(this)
-        baseQuery.addBasicFilters(this)
-        baseQuery.must(beAvsluttetAvSaksbehandlerEtter(ferdigstiltFom))
-        baseQuery.must(beAvsluttetAvSaksbehandlerFoer(ferdigstiltTom))
-        baseQuery.must(beAssignedToROL(navIdent = navIdent))
-        baseQuery.mustNot(beFeilregistrert())
-        baseQuery.must(haveFristBetween(fristFrom, fristTo))
-        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
-
-        teamLogger.debug("Making search request with query {}", baseQuery.toString())
-        return baseQuery
-    }
-
     private fun ReturnerteROLOppgaverSearchCriteria.toROLEsQuery(): QueryBuilder {
         teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
@@ -550,16 +512,6 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
         baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
-
-        teamLogger.debug("Making search request with query {}", baseQuery.toString())
-        return baseQuery
-    }
-
-    private fun BehandlingIdSearchCriteria.toEsQuery(): QueryBuilder {
-        teamLogger.debug("Search criteria: {}", this)
-        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
-        baseQuery.addSecurityFilters(this)
-        baseQuery.must(QueryBuilders.idsQuery().addIds(behandlingId))
 
         teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -895,7 +847,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
             QueryBuilders.rangeQuery(EsBehandling::frist.name).gte(fristFom).lte(fristTom).format(ISO8601)
                 .timeZone(ZONEID_UTC)
         )
-        innerQuery.should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery(EsBehandling::frist.name)));
+        innerQuery.should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery(EsBehandling::frist.name)))
 
         return innerQuery
     }
@@ -910,7 +862,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         )
         innerQuery.should(
             QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery(EsBehandling::varsletFrist.name))
-        );
+        )
 
         return innerQuery
     }

@@ -12,7 +12,6 @@ import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -41,28 +40,6 @@ class OppgaverListController(
     ): BehandlingerListResponse {
         logger.debug("Params: {}", queryParams)
         return oppgaverService.getLedigeOppgaverForInnloggetSaksbehandler(queryParams = queryParams)
-    }
-
-    @Operation(
-        summary = "Hent oppgave",
-        description = "Hent oppgave."
-    )
-    @GetMapping("/oppgaver/{behandlingId}", produces = ["application/json"])
-    fun getOppgave(
-        @PathVariable behandlingId: String,
-    ): BehandlingView {
-        logger.debug("getOppgave: {}", behandlingId)
-
-        val searchCriteria = behandlingerSearchCriteriaMapper.toBehandlingIdSearchCriteria(
-            behandlingId = behandlingId,
-        )
-        val esResponse = elasticsearchService.findOppgaveByBehandlingId(searchCriteria)
-
-        val result = behandlingListMapper.mapEsBehandlingerToBehandlingView(
-            esBehandlinger = esResponse.searchHits.map { it.content },
-        )
-
-        return result.first()
     }
 
     @Operation(
@@ -148,5 +125,4 @@ class OppgaverListController(
         logger.debug("Params: {}", queryParams)
         return oppgaverService.getUtgaatteFristerAvailableToSaksbehandlerCount(queryParams = queryParams)
     }
-
 }
