@@ -71,7 +71,7 @@ class DefaultAzureGateway(
         }
 
     private fun mapToEnhet(enhetNr: String): Enhet =
-        KodeverkEnhet.values().find { it.navn == enhetNr }
+        KodeverkEnhet.entries.find { it.navn == enhetNr }
             ?.let { Enhet(it.navn, it.beskrivelse) }
             ?: throw EnhetNotFoundForSaksbehandlerException("Enhet ikke funnet med enhetNr $enhetNr")
 

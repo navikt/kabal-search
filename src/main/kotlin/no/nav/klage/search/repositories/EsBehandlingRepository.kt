@@ -231,7 +231,7 @@ class EsBehandlingRepository(val client: RestHighLevelClient) {
     }
 
     private fun logBulkResponse(response: BulkByScrollResponse) {
-        if (response.bulkFailures.size > 0) {
+        if (response.bulkFailures.isNotEmpty()) {
             logger.warn("Failures in bulk response")
             response.bulkFailures.forEach {
                 logger.warn("Details about failure; status: ${it.status}, message: ${it.message}", it.cause)
@@ -306,14 +306,6 @@ interface SearchHits<T> : Iterable<SearchHit<T>> {
     val totalHits: Long
 
     val totalHitsRelation: TotalHits.Relation
-
-    fun hasAggregations(): Boolean {
-        return aggregations != null
-    }
-
-    fun hasSearchHits(): Boolean {
-        return searchHits.isNotEmpty()
-    }
 
     override fun iterator(): Iterator<SearchHit<T>> {
         return searchHits.iterator()
