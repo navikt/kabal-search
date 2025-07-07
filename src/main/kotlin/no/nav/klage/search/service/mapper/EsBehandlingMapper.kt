@@ -60,6 +60,7 @@ class EsBehandlingMapper(
             sattPaaVent = behandling.sattPaaVent,
             sattPaaVentExpires = behandling.sattPaaVentExpires,
             sattPaaVentReason = behandling.sattPaaVentReason,
+            sattPaaVentReasonId = behandling.sattPaaVentReasonId,
             status = EsStatus.valueOf(behandling.status.name),
             feilregistrert = behandling.feilregistrert,
             rolIdent = behandling.rolIdent,

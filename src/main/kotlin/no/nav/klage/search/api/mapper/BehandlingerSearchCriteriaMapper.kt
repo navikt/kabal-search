@@ -1,5 +1,7 @@
 package no.nav.klage.search.api.mapper
 
+import no.nav.klage.kodeverk.FlowState
+import no.nav.klage.kodeverk.SattPaaVentReason
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.kodeverk.hjemmel.Hjemmel
@@ -112,6 +114,7 @@ class BehandlingerSearchCriteriaMapper(
         ytelser = queryParams.ytelser.map { Ytelse.of(it) },
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
         navIdent = navIdent,
+        sattPaaVentReasons = queryParams.sattPaaVentReasonIds.map { SattPaaVentReason.of(it) },
         sortField = mapSortField(queryParams.sortering),
         order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
         offset = 0,
@@ -161,6 +164,7 @@ class BehandlingerSearchCriteriaMapper(
         enhetId = enhetId,
         saksbehandlere = queryParams.tildelteSaksbehandlere,
         medunderskrivere = queryParams.medunderskrivere,
+        sattPaaVentReasons = queryParams.sattPaaVentReasonIds.map { SattPaaVentReason.of(it) },
         sortField = mapSortField(queryParams.sortering),
         order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
         offset = 0,
@@ -195,6 +199,8 @@ class BehandlingerSearchCriteriaMapper(
         fristTo = mapFristTo(queryParams.fristTo),
         varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
         varsletFristTo = mapFristTo(queryParams.varsletFristTo),
+        muFlowStates = queryParams.muFlowStates.map { FlowState.of(it) },
+        rolFlowStates = queryParams.rolFlowStates.map { FlowState.of(it) },
     )
 
     fun toKrolsUferdigeOppgaverSearchCriteria(

@@ -80,6 +80,8 @@ data class EsBehandling(
 
     override val sattPaaVentReason: String? = null,
 
+    override val sattPaaVentReasonId: String? = null,
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     override val feilregistrert: LocalDateTime? = null,
 
@@ -116,6 +118,7 @@ interface EsAnonymBehandling {
     val sattPaaVent: LocalDate?
     val sattPaaVentExpires: LocalDate?
     val sattPaaVentReason: String?
+    val sattPaaVentReasonId: String?
     val feilregistrert: LocalDateTime?
     val rolIdent: String?
     val rolNavn: String?

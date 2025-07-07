@@ -1,5 +1,7 @@
 package no.nav.klage.search.domain
 
+import no.nav.klage.kodeverk.FlowState
+import no.nav.klage.kodeverk.SattPaaVentReason
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.kodeverk.hjemmel.Hjemmel
@@ -132,6 +134,7 @@ data class OppgaverPaaVentSearchCriteria(
     override val hjemler: List<Hjemmel>,
 
     val navIdent: String,
+    val sattPaaVentReasons: List<SattPaaVentReason>,
 
     override val sortField: SortField,
     override val order: Order,
@@ -208,6 +211,8 @@ data class EnhetensOppgaverPaaVentSearchCriteria(
     val saksbehandlere: List<String>,
     val medunderskrivere: List<String>,
 
+    val sattPaaVentReasons: List<SattPaaVentReason>,
+
     override val sortField: SortField,
     override val order: Order,
     override val offset: Int,
@@ -232,6 +237,9 @@ data class EnhetensUferdigeOppgaverSearchCriteria(
     val enhetId: String,
     val saksbehandlere: List<String>,
     val medunderskrivere: List<String>,
+
+    val muFlowStates: List<FlowState>,
+    val rolFlowStates: List<FlowState>,
 
     override val sortField: SortField,
     override val order: Order,
