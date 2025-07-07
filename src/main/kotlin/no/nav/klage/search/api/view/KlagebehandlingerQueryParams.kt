@@ -92,6 +92,7 @@ data class MineOppgaverPaaVentQueryParams(
     override val fristTo: LocalDate?,
     override val varsletFristFrom: LocalDate?,
     override val varsletFristTo: LocalDate?,
+    var sattPaaVentReasonIds: List<String> = emptyList(),
 ) : CommonOppgaverQueryParams
 
 data class EnhetensFerdigstilteOppgaverQueryParams(
@@ -121,6 +122,7 @@ data class EnhetensOppgaverPaaVentQueryParams(
     override val varsletFristTo: LocalDate?,
     var tildelteSaksbehandlere: List<String> = emptyList(),
     var medunderskrivere: List<String> = emptyList(),
+    var sattPaaVentReasonIds: List<String> = emptyList(),
 ) : CommonOppgaverQueryParams
 
 data class EnhetensUferdigeOppgaverQueryParams(
@@ -135,6 +137,8 @@ data class EnhetensUferdigeOppgaverQueryParams(
     override val varsletFristTo: LocalDate?,
     var tildelteSaksbehandlere: List<String> = emptyList(),
     var medunderskrivere: List<String> = emptyList(),
+    var muFlowStates: List<String> = emptyList(),
+    var rolFlowStates: List<String> = emptyList(),
 ) : CommonOppgaverQueryParams
 
 data class KrolsUferdigeOppgaverQueryParams(

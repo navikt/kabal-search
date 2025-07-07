@@ -1,6 +1,7 @@
 package no.nav.klage.search.service
 
 import no.nav.klage.kodeverk.FlowState
+import no.nav.klage.kodeverk.SattPaaVentReason
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.search.domain.*
@@ -561,6 +562,10 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
         baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
+        if (sattPaaVentReasons.isNotEmpty()) {
+            baseQuery.must(beSattPaaVentReasons(sattPaaVentReasons))
+        }
+
         teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
@@ -609,6 +614,10 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
             innerQuery.must(beTildeltMedunderskrivere(medunderskrivere))
         }
 
+        if (sattPaaVentReasons.isNotEmpty()) {
+            innerQuery.must(beSattPaaVentReasons(sattPaaVentReasons))
+        }
+
         baseQuery.must(innerQuery)
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
@@ -640,6 +649,14 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         if (medunderskrivere.isNotEmpty()) {
             innerQuery.must(beSentToMedunderskriver())
             innerQuery.must(beTildeltMedunderskrivere(medunderskrivere))
+        }
+
+        if (muFlowStates.isNotEmpty()) {
+            innerQuery.must(beMUFlowStates(muFlowStates))
+        }
+
+        if (rolFlowStates.isNotEmpty()) {
+            innerQuery.must(beROLFlowStates(rolFlowStates))
         }
 
         baseQuery.must(innerQuery)
@@ -889,6 +906,36 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
             innerQueryMedunderskriver.should(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, it))
         }
         return innerQueryMedunderskriver
+    }
+
+    private fun beSattPaaVentReasons(sattPaaVentReasons: List<SattPaaVentReason>): BoolQueryBuilder? {
+        return if (sattPaaVentReasons.isNotEmpty()) {
+            val innerQueryMedunderskriver = QueryBuilders.boolQuery()
+            sattPaaVentReasons.forEach {
+                innerQueryMedunderskriver.should(QueryBuilders.termQuery(EsBehandling::sattPaaVentReasonId.name, it.id))
+            }
+            innerQueryMedunderskriver
+        } else null
+    }
+
+    private fun beROLFlowStates(rolFlowStates: List<FlowState>): BoolQueryBuilder? {
+        return if (rolFlowStates.isNotEmpty()) {
+            val innerQueryMedunderskriver = QueryBuilders.boolQuery()
+            rolFlowStates.forEach {
+                innerQueryMedunderskriver.should(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, it.id))
+            }
+            innerQueryMedunderskriver
+        } else null
+    }
+
+    private fun beMUFlowStates(muFlowStates: List<FlowState>): BoolQueryBuilder? {
+        return if (muFlowStates.isNotEmpty()) {
+            val innerQueryMedunderskriver = QueryBuilders.boolQuery()
+            muFlowStates.forEach {
+                innerQueryMedunderskriver.should(QueryBuilders.termQuery(EsBehandling::medunderskriverFlowStateId.name, it.id))
+            }
+            innerQueryMedunderskriver
+        } else null
     }
 
     private fun beTildeltSaksbehandler(navIdent: String) =

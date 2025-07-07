@@ -28,6 +28,7 @@ class BehandlingSkjemaV2(
     val sattPaaVent: LocalDate?,
     val sattPaaVentExpires: LocalDate?,
     val sattPaaVentReason: String?,
+    val sattPaaVentReasonId: String?,
 
     val status: StatusType,
 
