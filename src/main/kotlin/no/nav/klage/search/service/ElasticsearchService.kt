@@ -908,28 +908,34 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return innerQueryMedunderskriver
     }
 
-    private fun beSattPaaVentReasons(sattPaaVentReasons: List<SattPaaVentReason>): BoolQueryBuilder {
-        val innerQueryMedunderskriver = QueryBuilders.boolQuery()
-        sattPaaVentReasons.forEach {
-            innerQueryMedunderskriver.should(QueryBuilders.termQuery(EsBehandling::sattPaaVentReasonId.name, it.id))
-        }
-        return innerQueryMedunderskriver
+    private fun beSattPaaVentReasons(sattPaaVentReasons: List<SattPaaVentReason>): BoolQueryBuilder? {
+        return if (sattPaaVentReasons.isNotEmpty()) {
+            val innerQueryMedunderskriver = QueryBuilders.boolQuery()
+            sattPaaVentReasons.forEach {
+                innerQueryMedunderskriver.should(QueryBuilders.termQuery(EsBehandling::sattPaaVentReasonId.name, it.id))
+            }
+            innerQueryMedunderskriver
+        } else null
     }
 
-    private fun beROLFlowStates(rolFlowStates: List<FlowState>): BoolQueryBuilder {
-        val innerQueryMedunderskriver = QueryBuilders.boolQuery()
-        rolFlowStates.forEach {
-            innerQueryMedunderskriver.should(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, it.id))
-        }
-        return innerQueryMedunderskriver
+    private fun beROLFlowStates(rolFlowStates: List<FlowState>): BoolQueryBuilder? {
+        return if (rolFlowStates.isNotEmpty()) {
+            val innerQueryMedunderskriver = QueryBuilders.boolQuery()
+            rolFlowStates.forEach {
+                innerQueryMedunderskriver.should(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, it.id))
+            }
+            innerQueryMedunderskriver
+        } else null
     }
 
-    private fun beMUFlowStates(muFlowStates: List<FlowState>): BoolQueryBuilder {
-        val innerQueryMedunderskriver = QueryBuilders.boolQuery()
-        muFlowStates.forEach {
-            innerQueryMedunderskriver.should(QueryBuilders.termQuery(EsBehandling::medunderskriverFlowStateId.name, it.id))
-        }
-        return innerQueryMedunderskriver
+    private fun beMUFlowStates(muFlowStates: List<FlowState>): BoolQueryBuilder? {
+        return if (muFlowStates.isNotEmpty()) {
+            val innerQueryMedunderskriver = QueryBuilders.boolQuery()
+            muFlowStates.forEach {
+                innerQueryMedunderskriver.should(QueryBuilders.termQuery(EsBehandling::medunderskriverFlowStateId.name, it.id))
+            }
+            innerQueryMedunderskriver
+        } else null
     }
 
     private fun beTildeltSaksbehandler(navIdent: String) =
