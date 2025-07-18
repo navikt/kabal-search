@@ -28,7 +28,6 @@ internal class PdlClientTest {
     fun `pdl response kan mappes selv med tomme arrays`() {
         val hentPersonResponse = getHentPersonResponse(pdlResponse())
         assertThat(hentPersonResponse.data).isNotNull
-        assertThat(hentPersonResponse.data!!.hentPerson!!.navn.first().fornavn).isEqualTo("AREMARK")
     }
 
     fun getHentPersonResponse(jsonResponse: String): HentPersonResponse {
@@ -45,20 +44,7 @@ internal class PdlClientTest {
         {
           "data": {
             "hentPerson": {
-              "navn": [
-                {
-                  "fornavn": "AREMARK",
-                  "mellomnavn": null,
-                  "etternavn": "TESTFAMILIEN"
-                }
-              ],
-              "kjoenn": [
-                {
-                  "kjoenn": "MANN"
-                }
-              ],
-              "adressebeskyttelse": [],
-              "sivilstand": []
+              "adressebeskyttelse": []
             }
           }
         }

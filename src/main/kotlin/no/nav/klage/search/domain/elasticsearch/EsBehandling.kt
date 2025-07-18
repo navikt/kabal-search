@@ -70,15 +70,11 @@ data class EsBehandling(
 
     override val strengtFortrolig: Boolean = false,
 
-    override val utfallId: String? = null,
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     override val sattPaaVent: LocalDate? = null,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     override val sattPaaVentExpires: LocalDate? = null,
-
-    override val sattPaaVentReason: String? = null,
 
     override val sattPaaVentReasonId: String? = null,
 
@@ -101,7 +97,6 @@ interface EsAnonymBehandling {
     val egenAnsatt: Boolean
     val avsluttetAvSaksbehandler: LocalDateTime?
     val returnertFraROL: LocalDateTime?
-    val utfallId: String?
     val tildeltSaksbehandlernavn: String?
     val tildeltSaksbehandlerident: String?
     val medunderskriverFlowStateId: String
@@ -117,7 +112,6 @@ interface EsAnonymBehandling {
     val behandlingId: String
     val sattPaaVent: LocalDate?
     val sattPaaVentExpires: LocalDate?
-    val sattPaaVentReason: String?
     val sattPaaVentReasonId: String?
     val feilregistrert: LocalDateTime?
     val rolIdent: String?
