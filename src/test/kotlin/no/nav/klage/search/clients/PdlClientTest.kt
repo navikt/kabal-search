@@ -44,7 +44,7 @@ internal class PdlClientTest {
         {
           "data": {
             "hentPerson": {
-              "adressebeskyttelse": []              
+              "adressebeskyttelse": []
             }
           }
         }
