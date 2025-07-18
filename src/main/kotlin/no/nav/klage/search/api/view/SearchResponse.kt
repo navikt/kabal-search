@@ -9,15 +9,3 @@ data class FnrSearchResponseWithoutPerson(
     val feilregistrerteBehandlinger: List<String>,
     val paaVentBehandlinger: List<String>,
 )
-
-/**
- * Used for name search
- */
-data class NameSearchResponse(
-    val people: List<PersonView>
-) {
-    data class PersonView(
-        val id: String,
-        val name: String,
-    )
-}
