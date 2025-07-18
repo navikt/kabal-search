@@ -4,10 +4,10 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import no.nav.klage.search.api.mapper.BehandlingListMapper
 import no.nav.klage.search.api.mapper.BehandlingerSearchCriteriaMapper
-import no.nav.klage.search.api.view.*
+import no.nav.klage.search.api.view.FnrSearchResponseWithoutPerson
+import no.nav.klage.search.api.view.SearchPersonByFnrInput
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.domain.AuditLogEvent
-import no.nav.klage.search.domain.personsoek.Navn
 import no.nav.klage.search.service.PersonSearchService
 import no.nav.klage.search.util.AuditLogger
 import no.nav.klage.search.util.TokenUtil
@@ -63,31 +63,6 @@ class BehandlingSearchController(
                     message = "Hentet behandlingsoversikt for person."
                 )
             )
-        }
-    }
-
-    @Operation(
-        summary = "Hent oppgaver som gjelder en gitt person",
-        description = "Henter alle oppgaver som saksbehandler har tilgang til som omhandler en gitt person."
-    )
-    @PostMapping("/name", produces = ["application/json"])
-    fun getNameSearchResponse(@RequestBody input: SearchPersonByNameInput): NameSearchResponse {
-        val people = personSearchService.nameSearch(input.query)
-        return NameSearchResponse(
-            people = people.map {
-                NameSearchResponse.PersonView(
-                    id = it.fnr,
-                    name = it.navn.toFullName()
-                )
-            }
-        )
-    }
-
-    private fun Navn.toFullName(): String {
-        return if (mellomnavn != null) {
-            "$fornavn $mellomnavn $etternavn"
-        } else {
-            "$fornavn $etternavn"
         }
     }
 }
