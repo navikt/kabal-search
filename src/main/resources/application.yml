@@ -102,6 +102,7 @@ no.nav.security.jwt:
 MICROSOFT_GRAPH_URL: https://graph.microsoft.com/v1.0
 
 EGENANSATT_KAFKA_TOPIC: nom.skjermede-personer-v1
+LEESAH_KAFKA_TOPIC: pdl.leesah-v1
 PDL_PERSON_KAFKA_TOPIC: aapen-person-pdl-dokument-v1
 BEHANDLING_ENDRET_KAFKA_TOPIC_V2: klage.behandling-endret.v2
 

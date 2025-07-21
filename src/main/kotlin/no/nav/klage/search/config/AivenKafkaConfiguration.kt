@@ -56,6 +56,22 @@ class AivenKafkaConfiguration(
     }
 
     @Bean
+    fun leesahKafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String> {
+        val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
+        factory.consumerFactory = leesahConsumerFactory()
+        factory.containerProperties.ackMode = AckMode.MANUAL_IMMEDIATE
+        factory.containerProperties.idleEventInterval = 3000L
+        factory.setCommonErrorHandler(CommonLoggingErrorHandler())
+
+        //Retry consumer/listener even if authorization fails at first
+        factory.setContainerCustomizer { container ->
+            container.containerProperties.setAuthExceptionRetryInterval(Duration.ofSeconds(10L))
+        }
+
+        return factory
+    }
+
+    @Bean
     fun behandlingEndretKafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String> {
         val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
         factory.consumerFactory = klageEndretConsumerFactory()
@@ -74,6 +90,11 @@ class AivenKafkaConfiguration(
 
     @Bean
     fun egenAnsattConsumerFactory(): ConsumerFactory<String, String> {
+        return DefaultKafkaConsumerFactory(getConsumerProps())
+    }
+
+    @Bean
+    fun leesahConsumerFactory(): ConsumerFactory<String, String> {
         return DefaultKafkaConsumerFactory(getConsumerProps())
     }
 
@@ -97,6 +118,11 @@ class AivenKafkaConfiguration(
     @Bean
     fun egenAnsattFinder(): PartitionFinder<String, String> {
         return PartitionFinder(egenAnsattConsumerFactory())
+    }
+
+    @Bean
+    fun leesahFinder(): PartitionFinder<String, String> {
+        return PartitionFinder(leesahConsumerFactory())
     }
 
     //Common
