@@ -29,12 +29,14 @@ class LeesahConsumer {
             partitionOffsets = [PartitionOffset(partition = "*", initialOffset = "0")]
         )]
     )
-    fun listen(cr: ConsumerRecord<String, GenericRecord>,
-               acknowledgment: Acknowledgment) {
+    fun listen(
+        cr: ConsumerRecord<String, GenericRecord>,
+        acknowledgment: Acknowledgment
+    ) {
         if (cr.offset() == 1368199L) {
             logger.debug("Fant adressebeskyttelse hendelse, går videre.")
-            logger.debug("Reading offset ${cr.offset()} from partition ${cr.partition()} on kafka topic ${cr.topic()}")
-            logger.debug("Opplysningstype: ${cr.value().opplysningstype}, cr.value: ${cr.value()}")
+            logger.debug("Reading offset ${cr.offset()} from partition ${cr.partition()} on kafka topic ${cr.topic()}, ${cr.value()}")
+
         }
 
 //        processPersonhendelse(
