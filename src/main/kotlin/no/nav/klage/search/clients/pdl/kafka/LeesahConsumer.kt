@@ -5,8 +5,6 @@ import no.nav.klage.search.util.getTeamLogger
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.kafka.annotation.KafkaListener
-import org.springframework.kafka.annotation.PartitionOffset
-import org.springframework.kafka.annotation.TopicPartition
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
 
@@ -21,13 +19,10 @@ class LeesahConsumer {
 
     @KafkaListener(
         id = "klageSearchLeesahListener",
-        idIsGroup = false,
-        containerFactory = "egenAnsattKafkaListenerContainerFactory",
-        topicPartitions = [TopicPartition(
-            topic = "\${LEESAH_KAFKA_TOPIC}",
-            partitions = ["#{@leesahFinder.partitions('\${LEESAH_KAFKA_TOPIC}')}"],
-            partitionOffsets = [PartitionOffset(partition = "*", initialOffset = "0")]
-        )]
+        idIsGroup = true,
+        containerFactory = "leesahKafkaListenerContainerFactory",
+        topics = ["\${LEESAH_KAFKA_TOPIC}"],
+        properties = ["auto.offset.reset = earliest"],
     )
     fun listen(
         cr: ConsumerRecord<String, GenericRecord>,

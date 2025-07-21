@@ -1,6 +1,7 @@
 package no.nav.klage.search.config
 
 import no.nav.klage.search.util.getLogger
+import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG
 import org.apache.kafka.clients.consumer.ConsumerConfig
@@ -55,9 +56,9 @@ class AivenKafkaConfiguration(
         return factory
     }
 
-//    @Bean
-    fun leesahKafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String> {
-        val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
+    @Bean
+    fun leesahKafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, GenericRecord> {
+        val factory = ConcurrentKafkaListenerContainerFactory<String, GenericRecord>()
         factory.consumerFactory = leesahConsumerFactory()
         factory.containerProperties.ackMode = AckMode.MANUAL_IMMEDIATE
         factory.containerProperties.idleEventInterval = 3000L
@@ -94,7 +95,7 @@ class AivenKafkaConfiguration(
     }
 
     @Bean
-    fun leesahConsumerFactory(): ConsumerFactory<String, String> {
+    fun leesahConsumerFactory(): ConsumerFactory<String, GenericRecord> {
         return DefaultKafkaConsumerFactory(getConsumerProps())
     }
 
@@ -121,7 +122,7 @@ class AivenKafkaConfiguration(
     }
 
     @Bean
-    fun leesahFinder(): PartitionFinder<String, String> {
+    fun leesahFinder(): PartitionFinder<String, GenericRecord> {
         return PartitionFinder(leesahConsumerFactory())
     }
 
