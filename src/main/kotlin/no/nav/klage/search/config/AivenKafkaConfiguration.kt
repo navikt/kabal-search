@@ -1,5 +1,7 @@
 package no.nav.klage.search.config
 
+import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient
 import io.confluent.kafka.serializers.KafkaAvroDeserializer
 import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig
 import no.nav.klage.search.util.getLogger
@@ -36,6 +38,10 @@ class AivenKafkaConfiguration(
     private val kafkaKeystorePath: String,
     @Value("\${KAFKA_SCHEMA_REGISTRY}")
     private val kafkaSchemaRegistryUrl: String,
+    @Value("\${KAFKA_SCHEMA_REGISTRY_USER}")
+    private val schemaRegistryUsername: String,
+    @Value("\${KAFKA_SCHEMA_REGISTRY_PASSWORD}")
+    private val schemaRegistryPassword: String,
 ) {
 
     companion object {
@@ -61,12 +67,21 @@ class AivenKafkaConfiguration(
     }
 
     @Bean
-    fun leesahKafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, GenericRecord> {
+    fun leesahKafkaListenerContainerFactory(
+        aivenSchemaRegistryClient: SchemaRegistryClient,
+    ): ConcurrentKafkaListenerContainerFactory<String, GenericRecord> {
+        val consumerFactory =
+            DefaultKafkaConsumerFactory(
+                getAvroConsumerProps(),
+                StringDeserializer(),
+                KafkaAvroDeserializer(aivenSchemaRegistryClient),
+            )
+
         val factory = ConcurrentKafkaListenerContainerFactory<String, GenericRecord>()
-        factory.consumerFactory = leesahConsumerFactory()
         factory.containerProperties.ackMode = AckMode.MANUAL_IMMEDIATE
-        factory.containerProperties.idleEventInterval = 3000L
         factory.setCommonErrorHandler(CommonLoggingErrorHandler())
+        factory.consumerFactory = consumerFactory
+        factory.containerProperties.idleEventInterval = 3000L
 
         //Retry consumer/listener even if authorization fails at first
         factory.setContainerCustomizer { container ->
@@ -98,10 +113,13 @@ class AivenKafkaConfiguration(
         return DefaultKafkaConsumerFactory(getConsumerProps())
     }
 
-    @Bean
-    fun leesahConsumerFactory(): ConsumerFactory<String, GenericRecord> {
-        return DefaultKafkaConsumerFactory(getAvroConsumerProps())
-    }
+//    @Bean
+//    fun leesahConsumerFactory(): ConsumerFactory<String!, Any!> {
+//        return DefaultKafkaConsumerFactory(
+//            getAvroConsumerProps(),
+//            StringDeserializer(),
+//            KafkaAvroDeserializer(aivenSchemaRegistryClient))
+//    }
 
     @Bean
     fun klageEndretConsumerFactory(): ConsumerFactory<String, String> {
@@ -120,6 +138,17 @@ class AivenKafkaConfiguration(
         ) + commonConfig()
     }
 
+    @Bean
+    fun aivenSchemaRegistryClient(): SchemaRegistryClient =
+        CachedSchemaRegistryClient(
+            kafkaSchemaRegistryUrl,
+            20,
+            mapOf(
+                KafkaAvroDeserializerConfig.BASIC_AUTH_CREDENTIALS_SOURCE to "USER_INFO",
+                KafkaAvroDeserializerConfig.USER_INFO_CONFIG to "$schemaRegistryUsername:$schemaRegistryPassword",
+            ),
+        )
+
     private fun getAvroConsumerProps(): Map<String, Serializable> {
         return mapOf(
             KafkaAvroDeserializerConfig.SCHEMA_REGISTRY_URL_CONFIG to kafkaSchemaRegistryUrl,
@@ -137,10 +166,10 @@ class AivenKafkaConfiguration(
         return PartitionFinder(egenAnsattConsumerFactory())
     }
 
-    @Bean
-    fun leesahFinder(): PartitionFinder<String, GenericRecord> {
-        return PartitionFinder(leesahConsumerFactory())
-    }
+//    @Bean
+//    fun leesahFinder(): PartitionFinder<String, GenericRecord> {
+//        return PartitionFinder(leesahConsumerFactory())
+//    }
 
     //Common
     private fun commonConfig() = mapOf(
