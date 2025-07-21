@@ -55,7 +55,7 @@ class AivenKafkaConfiguration(
         return factory
     }
 
-    @Bean
+//    @Bean
     fun leesahKafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String> {
         val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
         factory.consumerFactory = leesahConsumerFactory()

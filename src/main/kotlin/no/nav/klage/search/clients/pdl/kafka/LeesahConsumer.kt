@@ -22,7 +22,7 @@ class LeesahConsumer {
     @KafkaListener(
         id = "klageSearchLeesahListener",
         idIsGroup = false,
-        containerFactory = "leesahKafkaListenerContainerFactory",
+        containerFactory = "egenAnsattKafkaListenerContainerFactory",
         topicPartitions = [TopicPartition(
             topic = "\${LEESAH_KAFKA_TOPIC}",
             partitions = ["#{@leesahFinder.partitions('\${LEESAH_KAFKA_TOPIC}')}"],
