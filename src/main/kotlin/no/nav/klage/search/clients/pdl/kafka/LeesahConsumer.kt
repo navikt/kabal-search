@@ -35,10 +35,16 @@ class LeesahConsumer {
     ) {
         if (cr.offset() == 1368199L) {
             logger.debug("Fant adressebeskyttelse hendelse, går videre.")
-            logger.debug("Reading offset ${cr.offset()} from partition ${cr.partition()} on kafka topic ${cr.topic()}, ${cr.value()}")
-            logger.debug("opplysningstype: ${cr.value().opplysningstype}")
-            logger.debug("personidenter: ${cr.value().personidenter}")
+            logger.debug(
+                "Reading offset {} from partition {} on kafka topic {}, {}",
+                cr.offset(),
+                cr.partition(),
+                cr.topic(),
+                cr.value()
+            )
+            logger.debug("personidenter: {}", cr.value().personidenter)
             logger.debug("Key: ${cr.key()}")
+            logger.debug("opplysningstype: ${cr.value().opplysningstype}")
         }
 
 //        processPersonhendelse(
