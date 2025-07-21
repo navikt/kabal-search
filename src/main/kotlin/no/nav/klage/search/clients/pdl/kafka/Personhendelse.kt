@@ -19,7 +19,7 @@ val GenericRecord.fnr get(): String {
         .first { it.length == 11 }
 }
 
-val GenericRecord.erAdressebeskyttelse get(): Boolean {
+val GenericRecord.isAdressebeskyttelse get(): Boolean {
     return opplysningstype == OPPLYSNINGSTYPE_ADRESSEBESKYTTELSE
 }
 

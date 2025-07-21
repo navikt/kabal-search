@@ -1,5 +1,7 @@
 package no.nav.klage.search.clients.pdl.kafka
 
+import no.nav.klage.search.clients.pdl.PdlFacade
+import no.nav.klage.search.clients.pdl.PersonCacheService
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getTeamLogger
 import org.apache.avro.generic.GenericRecord
@@ -9,7 +11,10 @@ import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
 
 @Component
-class LeesahConsumer {
+class LeesahConsumer(
+    private val personCacheService: PersonCacheService,
+    private val pdlFacade: PdlFacade,
+) {
 
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
@@ -26,36 +31,23 @@ class LeesahConsumer {
     )
     fun listen(
         cr: ConsumerRecord<String, GenericRecord>,
-        acknowledgment: Acknowledgment
     ) {
-        if (cr.offset() == 1368199L) {
-            logger.debug("Fant adressebeskyttelse hendelse, går videre.")
-            logger.debug("Key: ${cr.key()}")
-            logger.debug(
-                "Reading offset {} from partition {} on kafka topic {}, {}",
-                cr.offset(),
-                cr.partition(),
-                cr.topic(),
-                cr.value()
-            )
-            processPersonhendelse(
-                cr.value(),
-                cr.timestamp(),
-            )
-        }
-
-
-
-//        acknowledgment.acknowledge()
+        processPersonhendelse(
+            personhendelse = cr.value(),
+        )
     }
 
     fun processPersonhendelse(
         personhendelse: GenericRecord,
-        timestamp: Long,
     ) {
-            logger.debug("fnr: {}", personhendelse.fnr)
-            logger.debug("personidenter: {}", personhendelse.personidenter)
-            logger.debug("opplysningstype: ${personhendelse.opplysningstype}")
-
+        if (personhendelse.isAdressebeskyttelse) {
+            logger.debug("Found adressebeskyttelse event. Checking if person is cached.")
+            if (personCacheService.isCached(foedselsnr = personhendelse.fnr)) {
+                logger.debug("Found fnr in person cache. Updating cache.")
+                personCacheService.removePerson(foedselsnr = personhendelse.fnr)
+                logger.debug("Removed person from cache.")
+                pdlFacade.getPersonInfo(fnr = personhendelse.fnr)
+            }
+        }
     }
 }

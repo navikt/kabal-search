@@ -25,6 +25,7 @@ class PdlFacade(
         if (personCacheService.isCached(fnr)) {
             return personCacheService.getPerson(fnr)
         }
+        logger.debug("Person not found in cache, fetching from PDL.")
         val hentPersonResponse: HentPersonResponse = pdlClient.getPersonInfo(fnr)
         val pdlPerson = hentPersonResponse.getPersonOrLogErrors(fnr)
         return hentPersonMapper.mapToPerson(fnr, pdlPerson).also { personCacheService.updatePersonCache(it) }
