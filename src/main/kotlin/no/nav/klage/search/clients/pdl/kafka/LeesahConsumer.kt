@@ -32,6 +32,7 @@ class LeesahConsumer {
     fun listen(cr: ConsumerRecord<String, GenericRecord>,
                acknowledgment: Acknowledgment) {
         logger.debug("Reading offset ${cr.offset()} from partition ${cr.partition()} on kafka topic ${cr.topic()}")
+        teamLogger.debug("cr: $cr")
         processPersonhendelse(
             cr.value(),
             cr.timestamp(),

@@ -35,27 +35,27 @@ class EgenAnsattKafkaConsumer(
         ).registerModule(JavaTimeModule())
     }
 
-    @KafkaListener(
-        id = "klageEgenAnsattListener",
-        idIsGroup = false,
-        containerFactory = "egenAnsattKafkaListenerContainerFactory",
-        topicPartitions = [TopicPartition(
-            topic = "\${EGENANSATT_KAFKA_TOPIC}",
-            partitions = ["#{@egenAnsattFinder.partitions('\${EGENANSATT_KAFKA_TOPIC}')}"],
-            partitionOffsets = [PartitionOffset(partition = "*", initialOffset = "0")]
-        )]
-    )
-    fun listen(egenAnsattRecord: ConsumerRecord<String, String>) {
-        runCatching {
-            logger.debug("Reading offset ${egenAnsattRecord.offset()} from partition ${egenAnsattRecord.partition()} on kafka topic ${egenAnsattRecord.topic()}")
-            val foedselsnr = egenAnsattRecord.key()
-            val egenAnsatt = egenAnsattRecord.value().toEgenAnsatt()
-            egenAnsattService.oppdaterEgenAnsatt(foedselsnr, egenAnsatt)
-        }.onFailure {
-            teamLogger.error("Failed to process egenansatt record", it)
-            throw RuntimeException("Could not process egenansatt record. See more details in team-logs.")
-        }
-    }
+//    @KafkaListener(
+//        id = "klageEgenAnsattListener",
+//        idIsGroup = false,
+//        containerFactory = "egenAnsattKafkaListenerContainerFactory",
+//        topicPartitions = [TopicPartition(
+//            topic = "\${EGENANSATT_KAFKA_TOPIC}",
+//            partitions = ["#{@egenAnsattFinder.partitions('\${EGENANSATT_KAFKA_TOPIC}')}"],
+//            partitionOffsets = [PartitionOffset(partition = "*", initialOffset = "0")]
+//        )]
+//    )
+//    fun listen(egenAnsattRecord: ConsumerRecord<String, String>) {
+//        runCatching {
+//            logger.debug("Reading offset ${egenAnsattRecord.offset()} from partition ${egenAnsattRecord.partition()} on kafka topic ${egenAnsattRecord.topic()}")
+//            val foedselsnr = egenAnsattRecord.key()
+//            val egenAnsatt = egenAnsattRecord.value().toEgenAnsatt()
+//            egenAnsattService.oppdaterEgenAnsatt(foedselsnr, egenAnsatt)
+//        }.onFailure {
+//            teamLogger.error("Failed to process egenansatt record", it)
+//            throw RuntimeException("Could not process egenansatt record. See more details in team-logs.")
+//        }
+//    }
 
     private fun String.toEgenAnsatt() = mapper.readValue(this, EgenAnsatt::class.java)
 }
