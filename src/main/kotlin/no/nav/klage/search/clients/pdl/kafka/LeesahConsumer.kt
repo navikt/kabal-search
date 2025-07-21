@@ -50,7 +50,7 @@ class LeesahConsumer {
 
 
 
-        acknowledgment.acknowledge()
+//        acknowledgment.acknowledge()
     }
 
     fun processPersonhendelse(
