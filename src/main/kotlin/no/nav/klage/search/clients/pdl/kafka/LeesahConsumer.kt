@@ -43,9 +43,9 @@ class LeesahConsumer(
         if (personhendelse.isAdressebeskyttelse) {
             logger.debug("Found adressebeskyttelse event. Checking if person is cached.")
             if (personCacheService.isCached(foedselsnr = personhendelse.fnr)) {
-                logger.debug("Found fnr in person cache. Updating cache.")
+                logger.debug("Found fnr in person cache. Removing person from cache.")
                 personCacheService.removePerson(foedselsnr = personhendelse.fnr)
-                logger.debug("Removed person from cache.")
+                logger.debug("Updating cache.")
                 pdlFacade.getPersonInfo(fnr = personhendelse.fnr)
             }
         }
