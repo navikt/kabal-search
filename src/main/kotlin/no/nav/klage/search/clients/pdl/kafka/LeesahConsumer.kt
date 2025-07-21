@@ -34,34 +34,32 @@ class LeesahConsumer {
         acknowledgment: Acknowledgment
     ) {
         if (cr.offset() == 1368199L) {
-            val record = cr.value()
             logger.debug("Fant adressebeskyttelse hendelse, går videre.")
+            logger.debug("Key: ${cr.key()}")
             logger.debug(
-                "Reading offset {} from partition {} on kafka topic {}, {}",
+                "Reading offset {} from partition {} on kafka topic {}",
                 cr.offset(),
                 cr.partition(),
                 cr.topic(),
-                record
             )
-            logger.debug("Key: ${cr.key()}")
-            logger.debug("fnr: {}", record.fnr)
-            logger.debug("personidenter: {}", record.personidenter)
-            logger.debug("opplysningstype: ${record.opplysningstype}")
+            processPersonhendelse(
+                cr.value(),
+                cr.timestamp(),
+            )
         }
 
-//        processPersonhendelse(
-//            cr.value(),
-//            cr.timestamp(),
-//        )
 
-//        acknowledgment.acknowledge()
+
+        acknowledgment.acknowledge()
     }
 
     fun processPersonhendelse(
         personhendelse: GenericRecord,
         timestamp: Long,
     ) {
-        logger.debug("Processing personhendelse.")
-        teamLogger.debug("Personhendelse received with type: ${personhendelse.opplysningstype}")
+            logger.debug("fnr: {}", personhendelse.fnr)
+            logger.debug("personidenter: {}", personhendelse.personidenter)
+            logger.debug("opplysningstype: ${personhendelse.opplysningstype}")
+
     }
 }
