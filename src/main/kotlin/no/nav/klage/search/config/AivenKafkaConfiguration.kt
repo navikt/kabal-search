@@ -1,5 +1,7 @@
 package no.nav.klage.search.config
 
+import io.confluent.kafka.serializers.KafkaAvroDeserializer
+import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig
 import no.nav.klage.search.util.getLogger
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.CommonClientConfigs
@@ -31,7 +33,9 @@ class AivenKafkaConfiguration(
     @Value("\${KAFKA_CREDSTORE_PASSWORD}")
     private val kafkaCredstorePassword: String,
     @Value("\${KAFKA_KEYSTORE_PATH}")
-    private val kafkaKeystorePath: String
+    private val kafkaKeystorePath: String,
+    @Value("\${KAFKA_SCHEMA_REGISTRY}")
+    private val kafkaSchemaRegistryUrl: String,
 ) {
 
     companion object {
@@ -96,7 +100,7 @@ class AivenKafkaConfiguration(
 
     @Bean
     fun leesahConsumerFactory(): ConsumerFactory<String, GenericRecord> {
-        return DefaultKafkaConsumerFactory(getConsumerProps())
+        return DefaultKafkaConsumerFactory(getAvroConsumerProps())
     }
 
     @Bean
@@ -113,6 +117,18 @@ class AivenKafkaConfiguration(
             ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to ErrorHandlingDeserializer::class.java,
             "spring.deserializer.key.delegate.class" to StringDeserializer::class.java,
             "spring.deserializer.value.delegate.class" to StringDeserializer::class.java
+        ) + commonConfig()
+    }
+
+    private fun getAvroConsumerProps(): Map<String, Serializable> {
+        return mapOf(
+            KafkaAvroDeserializerConfig.SCHEMA_REGISTRY_URL_CONFIG to kafkaSchemaRegistryUrl,
+            KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG to false,
+            ConsumerConfig.GROUP_ID_CONFIG to "kabal-search",
+            ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to false,
+            ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "earliest",
+            ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
+            ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to KafkaAvroDeserializer::class.java,
         ) + commonConfig()
     }
 

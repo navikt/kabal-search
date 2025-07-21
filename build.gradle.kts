@@ -15,6 +15,7 @@ val kodeverkVersion = "1.10.19"
 val ehcacheVersion = "3.10.8"
 val logbackSyslog4jVersion = "1.0.0"
 val avroVersion = "1.12.0"
+val confluentVersion = "7.9.1"
 
 java.sourceCompatibility = JavaVersion.VERSION_21
 
@@ -66,6 +67,8 @@ dependencies {
     }
     implementation("org.springframework.retry:spring-retry:$springRetryVersion")
     implementation("org.apache.avro:avro:${avroVersion}")
+    implementation("io.confluent:kafka-connect-avro-converter:${confluentVersion}")
+    implementation("io.confluent:kafka-schema-registry-client:${confluentVersion}")
 
     //Test
     //Managed by Spring:

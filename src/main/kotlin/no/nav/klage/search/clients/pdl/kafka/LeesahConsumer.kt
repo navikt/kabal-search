@@ -32,10 +32,11 @@ class LeesahConsumer {
             logger.debug("Fant adressebeskyttelse hendelse, går videre.")
             logger.debug("Key: ${cr.key()}")
             logger.debug(
-                "Reading offset {} from partition {} on kafka topic {}",
+                "Reading offset {} from partition {} on kafka topic {}, {}",
                 cr.offset(),
                 cr.partition(),
                 cr.topic(),
+                cr.value()
             )
             processPersonhendelse(
                 cr.value(),
