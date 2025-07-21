@@ -30,7 +30,8 @@ class LeesahConsumer {
         )]
     )
     fun listen(cr: ConsumerRecord<String, GenericRecord>,
-               acknowledgment: Acknowledgment,) {
+               acknowledgment: Acknowledgment) {
+        logger.debug("Reading offset ${cr.offset()} from partition ${cr.partition()} on kafka topic ${cr.topic()}")
         processPersonhendelse(
             cr.value(),
             cr.timestamp(),
@@ -43,6 +44,7 @@ class LeesahConsumer {
         personhendelse: GenericRecord,
         timestamp: Long,
     ) {
+        logger.debug("Processing personhendelse.")
         teamLogger.debug("Personhendelse received with type: ${personhendelse.opplysningstype}")
     }
 }
