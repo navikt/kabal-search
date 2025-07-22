@@ -70,17 +70,10 @@ class AivenKafkaConfiguration(
     fun leesahKafkaListenerContainerFactory(
         aivenSchemaRegistryClient: SchemaRegistryClient,
     ): ConcurrentKafkaListenerContainerFactory<String, GenericRecord> {
-        val consumerFactory =
-            DefaultKafkaConsumerFactory(
-                getAvroConsumerProps(),
-                StringDeserializer(),
-                KafkaAvroDeserializer(aivenSchemaRegistryClient),
-            )
-
         val factory = ConcurrentKafkaListenerContainerFactory<String, GenericRecord>()
+        factory.consumerFactory = leesahConsumerFactory(aivenSchemaRegistryClient = aivenSchemaRegistryClient)
         factory.containerProperties.ackMode = AckMode.MANUAL_IMMEDIATE
         factory.setCommonErrorHandler(CommonLoggingErrorHandler())
-        factory.consumerFactory = consumerFactory
         factory.containerProperties.idleEventInterval = 3000L
 
         //Retry consumer/listener even if authorization fails at first
@@ -113,13 +106,13 @@ class AivenKafkaConfiguration(
         return DefaultKafkaConsumerFactory(getConsumerProps())
     }
 
-//    @Bean
-//    fun leesahConsumerFactory(): ConsumerFactory<String!, Any!> {
-//        return DefaultKafkaConsumerFactory(
-//            getAvroConsumerProps(),
-//            StringDeserializer(),
-//            KafkaAvroDeserializer(aivenSchemaRegistryClient))
-//    }
+    @Bean
+    fun leesahConsumerFactory(aivenSchemaRegistryClient: SchemaRegistryClient): ConsumerFactory<String, Any> {
+        return DefaultKafkaConsumerFactory(
+            getAvroConsumerProps(),
+            StringDeserializer(),
+            KafkaAvroDeserializer(aivenSchemaRegistryClient))
+    }
 
     @Bean
     fun klageEndretConsumerFactory(): ConsumerFactory<String, String> {
@@ -155,7 +148,7 @@ class AivenKafkaConfiguration(
             KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG to false,
             ConsumerConfig.GROUP_ID_CONFIG to "kabal-search",
             ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to false,
-            ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "earliest",
+            ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "latest",
             ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
             ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to KafkaAvroDeserializer::class.java,
         ) + commonConfig()

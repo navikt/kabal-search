@@ -47,7 +47,7 @@ class EgenAnsattKafkaConsumer(
     )
     fun listen(egenAnsattRecord: ConsumerRecord<String, String>) {
         runCatching {
-//            logger.debug("Reading offset ${egenAnsattRecord.offset()} from partition ${egenAnsattRecord.partition()} on kafka topic ${egenAnsattRecord.topic()}")
+            logger.debug("Reading offset ${egenAnsattRecord.offset()} from partition ${egenAnsattRecord.partition()} on kafka topic ${egenAnsattRecord.topic()}")
             val foedselsnr = egenAnsattRecord.key()
             val egenAnsatt = egenAnsattRecord.value().toEgenAnsatt()
             egenAnsattService.oppdaterEgenAnsatt(foedselsnr, egenAnsatt)

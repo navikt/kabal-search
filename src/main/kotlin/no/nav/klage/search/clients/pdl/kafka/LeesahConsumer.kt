@@ -24,10 +24,10 @@ class LeesahConsumer(
 
     @KafkaListener(
         id = "klageSearchLeesahListener",
-        idIsGroup = true,
+        idIsGroup = false,
         containerFactory = "leesahKafkaListenerContainerFactory",
         topics = ["\${LEESAH_KAFKA_TOPIC}"],
-        properties = ["auto.offset.reset = earliest"],
+        properties = ["auto.offset.reset = latest"],
     )
     fun listen(
         cr: ConsumerRecord<String, GenericRecord>,
