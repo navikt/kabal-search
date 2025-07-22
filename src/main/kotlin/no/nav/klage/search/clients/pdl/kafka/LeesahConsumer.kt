@@ -31,10 +31,12 @@ class LeesahConsumer(
     )
     fun listen(
         cr: ConsumerRecord<String, GenericRecord>,
+        acknowledgment: Acknowledgment,
     ) {
         processPersonhendelse(
             personhendelse = cr.value(),
         )
+        acknowledgment.acknowledge()
     }
 
     fun processPersonhendelse(

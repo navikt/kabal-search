@@ -159,11 +159,6 @@ class AivenKafkaConfiguration(
         return PartitionFinder(egenAnsattConsumerFactory())
     }
 
-//    @Bean
-//    fun leesahFinder(): PartitionFinder<String, GenericRecord> {
-//        return PartitionFinder(leesahConsumerFactory())
-//    }
-
     //Common
     private fun commonConfig() = mapOf(
         BOOTSTRAP_SERVERS_CONFIG to kafkaBrokers
