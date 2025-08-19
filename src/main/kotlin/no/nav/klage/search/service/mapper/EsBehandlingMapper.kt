@@ -25,10 +25,24 @@ class EsBehandlingMapper(
 
     fun mapBehandlingToEsBehandling(behandling: BehandlingSkjemaV2): EsBehandling {
         val sakenGjelderFnr = behandling.sakenGjelder.person!!.fnr
-        val sakenGjelderPersonInfo = pdlFacade.getPersonInfo(sakenGjelderFnr)
-        val erFortrolig = sakenGjelderPersonInfo.harBeskyttelsesbehovFortrolig()
-        val erStrengtFortrolig = sakenGjelderPersonInfo.harBeskyttelsesbehovStrengtFortrolig()
-        val erEgenAnsatt = sakenGjelderFnr.let { egenAnsattService.erEgenAnsatt(it) }
+
+        //TODO: Refactor after including new fields in the BehandlingSkjemaV2
+        val newFieldsAreIncluded = behandling.erFortrolig != null && behandling.erStrengtFortrolig != null && behandling.erEgenAnsatt != null
+
+        var erFortrolig: Boolean
+        var erStrengtFortrolig: Boolean
+        var erEgenAnsatt: Boolean
+
+        if (!newFieldsAreIncluded) {
+            val sakenGjelderPersonInfo = pdlFacade.getPersonInfo(sakenGjelderFnr)
+            erFortrolig = sakenGjelderPersonInfo.harBeskyttelsesbehovFortrolig()
+            erStrengtFortrolig = sakenGjelderPersonInfo.harBeskyttelsesbehovStrengtFortrolig()
+            erEgenAnsatt = sakenGjelderFnr.let { egenAnsattService.erEgenAnsatt(it) }
+        } else {
+            erFortrolig = behandling.erFortrolig
+            erStrengtFortrolig = behandling.erStrengtFortrolig
+            erEgenAnsatt = behandling.erEgenAnsatt
+        }
 
         return EsBehandling(
             behandlingId = behandling.id,

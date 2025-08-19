@@ -35,6 +35,10 @@ class BehandlingSkjemaV2(
     val feilregistrert: LocalDateTime?,
     val rolIdent: String?,
     val rolFlowStateId: String,
+
+    val erFortrolig: Boolean? = null,
+    val erStrengtFortrolig: Boolean? = null,
+    val erEgenAnsatt: Boolean? = null,
 ) {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
