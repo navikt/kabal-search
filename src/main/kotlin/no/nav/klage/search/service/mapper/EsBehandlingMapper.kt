@@ -1,9 +1,7 @@
 package no.nav.klage.search.service.mapper
 
 
-import no.nav.klage.search.clients.egenansatt.EgenAnsattService
 import no.nav.klage.search.clients.klageendret.BehandlingSkjemaV2
-import no.nav.klage.search.clients.pdl.PdlFacade
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import no.nav.klage.search.domain.elasticsearch.EsSaksdokument
 import no.nav.klage.search.domain.elasticsearch.EsStatus
@@ -13,8 +11,6 @@ import org.springframework.stereotype.Service
 
 @Service
 class EsBehandlingMapper(
-    private val pdlFacade: PdlFacade,
-    private val egenAnsattService: EgenAnsattService,
     private val saksbehandlerService: SaksbehandlerService,
 ) {
 
@@ -24,29 +20,9 @@ class EsBehandlingMapper(
     }
 
     fun mapBehandlingToEsBehandling(behandling: BehandlingSkjemaV2): EsBehandling {
-        val sakenGjelderFnr = behandling.sakenGjelder.person!!.fnr
-
-        //TODO: Refactor after including new fields in the BehandlingSkjemaV2
-        val newFieldsAreIncluded = behandling.erFortrolig != null && behandling.erStrengtFortrolig != null && behandling.erEgenAnsatt != null
-
-        var erFortrolig: Boolean
-        var erStrengtFortrolig: Boolean
-        var erEgenAnsatt: Boolean
-
-        if (!newFieldsAreIncluded) {
-            val sakenGjelderPersonInfo = pdlFacade.getPersonInfo(sakenGjelderFnr)
-            erFortrolig = sakenGjelderPersonInfo.harBeskyttelsesbehovFortrolig()
-            erStrengtFortrolig = sakenGjelderPersonInfo.harBeskyttelsesbehovStrengtFortrolig()
-            erEgenAnsatt = sakenGjelderFnr.let { egenAnsattService.erEgenAnsatt(it) }
-        } else {
-            erFortrolig = behandling.erFortrolig
-            erStrengtFortrolig = behandling.erStrengtFortrolig
-            erEgenAnsatt = behandling.erEgenAnsatt
-        }
-
         return EsBehandling(
             behandlingId = behandling.id,
-            sakenGjelderFnr = sakenGjelderFnr,
+            sakenGjelderFnr = behandling.sakenGjelder.person!!.fnr,
             ytelseId = behandling.ytelse.id,
             typeId = behandling.type.id,
             fagsystemId = behandling.sakFagsystem.id,
@@ -67,9 +43,9 @@ class EsBehandlingMapper(
             hjemmelIdList = behandling.hjemler.map { it.id },
 
             saksdokumenter = behandling.saksdokumenter.map { EsSaksdokument(it.journalpostId, it.dokumentInfoId) },
-            egenAnsatt = erEgenAnsatt,
-            fortrolig = erFortrolig,
-            strengtFortrolig = erStrengtFortrolig,
+            egenAnsatt = behandling.erEgenAnsatt,
+            fortrolig = behandling.erFortrolig,
+            strengtFortrolig = behandling.erStrengtFortrolig,
             sattPaaVent = behandling.sattPaaVent,
             sattPaaVentExpires = behandling.sattPaaVentExpires,
             sattPaaVentReasonId = behandling.sattPaaVentReasonId,

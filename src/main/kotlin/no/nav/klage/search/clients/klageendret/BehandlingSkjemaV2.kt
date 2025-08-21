@@ -36,9 +36,9 @@ class BehandlingSkjemaV2(
     val rolIdent: String?,
     val rolFlowStateId: String,
 
-    val erFortrolig: Boolean? = null,
-    val erStrengtFortrolig: Boolean? = null,
-    val erEgenAnsatt: Boolean? = null,
+    val erFortrolig: Boolean,
+    val erStrengtFortrolig: Boolean,
+    val erEgenAnsatt: Boolean,
 ) {
 
     @JsonIgnoreProperties(ignoreUnknown = true)

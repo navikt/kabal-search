@@ -5,7 +5,6 @@ externalHosts:
   - host: hooks.slack.com
   - host: klage-fss-proxy.dev-fss-pub.nais.io
   - host: kafka-schema-registry.nais-q.adeo.no
-  - host: pdl-api.dev-fss-pub.nais.io
 springProfile: dev-gcp
 tenant: trygdeetaten.no
 db_tier: db-custom-1-3840
