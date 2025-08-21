@@ -82,8 +82,6 @@ spec:
       {{/each}}
   envFrom:
     - secret: srvklage-saksbeh
-    - secret: sts-apikey
-    - secret: pdl-apikey
     - secret: slack-url
     - secret: slack-channel-id
     - secret: elastic
