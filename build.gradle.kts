@@ -2,18 +2,18 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val mockkVersion = "1.14.5"
-val tokenValidationVersion = "5.0.34"
+val tokenValidationVersion = "5.0.36"
 val logstashVersion = "8.1"
 val springRetryVersion = "2.0.12"
 val springMockkVersion = "4.0.2"
-val springDocVersion = "2.8.10"
+val springDocVersion = "2.8.13"
 val testContainersVersion = "1.21.3"
 val threeTenExtraVersion = "1.8.0"
 val archunitVersion = "1.4.1"
 val opensearchVersion = "3.2.0"
 val reactorSpringVersion = "1.0.1.RELEASE"
 val kodeverkVersion = "1.11.6"
-val ehcacheVersion = "3.11.0"
+val ehcacheVersion = "3.11.1"
 val logbackSyslog4jVersion = "1.0.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_21
@@ -25,7 +25,7 @@ repositories {
 }
 
 plugins {
-    val kotlinVersion = "2.2.10"
+    val kotlinVersion = "2.2.20"
     id("org.springframework.boot") version "3.5.5"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
