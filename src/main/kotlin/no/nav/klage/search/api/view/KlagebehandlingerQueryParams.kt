@@ -1,6 +1,8 @@
 package no.nav.klage.search.api.view
 
+import no.nav.klage.kodeverk.FlowState
 import java.time.LocalDate
+import java.util.concurrent.Flow
 
 interface CommonOppgaverQueryParams {
     var typer: List<String>
@@ -62,8 +64,8 @@ data class MineUferdigeOppgaverQueryParams(
     override val fristTo: LocalDate?,
     override val varsletFristFrom: LocalDate?,
     override val varsletFristTo: LocalDate?,
-    var muFlowStates: List<String> = emptyList(),
-    var rolFlowStates: List<String> = emptyList(),
+    var muFlowStates: List<FlowState> = emptyList(),
+    var rolFlowStates: List<FlowState> = emptyList(),
 ) : CommonOppgaverQueryParams
 
 data class MineLedigeOppgaverQueryParams(
@@ -139,8 +141,8 @@ data class EnhetensUferdigeOppgaverQueryParams(
     override val varsletFristTo: LocalDate?,
     var tildelteSaksbehandlere: List<String> = emptyList(),
     var medunderskrivere: List<String> = emptyList(),
-    var muFlowStates: List<String> = emptyList(),
-    var rolFlowStates: List<String> = emptyList(),
+    var muFlowStates: List<FlowState> = emptyList(),
+    var rolFlowStates: List<FlowState> = emptyList(),
 ) : CommonOppgaverQueryParams
 
 data class KrolsUferdigeOppgaverQueryParams(
