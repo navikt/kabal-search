@@ -62,6 +62,8 @@ data class MineUferdigeOppgaverQueryParams(
     override val fristTo: LocalDate?,
     override val varsletFristFrom: LocalDate?,
     override val varsletFristTo: LocalDate?,
+    var muFlowStates: List<String> = emptyList(),
+    var rolFlowStates: List<String> = emptyList(),
 ) : CommonOppgaverQueryParams
 
 data class MineLedigeOppgaverQueryParams(

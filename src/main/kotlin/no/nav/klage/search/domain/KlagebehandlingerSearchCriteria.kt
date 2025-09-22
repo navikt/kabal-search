@@ -126,6 +126,9 @@ data class UferdigeOppgaverSearchCriteria(
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
     override val kanBehandleStrengtFortrolig: Boolean,
+
+    val muFlowStates: List<FlowState>,
+    val rolFlowStates: List<FlowState>,
 ) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria
 
 data class OppgaverPaaVentSearchCriteria(
