@@ -530,6 +530,18 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
         baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
+        val innerQuery = QueryBuilders.boolQuery()
+
+        if (muFlowStates.isNotEmpty()) {
+            innerQuery.must(beMUFlowStates(muFlowStates))
+        }
+
+        if (rolFlowStates.isNotEmpty()) {
+            innerQuery.must(beROLFlowStates(rolFlowStates))
+        }
+
+        baseQuery.must(innerQuery)
+
         teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
