@@ -64,8 +64,7 @@ data class MineUferdigeOppgaverQueryParams(
     override val fristTo: LocalDate?,
     override val varsletFristFrom: LocalDate?,
     override val varsletFristTo: LocalDate?,
-    var muFlowStates: List<FlowState> = emptyList(),
-    var rolFlowStates: List<FlowState> = emptyList(),
+    var customTags: List<CustomTag> = emptyList(),
 ) : CommonOppgaverQueryParams
 
 data class MineLedigeOppgaverQueryParams(
@@ -141,8 +140,7 @@ data class EnhetensUferdigeOppgaverQueryParams(
     override val varsletFristTo: LocalDate?,
     var tildelteSaksbehandlere: List<String> = emptyList(),
     var medunderskrivere: List<String> = emptyList(),
-    var muFlowStates: List<FlowState> = emptyList(),
-    var rolFlowStates: List<FlowState> = emptyList(),
+    var customTags: List<CustomTag> = emptyList(),
 ) : CommonOppgaverQueryParams
 
 data class KrolsUferdigeOppgaverQueryParams(
@@ -178,4 +176,14 @@ enum class Rekkefoelge {
 
 enum class Sortering {
     FRIST, MOTTATT, ALDER, PAA_VENT_FROM, PAA_VENT_TO, AVSLUTTET_AV_SAKSBEHANDLER, RETURNERT_FRA_ROL, VARSLET_FRIST
+}
+
+enum class CustomTag {
+    SENDT_TIL_MU,
+    RETURNERT_FRA_MU,
+    SENDT_TIL_FELLES_ROL_KOE,
+    SENDT_TIL_ROL,
+    RETURNERT_FRA_ROL,
+    MU,
+    ROL,
 }

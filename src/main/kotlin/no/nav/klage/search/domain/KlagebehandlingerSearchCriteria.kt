@@ -5,6 +5,7 @@ import no.nav.klage.kodeverk.SattPaaVentReason
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.kodeverk.hjemmel.Hjemmel
+import no.nav.klage.search.api.view.CustomTag
 import java.time.LocalDate
 
 enum class SortField {
@@ -127,8 +128,7 @@ data class UferdigeOppgaverSearchCriteria(
     override val kanBehandleFortrolig: Boolean,
     override val kanBehandleStrengtFortrolig: Boolean,
 
-    val muFlowStates: List<FlowState>,
-    val rolFlowStates: List<FlowState>,
+    val customTags: List<CustomTag>,
 ) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria
 
 data class OppgaverPaaVentSearchCriteria(
@@ -241,8 +241,7 @@ data class EnhetensUferdigeOppgaverSearchCriteria(
     val saksbehandlere: List<String>,
     val medunderskrivere: List<String>,
 
-    val muFlowStates: List<FlowState>,
-    val rolFlowStates: List<FlowState>,
+    val customTags: List<CustomTag>,
 
     override val sortField: SortField,
     override val order: Order,

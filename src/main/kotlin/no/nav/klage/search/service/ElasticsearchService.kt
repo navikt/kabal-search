@@ -4,6 +4,7 @@ import no.nav.klage.kodeverk.FlowState
 import no.nav.klage.kodeverk.SattPaaVentReason
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.ytelse.Ytelse
+import no.nav.klage.search.api.view.CustomTag
 import no.nav.klage.search.domain.*
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import no.nav.klage.search.domain.elasticsearch.EsStatus
@@ -530,17 +531,11 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
         baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
-        val innerQuery = QueryBuilders.boolQuery()
-
-        if (muFlowStates.isNotEmpty()) {
-            innerQuery.must(beMUFlowStates(muFlowStates))
+        if (customTags.isNotEmpty()) {
+            val innerQuery = QueryBuilders.boolQuery()
+            innerQuery.must(createQueryForCustomTags(customTags, navIdent))
+            baseQuery.must(innerQuery)
         }
-
-        if (rolFlowStates.isNotEmpty()) {
-            innerQuery.must(beROLFlowStates(rolFlowStates))
-        }
-
-        baseQuery.must(innerQuery)
 
         teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -663,12 +658,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
             innerQuery.must(beTildeltMedunderskrivere(medunderskrivere))
         }
 
-        if (muFlowStates.isNotEmpty()) {
-            innerQuery.must(beMUFlowStates(muFlowStates))
-        }
-
-        if (rolFlowStates.isNotEmpty()) {
-            innerQuery.must(beROLFlowStates(rolFlowStates))
+        if (customTags.isNotEmpty()) {
+            innerQuery.must(createQueryForCustomTags(customTags, null))
         }
 
         baseQuery.must(innerQuery)
@@ -931,24 +922,52 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         } else null
     }
 
-    private fun beROLFlowStates(rolFlowStates: List<FlowState>): BoolQueryBuilder? {
-        return if (rolFlowStates.isNotEmpty()) {
-            val innerQueryMedunderskriver = QueryBuilders.boolQuery()
-            rolFlowStates.forEach {
-                innerQueryMedunderskriver.should(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, it.id))
+    private fun createQueryForCustomTags(customTags: List<CustomTag>, navIdent: String?): BoolQueryBuilder? {
+        return if (customTags.isNotEmpty()) {
+            val innerQuery = QueryBuilders.boolQuery()
+            customTags.forEach { customTag ->
+                innerQuery.should(createQueryForCustomTag(customTag, navIdent))
             }
-            innerQueryMedunderskriver
+            innerQuery
         } else null
     }
 
-    private fun beMUFlowStates(muFlowStates: List<FlowState>): BoolQueryBuilder? {
-        return if (muFlowStates.isNotEmpty()) {
-            val innerQueryMedunderskriver = QueryBuilders.boolQuery()
-            muFlowStates.forEach {
-                innerQueryMedunderskriver.should(QueryBuilders.termQuery(EsBehandling::medunderskriverFlowStateId.name, it.id))
+    private fun createQueryForCustomTag(customTag: CustomTag, navIdent: String?): BoolQueryBuilder? {
+        val innerQuery = QueryBuilders.boolQuery()
+        return when (customTag) {
+            CustomTag.SENDT_TIL_MU -> {
+                innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverFlowStateId.name, FlowState.SENT.id))
+                navIdent?.let { innerQuery.mustNot(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, navIdent)) }
+                //Spesifiserer ikke at medunderskriverident.name må være null, siden det skal være et umulig tilfelle.
             }
-            innerQueryMedunderskriver
-        } else null
+            CustomTag.RETURNERT_FRA_MU -> {
+                innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverFlowStateId.name, FlowState.RETURNED.id))
+            }
+            CustomTag.MU -> {
+                if (navIdent != null) {
+                    innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverFlowStateId.name, FlowState.SENT.id))
+                    innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, navIdent))
+                } else null
+            }
+            CustomTag.SENDT_TIL_FELLES_ROL_KOE -> {
+                innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.SENT.id))
+                innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolIdent.name, null))
+            }
+            CustomTag.SENDT_TIL_ROL -> {
+                innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.SENT.id))
+                innerQuery.mustNot(QueryBuilders.termQuery(EsBehandling::rolIdent.name, null))
+                navIdent?.let { innerQuery.mustNot(QueryBuilders.termQuery(EsBehandling::rolIdent.name, navIdent)) }
+            }
+            CustomTag.RETURNERT_FRA_ROL -> {
+                innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.RETURNED.id))
+            }
+            CustomTag.ROL -> {
+                if (navIdent != null) {
+                    innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.SENT.id))
+                    innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolIdent.name, navIdent))
+                } else null
+            }
+        }
     }
 
     private fun beTildeltSaksbehandler(navIdent: String) =

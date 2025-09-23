@@ -104,8 +104,7 @@ class BehandlingerSearchCriteriaMapper(
         fristTo = mapFristTo(queryParams.fristTo),
         varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
         varsletFristTo = mapFristTo(queryParams.varsletFristTo),
-        muFlowStates = queryParams.muFlowStates,
-        rolFlowStates = queryParams.rolFlowStates,
+        customTags = queryParams.customTags,
     )
 
     fun toOppgaverPaaVentSearchCriteria(
@@ -201,8 +200,7 @@ class BehandlingerSearchCriteriaMapper(
         fristTo = mapFristTo(queryParams.fristTo),
         varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
         varsletFristTo = mapFristTo(queryParams.varsletFristTo),
-        muFlowStates = queryParams.muFlowStates,
-        rolFlowStates = queryParams.rolFlowStates,
+        customTags = queryParams.customTags,
     )
 
     fun toKrolsUferdigeOppgaverSearchCriteria(
