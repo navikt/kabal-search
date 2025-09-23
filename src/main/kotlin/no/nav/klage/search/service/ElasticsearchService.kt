@@ -4,7 +4,6 @@ import no.nav.klage.kodeverk.FlowState
 import no.nav.klage.kodeverk.SattPaaVentReason
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.ytelse.Ytelse
-import no.nav.klage.search.api.view.CustomTag
 import no.nav.klage.search.domain.*
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import no.nav.klage.search.domain.elasticsearch.EsStatus
