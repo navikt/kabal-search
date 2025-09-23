@@ -10,7 +10,7 @@ enum class SortField {
     FRIST, MOTTATT, PAA_VENT_FROM, PAA_VENT_TO, AVSLUTTET_AV_SAKSBEHANDLER, RETURNERT_FRA_ROL, VARSLET_FRIST
 }
 
-enum class CustomTag {
+enum class HelperStatus {
     SENDT_TIL_MU,
     RETURNERT_FRA_MU,
     SENDT_TIL_FELLES_ROL_KOE,
@@ -136,7 +136,7 @@ data class UferdigeOppgaverSearchCriteria(
     override val kanBehandleFortrolig: Boolean,
     override val kanBehandleStrengtFortrolig: Boolean,
 
-    val customTags: List<CustomTag>,
+    val helperStatusList: List<HelperStatus>,
 ) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria
 
 data class OppgaverPaaVentSearchCriteria(
@@ -249,7 +249,7 @@ data class EnhetensUferdigeOppgaverSearchCriteria(
     val saksbehandlere: List<String>,
     val medunderskrivere: List<String>,
 
-    val customTags: List<CustomTag>,
+    val helperStatusList: List<HelperStatus>,
 
     override val sortField: SortField,
     override val order: Order,

@@ -1,9 +1,7 @@
 package no.nav.klage.search.api.view
 
-import no.nav.klage.kodeverk.FlowState
-import no.nav.klage.search.domain.CustomTag
+import no.nav.klage.search.domain.HelperStatus
 import java.time.LocalDate
-import java.util.concurrent.Flow
 
 interface CommonOppgaverQueryParams {
     var typer: List<String>
@@ -65,7 +63,7 @@ data class MineUferdigeOppgaverQueryParams(
     override val fristTo: LocalDate?,
     override val varsletFristFrom: LocalDate?,
     override val varsletFristTo: LocalDate?,
-    var customTags: List<CustomTag> = emptyList(),
+    var helperStatusList: List<HelperStatus> = emptyList(),
 ) : CommonOppgaverQueryParams
 
 data class MineLedigeOppgaverQueryParams(
@@ -141,7 +139,7 @@ data class EnhetensUferdigeOppgaverQueryParams(
     override val varsletFristTo: LocalDate?,
     var tildelteSaksbehandlere: List<String> = emptyList(),
     var medunderskrivere: List<String> = emptyList(),
-    var customTags: List<CustomTag> = emptyList(),
+    var helperStatusList: List<HelperStatus> = emptyList(),
 ) : CommonOppgaverQueryParams
 
 data class KrolsUferdigeOppgaverQueryParams(

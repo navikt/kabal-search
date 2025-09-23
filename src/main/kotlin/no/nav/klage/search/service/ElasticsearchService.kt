@@ -530,9 +530,9 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
         baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
-        if (customTags.isNotEmpty()) {
+        if (helperStatusList.isNotEmpty()) {
             val innerQuery = QueryBuilders.boolQuery()
-            innerQuery.must(createQueryForCustomTags(customTags, navIdent))
+            innerQuery.must(createQueryForHelperStatusList(helperStatusList, navIdent))
             baseQuery.must(innerQuery)
         }
 
@@ -657,8 +657,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
             innerQuery.must(beTildeltMedunderskrivere(medunderskrivere))
         }
 
-        if (customTags.isNotEmpty()) {
-            innerQuery.must(createQueryForCustomTags(customTags, null))
+        if (helperStatusList.isNotEmpty()) {
+            innerQuery.must(createQueryForHelperStatusList(helperStatusList, null))
         }
 
         baseQuery.must(innerQuery)
@@ -921,50 +921,50 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         } else null
     }
 
-    private fun createQueryForCustomTags(customTags: List<CustomTag>, navIdent: String?): BoolQueryBuilder? {
-        return if (customTags.isNotEmpty()) {
+    private fun createQueryForHelperStatusList(helperStatusList: List<HelperStatus>, navIdent: String?): BoolQueryBuilder? {
+        return if (helperStatusList.isNotEmpty()) {
             val innerQuery = QueryBuilders.boolQuery()
-            customTags.forEach { customTag ->
-                innerQuery.should(createQueryForCustomTag(customTag, navIdent))
+            helperStatusList.forEach { helperStatus ->
+                innerQuery.should(createQueryForHelperStatus(helperStatus, navIdent))
             }
             innerQuery
         } else null
     }
 
-    private fun createQueryForCustomTag(customTag: CustomTag, navIdent: String?): BoolQueryBuilder? {
+    private fun createQueryForHelperStatus(helperStatus: HelperStatus, navIdent: String?): BoolQueryBuilder? {
         val innerQuery = QueryBuilders.boolQuery()
-        when (customTag) {
-            CustomTag.SENDT_TIL_MU -> {
+        when (helperStatus) {
+            HelperStatus.SENDT_TIL_MU -> {
                 innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverFlowStateId.name, FlowState.SENT.id))
                 navIdent?.let { innerQuery.mustNot(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, navIdent)) }
                 //Spesifiserer ikke at medunderskriverident.name må være null, siden det skal være et umulig tilfelle.
             }
-            CustomTag.RETURNERT_FRA_MU -> {
+            HelperStatus.RETURNERT_FRA_MU -> {
                 innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverFlowStateId.name, FlowState.RETURNED.id))
             }
-            CustomTag.MU -> {
+            HelperStatus.MU -> {
                 if (navIdent != null) {
                     innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverFlowStateId.name, FlowState.SENT.id))
                     innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, navIdent))
                 }
             }
-            CustomTag.SENDT_TIL_FELLES_ROL_KOE -> {
+            HelperStatus.SENDT_TIL_FELLES_ROL_KOE -> {
                 innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.SENT.id))
                 innerQuery.mustNot(QueryBuilders.wildcardQuery(EsBehandling::rolIdent.name, "*"))
             }
-            CustomTag.SENDT_TIL_ROL -> {
+            HelperStatus.SENDT_TIL_ROL -> {
                 innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.SENT.id))
                 innerQuery.must(QueryBuilders.wildcardQuery(EsBehandling::rolIdent.name, "*"))
                 navIdent?.let { innerQuery.mustNot(QueryBuilders.termQuery(EsBehandling::rolIdent.name, navIdent)) }
             }
-            CustomTag.RETURNERT_FRA_ROL -> {
+            HelperStatus.RETURNERT_FRA_ROL -> {
                 innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.RETURNED.id))
             }
-            CustomTag.ROL -> {
+            HelperStatus.ROL -> {
                 if (navIdent != null) {
                     innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.SENT.id))
                     innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolIdent.name, navIdent))
-                } 
+                }
             }
         }
         return innerQuery
