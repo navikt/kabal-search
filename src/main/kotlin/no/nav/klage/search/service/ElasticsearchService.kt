@@ -933,7 +933,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
 
     private fun createQueryForCustomTag(customTag: CustomTag, navIdent: String?): BoolQueryBuilder? {
         val innerQuery = QueryBuilders.boolQuery()
-        return when (customTag) {
+        when (customTag) {
             CustomTag.SENDT_TIL_MU -> {
                 innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverFlowStateId.name, FlowState.SENT.id))
                 navIdent?.let { innerQuery.mustNot(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, navIdent)) }
@@ -946,7 +946,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                 if (navIdent != null) {
                     innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverFlowStateId.name, FlowState.SENT.id))
                     innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, navIdent))
-                } else null
+                }
             }
             CustomTag.SENDT_TIL_FELLES_ROL_KOE -> {
                 innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.SENT.id))
@@ -964,9 +964,10 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                 if (navIdent != null) {
                     innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.SENT.id))
                     innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolIdent.name, navIdent))
-                } else null
+                } 
             }
         }
+        return innerQuery
     }
 
     private fun beTildeltSaksbehandler(navIdent: String) =
