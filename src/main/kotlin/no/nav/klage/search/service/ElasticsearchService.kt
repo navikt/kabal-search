@@ -950,11 +950,11 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
             }
             CustomTag.SENDT_TIL_FELLES_ROL_KOE -> {
                 innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.SENT.id))
-                innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolIdent.name, null))
+                innerQuery.mustNot(QueryBuilders.wildcardQuery(EsBehandling::rolIdent.name, "*"))
             }
             CustomTag.SENDT_TIL_ROL -> {
                 innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.SENT.id))
-                innerQuery.mustNot(QueryBuilders.termQuery(EsBehandling::rolIdent.name, null))
+                innerQuery.must(QueryBuilders.wildcardQuery(EsBehandling::rolIdent.name, "*"))
                 navIdent?.let { innerQuery.mustNot(QueryBuilders.termQuery(EsBehandling::rolIdent.name, navIdent)) }
             }
             CustomTag.RETURNERT_FRA_ROL -> {
