@@ -1,14 +1,23 @@
 package no.nav.klage.search.domain
 
-import no.nav.klage.kodeverk.FlowState
 import no.nav.klage.kodeverk.SattPaaVentReason
 import no.nav.klage.kodeverk.Type
-import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.kodeverk.hjemmel.Hjemmel
+import no.nav.klage.kodeverk.ytelse.Ytelse
 import java.time.LocalDate
 
 enum class SortField {
     FRIST, MOTTATT, PAA_VENT_FROM, PAA_VENT_TO, AVSLUTTET_AV_SAKSBEHANDLER, RETURNERT_FRA_ROL, VARSLET_FRIST
+}
+
+enum class HelperStatus {
+    SENDT_TIL_MU,
+    RETURNERT_FRA_MU,
+    SENDT_TIL_FELLES_ROL_KOE,
+    SENDT_TIL_ROL,
+    RETURNERT_FRA_ROL,
+    MU,
+    ROL,
 }
 
 enum class Order {
@@ -126,6 +135,8 @@ data class UferdigeOppgaverSearchCriteria(
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
     override val kanBehandleStrengtFortrolig: Boolean,
+
+    val helperStatusList: List<HelperStatus>,
 ) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria
 
 data class OppgaverPaaVentSearchCriteria(
@@ -238,8 +249,7 @@ data class EnhetensUferdigeOppgaverSearchCriteria(
     val saksbehandlere: List<String>,
     val medunderskrivere: List<String>,
 
-    val muFlowStates: List<FlowState>,
-    val rolFlowStates: List<FlowState>,
+    val helperStatusList: List<HelperStatus>,
 
     override val sortField: SortField,
     override val order: Order,

@@ -530,6 +530,12 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
         baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
 
+        if (helperStatusList.isNotEmpty()) {
+            val innerQuery = QueryBuilders.boolQuery()
+            innerQuery.must(createQueryForHelperStatusList(helperStatusList, navIdent))
+            baseQuery.must(innerQuery)
+        }
+
         teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
@@ -651,12 +657,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
             innerQuery.must(beTildeltMedunderskrivere(medunderskrivere))
         }
 
-        if (muFlowStates.isNotEmpty()) {
-            innerQuery.must(beMUFlowStates(muFlowStates))
-        }
-
-        if (rolFlowStates.isNotEmpty()) {
-            innerQuery.must(beROLFlowStates(rolFlowStates))
+        if (helperStatusList.isNotEmpty()) {
+            innerQuery.must(createQueryForHelperStatusList(helperStatusList, null))
         }
 
         baseQuery.must(innerQuery)
@@ -919,24 +921,53 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         } else null
     }
 
-    private fun beROLFlowStates(rolFlowStates: List<FlowState>): BoolQueryBuilder? {
-        return if (rolFlowStates.isNotEmpty()) {
-            val innerQueryMedunderskriver = QueryBuilders.boolQuery()
-            rolFlowStates.forEach {
-                innerQueryMedunderskriver.should(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, it.id))
+    private fun createQueryForHelperStatusList(helperStatusList: List<HelperStatus>, navIdent: String?): BoolQueryBuilder? {
+        return if (helperStatusList.isNotEmpty()) {
+            val innerQuery = QueryBuilders.boolQuery()
+            helperStatusList.forEach { helperStatus ->
+                innerQuery.should(createQueryForHelperStatus(helperStatus, navIdent))
             }
-            innerQueryMedunderskriver
+            innerQuery
         } else null
     }
 
-    private fun beMUFlowStates(muFlowStates: List<FlowState>): BoolQueryBuilder? {
-        return if (muFlowStates.isNotEmpty()) {
-            val innerQueryMedunderskriver = QueryBuilders.boolQuery()
-            muFlowStates.forEach {
-                innerQueryMedunderskriver.should(QueryBuilders.termQuery(EsBehandling::medunderskriverFlowStateId.name, it.id))
+    private fun createQueryForHelperStatus(helperStatus: HelperStatus, navIdent: String?): BoolQueryBuilder? {
+        val innerQuery = QueryBuilders.boolQuery()
+        when (helperStatus) {
+            HelperStatus.SENDT_TIL_MU -> {
+                innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverFlowStateId.name, FlowState.SENT.id))
+                navIdent?.let { innerQuery.mustNot(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, navIdent)) }
+                //Spesifiserer ikke at medunderskriverident.name må være null, siden det skal være et umulig tilfelle.
             }
-            innerQueryMedunderskriver
-        } else null
+            HelperStatus.RETURNERT_FRA_MU -> {
+                innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverFlowStateId.name, FlowState.RETURNED.id))
+            }
+            HelperStatus.MU -> {
+                if (navIdent != null) {
+                    innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverFlowStateId.name, FlowState.SENT.id))
+                    innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, navIdent))
+                }
+            }
+            HelperStatus.SENDT_TIL_FELLES_ROL_KOE -> {
+                innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.SENT.id))
+                innerQuery.mustNot(QueryBuilders.wildcardQuery(EsBehandling::rolIdent.name, "*"))
+            }
+            HelperStatus.SENDT_TIL_ROL -> {
+                innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.SENT.id))
+                innerQuery.must(QueryBuilders.wildcardQuery(EsBehandling::rolIdent.name, "*"))
+                navIdent?.let { innerQuery.mustNot(QueryBuilders.termQuery(EsBehandling::rolIdent.name, navIdent)) }
+            }
+            HelperStatus.RETURNERT_FRA_ROL -> {
+                innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.RETURNED.id))
+            }
+            HelperStatus.ROL -> {
+                if (navIdent != null) {
+                    innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.SENT.id))
+                    innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolIdent.name, navIdent))
+                }
+            }
+        }
+        return innerQuery
     }
 
     private fun beTildeltSaksbehandler(navIdent: String) =

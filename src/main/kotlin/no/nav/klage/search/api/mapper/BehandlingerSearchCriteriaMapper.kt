@@ -1,6 +1,5 @@
 package no.nav.klage.search.api.mapper
 
-import no.nav.klage.kodeverk.FlowState
 import no.nav.klage.kodeverk.SattPaaVentReason
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.ytelse.Ytelse
@@ -104,6 +103,7 @@ class BehandlingerSearchCriteriaMapper(
         fristTo = mapFristTo(queryParams.fristTo),
         varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
         varsletFristTo = mapFristTo(queryParams.varsletFristTo),
+        helperStatusList = queryParams.helperStatusList,
     )
 
     fun toOppgaverPaaVentSearchCriteria(
@@ -199,8 +199,7 @@ class BehandlingerSearchCriteriaMapper(
         fristTo = mapFristTo(queryParams.fristTo),
         varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
         varsletFristTo = mapFristTo(queryParams.varsletFristTo),
-        muFlowStates = queryParams.muFlowStates.map { FlowState.of(it) },
-        rolFlowStates = queryParams.rolFlowStates.map { FlowState.of(it) },
+        helperStatusList = queryParams.helperStatusList,
     )
 
     fun toKrolsUferdigeOppgaverSearchCriteria(
