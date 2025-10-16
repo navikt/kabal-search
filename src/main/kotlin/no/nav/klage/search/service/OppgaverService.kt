@@ -103,6 +103,7 @@ class OppgaverService(
             Type.ANKE.id,
             Type.BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET.id,
             Type.OMGJOERINGSKRAV.id,
+            Type.BEGJAERING_OM_GJENOPPTAK.id,
         )
     }
 
