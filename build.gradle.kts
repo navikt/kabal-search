@@ -49,6 +49,7 @@ dependencies {
     implementation("org.ehcache:ehcache:$ehcacheVersion")
     implementation("org.opensearch.client:opensearch-rest-high-level-client:$opensearchVersion")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocVersion")
+    implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
     implementation("no.nav.security:token-validation-spring:$tokenValidationVersion")
     implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
     implementation("no.nav.klage:klage-kodeverk:$kodeverkVersion") {
