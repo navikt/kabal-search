@@ -45,6 +45,7 @@ dependencies {
     implementation("org.springframework.kafka:spring-kafka")
 
     //Not managed by Spring:
+    implementation("io.micrometer:micrometer-tracing-bridge-brave")
     implementation("com.papertrailapp:logback-syslog4j:$logbackSyslog4jVersion")
     implementation("org.ehcache:ehcache:$ehcacheVersion")
     implementation("org.opensearch.client:opensearch-rest-high-level-client:$opensearchVersion")
