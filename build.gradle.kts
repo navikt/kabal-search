@@ -42,13 +42,21 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.kafka:spring-kafka")
+    implementation("javax.cache:cache-api")
+    implementation("io.micrometer:micrometer-registry-prometheus")
+    implementation("io.micrometer:micrometer-tracing-bridge-brave")
+    implementation("ch.qos.logback:logback-classic")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     //Not managed by Spring:
-    implementation("io.micrometer:micrometer-tracing-bridge-brave")
     implementation("com.papertrailapp:logback-syslog4j:$logbackSyslog4jVersion")
     implementation("org.ehcache:ehcache:$ehcacheVersion")
     implementation("org.opensearch.client:opensearch-rest-high-level-client:$opensearchVersion")
+    implementation("org.threeten:threeten-extra:$threeTenExtraVersion")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
     implementation("no.nav.security:token-validation-spring:$tokenValidationVersion")
@@ -56,6 +64,7 @@ dependencies {
     implementation("no.nav.klage:klage-kodeverk:$kodeverkVersion") {
         exclude(group = "jakarta.persistence")
     }
+    implementation("org.springframework.retry:spring-retry:$springRetryVersion")
 
     //Test
     //Managed by Spring:
@@ -63,10 +72,15 @@ dependencies {
         exclude(group = "org.junit.vintage")
         exclude(group = "org.mockito")
     }
+    testImplementation("org.springframework.kafka:spring-kafka-test")
 
     //Not managed by Spring:
+    testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
+    testImplementation("org.testcontainers:elasticsearch:$testContainersVersion")
     testImplementation("com.tngtech.archunit:archunit-junit5:$archunitVersion")
+    testImplementation("io.mockk:mockk:$mockkVersion")
+    testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
 }
 
 idea {
