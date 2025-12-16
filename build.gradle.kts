@@ -75,8 +75,8 @@ dependencies {
 
     //Not managed by Spring:
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
-    testImplementation("org.testcontainers:testcontainers-junit-jupiter:$testContainersVersion")
-    testImplementation("org.testcontainers:testcontainers-elasticsearch:$testContainersVersion")
+    testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
+    testImplementation("org.testcontainers:elasticsearch:$testContainersVersion")
     testImplementation("com.tngtech.archunit:archunit-junit5:$archunitVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
