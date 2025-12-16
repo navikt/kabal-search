@@ -7,7 +7,7 @@ val logstashVersion = "9.0"
 val springRetryVersion = "2.0.12"
 val springMockkVersion = "5.0.1"
 val springDocVersion = "3.0.0"
-val testContainersVersion = "1.21.3"
+val testContainersVersion = "2.0.2"
 val threeTenExtraVersion = "1.8.0"
 val archunitVersion = "1.4.1"
 val opensearchVersion = "3.3.2"
@@ -75,8 +75,8 @@ dependencies {
 
     //Not managed by Spring:
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
-    testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
-    testImplementation("org.testcontainers:elasticsearch:$testContainersVersion")
+    testImplementation("org.testcontainers:testcontainers-junit-jupiter:$testContainersVersion")
+    testImplementation("org.testcontainers:testcontainers-elasticsearch:$testContainersVersion")
     testImplementation("com.tngtech.archunit:archunit-junit5:$archunitVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
