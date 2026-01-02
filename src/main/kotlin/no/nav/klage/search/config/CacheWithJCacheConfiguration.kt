@@ -38,7 +38,7 @@ class CacheWithJCacheConfiguration(private val environment: Environment) : JCach
             .setStatisticsEnabled(true)
 
     private fun commonDuration() =
-        if (environment.activeProfiles.contains("prod-gcp")) {
+        if (environment.activeProfiles.contains("prod")) {
             480L
         } else {
             10L
