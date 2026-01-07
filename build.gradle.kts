@@ -15,6 +15,7 @@ val reactorSpringVersion = "1.0.1.RELEASE"
 val kodeverkVersion = "1.12.16"
 val ehcacheVersion = "3.11.1"
 val logbackSyslog4jVersion = "1.0.0"
+val otelVersion = "1.53.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_21
 
@@ -46,8 +47,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.kafka:spring-kafka")
     implementation("javax.cache:cache-api")
-    implementation("io.micrometer:micrometer-registry-prometheus")
-    implementation("io.micrometer:micrometer-tracing-bridge-brave")
     implementation("ch.qos.logback:logback-classic")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
@@ -64,6 +63,7 @@ dependencies {
         exclude(group = "jakarta.persistence")
     }
     implementation("org.springframework.retry:spring-retry:$springRetryVersion")
+    implementation("io.opentelemetry:opentelemetry-api:${otelVersion}")
 
     //Test
     //Managed by Spring:
