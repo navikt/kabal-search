@@ -51,6 +51,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     //Not managed by Spring:
+    implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("com.papertrailapp:logback-syslog4j:$logbackSyslog4jVersion")
     implementation("org.ehcache:ehcache:$ehcacheVersion")
     implementation("org.opensearch.client:opensearch-rest-high-level-client:$opensearchVersion")
