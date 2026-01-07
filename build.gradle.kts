@@ -2,12 +2,12 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val mockkVersion = "1.14.7"
-val tokenValidationVersion = "5.0.36"
+val tokenValidationVersion = "6.0.0"
 val logstashVersion = "9.0"
 val springRetryVersion = "2.0.12"
 val springMockkVersion = "5.0.1"
 val springDocVersion = "3.0.0"
-val testContainersVersion = "1.21.4"
+val testContainersVersion = "2.0.3"
 val threeTenExtraVersion = "1.8.0"
 val archunitVersion = "1.4.1"
 val opensearchVersion = "3.4.0"
@@ -44,7 +44,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-cache")
-    implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.kafka:spring-kafka")
     implementation("javax.cache:cache-api")
     implementation("io.micrometer:micrometer-registry-prometheus")
@@ -74,10 +73,9 @@ dependencies {
     }
     testImplementation("org.springframework.kafka:spring-kafka-test")
 
-    //Not managed by Spring:
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
-    testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
-    testImplementation("org.testcontainers:elasticsearch:$testContainersVersion")
+    testImplementation("org.testcontainers:testcontainers-junit-jupiter:$testContainersVersion")
+    testImplementation("org.testcontainers:testcontainers-elasticsearch:$testContainersVersion")
     testImplementation("com.tngtech.archunit:archunit-junit5:$archunitVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.ninja-squad:springmockk:$springMockkVersion")

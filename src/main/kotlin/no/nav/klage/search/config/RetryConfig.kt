@@ -1,8 +1,8 @@
 package no.nav.klage.search.config
 
 import org.springframework.context.annotation.Configuration
-import org.springframework.retry.annotation.EnableRetry
+import org.springframework.resilience.annotation.EnableResilientMethods
 
 @Configuration
-@EnableRetry
+@EnableResilientMethods
 class RetryConfig

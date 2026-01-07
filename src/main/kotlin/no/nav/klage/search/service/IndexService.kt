@@ -4,7 +4,7 @@ import no.nav.klage.search.clients.klageendret.BehandlingSkjemaV2
 import no.nav.klage.search.service.mapper.EsBehandlingMapper
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getTeamLogger
-import org.springframework.retry.annotation.Retryable
+import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Service
 import java.util.*
 
