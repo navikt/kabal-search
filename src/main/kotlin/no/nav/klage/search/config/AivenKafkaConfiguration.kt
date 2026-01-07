@@ -9,10 +9,10 @@ import org.apache.kafka.common.serialization.StringDeserializer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
 import org.springframework.kafka.core.ConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
-import org.springframework.kafka.listener.CommonLoggingErrorHandler
 import org.springframework.kafka.listener.ContainerProperties.AckMode
 import org.springframework.kafka.listener.DefaultErrorHandler
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
@@ -21,6 +21,7 @@ import java.io.Serializable
 import java.time.Duration
 
 
+@EnableKafka
 @Configuration
 class AivenKafkaConfiguration(
     @Value("\${KAFKA_BROKERS}")
@@ -38,27 +39,10 @@ class AivenKafkaConfiguration(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    //Consumer beans
-    @Bean
-    fun egenAnsattKafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String> {
-        val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
-        factory.consumerFactory = egenAnsattConsumerFactory()
-        factory.containerProperties.ackMode = AckMode.MANUAL_IMMEDIATE
-        factory.containerProperties.idleEventInterval = 3000L
-        factory.setCommonErrorHandler(CommonLoggingErrorHandler())
-
-        //Retry consumer/listener even if authorization fails at first
-        factory.setContainerCustomizer { container ->
-            container.containerProperties.setAuthExceptionRetryInterval(Duration.ofSeconds(10L))
-        }
-
-        return factory
-    }
-
     @Bean
     fun behandlingEndretKafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String> {
         val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
-        factory.consumerFactory = klageEndretConsumerFactory()
+        factory.setConsumerFactory(klageEndretConsumerFactory())
 
         factory.containerProperties.ackMode = AckMode.RECORD
         factory.setCommonErrorHandler(DefaultErrorHandler(FixedBackOff(1000L, 3L)))
@@ -70,11 +54,6 @@ class AivenKafkaConfiguration(
         }
 
         return factory
-    }
-
-    @Bean
-    fun egenAnsattConsumerFactory(): ConsumerFactory<String, String> {
-        return DefaultKafkaConsumerFactory(getConsumerProps())
     }
 
     @Bean
@@ -94,11 +73,6 @@ class AivenKafkaConfiguration(
         ) + commonConfig()
     }
 
-    @Bean
-    fun egenAnsattFinder(): PartitionFinder<String, String> {
-        return PartitionFinder(egenAnsattConsumerFactory())
-    }
-
     //Common
     private fun commonConfig() = mapOf(
         BOOTSTRAP_SERVERS_CONFIG to kafkaBrokers
@@ -115,15 +89,4 @@ class AivenKafkaConfiguration(
         SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG to kafkaCredstorePassword,
         SslConfigs.SSL_KEY_PASSWORD_CONFIG to kafkaCredstorePassword,
     )
-
-}
-
-class PartitionFinder<K, V>(private val consumerFactory: ConsumerFactory<K, V>) {
-    fun partitions(topic: String): Array<String> {
-        consumerFactory.createConsumer().use { consumer ->
-            return consumer.partitionsFor(topic)
-                .map { pi -> "" + pi.partition() }
-                .toTypedArray()
-        }
-    }
 }

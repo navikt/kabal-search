@@ -1,20 +1,21 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val mockkVersion = "1.14.5"
-val tokenValidationVersion = "5.0.36"
-val logstashVersion = "8.1"
+val mockkVersion = "1.14.7"
+val tokenValidationVersion = "6.0.0"
+val logstashVersion = "9.0"
 val springRetryVersion = "2.0.12"
-val springMockkVersion = "4.0.2"
-val springDocVersion = "2.8.13"
-val testContainersVersion = "1.21.3"
+val springMockkVersion = "5.0.1"
+val springDocVersion = "3.0.0"
+val testContainersVersion = "2.0.3"
 val threeTenExtraVersion = "1.8.0"
 val archunitVersion = "1.4.1"
-val opensearchVersion = "3.2.0"
+val opensearchVersion = "3.4.0"
 val reactorSpringVersion = "1.0.1.RELEASE"
-val kodeverkVersion = "1.12.15"
+val kodeverkVersion = "1.12.16"
 val ehcacheVersion = "3.11.1"
 val logbackSyslog4jVersion = "1.0.0"
+val otelVersion = "1.53.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_21
 
@@ -25,8 +26,8 @@ repositories {
 }
 
 plugins {
-    val kotlinVersion = "2.2.20"
-    id("org.springframework.boot") version "3.5.8"
+    val kotlinVersion = "2.3.0"
+    id("org.springframework.boot") version "4.0.1"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     idea
@@ -44,15 +45,13 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-cache")
-    implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.kafka:spring-kafka")
     implementation("javax.cache:cache-api")
-    implementation("io.micrometer:micrometer-registry-prometheus")
-    implementation("io.micrometer:micrometer-tracing-bridge-brave")
     implementation("ch.qos.logback:logback-classic")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     //Not managed by Spring:
+    implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("com.papertrailapp:logback-syslog4j:$logbackSyslog4jVersion")
     implementation("org.ehcache:ehcache:$ehcacheVersion")
     implementation("org.opensearch.client:opensearch-rest-high-level-client:$opensearchVersion")
@@ -65,6 +64,7 @@ dependencies {
         exclude(group = "jakarta.persistence")
     }
     implementation("org.springframework.retry:spring-retry:$springRetryVersion")
+    implementation("io.opentelemetry:opentelemetry-api:${otelVersion}")
 
     //Test
     //Managed by Spring:
@@ -74,10 +74,9 @@ dependencies {
     }
     testImplementation("org.springframework.kafka:spring-kafka-test")
 
-    //Not managed by Spring:
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
-    testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
-    testImplementation("org.testcontainers:elasticsearch:$testContainersVersion")
+    testImplementation("org.testcontainers:testcontainers-junit-jupiter:$testContainersVersion")
+    testImplementation("org.testcontainers:testcontainers-elasticsearch:$testContainersVersion")
     testImplementation("com.tngtech.archunit:archunit-junit5:$archunitVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
