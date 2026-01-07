@@ -12,6 +12,7 @@ import org.opensearch.client.Request
 import org.opensearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -21,6 +22,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @Testcontainers
 @SpringBootTest(classes = [ElasticsearchServiceConfiguration::class])
+@DirtiesContext
 class CreateIndexFromEsBehandlingTest {
 
     companion object {

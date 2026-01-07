@@ -17,6 +17,7 @@ import org.junit.jupiter.api.TestMethodOrder
 import org.opensearch.index.query.QueryBuilders
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -29,6 +30,7 @@ import java.util.*
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @Testcontainers
 @SpringBootTest(classes = [ElasticsearchServiceConfiguration::class])
+@DirtiesContext
 class ElasticsearchServiceStatusTest {
 
     companion object {
