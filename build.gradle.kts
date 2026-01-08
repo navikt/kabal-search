@@ -15,7 +15,7 @@ val reactorSpringVersion = "1.0.1.RELEASE"
 val kodeverkVersion = "1.12.16"
 val ehcacheVersion = "3.11.1"
 val logbackSyslog4jVersion = "1.0.0"
-val otelVersion = "1.53.0"
+val otelVersion = "1.57.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_21
 
