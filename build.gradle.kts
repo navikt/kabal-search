@@ -6,7 +6,7 @@ val tokenValidationVersion = "6.0.0"
 val logstashVersion = "9.0"
 val springRetryVersion = "2.0.12"
 val springMockkVersion = "5.0.1"
-val springDocVersion = "3.0.0"
+val springDocVersion = "3.0.1"
 val testContainersVersion = "2.0.3"
 val threeTenExtraVersion = "1.8.0"
 val archunitVersion = "1.4.1"
@@ -15,7 +15,7 @@ val reactorSpringVersion = "1.0.1.RELEASE"
 val kodeverkVersion = "2.0.5"
 val ehcacheVersion = "3.11.1"
 val logbackSyslog4jVersion = "1.0.0"
-val otelVersion = "1.53.0"
+val otelVersion = "1.58.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_21
 
