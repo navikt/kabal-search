@@ -48,6 +48,10 @@ class ProblemHandlingControllerAdvice : ResponseEntityExceptionHandler() {
         create(HttpStatus.NOT_FOUND, ex)
 
     @ExceptionHandler
+    fun handleUserNotFoundException(ex: UserNotFoundException, request: NativeWebRequest): ProblemDetail =
+        create(HttpStatus.NOT_FOUND, ex)
+
+    @ExceptionHandler
     fun handleEnhetNotFoundForSaksbehandlerException(
         ex: EnhetNotFoundForSaksbehandlerException,
         request: NativeWebRequest

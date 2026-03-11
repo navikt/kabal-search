@@ -7,8 +7,8 @@ import no.nav.klage.search.api.mapper.BehandlingListMapper
 import no.nav.klage.search.api.mapper.BehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.AntallUtgaatteFristerResponse
 import no.nav.klage.search.api.view.BehandlingerListResponse
-import no.nav.klage.search.api.view.MineLedigeOppgaverCountQueryParams
-import no.nav.klage.search.api.view.MineLedigeOppgaverQueryParams
+import no.nav.klage.search.api.view.SaksbehandlersLedigeOppgaverCountQueryParams
+import no.nav.klage.search.api.view.SaksbehandlersLedigeOppgaverQueryParams
 import no.nav.klage.search.util.getLogger
 import org.springframework.stereotype.Service
 
@@ -26,7 +26,7 @@ class OppgaverService(
     }
 
     fun getLedigeOppgaverForInnloggetSaksbehandler(
-        queryParams: MineLedigeOppgaverQueryParams,
+        queryParams: SaksbehandlersLedigeOppgaverQueryParams,
     ): BehandlingerListResponse {
         val saksbehandlerInnstillinger = kabalInnstillingerService.getInnstillingerForCurrentSaksbehandler()
 
@@ -62,7 +62,7 @@ class OppgaverService(
     }
 
     fun getUtgaatteFristerAvailableToSaksbehandlerCount(
-        queryParams: MineLedigeOppgaverCountQueryParams
+        queryParams: SaksbehandlersLedigeOppgaverCountQueryParams
     ): AntallUtgaatteFristerResponse {
         val saksbehandlerInnstillinger = kabalInnstillingerService.getInnstillingerForCurrentSaksbehandler()
 

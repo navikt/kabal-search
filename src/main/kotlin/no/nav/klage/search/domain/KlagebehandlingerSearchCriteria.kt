@@ -64,7 +64,7 @@ data class OppgaverOmPersonSearchCriteria(
     override val order: Order,
 ) : PageableSearchCriteria, SecuritySearchCriteria, SortableSearchCriteria
 
-data class FerdigstilteOppgaverSearchCriteria(
+data class SaksbehandlersFerdigstilteOppgaverSearchCriteria(
     override val typer: List<Type>,
     override val ytelser: List<Ytelse>,
     override val hjemler: List<Hjemmel>,
@@ -114,7 +114,7 @@ data class ReturnerteROLOppgaverSearchCriteria(
     override val kanBehandleStrengtFortrolig: Boolean,
 ) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria
 
-data class UferdigeOppgaverSearchCriteria(
+data class SaksbehandlersUferdigeOppgaverSearchCriteria(
     override val typer: List<Type>,
     override val ytelser: List<Ytelse>,
     override val hjemler: List<Hjemmel>,
@@ -139,7 +139,7 @@ data class UferdigeOppgaverSearchCriteria(
     val helperStatusList: List<HelperStatus>,
 ) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria
 
-data class OppgaverPaaVentSearchCriteria(
+data class SaksbehandlersOppgaverPaaVentSearchCriteria(
     override val typer: List<Type>,
     override val ytelser: List<Ytelse>,
     override val hjemler: List<Hjemmel>,
@@ -326,3 +326,81 @@ data class CountLedigeOppgaverMedUtgaattFristSearchCriteria(
     override val kanBehandleFortrolig: Boolean,
     override val kanBehandleStrengtFortrolig: Boolean,
 ) : BasicSearchCriteria, SecuritySearchCriteria
+
+
+data class FerdigstilteOppgaverSearchCriteria(
+    override val typer: List<Type>,
+    override val ytelser: List<Ytelse>,
+    override val hjemler: List<Hjemmel>,
+
+    val saksbehandlere: List<String>,
+    val ferdigstiltFom: LocalDate,
+    val ferdigstiltTom: LocalDate,
+
+    override val sortField: SortField,
+    override val order: Order,
+    override val offset: Int,
+    override val limit: Int,
+
+    override val fristFrom: LocalDate,
+    override val fristTo: LocalDate,
+
+    override val varsletFristFrom: LocalDate,
+    override val varsletFristTo: LocalDate,
+
+    override val kanBehandleEgenAnsatt: Boolean,
+    override val kanBehandleFortrolig: Boolean,
+    override val kanBehandleStrengtFortrolig: Boolean,
+) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria
+
+data class OppgaverPaaVentSearchCriteria(
+    override val typer: List<Type>,
+    override val ytelser: List<Ytelse>,
+    override val hjemler: List<Hjemmel>,
+
+    val saksbehandlere: List<String>,
+    val medunderskrivere: List<String>,
+
+    val sattPaaVentReasons: List<SattPaaVentReason>,
+
+    override val sortField: SortField,
+    override val order: Order,
+    override val offset: Int,
+    override val limit: Int,
+
+    override val fristFrom: LocalDate,
+    override val fristTo: LocalDate,
+
+    override val varsletFristFrom: LocalDate,
+    override val varsletFristTo: LocalDate,
+
+    override val kanBehandleEgenAnsatt: Boolean,
+    override val kanBehandleFortrolig: Boolean,
+    override val kanBehandleStrengtFortrolig: Boolean,
+) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria
+
+data class UferdigeOppgaverSearchCriteria(
+    override val typer: List<Type>,
+    override val ytelser: List<Ytelse>,
+    override val hjemler: List<Hjemmel>,
+
+    val saksbehandlere: List<String>,
+    val medunderskrivere: List<String>,
+
+    val helperStatusList: List<HelperStatus>,
+
+    override val sortField: SortField,
+    override val order: Order,
+    override val offset: Int,
+    override val limit: Int,
+
+    override val fristFrom: LocalDate,
+    override val fristTo: LocalDate,
+
+    override val varsletFristFrom: LocalDate,
+    override val varsletFristTo: LocalDate,
+
+    override val kanBehandleEgenAnsatt: Boolean,
+    override val kanBehandleFortrolig: Boolean,
+    override val kanBehandleStrengtFortrolig: Boolean,
+) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria

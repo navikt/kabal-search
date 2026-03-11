@@ -5,9 +5,9 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import no.nav.klage.search.api.mapper.BehandlingListMapper
 import no.nav.klage.search.api.mapper.BehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.BehandlingerListResponse
-import no.nav.klage.search.api.view.MineLedigeOppgaverQueryParams
+import no.nav.klage.search.api.view.SaksbehandlersLedigeOppgaverQueryParams
 import no.nav.klage.search.api.view.MineReturnerteROLOppgaverQueryParams
-import no.nav.klage.search.api.view.MineUferdigeOppgaverQueryParams
+import no.nav.klage.search.api.view.SaksbehandlersUferdigeOppgaverQueryParams
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.service.ElasticsearchService
 import no.nav.klage.search.service.saksbehandler.OAuthTokenService
@@ -37,7 +37,7 @@ class RolOppgaverListController(
     )
     @GetMapping("/roloppgaver/ledige", produces = ["application/json"])
     fun getLedigeRolOppgaver(
-        queryParams: MineLedigeOppgaverQueryParams
+        queryParams: SaksbehandlersLedigeOppgaverQueryParams
     ): BehandlingerListResponse {
         logger.debug("Params: {}", queryParams)
 
@@ -84,11 +84,11 @@ class RolOppgaverListController(
     )
     @GetMapping("/roloppgaver/uferdige", produces = ["application/json"])
     fun getMineUferdigeROLOppgaver(
-        queryParams: MineUferdigeOppgaverQueryParams
+        queryParams: SaksbehandlersUferdigeOppgaverQueryParams
     ): BehandlingerListResponse {
         logger.debug("Params: {}", queryParams)
 
-        val searchCriteria = behandlingerSearchCriteriaMapper.toUferdigeOppgaverSearchCriteria(
+        val searchCriteria = behandlingerSearchCriteriaMapper.toSaksbehandlersUferdigeOppgaverSearchCriteria(
             navIdent = oAuthTokenService.getInnloggetIdent(),
             queryParams = queryParams
         )
