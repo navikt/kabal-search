@@ -2,6 +2,7 @@ package no.nav.klage.search.clients.klagelookup
 
 import no.nav.klage.kodeverk.AzureGroup
 import no.nav.klage.search.exceptions.UserNotFoundException
+import no.nav.klage.search.exceptions.GroupNotFoundException
 import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.logErrorResponse
@@ -88,6 +89,40 @@ class KlageLookupClient(
                 }
                 .block() ?: throw RuntimeException("Could not get user groups for navIdent $navIdent")
         }.toSaksbehandlerGroups()
+    }
+
+    @Retryable(
+        excludes = [GroupNotFoundException::class]
+    )
+    fun getUsersInGroup(
+        azureGroup: AzureGroup,
+    ): UsersResponse {
+        return runWithTimingAndLogging {
+            val token = getCorrectBearerToken()
+            klageLookupWebClient.get()
+                .uri("/groups/${azureGroup.id}/users")
+                .header(
+                    HttpHeaders.AUTHORIZATION,
+                    token,
+                )
+                .exchangeToMono { response ->
+                    if (response.statusCode().value() == 404) {
+                        logger.debug("Group $azureGroup not found")
+                        Mono.error(GroupNotFoundException("Group $azureGroup not found"))
+
+                    } else if (response.statusCode().isError) {
+                        logErrorResponse(
+                            response = response,
+                            functionName = ::getUsersInGroup.name,
+                            classLogger = logger,
+                        )
+                        response.createError()
+                    } else {
+                        response.bodyToMono<UsersResponse>()
+                    }
+                }
+                .block() ?: throw RuntimeException("Could not get users information for azureGroup $azureGroup")
+        }
     }
 
     fun <T> runWithTimingAndLogging(block: () -> T): T {
