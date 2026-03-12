@@ -1,13 +1,15 @@
 package no.nav.klage.search.service.saksbehandler
 
+import no.nav.klage.search.clients.klagelookup.KlageLookupClient
 import no.nav.klage.search.domain.saksbehandler.Enhet
-import no.nav.klage.search.gateway.AzureGateway
+import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import org.springframework.stereotype.Service
 
 @Service
 class InnloggetSaksbehandlerService(
-    private val azureGateway: AzureGateway,
+    private val klageLookupClient: KlageLookupClient,
+    private val tokenUtil: TokenUtil,
 ) {
 
     companion object {
@@ -16,6 +18,10 @@ class InnloggetSaksbehandlerService(
     }
 
     fun getEnhetForSaksbehandler(): Enhet {
-        return azureGateway.getDataOmInnloggetSaksbehandler().enhet
+        val foundEnhet = klageLookupClient.getUserInfo(navIdent = tokenUtil.getIdent()).enhet
+        return Enhet(
+            enhetId = foundEnhet.enhetNr,
+            navn = foundEnhet.enhetNavn,
+        )
     }
 }
