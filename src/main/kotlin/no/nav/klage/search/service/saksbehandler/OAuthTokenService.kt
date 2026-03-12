@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Service
+//Kan antageligvis fjernes
 class OAuthTokenService(
     private val tokenUtil: TokenUtil,
     @Value("\${KABAL_INNSYN_EGEN_ENHET_ROLE_ID}") private val kabalOppgavestyringEgenEnhetRoleId: String,

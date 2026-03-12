@@ -143,7 +143,7 @@ data class EnhetensUferdigeOppgaverQueryParams(
     var helperStatusList: List<HelperStatus> = emptyList(),
 ) : CommonOppgaverQueryParams
 
-data class FerdigstilteOppgaverQueryParams(
+data class TildelteOppgaverQueryParams(
     override var typer: List<String> = listOf(
         Type.ANKE_I_TRYGDERETTEN.id,
         Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN.id
@@ -152,14 +152,14 @@ data class FerdigstilteOppgaverQueryParams(
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
     override val sortering: Sortering? = Sortering.AVSLUTTET_AV_SAKSBEHANDLER,
-    override val ferdigstiltFrom: LocalDate?,
-    override val ferdigstiltTo: LocalDate?,
     override val fristFrom: LocalDate?,
     override val fristTo: LocalDate?,
     override val varsletFristFrom: LocalDate?,
     override val varsletFristTo: LocalDate?,
     var tildelteSaksbehandlere: List<String> = emptyList(),
-) : CommonOppgaverQueryParams, AllFerdigstilteOppgaverQueryParams
+    var medunderskrivere: List<String> = emptyList(),
+    var helperStatusList: List<HelperStatus> = emptyList(),
+) : CommonOppgaverQueryParams
 
 data class OppgaverPaaVentQueryParams(
     override var typer: List<String> = listOf(
@@ -179,7 +179,7 @@ data class OppgaverPaaVentQueryParams(
     var sattPaaVentReasonIds: List<String> = emptyList(),
 ) : CommonOppgaverQueryParams
 
-data class UferdigeOppgaverQueryParams(
+data class LedigeOppgaverQueryParams(
     override var typer: List<String> = listOf(
         Type.ANKE_I_TRYGDERETTEN.id,
         Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN.id
@@ -192,9 +192,6 @@ data class UferdigeOppgaverQueryParams(
     override val fristTo: LocalDate?,
     override val varsletFristFrom: LocalDate?,
     override val varsletFristTo: LocalDate?,
-    var tildelteSaksbehandlere: List<String> = emptyList(),
-    var medunderskrivere: List<String> = emptyList(),
-    var helperStatusList: List<HelperStatus> = emptyList(),
 ) : CommonOppgaverQueryParams
 
 data class KrolsUferdigeOppgaverQueryParams(

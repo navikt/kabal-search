@@ -217,7 +217,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits.anonymize()
     }
 
-    open fun findFerdigstilteOppgaverByCriteria(criteria: FerdigstilteOppgaverSearchCriteria): AnonymeBehandlingerSearchHits {
+    open fun findTildelteOppgaverByCriteria(criteria: TildelteOppgaverSearchCriteria): AnonymeBehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
@@ -230,18 +230,6 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     }
 
     open fun findOppgaverPaaVentByCriteria(criteria: OppgaverPaaVentSearchCriteria): AnonymeBehandlingerSearchHits {
-        val searchSourceBuilder = SearchSourceBuilder()
-        searchSourceBuilder.query(criteria.toEsQuery())
-        searchSourceBuilder.addPaging(criteria)
-        searchSourceBuilder.addSorting(criteria)
-        searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
-
-        val searchHits = esBehandlingRepository.search(searchSourceBuilder)
-        logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
-        return searchHits.anonymize()
-    }
-
-    open fun findUferdigeOppgaverByCriteria(criteria: UferdigeOppgaverSearchCriteria): AnonymeBehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
@@ -743,20 +731,29 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return baseQuery
     }
 
-    private fun FerdigstilteOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
+    private fun TildelteOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
         teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
-        //baseQuery.must(beAvsluttetAvSaksbehandler())
-        baseQuery.must(beAvsluttetAvSaksbehandlerEtter(ferdigstiltFom))
-        baseQuery.must(beAvsluttetAvSaksbehandlerFoer(ferdigstiltTom))
         if (saksbehandlere.isNotEmpty()) {
             baseQuery.must(beTildeltSaksbehandlere(saksbehandlere))
         }
+        if (medunderskrivere.isNotEmpty()) {
+            baseQuery.must(beTildeltMedunderskrivere(medunderskrivere))
+        }
+        baseQuery.mustNot(beAvsluttetAvSaksbehandler())
         baseQuery.mustNot(beFeilregistrert())
+        baseQuery.mustNot(beSattPaaVent())
+        baseQuery.must(beTildeltSaksbehandler())
         baseQuery.must(haveFristBetween(fristFrom, fristTo))
         baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
+
+        if (helperStatusList.isNotEmpty()) {
+            val innerQuery = QueryBuilders.boolQuery()
+            innerQuery.must(createQueryForHelperStatusList(helperStatusList = helperStatusList, navIdent = null))
+            baseQuery.must(innerQuery)
+        }
 
         teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -783,38 +780,6 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
 
         if (sattPaaVentReasons.isNotEmpty()) {
             innerQuery.must(beSattPaaVentReasons(sattPaaVentReasons))
-        }
-
-        baseQuery.must(innerQuery)
-        baseQuery.mustNot(beFeilregistrert())
-        baseQuery.must(haveFristBetween(fristFrom, fristTo))
-        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
-
-        teamLogger.debug("Making search request with query {}", baseQuery.toString())
-        return baseQuery
-    }
-
-    private fun UferdigeOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
-        teamLogger.debug("Search criteria: {}", this)
-        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
-        baseQuery.addSecurityFilters(this)
-        baseQuery.addBasicFilters(this)
-        baseQuery.mustNot(beAvsluttetAvSaksbehandler())
-        baseQuery.mustNot(beSattPaaVent())
-
-        val innerQuery = QueryBuilders.boolQuery()
-
-        if (saksbehandlere.isNotEmpty()) {
-            innerQuery.must(beTildeltSaksbehandlere(saksbehandlere))
-        }
-
-        if (medunderskrivere.isNotEmpty()) {
-            innerQuery.must(beSentToMedunderskriver())
-            innerQuery.must(beTildeltMedunderskrivere(medunderskrivere))
-        }
-
-        if (helperStatusList.isNotEmpty()) {
-            innerQuery.must(createQueryForHelperStatusList(helperStatusList, null))
         }
 
         baseQuery.must(innerQuery)

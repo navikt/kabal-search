@@ -204,15 +204,14 @@ class BehandlingerSearchCriteriaMapper(
 
     //-- oppgaver:
 
-    fun toFerdigstilteOppgaverSearchCriteria(
-        queryParams: FerdigstilteOppgaverQueryParams,
-    ) = FerdigstilteOppgaverSearchCriteria(
+    fun toTildelteOppgaverSearchCriteria(
+        queryParams: TildelteOppgaverQueryParams,
+    ) = TildelteOppgaverSearchCriteria(
         typer = queryParams.typer.map { Type.of(it) },
         ytelser = queryParams.ytelser.map { Ytelse.of(it) },
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
         saksbehandlere = queryParams.tildelteSaksbehandlere,
-        ferdigstiltFom = mapFrom(queryParams.ferdigstiltFrom),
-        ferdigstiltTom = queryParams.ferdigstiltTo ?: LocalDate.now(),
+        medunderskrivere = queryParams.medunderskrivere,
         sortField = mapSortField(queryParams.sortering),
         order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
         offset = 0,
@@ -224,6 +223,7 @@ class BehandlingerSearchCriteriaMapper(
         fristTo = mapFristTo(queryParams.fristTo),
         varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
         varsletFristTo = mapFristTo(queryParams.varsletFristTo),
+        helperStatusList = queryParams.helperStatusList,
     )
 
     fun toOppgaverPaaVentSearchCriteria(
@@ -248,14 +248,12 @@ class BehandlingerSearchCriteriaMapper(
         varsletFristTo = mapFristTo(queryParams.varsletFristTo),
     )
 
-    fun toUferdigeOppgaverSearchCriteria(
-        queryParams: UferdigeOppgaverQueryParams,
-    ) = UferdigeOppgaverSearchCriteria(
+    fun toLedigeOppgaverSearchCriteria(
+        queryParams: LedigeOppgaverQueryParams,
+    ) = LedigeOppgaverSearchCriteria(
         typer = queryParams.typer.map { Type.of(it) },
         ytelser = queryParams.ytelser.map { Ytelse.of(it) },
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
-        saksbehandlere = queryParams.tildelteSaksbehandlere,
-        medunderskrivere = queryParams.medunderskrivere,
         sortField = mapSortField(queryParams.sortering),
         order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
         offset = 0,
@@ -267,7 +265,6 @@ class BehandlingerSearchCriteriaMapper(
         fristTo = mapFristTo(queryParams.fristTo),
         varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
         varsletFristTo = mapFristTo(queryParams.varsletFristTo),
-        helperStatusList = queryParams.helperStatusList,
     )
 
     fun toKrolsUferdigeOppgaverSearchCriteria(

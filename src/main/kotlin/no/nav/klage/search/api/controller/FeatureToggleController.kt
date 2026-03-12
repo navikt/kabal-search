@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @Hidden
+//Kan kanskje fjernes?
 class FeatureToggleController {
 
     companion object {

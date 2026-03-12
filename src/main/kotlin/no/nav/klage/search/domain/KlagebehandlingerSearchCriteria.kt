@@ -328,14 +328,15 @@ data class CountLedigeOppgaverMedUtgaattFristSearchCriteria(
 ) : BasicSearchCriteria, SecuritySearchCriteria
 
 
-data class FerdigstilteOppgaverSearchCriteria(
+data class TildelteOppgaverSearchCriteria(
     override val typer: List<Type>,
     override val ytelser: List<Ytelse>,
     override val hjemler: List<Hjemmel>,
 
     val saksbehandlere: List<String>,
-    val ferdigstiltFom: LocalDate,
-    val ferdigstiltTom: LocalDate,
+    val medunderskrivere: List<String>,
+
+    val helperStatusList: List<HelperStatus>,
 
     override val sortField: SortField,
     override val order: Order,
