@@ -1,19 +1,22 @@
 package no.nav.klage.search.api.mapper
 
+import no.nav.klage.kodeverk.AzureGroup
 import no.nav.klage.kodeverk.SattPaaVentReason
 import no.nav.klage.kodeverk.Type
-import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.kodeverk.hjemmel.Hjemmel
+import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.search.api.view.*
+import no.nav.klage.search.clients.klagelookup.KlageLookupClient
 import no.nav.klage.search.domain.*
-import no.nav.klage.search.service.saksbehandler.OAuthTokenService
+import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
 class BehandlingerSearchCriteriaMapper(
-    private val oAuthTokenService: OAuthTokenService,
+    private val klageLookupClient: KlageLookupClient,
+    private val tokenUtil: TokenUtil,
 ) {
 
     companion object {
@@ -21,9 +24,21 @@ class BehandlingerSearchCriteriaMapper(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    fun kanBehandleEgenAnsatt() = oAuthTokenService.kanBehandleEgenAnsatt()
-    fun kanBehandleFortrolig() = oAuthTokenService.kanBehandleFortrolig()
-    fun kanBehandleStrengtFortrolig() = oAuthTokenService.kanBehandleStrengtFortrolig()
+    fun kanBehandleEgenAnsatt(): Boolean {
+        val navIdent = tokenUtil.getIdent()
+        val userGroups = klageLookupClient.getUserGroups(navIdent).groups
+        return userGroups.contains(AzureGroup.EGEN_ANSATT)
+    }
+    fun kanBehandleFortrolig(): Boolean {
+        val navIdent = tokenUtil.getIdent()
+        val userGroups = klageLookupClient.getUserGroups(navIdent).groups
+        return userGroups.contains(AzureGroup.FORTROLIG)
+    }
+    fun kanBehandleStrengtFortrolig(): Boolean {
+        val navIdent = tokenUtil.getIdent()
+        val userGroups = klageLookupClient.getUserGroups(navIdent).groups
+        return userGroups.contains(AzureGroup.STRENGT_FORTROLIG)
+    }
 
     fun toOppgaverOmPersonSearchCriteria(input: SearchPersonByFnrInput) = OppgaverOmPersonSearchCriteria(
         fnr = input.query,

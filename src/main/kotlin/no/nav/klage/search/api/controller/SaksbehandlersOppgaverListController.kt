@@ -8,7 +8,7 @@ import no.nav.klage.search.api.view.*
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.service.ElasticsearchService
 import no.nav.klage.search.service.OppgaverService
-import no.nav.klage.search.service.saksbehandler.OAuthTokenService
+import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.GetMapping
@@ -21,8 +21,8 @@ class SaksbehandlersOppgaverListController(
     private val behandlingListMapper: BehandlingListMapper,
     private val elasticsearchService: ElasticsearchService,
     private val behandlingerSearchCriteriaMapper: BehandlingerSearchCriteriaMapper,
-    private val oAuthTokenService: OAuthTokenService,
     private val oppgaverService: OppgaverService,
+    private val tokenUtil: TokenUtil,
 ) {
 
     companion object {
@@ -53,7 +53,7 @@ class SaksbehandlersOppgaverListController(
         logger.debug("Params: {}", queryParams)
 
         val searchCriteria = behandlingerSearchCriteriaMapper.toSaksbehandlersFerdigstilteOppgaverSearchCriteria(
-            navIdent = oAuthTokenService.getInnloggetIdent(),
+            navIdent = tokenUtil.getIdent(),
             queryParams = queryParams
         )
 
@@ -77,7 +77,7 @@ class SaksbehandlersOppgaverListController(
         logger.debug("Params: {}", queryParams)
 
         val searchCriteria = behandlingerSearchCriteriaMapper.toSaksbehandlersUferdigeOppgaverSearchCriteria(
-            navIdent = oAuthTokenService.getInnloggetIdent(),
+            navIdent = tokenUtil.getIdent(),
             queryParams = queryParams
         )
 
@@ -101,7 +101,7 @@ class SaksbehandlersOppgaverListController(
         logger.debug("Params: {}", queryParams)
 
         val searchCriteria = behandlingerSearchCriteriaMapper.toSaksbehandlersOppgaverPaaVentSearchCriteria(
-            navIdent = oAuthTokenService.getInnloggetIdent(),
+            navIdent = tokenUtil.getIdent(),
             queryParams = queryParams
         )
 
