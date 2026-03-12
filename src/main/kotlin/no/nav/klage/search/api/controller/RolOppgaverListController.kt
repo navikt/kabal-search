@@ -5,12 +5,12 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import no.nav.klage.search.api.mapper.BehandlingListMapper
 import no.nav.klage.search.api.mapper.BehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.BehandlingerListResponse
-import no.nav.klage.search.api.view.MineLedigeOppgaverQueryParams
 import no.nav.klage.search.api.view.MineReturnerteROLOppgaverQueryParams
-import no.nav.klage.search.api.view.MineUferdigeOppgaverQueryParams
+import no.nav.klage.search.api.view.SaksbehandlersLedigeOppgaverQueryParams
+import no.nav.klage.search.api.view.SaksbehandlersUferdigeOppgaverQueryParams
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.service.ElasticsearchService
-import no.nav.klage.search.service.saksbehandler.OAuthTokenService
+import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.GetMapping
@@ -23,7 +23,7 @@ class RolOppgaverListController(
     private val behandlingListMapper: BehandlingListMapper,
     private val elasticsearchService: ElasticsearchService,
     private val behandlingerSearchCriteriaMapper: BehandlingerSearchCriteriaMapper,
-    private val oAuthTokenService: OAuthTokenService,
+    private val tokenUtil: TokenUtil,
 ) {
 
     companion object {
@@ -37,7 +37,7 @@ class RolOppgaverListController(
     )
     @GetMapping("/roloppgaver/ledige", produces = ["application/json"])
     fun getLedigeRolOppgaver(
-        queryParams: MineLedigeOppgaverQueryParams
+        queryParams: SaksbehandlersLedigeOppgaverQueryParams
     ): BehandlingerListResponse {
         logger.debug("Params: {}", queryParams)
 
@@ -65,7 +65,7 @@ class RolOppgaverListController(
         logger.debug("Params: {}", queryParams)
 
         val searchCriteria = behandlingerSearchCriteriaMapper.toReturnerteROLOppgaverSearchCriteria(
-            navIdent = oAuthTokenService.getInnloggetIdent(),
+            navIdent = tokenUtil.getIdent(),
             queryParams = queryParams
         )
 
@@ -84,12 +84,12 @@ class RolOppgaverListController(
     )
     @GetMapping("/roloppgaver/uferdige", produces = ["application/json"])
     fun getMineUferdigeROLOppgaver(
-        queryParams: MineUferdigeOppgaverQueryParams
+        queryParams: SaksbehandlersUferdigeOppgaverQueryParams
     ): BehandlingerListResponse {
         logger.debug("Params: {}", queryParams)
 
-        val searchCriteria = behandlingerSearchCriteriaMapper.toUferdigeOppgaverSearchCriteria(
-            navIdent = oAuthTokenService.getInnloggetIdent(),
+        val searchCriteria = behandlingerSearchCriteriaMapper.toSaksbehandlersUferdigeOppgaverSearchCriteria(
+            navIdent = tokenUtil.getIdent(),
             queryParams = queryParams
         )
 

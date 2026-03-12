@@ -15,7 +15,7 @@ interface CommonOppgaverQueryParams {
     val varsletFristTo: LocalDate?
 }
 
-interface FerdigstilteOppgaverQueryParams {
+interface AllFerdigstilteOppgaverQueryParams {
     val ferdigstiltFrom: LocalDate?
     val ferdigstiltTo: LocalDate?
 }
@@ -25,7 +25,7 @@ interface ReturnerteROLOppgaverQueryParams {
     val returnertTo: LocalDate?
 }
 
-data class MineFerdigstilteOppgaverQueryParams(
+data class SaksbehandlersFerdigstilteOppgaverQueryParams(
     override var typer: List<String> = emptyList(),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
@@ -37,7 +37,7 @@ data class MineFerdigstilteOppgaverQueryParams(
     override val fristTo: LocalDate?,
     override val varsletFristFrom: LocalDate?,
     override val varsletFristTo: LocalDate?,
-) : CommonOppgaverQueryParams, FerdigstilteOppgaverQueryParams
+) : CommonOppgaverQueryParams, AllFerdigstilteOppgaverQueryParams
 
 data class MineReturnerteROLOppgaverQueryParams(
     override var typer: List<String> = emptyList(),
@@ -53,7 +53,7 @@ data class MineReturnerteROLOppgaverQueryParams(
     override val varsletFristTo: LocalDate?,
 ) : CommonOppgaverQueryParams, ReturnerteROLOppgaverQueryParams
 
-data class MineUferdigeOppgaverQueryParams(
+data class SaksbehandlersUferdigeOppgaverQueryParams(
     override var typer: List<String> = emptyList(),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
@@ -66,7 +66,7 @@ data class MineUferdigeOppgaverQueryParams(
     var helperStatusList: List<HelperStatus> = emptyList(),
 ) : CommonOppgaverQueryParams
 
-data class MineLedigeOppgaverQueryParams(
+data class SaksbehandlersLedigeOppgaverQueryParams(
     override var typer: List<String> = emptyList(),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
@@ -78,13 +78,13 @@ data class MineLedigeOppgaverQueryParams(
     override val varsletFristTo: LocalDate?,
 ) : CommonOppgaverQueryParams
 
-data class MineLedigeOppgaverCountQueryParams(
+data class SaksbehandlersLedigeOppgaverCountQueryParams(
     var typer: List<String> = emptyList(),
     var ytelser: List<String> = emptyList(),
     var hjemler: List<String> = emptyList(),
 )
 
-data class MineOppgaverPaaVentQueryParams(
+data class SaksbehandlersOppgaverPaaVentQueryParams(
     override var typer: List<String> = emptyList(),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
@@ -110,7 +110,7 @@ data class EnhetensFerdigstilteOppgaverQueryParams(
     override val varsletFristFrom: LocalDate?,
     override val varsletFristTo: LocalDate?,
     var tildelteSaksbehandlere: List<String> = emptyList(),
-) : CommonOppgaverQueryParams, FerdigstilteOppgaverQueryParams
+) : CommonOppgaverQueryParams, AllFerdigstilteOppgaverQueryParams
 
 data class EnhetensOppgaverPaaVentQueryParams(
     override var typer: List<String> = emptyList(),

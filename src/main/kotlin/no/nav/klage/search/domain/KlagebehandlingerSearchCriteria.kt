@@ -64,7 +64,7 @@ data class OppgaverOmPersonSearchCriteria(
     override val order: Order,
 ) : PageableSearchCriteria, SecuritySearchCriteria, SortableSearchCriteria
 
-data class FerdigstilteOppgaverSearchCriteria(
+data class SaksbehandlersFerdigstilteOppgaverSearchCriteria(
     override val typer: List<Type>,
     override val ytelser: List<Ytelse>,
     override val hjemler: List<Hjemmel>,
@@ -114,7 +114,7 @@ data class ReturnerteROLOppgaverSearchCriteria(
     override val kanBehandleStrengtFortrolig: Boolean,
 ) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria
 
-data class UferdigeOppgaverSearchCriteria(
+data class SaksbehandlersUferdigeOppgaverSearchCriteria(
     override val typer: List<Type>,
     override val ytelser: List<Ytelse>,
     override val hjemler: List<Hjemmel>,
@@ -139,7 +139,7 @@ data class UferdigeOppgaverSearchCriteria(
     val helperStatusList: List<HelperStatus>,
 ) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria
 
-data class OppgaverPaaVentSearchCriteria(
+data class SaksbehandlersOppgaverPaaVentSearchCriteria(
     override val typer: List<Type>,
     override val ytelser: List<Ytelse>,
     override val hjemler: List<Hjemmel>,
