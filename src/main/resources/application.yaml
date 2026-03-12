@@ -97,3 +97,6 @@ SERVICE_USER_PASSWORD: itest
 
 KABAL_INNSTILLINGER_BASE_URL: http://kabal-innstillinger
 KABAL_INNSTILLINGER_APP_NAME: kabal-innstillinger
+
+KLAGE_LOOKUP_APP_NAME: klage-lookup
+KLAGE_LOOKUP_BASE_URL: http://klage-lookup
