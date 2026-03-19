@@ -20,7 +20,7 @@ class SaksbehandlerService(
     fun getNameForIdent(navIdent: String): String? {
         return try {
             klageLookupClient.getUserInfo(navIdent = navIdent).sammensattNavn
-        } catch(_: UserNotFoundException) {
+        } catch (_: UserNotFoundException) {
             logger.warn("User $navIdent not found in klageLookup. Returning default value.")
             "Ukjent navn"
         }
@@ -47,6 +47,12 @@ class SaksbehandlerService(
         } ?: emptyList()
     }
 
-    fun getEnhetsnummerForNavIdent(navIdent: String): String? =
-        klageLookupClient.getUserInfo(navIdent = navIdent).enhet.enhetNr
+    fun getEnhetsnummerForNavIdent(navIdent: String): String? {
+        return try {
+            klageLookupClient.getUserInfo(navIdent = navIdent).enhet.enhetNr
+        } catch (_: UserNotFoundException) {
+            logger.warn("User $navIdent not found in klageLookup. Returning default value.")
+            null
+        }
+    }
 }
