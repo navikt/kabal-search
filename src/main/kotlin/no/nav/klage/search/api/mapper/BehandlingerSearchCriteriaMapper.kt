@@ -41,7 +41,7 @@ class BehandlingerSearchCriteriaMapper(
     fun toFerdigstilteOppgaverSearchCriteria(
         navIdent: String,
         queryParams: MineFerdigstilteOppgaverQueryParams,
-    ) = FerdigstilteOppgaverSearchCriteria(
+    ) = FerdigstilteOppgaverForAssignedSaksbehandlerSearchCriteria(
         typer = queryParams.typer.map { Type.of(it) },
         ytelser = queryParams.ytelser.map { Ytelse.of(it) },
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
@@ -64,7 +64,7 @@ class BehandlingerSearchCriteriaMapper(
     fun toReturnerteROLOppgaverSearchCriteria(
         navIdent: String,
         queryParams: MineReturnerteROLOppgaverQueryParams,
-    ) = ReturnerteROLOppgaverSearchCriteria(
+    ) = ReturnerteROLOppgaverForAssignedRolSearchCriteria(
         typer = queryParams.typer.map { Type.of(it) },
         ytelser = queryParams.ytelser.map { Ytelse.of(it) },
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
@@ -87,7 +87,7 @@ class BehandlingerSearchCriteriaMapper(
     fun toUferdigeOppgaverSearchCriteria(
         navIdent: String,
         queryParams: MineUferdigeOppgaverQueryParams,
-    ) = UferdigeOppgaverSearchCriteria(
+    ) = UferdigeOppgaverForSaksbehandlerOrMedunderskriverOrRolSearchCriteria(
         typer = queryParams.typer.map { Type.of(it) },
         ytelser = queryParams.ytelser.map { Ytelse.of(it) },
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
@@ -109,7 +109,7 @@ class BehandlingerSearchCriteriaMapper(
     fun toOppgaverPaaVentSearchCriteria(
         navIdent: String,
         queryParams: MineOppgaverPaaVentQueryParams,
-    ) = OppgaverPaaVentSearchCriteria(
+    ) = OppgaverPaaVentForSaksbehandlerOrMedunderskriverSearchCriteria(
         typer = queryParams.typer.map { Type.of(it) },
         ytelser = queryParams.ytelser.map { Ytelse.of(it) },
         hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
@@ -276,6 +276,77 @@ class BehandlingerSearchCriteriaMapper(
             kanBehandleFortrolig = kanBehandleFortrolig(),
             kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
         )
+
+    //-- oppgaver:
+
+    fun toTildelteOppgaverSearchCriteria(
+        queryParams: TildelteOppgaverITRQueryParams,
+    ): TildelteOppgaverSearchCriteria {
+        return TildelteOppgaverSearchCriteria(
+            typer = queryParams.typer.map { Type.of(it) },
+            ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+            hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+            saksbehandlere = queryParams.tildelteSaksbehandlere,
+            medunderskrivere = queryParams.medunderskrivere,
+            sortField = mapSortField(queryParams.sortering),
+            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            offset = 0,
+            limit = 9_999,
+            kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
+            kanBehandleFortrolig = kanBehandleFortrolig(),
+            kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+            fristFrom = mapFrom(queryParams.fristFrom),
+            fristTo = mapFristTo(queryParams.fristTo),
+            varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+            varsletFristTo = mapFristTo(queryParams.varsletFristTo),
+            helperStatusList = queryParams.helperStatusList,
+        )
+    }
+
+    fun toOppgaverPaaVentSearchCriteria(
+        queryParams: OppgaverPaaVentITRQueryParams,
+    ): OppgaverPaaVentSearchCriteria {
+        return OppgaverPaaVentSearchCriteria(
+            typer = queryParams.typer.map { Type.of(it) },
+            ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+            hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+            saksbehandlere = queryParams.tildelteSaksbehandlere,
+            medunderskrivere = queryParams.medunderskrivere,
+            sattPaaVentReasons = queryParams.sattPaaVentReasonIds.map { SattPaaVentReason.of(it) },
+            sortField = mapSortField(queryParams.sortering),
+            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            offset = 0,
+            limit = 9_999,
+            kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
+            kanBehandleFortrolig = kanBehandleFortrolig(),
+            kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+            fristFrom = mapFrom(queryParams.fristFrom),
+            fristTo = mapFristTo(queryParams.fristTo),
+            varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+            varsletFristTo = mapFristTo(queryParams.varsletFristTo),
+        )
+    }
+
+    fun toLedigeOppgaverSearchCriteria(
+        queryParams: LedigeOppgaverITRQueryParams,
+    ): LedigeOppgaverSearchCriteria {
+        return LedigeOppgaverSearchCriteria(
+            typer = queryParams.typer.map { Type.of(it) },
+            ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+            hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+            sortField = mapSortField(queryParams.sortering),
+            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            offset = 0,
+            limit = 9_999,
+            kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
+            kanBehandleFortrolig = kanBehandleFortrolig(),
+            kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+            fristFrom = mapFrom(queryParams.fristFrom),
+            fristTo = mapFristTo(queryParams.fristTo),
+            varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+            varsletFristTo = mapFristTo(queryParams.varsletFristTo),
+        )
+    }
 
     private fun mapSortField(sortering: Sortering?): SortField =
         when (sortering) {
