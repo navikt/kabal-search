@@ -1,5 +1,6 @@
 package no.nav.klage.search.api.view
 
+import no.nav.klage.kodeverk.Type
 import no.nav.klage.search.domain.HelperStatus
 import java.time.LocalDate
 
@@ -140,6 +141,57 @@ data class EnhetensUferdigeOppgaverQueryParams(
     var tildelteSaksbehandlere: List<String> = emptyList(),
     var medunderskrivere: List<String> = emptyList(),
     var helperStatusList: List<HelperStatus> = emptyList(),
+) : CommonOppgaverQueryParams
+
+data class TildelteOppgaverITRQueryParams(
+    override var typer: List<String> = listOf(
+        Type.ANKE_I_TRYGDERETTEN.id,
+        Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN.id
+    ),
+    override var ytelser: List<String> = emptyList(),
+    override var hjemler: List<String> = emptyList(),
+    override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
+    override val sortering: Sortering? = Sortering.AVSLUTTET_AV_SAKSBEHANDLER,
+    override val fristFrom: LocalDate?,
+    override val fristTo: LocalDate?,
+    override val varsletFristFrom: LocalDate?,
+    override val varsletFristTo: LocalDate?,
+    var tildelteSaksbehandlere: List<String> = emptyList(),
+    var medunderskrivere: List<String> = emptyList(),
+    var helperStatusList: List<HelperStatus> = emptyList(),
+) : CommonOppgaverQueryParams
+
+data class OppgaverPaaVentITRQueryParams(
+    override var typer: List<String> = listOf(
+        Type.ANKE_I_TRYGDERETTEN.id,
+        Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN.id
+    ),
+    override var ytelser: List<String> = emptyList(),
+    override var hjemler: List<String> = emptyList(),
+    override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
+    override val sortering: Sortering? = Sortering.FRIST,
+    override val fristFrom: LocalDate?,
+    override val fristTo: LocalDate?,
+    override val varsletFristFrom: LocalDate?,
+    override val varsletFristTo: LocalDate?,
+    var tildelteSaksbehandlere: List<String> = emptyList(),
+    var medunderskrivere: List<String> = emptyList(),
+    var sattPaaVentReasonIds: List<String> = emptyList(),
+) : CommonOppgaverQueryParams
+
+data class LedigeOppgaverITRQueryParams(
+    override var typer: List<String> = listOf(
+        Type.ANKE_I_TRYGDERETTEN.id,
+        Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN.id
+    ),
+    override var ytelser: List<String> = emptyList(),
+    override var hjemler: List<String> = emptyList(),
+    override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
+    override val sortering: Sortering? = Sortering.FRIST,
+    override val fristFrom: LocalDate?,
+    override val fristTo: LocalDate?,
+    override val varsletFristFrom: LocalDate?,
+    override val varsletFristTo: LocalDate?,
 ) : CommonOppgaverQueryParams
 
 data class KrolsUferdigeOppgaverQueryParams(

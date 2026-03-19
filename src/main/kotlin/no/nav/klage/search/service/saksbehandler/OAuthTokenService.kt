@@ -7,12 +7,13 @@ import org.springframework.stereotype.Service
 @Service
 class OAuthTokenService(
     private val tokenUtil: TokenUtil,
-    @Value("\${KABAL_INNSYN_EGEN_ENHET_ROLE_ID}") private val kabalOppgavestyringEgenEnhetRoleId: String,
-    @Value("\${FORTROLIG_ROLE_ID}") private val fortroligRoleId: String,
-    @Value("\${STRENGT_FORTROLIG_ROLE_ID}") private val strengtFortroligRoleId: String,
-    @Value("\${EGEN_ANSATT_ROLE_ID}") private val egenAnsattRoleId: String,
-    @Value("\${KABAL_ADMIN_ROLE_ID}") private val kabalAdminRoleId: String,
-    @Value("\${KABAL_KROL_ROLE_ID}") private val kabalKrolRoleId: String,
+    @Value($$"${KABAL_INNSYN_EGEN_ENHET_ROLE_ID}") private val kabalOppgavestyringEgenEnhetRoleId: String,
+    @Value($$"${KABAL_OPPGAVESTYRING_ALLE_ENHETER_ROLE_ID}") private val kabalOppgavestyringAlleEnheterRoleId: String,
+    @Value($$"${FORTROLIG_ROLE_ID}") private val fortroligRoleId: String,
+    @Value($$"${STRENGT_FORTROLIG_ROLE_ID}") private val strengtFortroligRoleId: String,
+    @Value($$"${EGEN_ANSATT_ROLE_ID}") private val egenAnsattRoleId: String,
+    @Value($$"${KABAL_ADMIN_ROLE_ID}") private val kabalAdminRoleId: String,
+    @Value($$"${KABAL_KROL_ROLE_ID}") private val kabalKrolRoleId: String,
 ) {
 
     fun getInnloggetIdent() = tokenUtil.getIdent()
@@ -22,6 +23,8 @@ class OAuthTokenService(
     fun isKROL(): Boolean = tokenUtil.getRoleIdsFromToken().contains(kabalKrolRoleId)
 
     fun isKabalOppgavestyringEgenEnhet(): Boolean = tokenUtil.getRoleIdsFromToken().contains(kabalOppgavestyringEgenEnhetRoleId)
+
+    fun isKabalOppgavestyringAlleEnheter(): Boolean = tokenUtil.getRoleIdsFromToken().contains(kabalOppgavestyringAlleEnheterRoleId)
 
     fun kanBehandleFortrolig(): Boolean = tokenUtil.getRoleIdsFromToken().contains(fortroligRoleId)
 
