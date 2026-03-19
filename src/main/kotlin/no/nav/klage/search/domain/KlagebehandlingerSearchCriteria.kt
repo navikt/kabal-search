@@ -48,7 +48,7 @@ interface HelperStatusSearchCriteria {
     val helperStatusList: List<HelperStatus>
 }
 
-interface SattPaaVentSearchCriteriaInterface {
+interface SattPaaVentSearchCriteria {
     val sattPaaVentReasons: List<SattPaaVentReason>
 }
 
@@ -199,7 +199,7 @@ data class OppgaverPaaVentForSaksbehandlerOrMedunderskriverSearchCriteria(
     override val kanBehandleFortrolig: Boolean,
     override val kanBehandleStrengtFortrolig: Boolean,
 ) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria,
-    SattPaaVentSearchCriteriaInterface, NavIdentSearchCriteria
+    SattPaaVentSearchCriteria, NavIdentSearchCriteria
 
 data class EnhetensFerdigstilteOppgaverSearchCriteria(
     override val typer: List<Type>,
@@ -278,7 +278,7 @@ data class EnhetensOppgaverPaaVentSearchCriteria(
     override val kanBehandleFortrolig: Boolean,
     override val kanBehandleStrengtFortrolig: Boolean,
 ) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria,
-    SattPaaVentSearchCriteriaInterface, EnhetSearchCriteria, SaksbehandlereSearchCriteria,
+    SattPaaVentSearchCriteria, EnhetSearchCriteria, SaksbehandlereSearchCriteria,
     MedunderskrivereSearchCriteria
 
 data class EnhetensUferdigeOppgaverSearchCriteria(
@@ -421,4 +421,4 @@ data class OppgaverPaaVentSearchCriteria(
     override val kanBehandleEgenAnsatt: Boolean,
     override val kanBehandleFortrolig: Boolean,
     override val kanBehandleStrengtFortrolig: Boolean,
-) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria, SaksbehandlereSearchCriteria, MedunderskrivereSearchCriteria, SattPaaVentSearchCriteriaInterface
+) : BasicSearchCriteria, PageableSearchCriteria, SortableSearchCriteria, SecuritySearchCriteria, SaksbehandlereSearchCriteria, MedunderskrivereSearchCriteria, SattPaaVentSearchCriteria
