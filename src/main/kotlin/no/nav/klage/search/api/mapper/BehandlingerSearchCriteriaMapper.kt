@@ -1,19 +1,22 @@
 package no.nav.klage.search.api.mapper
 
+import no.nav.klage.kodeverk.AzureGroup
 import no.nav.klage.kodeverk.SattPaaVentReason
 import no.nav.klage.kodeverk.Type
-import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.kodeverk.hjemmel.Hjemmel
+import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.search.api.view.*
+import no.nav.klage.search.clients.klagelookup.KlageLookupClient
 import no.nav.klage.search.domain.*
-import no.nav.klage.search.service.saksbehandler.OAuthTokenService
+import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
 class BehandlingerSearchCriteriaMapper(
-    private val oAuthTokenService: OAuthTokenService,
+    private val klageLookupClient: KlageLookupClient,
+    private val tokenUtil: TokenUtil,
 ) {
 
     companion object {
@@ -21,232 +24,274 @@ class BehandlingerSearchCriteriaMapper(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    fun kanBehandleEgenAnsatt() = oAuthTokenService.kanBehandleEgenAnsatt()
-    fun kanBehandleFortrolig() = oAuthTokenService.kanBehandleFortrolig()
-    fun kanBehandleStrengtFortrolig() = oAuthTokenService.kanBehandleStrengtFortrolig()
-
-    fun toOppgaverOmPersonSearchCriteria(input: SearchPersonByFnrInput) = OppgaverOmPersonSearchCriteria(
-        fnr = input.query,
-        offset = 0,
-        limit = 500,
-        kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
-        kanBehandleFortrolig = kanBehandleFortrolig(),
-        kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
-        sortField = SortField.MOTTATT,
-        order = Order.DESC,
+    private data class BehandlingPermissions(
+        val kanBehandleEgenAnsatt: Boolean,
+        val kanBehandleFortrolig: Boolean,
+        val kanBehandleStrengtFortrolig: Boolean,
     )
+
+    private fun resolvePermissions(navIdent: String = tokenUtil.getIdent()): BehandlingPermissions {
+        val userGroups = klageLookupClient.getUserGroups(navIdent).groups
+        return BehandlingPermissions(
+            kanBehandleEgenAnsatt = userGroups.contains(AzureGroup.EGEN_ANSATT),
+            kanBehandleFortrolig = userGroups.contains(AzureGroup.FORTROLIG),
+            kanBehandleStrengtFortrolig = userGroups.contains(AzureGroup.STRENGT_FORTROLIG),
+        )
+    }
+
+    fun toOppgaverOmPersonSearchCriteria(input: SearchPersonByFnrInput): OppgaverOmPersonSearchCriteria {
+        val permissions = resolvePermissions()
+        return OppgaverOmPersonSearchCriteria(
+            fnr = input.query,
+            offset = 0,
+            limit = 500,
+            kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
+            kanBehandleFortrolig = permissions.kanBehandleFortrolig,
+            kanBehandleStrengtFortrolig = permissions.kanBehandleStrengtFortrolig,
+            sortField = SortField.MOTTATT,
+            order = Order.DESC,
+        )
+    }
 
     //-- saksbehandlers oppgaver:
 
-    fun toFerdigstilteOppgaverSearchCriteria(
+    fun toSaksbehandlersFerdigstilteOppgaverSearchCriteria(
         navIdent: String,
-        queryParams: MineFerdigstilteOppgaverQueryParams,
-    ) = FerdigstilteOppgaverSearchCriteria(
-        typer = queryParams.typer.map { Type.of(it) },
-        ytelser = queryParams.ytelser.map { Ytelse.of(it) },
-        hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
-        navIdent = navIdent,
-        ferdigstiltFom = mapFrom(queryParams.ferdigstiltFrom),
-        ferdigstiltTom = queryParams.ferdigstiltTo ?: LocalDate.now(),
-        sortField = mapSortField(queryParams.sortering),
-        order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
-        offset = 0,
-        limit = 9_999,
-        kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
-        kanBehandleFortrolig = kanBehandleFortrolig(),
-        kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
-        fristFrom = mapFrom(queryParams.fristFrom),
-        fristTo = mapFristTo(queryParams.fristTo),
-        varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
-        varsletFristTo = mapFristTo(queryParams.varsletFristTo),
-    )
+        queryParams: SaksbehandlersFerdigstilteOppgaverQueryParams,
+    ): SaksbehandlersFerdigstilteOppgaverSearchCriteria {
+        val permissions = resolvePermissions()
+        return SaksbehandlersFerdigstilteOppgaverSearchCriteria(
+            typer = queryParams.typer.map { Type.of(it) },
+            ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+            hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+            navIdent = navIdent,
+            ferdigstiltFom = mapFrom(queryParams.ferdigstiltFrom),
+            ferdigstiltTom = queryParams.ferdigstiltTo ?: LocalDate.now(),
+            sortField = mapSortField(queryParams.sortering),
+            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            offset = 0,
+            limit = 9_999,
+            kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
+            kanBehandleFortrolig = permissions.kanBehandleFortrolig,
+            kanBehandleStrengtFortrolig = permissions.kanBehandleStrengtFortrolig,
+            fristFrom = mapFrom(queryParams.fristFrom),
+            fristTo = mapFristTo(queryParams.fristTo),
+            varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+            varsletFristTo = mapFristTo(queryParams.varsletFristTo),
+        )
+    }
 
     fun toReturnerteROLOppgaverSearchCriteria(
         navIdent: String,
         queryParams: MineReturnerteROLOppgaverQueryParams,
-    ) = ReturnerteROLOppgaverSearchCriteria(
-        typer = queryParams.typer.map { Type.of(it) },
-        ytelser = queryParams.ytelser.map { Ytelse.of(it) },
-        hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
-        navIdent = navIdent,
-        returnertFom = mapFrom(queryParams.returnertFrom),
-        returnertTom = queryParams.returnertTo ?: LocalDate.now(),
-        sortField = mapSortField(queryParams.sortering),
-        order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
-        offset = 0,
-        limit = 9_999,
-        kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
-        kanBehandleFortrolig = kanBehandleFortrolig(),
-        kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
-        fristFrom = mapFrom(queryParams.fristFrom),
-        fristTo = mapFristTo(queryParams.fristTo),
-        varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
-        varsletFristTo = mapFristTo(queryParams.varsletFristTo),
-    )
+    ): ReturnerteROLOppgaverSearchCriteria {
+        val permissions = resolvePermissions()
+        return ReturnerteROLOppgaverSearchCriteria(
+            typer = queryParams.typer.map { Type.of(it) },
+            ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+            hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+            navIdent = navIdent,
+            returnertFom = mapFrom(queryParams.returnertFrom),
+            returnertTom = queryParams.returnertTo ?: LocalDate.now(),
+            sortField = mapSortField(queryParams.sortering),
+            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            offset = 0,
+            limit = 9_999,
+            kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
+            kanBehandleFortrolig = permissions.kanBehandleFortrolig,
+            kanBehandleStrengtFortrolig = permissions.kanBehandleStrengtFortrolig,
+            fristFrom = mapFrom(queryParams.fristFrom),
+            fristTo = mapFristTo(queryParams.fristTo),
+            varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+            varsletFristTo = mapFristTo(queryParams.varsletFristTo),
+        )
+    }
 
-    fun toUferdigeOppgaverSearchCriteria(
+    fun toSaksbehandlersUferdigeOppgaverSearchCriteria(
         navIdent: String,
-        queryParams: MineUferdigeOppgaverQueryParams,
-    ) = UferdigeOppgaverSearchCriteria(
-        typer = queryParams.typer.map { Type.of(it) },
-        ytelser = queryParams.ytelser.map { Ytelse.of(it) },
-        hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
-        navIdent = navIdent,
-        sortField = mapSortField(queryParams.sortering),
-        order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
-        offset = 0,
-        limit = 9_999,
-        kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
-        kanBehandleFortrolig = kanBehandleFortrolig(),
-        kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
-        fristFrom = mapFrom(queryParams.fristFrom),
-        fristTo = mapFristTo(queryParams.fristTo),
-        varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
-        varsletFristTo = mapFristTo(queryParams.varsletFristTo),
-        helperStatusList = queryParams.helperStatusList,
-    )
+        queryParams: SaksbehandlersUferdigeOppgaverQueryParams,
+    ): SaksbehandlersUferdigeOppgaverSearchCriteria {
+        val permissions = resolvePermissions()
+        return SaksbehandlersUferdigeOppgaverSearchCriteria(
+            typer = queryParams.typer.map { Type.of(it) },
+            ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+            hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+            navIdent = navIdent,
+            sortField = mapSortField(queryParams.sortering),
+            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            offset = 0,
+            limit = 9_999,
+            kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
+            kanBehandleFortrolig = permissions.kanBehandleFortrolig,
+            kanBehandleStrengtFortrolig = permissions.kanBehandleStrengtFortrolig,
+            fristFrom = mapFrom(queryParams.fristFrom),
+            fristTo = mapFristTo(queryParams.fristTo),
+            varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+            varsletFristTo = mapFristTo(queryParams.varsletFristTo),
+            helperStatusList = queryParams.helperStatusList,
+        )
+    }
 
-    fun toOppgaverPaaVentSearchCriteria(
+    fun toSaksbehandlersOppgaverPaaVentSearchCriteria(
         navIdent: String,
-        queryParams: MineOppgaverPaaVentQueryParams,
-    ) = OppgaverPaaVentSearchCriteria(
-        typer = queryParams.typer.map { Type.of(it) },
-        ytelser = queryParams.ytelser.map { Ytelse.of(it) },
-        hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
-        navIdent = navIdent,
-        sattPaaVentReasons = queryParams.sattPaaVentReasonIds.map { SattPaaVentReason.of(it) },
-        sortField = mapSortField(queryParams.sortering),
-        order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
-        offset = 0,
-        limit = 9_999,
-        kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
-        kanBehandleFortrolig = kanBehandleFortrolig(),
-        kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
-        fristFrom = mapFrom(queryParams.fristFrom),
-        fristTo = mapFristTo(queryParams.fristTo),
-        varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
-        varsletFristTo = mapFristTo(queryParams.varsletFristTo),
-    )
+        queryParams: SaksbehandlersOppgaverPaaVentQueryParams,
+    ): SaksbehandlersOppgaverPaaVentSearchCriteria {
+        val permissions = resolvePermissions()
+        return SaksbehandlersOppgaverPaaVentSearchCriteria(
+            typer = queryParams.typer.map { Type.of(it) },
+            ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+            hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+            navIdent = navIdent,
+            sattPaaVentReasons = queryParams.sattPaaVentReasonIds.map { SattPaaVentReason.of(it) },
+            sortField = mapSortField(queryParams.sortering),
+            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            offset = 0,
+            limit = 9_999,
+            kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
+            kanBehandleFortrolig = permissions.kanBehandleFortrolig,
+            kanBehandleStrengtFortrolig = permissions.kanBehandleStrengtFortrolig,
+            fristFrom = mapFrom(queryParams.fristFrom),
+            fristTo = mapFristTo(queryParams.fristTo),
+            varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+            varsletFristTo = mapFristTo(queryParams.varsletFristTo),
+        )
+    }
 
     //-- enhetens oppgaver:
 
     fun toEnhetensFerdigstilteOppgaverSearchCriteria(
         enhetId: String,
         queryParams: EnhetensFerdigstilteOppgaverQueryParams,
-    ) = EnhetensFerdigstilteOppgaverSearchCriteria(
-        typer = queryParams.typer.map { Type.of(it) },
-        ytelser = queryParams.ytelser.map { Ytelse.of(it) },
-        hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
-        enhetId = enhetId,
-        saksbehandlere = queryParams.tildelteSaksbehandlere,
-        ferdigstiltFom = mapFrom(queryParams.ferdigstiltFrom),
-        ferdigstiltTom = queryParams.ferdigstiltTo ?: LocalDate.now(),
-        sortField = mapSortField(queryParams.sortering),
-        order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
-        offset = 0,
-        limit = 9_999,
-        kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
-        kanBehandleFortrolig = kanBehandleFortrolig(),
-        kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
-        fristFrom = mapFrom(queryParams.fristFrom),
-        fristTo = mapFristTo(queryParams.fristTo),
-        varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
-        varsletFristTo = mapFristTo(queryParams.varsletFristTo),
-    )
+    ): EnhetensFerdigstilteOppgaverSearchCriteria {
+        val permissions = resolvePermissions()
+        return EnhetensFerdigstilteOppgaverSearchCriteria(
+            typer = queryParams.typer.map { Type.of(it) },
+            ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+            hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+            enhetId = enhetId,
+            saksbehandlere = queryParams.tildelteSaksbehandlere,
+            ferdigstiltFom = mapFrom(queryParams.ferdigstiltFrom),
+            ferdigstiltTom = queryParams.ferdigstiltTo ?: LocalDate.now(),
+            sortField = mapSortField(queryParams.sortering),
+            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            offset = 0,
+            limit = 9_999,
+            kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
+            kanBehandleFortrolig = permissions.kanBehandleFortrolig,
+            kanBehandleStrengtFortrolig = permissions.kanBehandleStrengtFortrolig,
+            fristFrom = mapFrom(queryParams.fristFrom),
+            fristTo = mapFristTo(queryParams.fristTo),
+            varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+            varsletFristTo = mapFristTo(queryParams.varsletFristTo),
+        )
+    }
 
     fun toEnhetensOppgaverPaaVentSearchCriteria(
         enhetId: String,
         queryParams: EnhetensOppgaverPaaVentQueryParams,
-    ) = EnhetensOppgaverPaaVentSearchCriteria(
-        typer = queryParams.typer.map { Type.of(it) },
-        ytelser = queryParams.ytelser.map { Ytelse.of(it) },
-        hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
-        enhetId = enhetId,
-        saksbehandlere = queryParams.tildelteSaksbehandlere,
-        medunderskrivere = queryParams.medunderskrivere,
-        sattPaaVentReasons = queryParams.sattPaaVentReasonIds.map { SattPaaVentReason.of(it) },
-        sortField = mapSortField(queryParams.sortering),
-        order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
-        offset = 0,
-        limit = 9_999,
-        kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
-        kanBehandleFortrolig = kanBehandleFortrolig(),
-        kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
-        fristFrom = mapFrom(queryParams.fristFrom),
-        fristTo = mapFristTo(queryParams.fristTo),
-        varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
-        varsletFristTo = mapFristTo(queryParams.varsletFristTo),
-    )
+    ): EnhetensOppgaverPaaVentSearchCriteria {
+        val permissions = resolvePermissions()
+        return EnhetensOppgaverPaaVentSearchCriteria(
+            typer = queryParams.typer.map { Type.of(it) },
+            ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+            hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+            enhetId = enhetId,
+            saksbehandlere = queryParams.tildelteSaksbehandlere,
+            medunderskrivere = queryParams.medunderskrivere,
+            sattPaaVentReasons = queryParams.sattPaaVentReasonIds.map { SattPaaVentReason.of(it) },
+            sortField = mapSortField(queryParams.sortering),
+            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            offset = 0,
+            limit = 9_999,
+            kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
+            kanBehandleFortrolig = permissions.kanBehandleFortrolig,
+            kanBehandleStrengtFortrolig = permissions.kanBehandleStrengtFortrolig,
+            fristFrom = mapFrom(queryParams.fristFrom),
+            fristTo = mapFristTo(queryParams.fristTo),
+            varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+            varsletFristTo = mapFristTo(queryParams.varsletFristTo),
+        )
+    }
 
     fun toEnhetensUferdigeOppgaverSearchCriteria(
         enhetId: String,
         queryParams: EnhetensUferdigeOppgaverQueryParams,
-    ) = EnhetensUferdigeOppgaverSearchCriteria(
-        typer = queryParams.typer.map { Type.of(it) },
-        ytelser = queryParams.ytelser.map { Ytelse.of(it) },
-        hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
-        enhetId = enhetId,
-        saksbehandlere = queryParams.tildelteSaksbehandlere,
-        medunderskrivere = queryParams.medunderskrivere,
-        sortField = mapSortField(queryParams.sortering),
-        order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
-        offset = 0,
-        limit = 9_999,
-        kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
-        kanBehandleFortrolig = kanBehandleFortrolig(),
-        kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
-        fristFrom = mapFrom(queryParams.fristFrom),
-        fristTo = mapFristTo(queryParams.fristTo),
-        varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
-        varsletFristTo = mapFristTo(queryParams.varsletFristTo),
-        helperStatusList = queryParams.helperStatusList,
-    )
+    ): EnhetensUferdigeOppgaverSearchCriteria {
+        val permissions = resolvePermissions()
+        return EnhetensUferdigeOppgaverSearchCriteria(
+            typer = queryParams.typer.map { Type.of(it) },
+            ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+            hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+            enhetId = enhetId,
+            saksbehandlere = queryParams.tildelteSaksbehandlere,
+            medunderskrivere = queryParams.medunderskrivere,
+            sortField = mapSortField(queryParams.sortering),
+            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            offset = 0,
+            limit = 9_999,
+            kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
+            kanBehandleFortrolig = permissions.kanBehandleFortrolig,
+            kanBehandleStrengtFortrolig = permissions.kanBehandleStrengtFortrolig,
+            fristFrom = mapFrom(queryParams.fristFrom),
+            fristTo = mapFristTo(queryParams.fristTo),
+            varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+            varsletFristTo = mapFristTo(queryParams.varsletFristTo),
+            helperStatusList = queryParams.helperStatusList,
+        )
+    }
 
     fun toKrolsUferdigeOppgaverSearchCriteria(
         queryParams: KrolsUferdigeOppgaverQueryParams,
-    ) = KrolsUferdigeOppgaverSearchCriteria(
-        typer = queryParams.typer.map { Type.of(it) },
-        ytelser = queryParams.ytelser.map { Ytelse.of(it) },
-        hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
-        rolList = queryParams.tildelteRol,
-        sortField = mapSortField(queryParams.sortering),
-        order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
-        offset = 0,
-        limit = 9_999,
-        kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
-        kanBehandleFortrolig = kanBehandleFortrolig(),
-        kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
-        fristFrom = mapFrom(queryParams.fristFrom),
-        fristTo = mapFristTo(queryParams.fristTo),
-        varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
-        varsletFristTo = mapFristTo(queryParams.varsletFristTo),
-    )
+    ): KrolsUferdigeOppgaverSearchCriteria {
+        val permissions = resolvePermissions()
+        return KrolsUferdigeOppgaverSearchCriteria(
+            typer = queryParams.typer.map { Type.of(it) },
+            ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+            hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+            rolList = queryParams.tildelteRol,
+            sortField = mapSortField(queryParams.sortering),
+            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            offset = 0,
+            limit = 9_999,
+            kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
+            kanBehandleFortrolig = permissions.kanBehandleFortrolig,
+            kanBehandleStrengtFortrolig = permissions.kanBehandleStrengtFortrolig,
+            fristFrom = mapFrom(queryParams.fristFrom),
+            fristTo = mapFristTo(queryParams.fristTo),
+            varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+            varsletFristTo = mapFristTo(queryParams.varsletFristTo),
+        )
+    }
 
     fun toKrolsReturnerteOppgaverSearchCriteria(
         queryParams: KrolsReturnerteOppgaverQueryParams,
-    ) = KrolsReturnerteOppgaverSearchCriteria(
-        typer = queryParams.typer.map { Type.of(it) },
-        ytelser = queryParams.ytelser.map { Ytelse.of(it) },
-        hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
-        returnertFom = mapFrom(queryParams.returnertFrom),
-        returnertTom = queryParams.returnertTo ?: LocalDate.now(),
-        sortField = mapSortField(queryParams.sortering),
-        order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
-        offset = 0,
-        limit = 9_999,
-        kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
-        kanBehandleFortrolig = kanBehandleFortrolig(),
-        kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
-        fristFrom = mapFrom(queryParams.fristFrom),
-        fristTo = mapFristTo(queryParams.fristTo),
-        varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
-        varsletFristTo = mapFristTo(queryParams.varsletFristTo),
-    )
+    ): KrolsReturnerteOppgaverSearchCriteria {
+        val permissions = resolvePermissions()
+        return KrolsReturnerteOppgaverSearchCriteria(
+            typer = queryParams.typer.map { Type.of(it) },
+            ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+            hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+            returnertFom = mapFrom(queryParams.returnertFrom),
+            returnertTom = queryParams.returnertTo ?: LocalDate.now(),
+            sortField = mapSortField(queryParams.sortering),
+            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            offset = 0,
+            limit = 9_999,
+            kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
+            kanBehandleFortrolig = permissions.kanBehandleFortrolig,
+            kanBehandleStrengtFortrolig = permissions.kanBehandleStrengtFortrolig,
+            fristFrom = mapFrom(queryParams.fristFrom),
+            fristTo = mapFristTo(queryParams.fristTo),
+            varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+            varsletFristTo = mapFristTo(queryParams.varsletFristTo),
+        )
+    }
 
     //-- ledige oppgaver:
 
-    fun toLedigeOppgaverSearchCriteria(queryParams: MineLedigeOppgaverQueryParams): LedigeOppgaverSearchCriteria =
-        LedigeOppgaverSearchCriteria(
+    fun toLedigeOppgaverSearchCriteria(queryParams: SaksbehandlersLedigeOppgaverQueryParams): LedigeOppgaverSearchCriteria {
+        val permissions = resolvePermissions()
+        return LedigeOppgaverSearchCriteria(
             typer = queryParams.typer.map { Type.of(it) },
             ytelser = queryParams.ytelser.map { Ytelse.of(it) },
             hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
@@ -254,17 +299,19 @@ class BehandlingerSearchCriteriaMapper(
             order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
             offset = 0,
             limit = 9_999,
-            kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
-            kanBehandleFortrolig = kanBehandleFortrolig(),
-            kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+            kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
+            kanBehandleFortrolig = permissions.kanBehandleFortrolig,
+            kanBehandleStrengtFortrolig = permissions.kanBehandleStrengtFortrolig,
             fristFrom = mapFrom(queryParams.fristFrom),
             fristTo = mapFristTo(queryParams.fristTo),
             varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
             varsletFristTo = mapFristTo(queryParams.varsletFristTo),
         )
+    }
 
-    fun toSearchCriteriaForLedigeMedUtgaattFrist(queryParams: MineLedigeOppgaverCountQueryParams) =
-        CountLedigeOppgaverMedUtgaattFristSearchCriteria(
+    fun toSearchCriteriaForLedigeMedUtgaattFrist(queryParams: SaksbehandlersLedigeOppgaverCountQueryParams): CountLedigeOppgaverMedUtgaattFristSearchCriteria {
+        val permissions = resolvePermissions()
+        return CountLedigeOppgaverMedUtgaattFristSearchCriteria(
             typer = queryParams.typer.map { Type.of(it) },
             ytelser = queryParams.ytelser.map { Ytelse.of(it) },
             hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
@@ -272,10 +319,11 @@ class BehandlingerSearchCriteriaMapper(
             fristTo = LocalDate.now().minusDays(1),
             varsletFristFrom = LocalDate.now().minusYears(15),
             varsletFristTo = LocalDate.now().plusYears(15),
-            kanBehandleEgenAnsatt = kanBehandleEgenAnsatt(),
-            kanBehandleFortrolig = kanBehandleFortrolig(),
-            kanBehandleStrengtFortrolig = kanBehandleStrengtFortrolig(),
+            kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
+            kanBehandleFortrolig = permissions.kanBehandleFortrolig,
+            kanBehandleStrengtFortrolig = permissions.kanBehandleStrengtFortrolig,
         )
+    }
 
     private fun mapSortField(sortering: Sortering?): SortField =
         when (sortering) {

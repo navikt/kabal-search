@@ -25,34 +25,12 @@ class ProblemHandlingControllerAdvice : ResponseEntityExceptionHandler() {
         create(HttpStatus.FORBIDDEN, ex)
 
     @ExceptionHandler
-    fun handleNotMatchingUser(ex: NotMatchingUserException, request: NativeWebRequest): ProblemDetail =
-        create(HttpStatus.FORBIDDEN, ex)
-
-    @ExceptionHandler
-    fun handleFeatureNotEnabled(ex: FeatureNotEnabledException, request: NativeWebRequest): ProblemDetail =
-        create(HttpStatus.FORBIDDEN, ex)
-
-    @ExceptionHandler
-    fun handleNoSaksbehandlerRoleEnabled(
-        ex: NoSaksbehandlerRoleException,
-        request: NativeWebRequest
-    ): ProblemDetail =
-        create(HttpStatus.FORBIDDEN, ex)
-
-    @ExceptionHandler
-    fun handleNotOwnEnhet(ex: NotOwnEnhetException, request: NativeWebRequest): ProblemDetail =
-        create(HttpStatus.FORBIDDEN, ex)
-
-    @ExceptionHandler
-    fun handlePersonNotFound(ex: PersonNotFoundException, request: NativeWebRequest): ProblemDetail =
+    fun handleUserNotFoundException(ex: UserNotFoundException, request: NativeWebRequest): ProblemDetail =
         create(HttpStatus.NOT_FOUND, ex)
 
     @ExceptionHandler
-    fun handleEnhetNotFoundForSaksbehandlerException(
-        ex: EnhetNotFoundForSaksbehandlerException,
-        request: NativeWebRequest
-    ): ProblemDetail =
-        create(HttpStatus.INTERNAL_SERVER_ERROR, ex)
+    fun handleGroupNotFoundException(ex: GroupNotFoundException, request: NativeWebRequest): ProblemDetail =
+        create(HttpStatus.NOT_FOUND, ex)
 
     @ExceptionHandler
     fun handleResponseStatusException(
