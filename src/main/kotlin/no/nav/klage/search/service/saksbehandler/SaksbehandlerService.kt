@@ -2,6 +2,7 @@ package no.nav.klage.search.service.saksbehandler
 
 import no.nav.klage.search.api.view.SaksbehandlerView
 import no.nav.klage.search.clients.klagelookup.KlageLookupClient
+import no.nav.klage.search.exceptions.UserNotFoundException
 import no.nav.klage.search.gateway.AzureGateway
 import no.nav.klage.search.util.getLogger
 import org.springframework.stereotype.Service
@@ -17,7 +18,12 @@ class SaksbehandlerService(
     }
 
     fun getNameForIdent(navIdent: String): String? {
-        return klageLookupClient.getUserInfo(navIdent = navIdent).sammensattNavn
+        return try {
+            klageLookupClient.getUserInfo(navIdent = navIdent).sammensattNavn
+        } catch(_: UserNotFoundException) {
+            logger.warn("User $navIdent not found in klageLookup. Returning default value.")
+            "Ukjent navn"
+        }
     }
 
     fun getSaksbehandlereForEnhet(enhetsnummer: String): List<SaksbehandlerView> {
