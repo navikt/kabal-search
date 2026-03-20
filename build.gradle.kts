@@ -6,7 +6,7 @@ val tokenValidationVersion = "6.0.2"
 val logstashVersion = "9.0"
 val springRetryVersion = "2.0.12"
 val springMockkVersion = "5.0.1"
-val springDocVersion = "3.0.1"
+val springDocVersion = "3.0.2"
 val testContainersVersion = "2.0.3"
 val threeTenExtraVersion = "1.8.0"
 val archunitVersion = "1.4.1"
@@ -15,13 +15,13 @@ val reactorSpringVersion = "1.0.1.RELEASE"
 val kodeverkVersion = "3.2.5"
 val ehcacheVersion = "3.11.1"
 val logbackSyslog4jVersion = "1.0.0"
-val otelVersion = "1.59.0"
+val otelVersion = "1.60.1"
 
 java.sourceCompatibility = JavaVersion.VERSION_21
 
 plugins {
     val kotlinVersion = "2.3.10"
-    id("org.springframework.boot") version "4.0.2"
+    id("org.springframework.boot") version "4.0.3"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     idea
@@ -43,7 +43,7 @@ repositories {
 configurations.all {
     resolutionStrategy.dependencySubstitution {
         substitute(module("org.lz4:lz4-java"))
-            .using(module("at.yawk.lz4:lz4-java:1.10.1"))
+            .using(module("at.yawk.lz4:lz4-java:1.10.4"))
             .because("CVE-2025-12183 and CVE-2025-66566: org.lz4:lz4-java is archived, new releases under at.yawk.lz4")
     }
 }
