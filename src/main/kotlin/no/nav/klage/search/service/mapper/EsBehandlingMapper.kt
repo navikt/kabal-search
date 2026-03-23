@@ -29,6 +29,8 @@ class EsBehandlingMapper(
             saksnummer = behandling.sakFagsakId,
             innsendt = behandling.innsendtDato,
             sakMottattKaDato = behandling.sakMottattKaDato,
+            sendtTilTrygderetten = behandling.sendtTilTrygderetten,
+            ageStartDate = behandling.ageStartDate,
             avsluttetAvSaksbehandler = behandling.avsluttetAvSaksbehandlerTidspunkt,
             returnertFraROL = behandling.returnertFraROLTidspunkt,
             frist = behandling.fristDato,

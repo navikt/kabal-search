@@ -373,6 +373,14 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                     EsBehandling::varsletFrist.name
                 }
 
+                SortField.ALDER -> {
+                    EsBehandling::ageStartDate.name
+                }
+
+                SortField.SENDT_TIL_TRYGDERETTEN -> {
+                    EsBehandling::sendtTilTrygderetten.name
+                }
+
                 else -> {
                     EsBehandling::frist.name
                 }

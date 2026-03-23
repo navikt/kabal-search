@@ -64,6 +64,14 @@
       "type": "date",
       "format": "date_time"
     },
+    "sendtTilTrygderetten": {
+      "type": "date",
+      "format": "date_time"
+    },
+    "ageStartDate": {
+      "type": "date",
+      "format": "date"
+    },
     "sakenGjelderFnr": {
       "type": "keyword"
     },

@@ -14,6 +14,8 @@ class BehandlingSkjemaV2(
     val sakFagsakId: String,
     val innsendtDato: LocalDate?,
     val sakMottattKaDato: LocalDateTime,
+    val sendtTilTrygderetten: LocalDateTime?,
+    val ageStartDate: LocalDate?,
     val avsluttetAvSaksbehandlerTidspunkt: LocalDateTime?,
     val returnertFraROLTidspunkt: LocalDateTime?,
     val fristDato: LocalDate?,

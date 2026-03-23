@@ -93,6 +93,8 @@ class ElasticsearchServiceStatusTest {
         tildeltSaksbehandlerident = null,
         innsendt = LocalDate.of(2019, 10, 1),
         sakMottattKaDato = LocalDateTime.of(2019, 12, 1, 0, 0),
+        sendtTilTrygderetten = null,
+        ageStartDate = LocalDate.of(2019, 12, 1),
         frist = LocalDate.of(2020, 12, 1),
         varsletFrist = LocalDate.of(2020, 12, 1),
         hjemmelIdList = listOf(),

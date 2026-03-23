@@ -2,8 +2,8 @@ package no.nav.klage.search.api.mapper
 
 import no.nav.klage.kodeverk.SattPaaVentReason
 import no.nav.klage.kodeverk.Type
-import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.kodeverk.hjemmel.Hjemmel
+import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.search.api.view.*
 import no.nav.klage.search.domain.*
 import no.nav.klage.search.service.saksbehandler.OAuthTokenService
@@ -281,12 +281,13 @@ class BehandlingerSearchCriteriaMapper(
         when (sortering) {
             Sortering.MOTTATT -> SortField.MOTTATT
             Sortering.FRIST -> SortField.FRIST
-            Sortering.ALDER -> SortField.MOTTATT
+            Sortering.ALDER -> SortField.ALDER
             Sortering.PAA_VENT_FROM -> SortField.PAA_VENT_FROM
             Sortering.PAA_VENT_TO -> SortField.PAA_VENT_TO
             Sortering.AVSLUTTET_AV_SAKSBEHANDLER -> SortField.AVSLUTTET_AV_SAKSBEHANDLER
             Sortering.RETURNERT_FRA_ROL -> SortField.RETURNERT_FRA_ROL
             Sortering.VARSLET_FRIST -> SortField.VARSLET_FRIST
+            Sortering.SENDT_TIL_TRYGDERETTEN -> SortField.SENDT_TIL_TRYGDERETTEN
             else -> SortField.FRIST
         }
 
