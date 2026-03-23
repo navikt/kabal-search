@@ -370,7 +370,6 @@ data class CountLedigeOppgaverMedUtgaattFristSearchCriteria(
     override val kanBehandleStrengtFortrolig: Boolean,
 ) : BasicSearchCriteria, SecuritySearchCriteria
 
-
 data class TildelteOppgaverSearchCriteria(
     override val typer: List<Type>,
     override val ytelser: List<Ytelse>,
