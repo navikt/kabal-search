@@ -36,6 +36,18 @@ class TokenUtil(
         return response.access_token!!
     }
 
+    fun getSaksbehandlerAccessTokenWithKlageLookupScope(): String {
+        val clientProperties = clientConfigurationProperties.registration["klage-lookup-onbehalfof"]!!
+        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
+        return response.access_token!!
+    }
+
+    fun getAppAccessTokenWithKlageLookupScope(): String {
+        val clientProperties = clientConfigurationProperties.registration["klage-lookup-maskintilmaskin"]!!
+        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
+        return response.access_token!!
+    }
+
     fun getIdent(): String =
         tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
             ?.jwtTokenClaims?.get("NAVident")?.toString()
@@ -44,4 +56,32 @@ class TokenUtil(
     fun getRoleIdsFromToken(): List<String> =
         tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
             ?.jwtTokenClaims?.getAsList("groups").orEmpty().toList()
+
+    fun getCurrentTokenType(): TokenType {
+        val validationContext = runCatching { tokenValidationContextHolder.getTokenValidationContext() }.getOrNull()
+        val tokenType = if (validationContext == null) {
+            TokenType.UNAUTHENTICATED
+        } else {
+            val idtype =
+                runCatching { validationContext.getJwtToken(SecurityConfiguration.ISSUER_AAD)?.jwtTokenClaims?.get("idtyp") }.getOrNull()
+            val navIdent =
+                runCatching {
+                    validationContext.getJwtToken(SecurityConfiguration.ISSUER_AAD)?.jwtTokenClaims?.get("NAVident")
+                }.getOrNull()
+            if (idtype != null && idtype == "app") {
+                TokenType.CC
+            } else if (navIdent != null) {
+                TokenType.OBO
+            } else {
+                TokenType.UNAUTHENTICATED
+            }
+        }
+        return tokenType
+    }
+
+    enum class TokenType {
+        CC,
+        OBO,
+        UNAUTHENTICATED,
+    }
 }
