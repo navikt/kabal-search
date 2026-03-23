@@ -97,7 +97,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits
     }
 
-    open fun findSaksbehandlersFerdigstilteOppgaverByCriteria(criteria: FerdigstilteOppgaverSearchCriteria): BehandlingerSearchHits {
+    open fun findSaksbehandlersFerdigstilteOppgaverByCriteria(criteria: SaksbehandlersFerdigstilteOppgaverSearchCriteria): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
@@ -121,7 +121,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits
     }
 
-    open fun findSaksbehandlersUferdigeOppgaverByCriteria(criteria: UferdigeOppgaverSearchCriteria): BehandlingerSearchHits {
+    open fun findSaksbehandlersUferdigeOppgaverByCriteria(criteria: SaksbehandlersUferdigeOppgaverSearchCriteria): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
@@ -133,7 +133,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits
     }
 
-    open fun findROLsUferdigeOppgaverByCriteria(criteria: UferdigeOppgaverSearchCriteria): BehandlingerSearchHits {
+    open fun findROLsUferdigeOppgaverByCriteria(criteria: SaksbehandlersUferdigeOppgaverSearchCriteria): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toROLEsQuery())
         searchSourceBuilder.addPaging(criteria)
@@ -145,7 +145,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits
     }
 
-    open fun findSaksbehandlersOppgaverPaaVentByCriteria(criteria: OppgaverPaaVentSearchCriteria): BehandlingerSearchHits {
+    open fun findSaksbehandlersOppgaverPaaVentByCriteria(criteria: SaksbehandlersOppgaverPaaVentSearchCriteria): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
@@ -484,7 +484,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return baseQuery
     }
 
-    private fun FerdigstilteOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
+    private fun SaksbehandlersFerdigstilteOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
         teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
@@ -518,7 +518,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return baseQuery
     }
 
-    private fun UferdigeOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
+    private fun SaksbehandlersUferdigeOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
         teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
@@ -540,7 +540,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return baseQuery
     }
 
-    private fun UferdigeOppgaverSearchCriteria.toROLEsQuery(): QueryBuilder {
+    private fun SaksbehandlersUferdigeOppgaverSearchCriteria.toROLEsQuery(): QueryBuilder {
         teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
@@ -556,7 +556,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return baseQuery
     }
 
-    private fun OppgaverPaaVentSearchCriteria.toEsQuery(): QueryBuilder {
+    private fun SaksbehandlersOppgaverPaaVentSearchCriteria.toEsQuery(): QueryBuilder {
         teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)

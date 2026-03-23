@@ -8,7 +8,7 @@ import no.nav.klage.search.api.view.*
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.service.ElasticsearchService
 import no.nav.klage.search.service.OppgaverService
-import no.nav.klage.search.service.saksbehandler.OAuthTokenService
+import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.GetMapping
@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @Tag(name = "kabal-search")
 @ProtectedWithClaims(issuer = ISSUER_AAD)
-class OppgaverListController(
+class SaksbehandlersOppgaverListController(
     private val behandlingListMapper: BehandlingListMapper,
     private val elasticsearchService: ElasticsearchService,
     private val behandlingerSearchCriteriaMapper: BehandlingerSearchCriteriaMapper,
-    private val oAuthTokenService: OAuthTokenService,
     private val oppgaverService: OppgaverService,
+    private val tokenUtil: TokenUtil,
 ) {
 
     companion object {
@@ -35,8 +35,8 @@ class OppgaverListController(
         description = "Henter alle ledige oppgaver saksbehandler har tilgang til."
     )
     @GetMapping("/oppgaver/ledige", produces = ["application/json"])
-    fun getMineLedigeOppgaver(
-        queryParams: MineLedigeOppgaverQueryParams
+    fun getSaksbehandlersLedigeOppgaver(
+        queryParams: SaksbehandlersLedigeOppgaverQueryParams
     ): BehandlingerListResponse {
         logger.debug("Params: {}", queryParams)
         return oppgaverService.getLedigeOppgaverForInnloggetSaksbehandler(queryParams = queryParams)
@@ -47,13 +47,13 @@ class OppgaverListController(
         description = "Henter alle ferdigstilte oppgaver som saksbehandler har tilgang til."
     )
     @GetMapping("/oppgaver/ferdigstilte", produces = ["application/json"])
-    fun getMineFerdigstilteOppgaver(
-        queryParams: MineFerdigstilteOppgaverQueryParams
+    fun getSaksbehandlersFerdigstilteOppgaver(
+        queryParams: SaksbehandlersFerdigstilteOppgaverQueryParams
     ): BehandlingerListResponse {
         logger.debug("Params: {}", queryParams)
 
-        val searchCriteria = behandlingerSearchCriteriaMapper.toFerdigstilteOppgaverSearchCriteria(
-            navIdent = oAuthTokenService.getInnloggetIdent(),
+        val searchCriteria = behandlingerSearchCriteriaMapper.toSaksbehandlersFerdigstilteOppgaverSearchCriteria(
+            navIdent = tokenUtil.getIdent(),
             queryParams = queryParams
         )
 
@@ -71,13 +71,13 @@ class OppgaverListController(
         description = "Henter alle uferdige oppgaver som saksbehandler har tilgang til."
     )
     @GetMapping("/oppgaver/uferdige", produces = ["application/json"])
-    fun getMineUferdigeOppgaver(
-        queryParams: MineUferdigeOppgaverQueryParams
+    fun getSaksbehandlersUferdigeOppgaver(
+        queryParams: SaksbehandlersUferdigeOppgaverQueryParams
     ): BehandlingerListResponse {
         logger.debug("Params: {}", queryParams)
 
-        val searchCriteria = behandlingerSearchCriteriaMapper.toUferdigeOppgaverSearchCriteria(
-            navIdent = oAuthTokenService.getInnloggetIdent(),
+        val searchCriteria = behandlingerSearchCriteriaMapper.toSaksbehandlersUferdigeOppgaverSearchCriteria(
+            navIdent = tokenUtil.getIdent(),
             queryParams = queryParams
         )
 
@@ -95,13 +95,13 @@ class OppgaverListController(
         description = "Henter alle oppgaver satt på vent som saksbehandler har tilgang til."
     )
     @GetMapping("/oppgaver/paavent", produces = ["application/json"])
-    fun getMineOppgaverPaaVent(
-        queryParams: MineOppgaverPaaVentQueryParams
+    fun getSaksbehandlersOppgaverPaaVent(
+        queryParams: SaksbehandlersOppgaverPaaVentQueryParams
     ): BehandlingerListResponse {
         logger.debug("Params: {}", queryParams)
 
-        val searchCriteria = behandlingerSearchCriteriaMapper.toOppgaverPaaVentSearchCriteria(
-            navIdent = oAuthTokenService.getInnloggetIdent(),
+        val searchCriteria = behandlingerSearchCriteriaMapper.toSaksbehandlersOppgaverPaaVentSearchCriteria(
+            navIdent = tokenUtil.getIdent(),
             queryParams = queryParams
         )
 
@@ -120,7 +120,7 @@ class OppgaverListController(
     )
     @GetMapping("/antalloppgavermedutgaattefrister", produces = ["application/json"])
     fun getUtgaatteFristerAvailableToSaksbehandlerCount(
-        queryParams: MineLedigeOppgaverCountQueryParams
+        queryParams: SaksbehandlersLedigeOppgaverCountQueryParams
     ): AntallUtgaatteFristerResponse {
         logger.debug("Params: {}", queryParams)
         return oppgaverService.getUtgaatteFristerAvailableToSaksbehandlerCount(queryParams = queryParams)
