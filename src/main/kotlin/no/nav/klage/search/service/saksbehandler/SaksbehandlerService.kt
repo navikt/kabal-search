@@ -1,47 +1,34 @@
 package no.nav.klage.search.service.saksbehandler
 
 import no.nav.klage.search.api.view.SaksbehandlerView
+import no.nav.klage.search.clients.klagelookup.KlageLookupClient
+import no.nav.klage.search.exceptions.UserNotFoundException
 import no.nav.klage.search.gateway.AzureGateway
 import no.nav.klage.search.util.getLogger
 import org.springframework.stereotype.Service
-import kotlin.system.measureTimeMillis
 
 @Service
 class SaksbehandlerService(
     private val azureGateway: AzureGateway,
+    private val klageLookupClient: KlageLookupClient,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-
-        val saksbehandlerNameCache = mutableMapOf<String, String>()
-
-        const val MAX_AMOUNT_IDENTS_IN_GRAPH_QUERY = 15
     }
 
-    private fun expandAndReturnSaksbehandlerNameCache(identer: Set<String>): Map<String, String> {
-        logger.debug("Fetching names for saksbehandlere from Microsoft Graph")
-
-        val identerNotInCache = identer.toMutableSet()
-        identerNotInCache -= saksbehandlerNameCache.keys
-        logger.debug("Only fetching identer not in cache: {}", identerNotInCache)
-
-        val chunkedList = identerNotInCache.chunked(MAX_AMOUNT_IDENTS_IN_GRAPH_QUERY)
-
-        val measuredTimeMillis = measureTimeMillis {
-            saksbehandlerNameCache += azureGateway.getAllDisplayNames(chunkedList)
+    fun getNameForIdent(navIdent: String): String? {
+        return try {
+            klageLookupClient.getUserInfo(navIdent = navIdent).sammensattNavn
+        } catch (_: UserNotFoundException) {
+            logger.warn("User $navIdent not found in klageLookup. Returning default value.")
+            "Ukjent navn"
         }
-        logger.debug("It took {} millis to fetch all names", measuredTimeMillis)
-
-        return saksbehandlerNameCache
     }
-
-    fun getNameForIdent(it: String) =
-        expandAndReturnSaksbehandlerNameCache(setOf(it)).getOrDefault(it, "Ukjent navn")
 
     fun getSaksbehandlereForEnhet(enhetsnummer: String): List<SaksbehandlerView> {
-        val azureOutput = azureGateway.getEnhetensAnsattesNavIdentsWithKabalSaksbehandlerRole(enhetsnummer = enhetsnummer)
+        val azureOutput =
+            azureGateway.getEnhetensAnsattesNavIdentsWithKabalSaksbehandlerRole(enhetsnummer = enhetsnummer)
         return azureOutput.value?.map {
             SaksbehandlerView(
                 navIdent = it.onPremisesSamAccountName,
@@ -60,6 +47,12 @@ class SaksbehandlerService(
         } ?: emptyList()
     }
 
-    fun getEnhetsnummerForNavIdent(navIdent: String): String? = azureGateway.getEnhetsnummerForNavIdent(navIdent)
-
+    fun getEnhetsnummerForNavIdent(navIdent: String): String? {
+        return try {
+            klageLookupClient.getUserInfo(navIdent = navIdent).enhet.enhetNr
+        } catch (_: UserNotFoundException) {
+            logger.warn("User $navIdent not found in klageLookup. Returning default value.")
+            null
+        }
+    }
 }

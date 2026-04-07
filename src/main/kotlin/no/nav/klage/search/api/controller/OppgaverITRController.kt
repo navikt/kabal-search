@@ -2,16 +2,18 @@ package no.nav.klage.search.api.controller
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import no.nav.klage.kodeverk.AzureGroup
 import no.nav.klage.search.api.mapper.BehandlingListMapper
 import no.nav.klage.search.api.mapper.BehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.BehandlingerListResponse
-import no.nav.klage.search.api.view.TildelteOppgaverITRQueryParams
-import no.nav.klage.search.api.view.OppgaverPaaVentITRQueryParams
 import no.nav.klage.search.api.view.LedigeOppgaverITRQueryParams
+import no.nav.klage.search.api.view.OppgaverPaaVentITRQueryParams
+import no.nav.klage.search.api.view.TildelteOppgaverITRQueryParams
+import no.nav.klage.search.clients.klagelookup.KlageLookupClient
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.exceptions.MissingTilgangException
 import no.nav.klage.search.service.ElasticsearchService
-import no.nav.klage.search.service.saksbehandler.OAuthTokenService
+import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.GetMapping
@@ -24,7 +26,8 @@ class OppgaverITRController(
     private val behandlingListMapper: BehandlingListMapper,
     private val elasticsearchService: ElasticsearchService,
     private val behandlingerSearchCriteriaMapper: BehandlingerSearchCriteriaMapper,
-    private val oAuthTokenService: OAuthTokenService
+    private val tokenUtil: TokenUtil,
+    private val klageLookupClient: KlageLookupClient
 ) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
@@ -113,8 +116,12 @@ class OppgaverITRController(
     }
 
     private fun validateRettigheterForOppgaverITR() {
-        if (!oAuthTokenService.isKabalOppgavestyringAlleEnheter()) {
-            throw MissingTilgangException("Bruker mangler tilgang")
+        val navIdent = tokenUtil.getIdent()
+        if (!klageLookupClient.getUserGroups(navIdent = navIdent).groups.contains(AzureGroup.KABAL_OPPGAVESTYRING_ALLE_ENHETER)) {
+            val message =
+                "$navIdent har ikke tilgang til å se alle tildelte oppgaver."
+            logger.warn(message)
+            throw MissingTilgangException(message)
         }
     }
 }

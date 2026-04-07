@@ -10,7 +10,7 @@ import no.nav.klage.search.api.view.MineReturnerteROLOppgaverQueryParams
 import no.nav.klage.search.api.view.MineUferdigeOppgaverQueryParams
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.service.ElasticsearchService
-import no.nav.klage.search.service.saksbehandler.OAuthTokenService
+import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.GetMapping
@@ -23,7 +23,7 @@ class RolOppgaverListController(
     private val behandlingListMapper: BehandlingListMapper,
     private val elasticsearchService: ElasticsearchService,
     private val behandlingerSearchCriteriaMapper: BehandlingerSearchCriteriaMapper,
-    private val oAuthTokenService: OAuthTokenService,
+    private val tokenUtil: TokenUtil,
 ) {
 
     companion object {
@@ -65,7 +65,7 @@ class RolOppgaverListController(
         logger.debug("Params: {}", queryParams)
 
         val searchCriteria = behandlingerSearchCriteriaMapper.toReturnerteROLOppgaverSearchCriteria(
-            navIdent = oAuthTokenService.getInnloggetIdent(),
+            navIdent = tokenUtil.getIdent(),
             queryParams = queryParams
         )
 
@@ -89,7 +89,7 @@ class RolOppgaverListController(
         logger.debug("Params: {}", queryParams)
 
         val searchCriteria = behandlingerSearchCriteriaMapper.toUferdigeOppgaverSearchCriteria(
-            navIdent = oAuthTokenService.getInnloggetIdent(),
+            navIdent = tokenUtil.getIdent(),
             queryParams = queryParams
         )
 
