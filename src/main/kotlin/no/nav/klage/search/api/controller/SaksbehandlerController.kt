@@ -55,7 +55,7 @@ class SaksbehandlerController(
 
         val userGroups = klageLookupClient.getUserGroups(navIdent).groups
 
-        val esResponse = elasticsearchService.findSaksbehandlereByEnhetCriteria(
+        val esResponse = elasticsearchService.findSaksbehandlerIdentsByEnhetCriteria(
             SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria(
                 enhet = enhet,
                 kanBehandleEgenAnsatt = userGroups.contains(AzureGroup.EGEN_ANSATT),
@@ -66,8 +66,8 @@ class SaksbehandlerController(
 
         val saksbehandlereFromES = esResponse.map {
             SaksbehandlerView(
-                navIdent = it.navIdent,
-                navn = it.navn
+                navIdent = it,
+                navn = saksbehandlerService.getNameForIdent(navIdent = it) ?: "Ukjent navn"
             )
         }
 
@@ -97,7 +97,7 @@ class SaksbehandlerController(
 
         val userGroups = klageLookupClient.getUserGroups(navIdent).groups
 
-        val esResponse = elasticsearchService.findMedunderskrivereByEnhetCriteria(
+        val esResponse = elasticsearchService.findMedunderskriverIdentsByEnhetCriteria(
             SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria(
                 enhet = enhet,
                 kanBehandleEgenAnsatt = userGroups.contains(AzureGroup.EGEN_ANSATT),
@@ -108,8 +108,8 @@ class SaksbehandlerController(
 
         val saksbehandlereFromES = esResponse.map {
             SaksbehandlerView(
-                navIdent = it.navIdent,
-                navn = it.navn
+                navIdent = it,
+                navn = saksbehandlerService.getNameForIdent(navIdent = it) ?: "Ukjent navn"
             )
         }
 
@@ -134,7 +134,7 @@ class SaksbehandlerController(
         val navIdent = tokenUtil.getIdent()
         val userGroups = klageLookupClient.getUserGroups(navIdent).groups
 
-        val esResponse = elasticsearchService.findROLListByEnhetCriteria(
+        val esResponse = elasticsearchService.findROLIdentsByEnhetCriteria(
             ROLListSearchCriteria(
                 kanBehandleEgenAnsatt = userGroups.contains(AzureGroup.EGEN_ANSATT),
                 kanBehandleFortrolig = userGroups.contains(AzureGroup.FORTROLIG),
@@ -144,8 +144,8 @@ class SaksbehandlerController(
 
         val rolListFromES = esResponse.map {
             SaksbehandlerView(
-                navIdent = it.navIdent,
-                navn = it.navn
+                navIdent = it,
+                navn = saksbehandlerService.getNameForIdent(navIdent = it) ?: "Ukjent navn"
             )
         }
 

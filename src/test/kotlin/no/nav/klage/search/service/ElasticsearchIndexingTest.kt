@@ -118,21 +118,18 @@ class ElasticsearchIndexingTest {
             egenAnsatt = false,
             fortrolig = false,
             status = IKKE_TILDELT,
-            medunderskriverNavn = null,
             medunderskriverEnhet = null,
             medunderskriverFlowStateId = FlowState.NOT_SENT.id,
             fagsystemId = "1",
             sattPaaVent = LocalDate.now(),
             avsluttetAvSaksbehandler = LocalDateTime.now(),
             returnertFraROL = null,
-            tildeltSaksbehandlernavn = "null",
             medunderskriverident = "null",
             saksdokumenter = listOf(EsSaksdokument(journalpostId = "1", dokumentInfoId = "bc")),
             strengtFortrolig = false,
             sattPaaVentExpires = LocalDate.now(),
             feilregistrert = LocalDateTime.now(),
             rolIdent = "null",
-            rolNavn = null,
             rolFlowStateId = FlowState.NOT_SENT.id,
             saksnummer = "123",
         )
@@ -171,11 +168,8 @@ class ElasticsearchIndexingTest {
             saksnummer = "123",
             avsluttetAvSaksbehandler = null,
             returnertFraROL = null,
-            tildeltSaksbehandlernavn = null,
             medunderskriverident = null,
-            medunderskriverNavn = null,
             medunderskriverEnhet = null,
-            rolNavn = null,
         )
     }
 }

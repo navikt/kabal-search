@@ -8,7 +8,6 @@ import no.nav.klage.search.domain.*
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import no.nav.klage.search.domain.elasticsearch.EsStatus
 import no.nav.klage.search.domain.elasticsearch.EsStatus.*
-import no.nav.klage.search.domain.saksbehandler.Saksbehandler
 import no.nav.klage.search.repositories.AnonymeBehandlingerSearchHits
 import no.nav.klage.search.repositories.BehandlingerSearchHits
 import no.nav.klage.search.repositories.EsBehandlingRepository
@@ -241,46 +240,32 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits.anonymize()
     }
 
-    open fun findSaksbehandlereByEnhetCriteria(criteria: SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria): Set<Saksbehandler> {
+    open fun findSaksbehandlerIdentsByEnhetCriteria(criteria: SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria): Set<String> {
         val searchHits: SearchHits<EsBehandling> = esBehandlingRepository.search(criteria.toEsQuery())
 
-        return searchHits.map {
-            Saksbehandler(
-                navIdent = it.content.tildeltSaksbehandlerident
-                    ?: throw RuntimeException("tildeltSaksbehandlerident is null. Can't happen"),
-                navn = it.content.tildeltSaksbehandlernavn ?: "Navn mangler"
-            )
-        }.toSet()
+        return searchHits
+            .map {
+                it.content.tildeltSaksbehandlerident
+                    ?: throw RuntimeException("tildeltSaksbehandlerident is null. Can't happen")
+            }.toSet()
     }
 
-    open fun findMedunderskrivereByEnhetCriteria(criteria: SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria): Set<Saksbehandler> {
+    open fun findMedunderskriverIdentsByEnhetCriteria(criteria: SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria): Set<String> {
         val searchHits: SearchHits<EsBehandling> = esBehandlingRepository.search(criteria.toEsQuery())
 
-        return searchHits.mapNotNull {
-            if (it.content.medunderskriverident == null) {
-                null
-            } else {
-                Saksbehandler(
-                    navIdent = it.content.medunderskriverident,
-                    navn = it.content.medunderskriverNavn ?: "Navn mangler"
-                )
-            }
-        }.toSet()
+        return searchHits
+            .mapNotNull {
+                it.content.medunderskriverident
+            }.toSet()
     }
 
-    open fun findROLListByEnhetCriteria(criteria: ROLListSearchCriteria): Set<Saksbehandler> {
+    open fun findROLIdentsByEnhetCriteria(criteria: ROLListSearchCriteria): Set<String> {
         val searchHits: SearchHits<EsBehandling> = esBehandlingRepository.search(criteria.toEsQuery())
 
-        return searchHits.mapNotNull {
-            if (it.content.rolIdent == null) {
-                null
-            } else {
-                Saksbehandler(
-                    navIdent = it.content.rolIdent,
-                    navn = it.content.rolNavn ?: "Navn mangler"
-                )
-            }
-        }.toSet()
+        return searchHits
+            .mapNotNull {
+                it.content.rolIdent
+            }.toSet()
     }
 
     open fun countIkkeTildelt(ytelse: Ytelse, type: Type): Long {
@@ -1013,7 +998,10 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         } else null
     }
 
-    private fun createQueryForHelperStatusList(helperStatusList: List<HelperStatus>, navIdent: String?): BoolQueryBuilder? {
+    private fun createQueryForHelperStatusList(
+        helperStatusList: List<HelperStatus>,
+        navIdent: String?
+    ): BoolQueryBuilder? {
         return if (helperStatusList.isNotEmpty()) {
             val innerQuery = QueryBuilders.boolQuery()
             helperStatusList.forEach { helperStatus ->
@@ -1027,31 +1015,59 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         val innerQuery = QueryBuilders.boolQuery()
         when (helperStatus) {
             HelperStatus.SENDT_TIL_MU -> {
-                innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverFlowStateId.name, FlowState.SENT.id))
-                navIdent?.let { innerQuery.mustNot(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, navIdent)) }
+                innerQuery.must(
+                    QueryBuilders.termQuery(
+                        EsBehandling::medunderskriverFlowStateId.name,
+                        FlowState.SENT.id
+                    )
+                )
+                navIdent?.let {
+                    innerQuery.mustNot(
+                        QueryBuilders.termQuery(
+                            EsBehandling::medunderskriverident.name,
+                            navIdent
+                        )
+                    )
+                }
                 //Spesifiserer ikke at medunderskriverident.name må være null, siden det skal være et umulig tilfelle.
             }
+
             HelperStatus.RETURNERT_FRA_MU -> {
-                innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverFlowStateId.name, FlowState.RETURNED.id))
+                innerQuery.must(
+                    QueryBuilders.termQuery(
+                        EsBehandling::medunderskriverFlowStateId.name,
+                        FlowState.RETURNED.id
+                    )
+                )
             }
+
             HelperStatus.MU -> {
                 if (navIdent != null) {
-                    innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverFlowStateId.name, FlowState.SENT.id))
+                    innerQuery.must(
+                        QueryBuilders.termQuery(
+                            EsBehandling::medunderskriverFlowStateId.name,
+                            FlowState.SENT.id
+                        )
+                    )
                     innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, navIdent))
                 }
             }
+
             HelperStatus.SENDT_TIL_FELLES_ROL_KOE -> {
                 innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.SENT.id))
                 innerQuery.mustNot(QueryBuilders.wildcardQuery(EsBehandling::rolIdent.name, "*"))
             }
+
             HelperStatus.SENDT_TIL_ROL -> {
                 innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.SENT.id))
                 innerQuery.must(QueryBuilders.wildcardQuery(EsBehandling::rolIdent.name, "*"))
                 navIdent?.let { innerQuery.mustNot(QueryBuilders.termQuery(EsBehandling::rolIdent.name, navIdent)) }
             }
+
             HelperStatus.RETURNERT_FRA_ROL -> {
                 innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.RETURNED.id))
             }
+
             HelperStatus.ROL -> {
                 if (navIdent != null) {
                     innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.SENT.id))
