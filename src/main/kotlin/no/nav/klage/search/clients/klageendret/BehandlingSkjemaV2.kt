@@ -21,7 +21,7 @@ class BehandlingSkjemaV2(
     val fristDato: LocalDate?,
     val varsletFristDato: LocalDate?,
     val gjeldendeTildeling: TildeltSaksbehandler?,
-    val medunderskriver: TildeltMedunderskriver?,
+    val medunderskriver: TildeltSaksbehandler?,
     val medunderskriverFlowStateId: String,
     val hjemler: List<Kode>,
 
@@ -92,11 +92,6 @@ class BehandlingSkjemaV2(
         val tidspunkt: LocalDateTime,
         val saksbehandler: Saksbehandler?,
         val enhet: Enhet?,
-    )
-
-    data class TildeltMedunderskriver(
-        val tidspunkt: LocalDateTime,
-        val saksbehandler: Saksbehandler?,
     )
 
     data class Dokument(
