@@ -38,7 +38,7 @@ class EsBehandlingMapper(
             tildeltSaksbehandlerident = behandling.gjeldendeTildeling?.saksbehandler?.ident,
             medunderskriverident = behandling.medunderskriver?.saksbehandler?.ident,
             medunderskriverFlowStateId = behandling.medunderskriverFlowStateId,
-            medunderskriverEnhet = behandling.medunderskriver?.saksbehandler?.enhet?.nr,
+            medunderskriverEnhet = behandling.medunderskriver?.enhet?.nr,
             tildeltEnhet = behandling.gjeldendeTildeling?.enhet?.nr,
             hjemmelIdList = behandling.hjemler.map { it.id },
 
