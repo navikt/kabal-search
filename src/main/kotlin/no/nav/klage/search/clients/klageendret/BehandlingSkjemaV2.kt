@@ -37,10 +37,6 @@ class BehandlingSkjemaV2(
     val feilregistrert: LocalDateTime?,
     val rolIdent: String?,
     val rolFlowStateId: String,
-
-    val erFortrolig: Boolean,
-    val erStrengtFortrolig: Boolean,
-    val erEgenAnsatt: Boolean,
 ) {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -86,6 +82,7 @@ class BehandlingSkjemaV2(
 
     data class Saksbehandler(
         val ident: String,
+        val enhet: Enhet?,
     )
 
     data class TildeltSaksbehandler(

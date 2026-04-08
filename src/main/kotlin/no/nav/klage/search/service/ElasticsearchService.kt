@@ -1,18 +1,20 @@
 package no.nav.klage.search.service
 
+import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.FlowState
 import no.nav.klage.kodeverk.SattPaaVentReason
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.ytelse.Ytelse
+import no.nav.klage.search.clients.klagelookup.KlageLookupClient
 import no.nav.klage.search.domain.*
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import no.nav.klage.search.domain.elasticsearch.EsStatus
 import no.nav.klage.search.domain.elasticsearch.EsStatus.*
-import no.nav.klage.search.domain.saksbehandler.Saksbehandler
 import no.nav.klage.search.repositories.AnonymeBehandlingerSearchHits
 import no.nav.klage.search.repositories.BehandlingerSearchHits
 import no.nav.klage.search.repositories.EsBehandlingRepository
 import no.nav.klage.search.repositories.SearchHits
+import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getMedian
 import no.nav.klage.search.util.getTeamLogger
@@ -32,7 +34,11 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 
-open class ElasticsearchService(private val esBehandlingRepository: EsBehandlingRepository) :
+open class ElasticsearchService(
+    private val esBehandlingRepository: EsBehandlingRepository,
+    private val tokenUtil: TokenUtil,
+    private val klageLookupClient: KlageLookupClient
+) :
     ApplicationListener<ContextRefreshedEvent> {
 
     companion object {
@@ -241,45 +247,64 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits.anonymize()
     }
 
-    open fun findSaksbehandlereByEnhetCriteria(criteria: SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria): Set<Saksbehandler> {
+    open fun findSaksbehandlerIdentsByEnhetCriteria(criteria: SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria): Set<String> {
         val searchHits: SearchHits<EsBehandling> = esBehandlingRepository.search(criteria.toEsQuery())
 
-        return searchHits.map {
-            Saksbehandler(
-                navIdent = it.content.tildeltSaksbehandlerident
-                    ?: throw RuntimeException("tildeltSaksbehandlerident is null. Can't happen"),
-                navn = it.content.tildeltSaksbehandlernavn ?: "Navn mangler"
-            )
+        val requestingUserNavIdent = tokenUtil.getIdent()
+
+        return searchHits
+            .filter {
+                klageLookupClient.getAccess(
+                    brukerId = it.content.sakenGjelderFnr,
+                    navIdent = requestingUserNavIdent,
+                    sakId = it.content.saksnummer,
+                    ytelse = Ytelse.of(it.content.ytelseId),
+                    fagsystem = Fagsystem.of(it.content.fagsystemId),
+                ).access
+            }
+            .map {
+                it.content.tildeltSaksbehandlerident
+                    ?: throw RuntimeException("tildeltSaksbehandlerident is null. Can't happen")
         }.toSet()
     }
 
-    open fun findMedunderskrivereByEnhetCriteria(criteria: SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria): Set<Saksbehandler> {
+    open fun findMedunderskriverIdentsByEnhetCriteria(criteria: SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria): Set<String> {
         val searchHits: SearchHits<EsBehandling> = esBehandlingRepository.search(criteria.toEsQuery())
 
-        return searchHits.mapNotNull {
-            if (it.content.medunderskriverident == null) {
-                null
-            } else {
-                Saksbehandler(
-                    navIdent = it.content.medunderskriverident,
-                    navn = it.content.medunderskriverNavn ?: "Navn mangler"
-                )
+        val requestingUserNavIdent = tokenUtil.getIdent()
+
+        return searchHits
+            .filter {
+                klageLookupClient.getAccess(
+                    brukerId = it.content.sakenGjelderFnr,
+                    navIdent = requestingUserNavIdent,
+                    sakId = it.content.saksnummer,
+                    ytelse = Ytelse.of(it.content.ytelseId),
+                    fagsystem = Fagsystem.of(it.content.fagsystemId),
+                ).access
             }
+            .mapNotNull {
+                it.content.medunderskriverident
         }.toSet()
     }
 
-    open fun findROLListByEnhetCriteria(criteria: ROLListSearchCriteria): Set<Saksbehandler> {
+    open fun findROLIdentsByEnhetCriteria(criteria: ROLListSearchCriteria): Set<String> {
         val searchHits: SearchHits<EsBehandling> = esBehandlingRepository.search(criteria.toEsQuery())
 
-        return searchHits.mapNotNull {
-            if (it.content.rolIdent == null) {
-                null
-            } else {
-                Saksbehandler(
-                    navIdent = it.content.rolIdent,
-                    navn = it.content.rolNavn ?: "Navn mangler"
-                )
+        val requestingUserNavIdent = tokenUtil.getIdent()
+
+        return searchHits
+            .filter {
+                klageLookupClient.getAccess(
+                    brukerId = it.content.sakenGjelderFnr,
+                    navIdent = requestingUserNavIdent,
+                    sakId = it.content.saksnummer,
+                    ytelse = Ytelse.of(it.content.ytelseId),
+                    fagsystem = Fagsystem.of(it.content.fagsystemId),
+                ).access
             }
+            .mapNotNull {
+                it.content.rolIdent
         }.toSet()
     }
 
@@ -430,7 +455,6 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     private fun OppgaverOmPersonSearchCriteria.toEsQuery(): QueryBuilder {
         teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
-        baseQuery.addSecurityFilters(this)
 
         baseQuery.must(haveSakenGjelder(fnr))
 
@@ -441,7 +465,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     private fun SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria.toEsQuery(): QueryBuilder {
         teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
-        baseQuery.addSecurityFilters(this)
+//        baseQuery.addSecurityFilters(this)
 
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
 
@@ -460,7 +484,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     private fun ROLListSearchCriteria.toEsQuery(): QueryBuilder {
         teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
-        baseQuery.addSecurityFilters(this)
+//        baseQuery.addSecurityFilters(this)
 
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
 
@@ -475,7 +499,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     private fun LedigeOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
         teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
-        baseQuery.addSecurityFilters(this)
+//        baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
         baseQuery.mustNot(beTildeltSaksbehandler())
@@ -825,82 +849,82 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         }
     }
 
-    private fun BoolQueryBuilder.addSecurityFilters(securitySearchCriteria: SecuritySearchCriteria) {
-        val filterQuery = QueryBuilders.boolQuery()
-        this.filter(filterQuery)
-
-        val kanBehandleEgenAnsatt = securitySearchCriteria.kanBehandleEgenAnsatt
-        val kanBehandleFortrolig = securitySearchCriteria.kanBehandleFortrolig
-        val kanBehandleStrengtFortrolig = securitySearchCriteria.kanBehandleStrengtFortrolig
-        when {
-            kanBehandleEgenAnsatt && kanBehandleFortrolig && kanBehandleStrengtFortrolig -> {
-                //Case 1
-                //Skipper de normale, altså de som ikke har noe.
-                //fortrolig og strengt fortrolig trumfer egen ansatt
-                //tolker dette som kun egen ansatt som også er strengt fortrolig eller fortrolig
-                filterQuery.should(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
-                filterQuery.should(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
-            }
-
-            !kanBehandleEgenAnsatt && kanBehandleFortrolig && kanBehandleStrengtFortrolig -> {
-                //Case 2
-                //Er i praksis det samme som case 1
-                filterQuery.should(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
-                filterQuery.should(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
-            }
-
-            kanBehandleEgenAnsatt && !kanBehandleFortrolig && kanBehandleStrengtFortrolig -> {
-                //Case 3
-                //tolker dette som kun egen ansatt som også er strengt fortrolig
-                //Skipper de normale, altså de som ikke har noe.
-                filterQuery.must(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
-                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
-            }
-
-            kanBehandleEgenAnsatt && kanBehandleFortrolig && !kanBehandleStrengtFortrolig -> {
-                //Case 4
-                //Skal inkludere de normale
-                //Skal inkludere egen ansatt
-                //Skal inkludere fortrolig
-                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
-            }
-
-            !kanBehandleEgenAnsatt && !kanBehandleFortrolig && kanBehandleStrengtFortrolig -> {
-                //Case 5.
-                //Er i praksis det samme som case 3. Inkluderer egen ansatte som også har strengt fortrolig, strengt fortrolig trumfer egen ansatt
-                filterQuery.must(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
-                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
-            }
-
-            !kanBehandleEgenAnsatt && kanBehandleFortrolig && !kanBehandleStrengtFortrolig -> {
-                //Case 6
-                //Skal inkludere de normale
-                //Skal inkludere fortrolig
-                //Skal inkludere fortrolige som også er egen ansatt, men ikke egen ansatte som ikke er fortrolige
-                val egenAnsattAndNotFortrolig = QueryBuilders.boolQuery()
-                egenAnsattAndNotFortrolig.must(QueryBuilders.termQuery(EsBehandling::egenAnsatt.name, true))
-                egenAnsattAndNotFortrolig.mustNot(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
-
-                filterQuery.mustNot(egenAnsattAndNotFortrolig)
-                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
-            }
-
-            kanBehandleEgenAnsatt && !kanBehandleFortrolig && !kanBehandleStrengtFortrolig -> {
-                //Case 7
-                //Skal inkludere de normale
-                //Skal inkludere egen ansatt
-                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
-                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
-            }
-
-            !kanBehandleEgenAnsatt && !kanBehandleFortrolig && !kanBehandleStrengtFortrolig -> {
-                //Case 8
-                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
-                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
-                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::egenAnsatt.name, true))
-            }
-        }
-    }
+//    private fun BoolQueryBuilder.addSecurityFilters(securitySearchCriteria: SecuritySearchCriteria) {
+//        val filterQuery = QueryBuilders.boolQuery()
+//        this.filter(filterQuery)
+//
+//        val kanBehandleEgenAnsatt = securitySearchCriteria.kanBehandleEgenAnsatt
+//        val kanBehandleFortrolig = securitySearchCriteria.kanBehandleFortrolig
+//        val kanBehandleStrengtFortrolig = securitySearchCriteria.kanBehandleStrengtFortrolig
+//        when {
+//            kanBehandleEgenAnsatt && kanBehandleFortrolig && kanBehandleStrengtFortrolig -> {
+//                //Case 1
+//                //Skipper de normale, altså de som ikke har noe.
+//                //fortrolig og strengt fortrolig trumfer egen ansatt
+//                //tolker dette som kun egen ansatt som også er strengt fortrolig eller fortrolig
+//                filterQuery.should(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
+//                filterQuery.should(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
+//            }
+//
+//            !kanBehandleEgenAnsatt && kanBehandleFortrolig && kanBehandleStrengtFortrolig -> {
+//                //Case 2
+//                //Er i praksis det samme som case 1
+//                filterQuery.should(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
+//                filterQuery.should(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
+//            }
+//
+//            kanBehandleEgenAnsatt && !kanBehandleFortrolig && kanBehandleStrengtFortrolig -> {
+//                //Case 3
+//                //tolker dette som kun egen ansatt som også er strengt fortrolig
+//                //Skipper de normale, altså de som ikke har noe.
+//                filterQuery.must(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
+//                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
+//            }
+//
+//            kanBehandleEgenAnsatt && kanBehandleFortrolig && !kanBehandleStrengtFortrolig -> {
+//                //Case 4
+//                //Skal inkludere de normale
+//                //Skal inkludere egen ansatt
+//                //Skal inkludere fortrolig
+//                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
+//            }
+//
+//            !kanBehandleEgenAnsatt && !kanBehandleFortrolig && kanBehandleStrengtFortrolig -> {
+//                //Case 5.
+//                //Er i praksis det samme som case 3. Inkluderer egen ansatte som også har strengt fortrolig, strengt fortrolig trumfer egen ansatt
+//                filterQuery.must(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
+//                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
+//            }
+//
+//            !kanBehandleEgenAnsatt && kanBehandleFortrolig && !kanBehandleStrengtFortrolig -> {
+//                //Case 6
+//                //Skal inkludere de normale
+//                //Skal inkludere fortrolig
+//                //Skal inkludere fortrolige som også er egen ansatt, men ikke egen ansatte som ikke er fortrolige
+//                val egenAnsattAndNotFortrolig = QueryBuilders.boolQuery()
+//                egenAnsattAndNotFortrolig.must(QueryBuilders.termQuery(EsBehandling::egenAnsatt.name, true))
+//                egenAnsattAndNotFortrolig.mustNot(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
+//
+//                filterQuery.mustNot(egenAnsattAndNotFortrolig)
+//                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
+//            }
+//
+//            kanBehandleEgenAnsatt && !kanBehandleFortrolig && !kanBehandleStrengtFortrolig -> {
+//                //Case 7
+//                //Skal inkludere de normale
+//                //Skal inkludere egen ansatt
+//                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
+//                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
+//            }
+//
+//            !kanBehandleEgenAnsatt && !kanBehandleFortrolig && !kanBehandleStrengtFortrolig -> {
+//                //Case 8
+//                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
+//                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
+//                filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::egenAnsatt.name, true))
+//            }
+//        }
+//    }
 
     private fun beSentToROL(): BoolQueryBuilder {
         val queryBeSentToROL = QueryBuilders.boolQuery()
@@ -1013,7 +1037,10 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         } else null
     }
 
-    private fun createQueryForHelperStatusList(helperStatusList: List<HelperStatus>, navIdent: String?): BoolQueryBuilder? {
+    private fun createQueryForHelperStatusList(
+        helperStatusList: List<HelperStatus>,
+        navIdent: String?
+    ): BoolQueryBuilder? {
         return if (helperStatusList.isNotEmpty()) {
             val innerQuery = QueryBuilders.boolQuery()
             helperStatusList.forEach { helperStatus ->
@@ -1027,31 +1054,59 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         val innerQuery = QueryBuilders.boolQuery()
         when (helperStatus) {
             HelperStatus.SENDT_TIL_MU -> {
-                innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverFlowStateId.name, FlowState.SENT.id))
-                navIdent?.let { innerQuery.mustNot(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, navIdent)) }
+                innerQuery.must(
+                    QueryBuilders.termQuery(
+                        EsBehandling::medunderskriverFlowStateId.name,
+                        FlowState.SENT.id
+                    )
+                )
+                navIdent?.let {
+                    innerQuery.mustNot(
+                        QueryBuilders.termQuery(
+                            EsBehandling::medunderskriverident.name,
+                            navIdent
+                        )
+                    )
+                }
                 //Spesifiserer ikke at medunderskriverident.name må være null, siden det skal være et umulig tilfelle.
             }
+
             HelperStatus.RETURNERT_FRA_MU -> {
-                innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverFlowStateId.name, FlowState.RETURNED.id))
+                innerQuery.must(
+                    QueryBuilders.termQuery(
+                        EsBehandling::medunderskriverFlowStateId.name,
+                        FlowState.RETURNED.id
+                    )
+                )
             }
+
             HelperStatus.MU -> {
                 if (navIdent != null) {
-                    innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverFlowStateId.name, FlowState.SENT.id))
+                    innerQuery.must(
+                        QueryBuilders.termQuery(
+                            EsBehandling::medunderskriverFlowStateId.name,
+                            FlowState.SENT.id
+                        )
+                    )
                     innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, navIdent))
                 }
             }
+
             HelperStatus.SENDT_TIL_FELLES_ROL_KOE -> {
                 innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.SENT.id))
                 innerQuery.mustNot(QueryBuilders.wildcardQuery(EsBehandling::rolIdent.name, "*"))
             }
+
             HelperStatus.SENDT_TIL_ROL -> {
                 innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.SENT.id))
                 innerQuery.must(QueryBuilders.wildcardQuery(EsBehandling::rolIdent.name, "*"))
                 navIdent?.let { innerQuery.mustNot(QueryBuilders.termQuery(EsBehandling::rolIdent.name, navIdent)) }
             }
+
             HelperStatus.RETURNERT_FRA_ROL -> {
                 innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.RETURNED.id))
             }
+
             HelperStatus.ROL -> {
                 if (navIdent != null) {
                     innerQuery.must(QueryBuilders.termQuery(EsBehandling::rolFlowStateId.name, FlowState.SENT.id))

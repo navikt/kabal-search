@@ -54,11 +54,7 @@ data class EsBehandling(
 
     override val tildeltSaksbehandlerident: String?,
 
-    override val tildeltSaksbehandlernavn: String?,
-
     override val medunderskriverident: String?,
-
-    override val medunderskriverNavn: String?,
 
     override val medunderskriverFlowStateId: String,
 
@@ -69,12 +65,6 @@ data class EsBehandling(
     override val hjemmelIdList: List<String> = emptyList(),
 
     val saksdokumenter: List<EsSaksdokument> = emptyList(),
-
-    override val egenAnsatt: Boolean = false,
-
-    override val fortrolig: Boolean = false,
-
-    override val strengtFortrolig: Boolean = false,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     override val sattPaaVent: LocalDate? = null,
@@ -89,25 +79,17 @@ data class EsBehandling(
 
     override val rolIdent: String?,
 
-    override val rolNavn: String?,
-
     override val rolFlowStateId: String,
 
     val status: EsStatus,
 ) : EsAnonymBehandling
 
 interface EsAnonymBehandling {
-
-    val strengtFortrolig: Boolean
-    val fortrolig: Boolean
-    val egenAnsatt: Boolean
     val avsluttetAvSaksbehandler: LocalDateTime?
     val returnertFraROL: LocalDateTime?
-    val tildeltSaksbehandlernavn: String?
     val tildeltSaksbehandlerident: String?
     val medunderskriverFlowStateId: String
     val medunderskriverident: String?
-    val medunderskriverNavn: String?
     val medunderskriverEnhet: String?
     val sakMottattKaDato: LocalDateTime
     val sendtTilTrygderetten: LocalDateTime?
@@ -123,6 +105,5 @@ interface EsAnonymBehandling {
     val sattPaaVentReasonId: String?
     val feilregistrert: LocalDateTime?
     val rolIdent: String?
-    val rolNavn: String?
     val rolFlowStateId: String?
 }

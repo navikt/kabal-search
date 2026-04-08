@@ -55,7 +55,9 @@ class ElasticsearchServiceConfiguration(
 
     @Bean
     fun elasticsearchService(): ElasticsearchService {
-        return ElasticsearchService(esKlagebehandlingRepository())
+        return ElasticsearchService(
+            esBehandlingRepository = esKlagebehandlingRepository(),
+        )
     }
 
 

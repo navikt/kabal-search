@@ -1,12 +1,15 @@
 package no.nav.klage.search.clients.klagelookup
 
 import no.nav.klage.kodeverk.AzureGroup
+import no.nav.klage.kodeverk.Fagsystem
+import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.search.exceptions.GroupNotFoundException
 import no.nav.klage.search.exceptions.UserNotFoundException
 import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.logErrorResponse
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatusCode
 import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
@@ -125,6 +128,52 @@ class KlageLookupClient(
         }
     }
 
+    @Retryable
+    fun getAccess(
+        /** fnr, dnr or aktorId */
+        brukerId: String,
+        navIdent: String?,
+        sakId: String?,
+        ytelse: Ytelse?,
+        fagsystem: Fagsystem?,
+    ): Access {
+        return runWithTimingAndLogging {
+            val token = if (navIdent != null) {
+                "Bearer ${tokenUtil.getAppAccessTokenWithKlageLookupScope()}"
+            } else {
+                "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithKlageLookupScope()}"
+            }
+
+            val accessRequest = AccessRequest(
+                brukerId = brukerId,
+                navIdent = navIdent,
+                sak = if (sakId != null && ytelse != null && fagsystem != null) AccessRequest.Sak(
+                    sakId = sakId,
+                    ytelse = ytelse,
+                    fagsystem = fagsystem
+                ) else null,
+            )
+
+            klageLookupWebClient.post()
+                .uri("/access-to-person")
+                .bodyValue(accessRequest)
+                .header(
+                    HttpHeaders.AUTHORIZATION,
+                    token,
+                )
+                .retrieve()
+                .onStatus(HttpStatusCode::isError) { response ->
+                    logErrorResponse(
+                        response = response,
+                        functionName = ::getAccess.name,
+                        classLogger = logger,
+                    )
+                }
+                .bodyToMono<Access>()
+                .block() ?: throw RuntimeException("Could not get access")
+        }
+    }
+
     fun <T> runWithTimingAndLogging(block: () -> T): T {
         val start = System.currentTimeMillis()
         try {
@@ -147,4 +196,9 @@ class KlageLookupClient(
             groups = this.groupIds.map { AzureGroup.of(it) }
         )
     }
+
+    data class Access(
+        val access: Boolean,
+        val reason: String,
+    )
 }
