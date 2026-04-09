@@ -7,6 +7,7 @@ import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.logErrorResponse
 import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
@@ -55,6 +56,40 @@ class KlageLookupClient(
                     }
                 }
                 .block() ?: throw RuntimeException("Could not get user info for $navIdent")
+        }
+    }
+
+    @Retryable
+    fun getUserInfoBatched(
+        navIdentList: List<String>,
+    ): ExtendedUsersResponse {
+        return runWithTimingAndLogging {
+            val token = getCorrectBearerToken()
+            klageLookupWebClient.post()
+                .uri("/users")
+                .header(
+                    HttpHeaders.AUTHORIZATION,
+                    token,
+                )
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(
+                    BatchedUserRequest(
+                        navIdentList = navIdentList
+                    )
+                )
+                .exchangeToMono { response ->
+                    if (response.statusCode().isError) {
+                        logErrorResponse(
+                            response = response,
+                            functionName = ::getUserInfo.name,
+                            classLogger = logger,
+                        )
+                        response.createError()
+                    } else {
+                        response.bodyToMono<ExtendedUsersResponse>()
+                    }
+                }
+                .block() ?: throw RuntimeException("Could not get user info for input ${navIdentList.toString()}")
         }
     }
 

@@ -1,6 +1,7 @@
 package no.nav.klage.search.service.saksbehandler
 
 import no.nav.klage.search.api.view.SaksbehandlerView
+import no.nav.klage.search.clients.klagelookup.ExtendedUsersResponse
 import no.nav.klage.search.clients.klagelookup.KlageLookupClient
 import no.nav.klage.search.exceptions.UserNotFoundException
 import no.nav.klage.search.gateway.AzureGateway
@@ -25,6 +26,12 @@ class SaksbehandlerService(
             "Ukjent navn"
         }
     }
+
+    fun getNamesForIdents(navIdentList: List<String>): ExtendedUsersResponse {
+        return klageLookupClient.getUserInfoBatched(navIdentList = navIdentList)
+    }
+
+
 
     fun getSaksbehandlereForEnhet(enhetsnummer: String): List<SaksbehandlerView> {
         val azureOutput =

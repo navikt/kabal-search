@@ -64,10 +64,12 @@ class SaksbehandlerController(
             )
         )
 
-        val saksbehandlereFromES = esResponse.map {
+        val usersInfoResults = saksbehandlerService.getNamesForIdents(navIdentList = esResponse.toList())
+
+        val saksbehandlereFromES = esResponse.map { currentNavIdent ->
             SaksbehandlerView(
-                navIdent = it,
-                navn = saksbehandlerService.getNameForIdent(navIdent = it) ?: "Ukjent navn"
+                navIdent = currentNavIdent,
+                navn = usersInfoResults.hits.find { currentNavIdent == it.navIdent }?.sammensattNavn ?: "Ukjent navn"
             )
         }
 
@@ -106,17 +108,19 @@ class SaksbehandlerController(
             )
         )
 
-        val saksbehandlereFromES = esResponse.map {
+        val usersInfoResults = saksbehandlerService.getNamesForIdents(navIdentList = esResponse.toList())
+
+        val medunderskrivereFromES = esResponse.map { currentNavIdent ->
             SaksbehandlerView(
-                navIdent = it,
-                navn = saksbehandlerService.getNameForIdent(navIdent = it) ?: "Ukjent navn"
+                navIdent = currentNavIdent,
+                navn = usersInfoResults.hits.find { currentNavIdent == it.navIdent }?.sammensattNavn ?: "Ukjent navn"
             )
         }
 
         val saksbehandlereFromMSGraph = saksbehandlerService.getSaksbehandlereForEnhet(enhetsnummer = enhet)
 
         return MedunderskrivereListResponse(
-            medunderskrivere = (saksbehandlereFromES + saksbehandlereFromMSGraph)
+            medunderskrivere = (medunderskrivereFromES + saksbehandlereFromMSGraph)
                 .toSortedSet(compareBy { it.navn }).toList()
         )
     }
@@ -142,10 +146,12 @@ class SaksbehandlerController(
             )
         )
 
-        val rolListFromES = esResponse.map {
+        val usersInfoResults = saksbehandlerService.getNamesForIdents(navIdentList = esResponse.toList())
+
+        val rolListFromES = esResponse.map { currentNavIdent ->
             SaksbehandlerView(
-                navIdent = it,
-                navn = saksbehandlerService.getNameForIdent(navIdent = it) ?: "Ukjent navn"
+                navIdent = currentNavIdent,
+                navn = usersInfoResults.hits.find { currentNavIdent == it.navIdent }?.sammensattNavn ?: "Ukjent navn"
             )
         }
 
