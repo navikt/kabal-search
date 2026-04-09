@@ -81,7 +81,7 @@ class KlageLookupClient(
                     if (response.statusCode().isError) {
                         logErrorResponse(
                             response = response,
-                            functionName = ::getUserInfo.name,
+                            functionName = ::getUserInfoBatched.name,
                             classLogger = logger,
                         )
                         response.createError()
