@@ -2,15 +2,17 @@ package no.nav.klage.search.api.controller
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import no.nav.klage.kodeverk.AzureGroup
 import no.nav.klage.search.api.mapper.BehandlingListMapper
 import no.nav.klage.search.api.mapper.BehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.BehandlingerListResponse
 import no.nav.klage.search.api.view.KrolsReturnerteOppgaverQueryParams
 import no.nav.klage.search.api.view.KrolsUferdigeOppgaverQueryParams
+import no.nav.klage.search.clients.klagelookup.KlageLookupClient
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.exceptions.MissingTilgangException
 import no.nav.klage.search.service.ElasticsearchService
-import no.nav.klage.search.service.saksbehandler.OAuthTokenService
+import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.GetMapping
@@ -23,7 +25,8 @@ class KrolOppgaverListController(
     private val behandlingListMapper: BehandlingListMapper,
     private val elasticsearchService: ElasticsearchService,
     private val behandlingerSearchCriteriaMapper: BehandlingerSearchCriteriaMapper,
-    private val oAuthTokenService: OAuthTokenService,
+    private val klageLookupClient: KlageLookupClient,
+    private val tokenUtil: TokenUtil,
 ) {
 
     companion object {
@@ -86,9 +89,10 @@ class KrolOppgaverListController(
     }
 
     private fun validateRettigheterForKrolOppgaver() {
-        if (!oAuthTokenService.isKROL()) {
+        val navIdent = tokenUtil.getIdent()
+        if (!klageLookupClient.getUserGroups(navIdent = navIdent).groups.contains(AzureGroup.KABAL_KROL)) {
             val message =
-                "${oAuthTokenService.getInnloggetIdent()} har ikke tilgang til å se alle oppgaver."
+                "$navIdent har ikke tilgang til å se alle KROL-oppgaver."
             logger.warn(message)
             throw MissingTilgangException(message)
         }

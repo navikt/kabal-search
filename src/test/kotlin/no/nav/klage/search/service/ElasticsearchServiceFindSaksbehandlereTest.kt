@@ -133,7 +133,7 @@ class ElasticsearchServiceFindSaksbehandlereTest {
     @Order(4)
     fun `find saksbehandlere based on enhet, but not including finished klagebehandlinger`() {
         val saksbehandlere =
-            service.findSaksbehandlereByEnhetCriteria(
+            service.findSaksbehandlerIdentsByEnhetCriteria(
                 SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria(
                     enhet = "4219",
                     kanBehandleEgenAnsatt = false,
@@ -157,7 +157,6 @@ class ElasticsearchServiceFindSaksbehandlereTest {
             ytelseId = Ytelse.OMS_OMP.id,
             typeId = Type.KLAGE.id,
             tildeltSaksbehandlerident = saksbehandlerIdent,
-            tildeltSaksbehandlernavn = saksbehandlerNavn,
             innsendt = LocalDate.of(2019, 10, 1),
             sakMottattKaDato = LocalDateTime.of(2019, 12, 1, 0, 0),
             sendtTilTrygderetten = null,
@@ -171,11 +170,9 @@ class ElasticsearchServiceFindSaksbehandlereTest {
             sakenGjelderFnr = "12345678910",
             fagsystemId = "1",
             rolIdent = "ROLIDENT",
-            rolNavn = "ROLNAVN",
             rolFlowStateId = "1",
             saksnummer = "123",
             returnertFraROL = null,
-            medunderskriverNavn = null,
             medunderskriverEnhet = null,
             medunderskriverident = null,
         )

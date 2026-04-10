@@ -54,11 +54,7 @@ data class EsBehandling(
 
     override val tildeltSaksbehandlerident: String?,
 
-    override val tildeltSaksbehandlernavn: String?,
-
     override val medunderskriverident: String?,
-
-    override val medunderskriverNavn: String?,
 
     override val medunderskriverFlowStateId: String,
 
@@ -89,8 +85,6 @@ data class EsBehandling(
 
     override val rolIdent: String?,
 
-    override val rolNavn: String?,
-
     override val rolFlowStateId: String,
 
     val status: EsStatus,
@@ -103,11 +97,9 @@ interface EsAnonymBehandling {
     val egenAnsatt: Boolean
     val avsluttetAvSaksbehandler: LocalDateTime?
     val returnertFraROL: LocalDateTime?
-    val tildeltSaksbehandlernavn: String?
     val tildeltSaksbehandlerident: String?
     val medunderskriverFlowStateId: String
     val medunderskriverident: String?
-    val medunderskriverNavn: String?
     val medunderskriverEnhet: String?
     val sakMottattKaDato: LocalDateTime
     val sendtTilTrygderetten: LocalDateTime?
@@ -123,6 +115,5 @@ interface EsAnonymBehandling {
     val sattPaaVentReasonId: String?
     val feilregistrert: LocalDateTime?
     val rolIdent: String?
-    val rolNavn: String?
     val rolFlowStateId: String?
 }

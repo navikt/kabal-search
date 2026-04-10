@@ -3,18 +3,19 @@ package no.nav.klage.search.api.controller
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
+import no.nav.klage.kodeverk.AzureGroup
 import no.nav.klage.search.api.view.MedunderskrivereListResponse
 import no.nav.klage.search.api.view.ROLListResponse
 import no.nav.klage.search.api.view.SaksbehandlerView
 import no.nav.klage.search.api.view.SaksbehandlereListResponse
+import no.nav.klage.search.clients.klagelookup.KlageLookupClient
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.domain.ROLListSearchCriteria
 import no.nav.klage.search.domain.SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria
 import no.nav.klage.search.exceptions.MissingTilgangException
 import no.nav.klage.search.service.ElasticsearchService
-import no.nav.klage.search.service.saksbehandler.InnloggetSaksbehandlerService
-import no.nav.klage.search.service.saksbehandler.OAuthTokenService
 import no.nav.klage.search.service.saksbehandler.SaksbehandlerService
+import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.GetMapping
@@ -26,9 +27,9 @@ import org.springframework.web.bind.annotation.RestController
 @ProtectedWithClaims(issuer = ISSUER_AAD)
 class SaksbehandlerController(
     private val elasticsearchService: ElasticsearchService,
-    private val oAuthTokenService: OAuthTokenService,
-    private val innloggetSaksbehandlerService: InnloggetSaksbehandlerService,
     private val saksbehandlerService: SaksbehandlerService,
+    private val klageLookupClient: KlageLookupClient,
+    private val tokenUtil: TokenUtil,
 ) {
 
     companion object {
@@ -47,25 +48,23 @@ class SaksbehandlerController(
     ): SaksbehandlereListResponse {
         logger.debug("getSaksbehandlereForEnhet")
 
-        if (innloggetSaksbehandlerService.getEnhetForSaksbehandler().enhetId != enhet) {
-            throw MissingTilgangException("Saksbehandler ${oAuthTokenService.getInnloggetIdent()} does not have access to enhet $enhet")
+        val navIdent = tokenUtil.getIdent()
+        if (saksbehandlerService.getEnhetsnummerForNavIdent(navIdent = navIdent) != enhet) {
+            throw MissingTilgangException("Saksbehandler $navIdent does not have access to enhet $enhet")
         }
 
-        val esResponse = elasticsearchService.findSaksbehandlereByEnhetCriteria(
+        val userGroups = klageLookupClient.getUserGroups(navIdent).groups
+
+        val esResponse = elasticsearchService.findSaksbehandlerIdentsByEnhetCriteria(
             SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria(
                 enhet = enhet,
-                kanBehandleEgenAnsatt = oAuthTokenService.kanBehandleEgenAnsatt(),
-                kanBehandleFortrolig = oAuthTokenService.kanBehandleFortrolig(),
-                kanBehandleStrengtFortrolig = oAuthTokenService.kanBehandleStrengtFortrolig(),
+                kanBehandleEgenAnsatt = userGroups.contains(AzureGroup.EGEN_ANSATT),
+                kanBehandleFortrolig = userGroups.contains(AzureGroup.FORTROLIG),
+                kanBehandleStrengtFortrolig = userGroups.contains(AzureGroup.STRENGT_FORTROLIG),
             )
         )
 
-        val saksbehandlereFromES = esResponse.map {
-            SaksbehandlerView(
-                navIdent = it.navIdent,
-                navn = it.navn
-            )
-        }
+        val saksbehandlereFromES = toSaksbehandlerViews(esResponse)
 
         val saksbehandlereFromMSGraph = saksbehandlerService.getSaksbehandlereForEnhet(enhetsnummer = enhet)
 
@@ -86,30 +85,28 @@ class SaksbehandlerController(
     ): MedunderskrivereListResponse {
         logger.debug("getMedunderskrivereForEnhet")
 
-        if (innloggetSaksbehandlerService.getEnhetForSaksbehandler().enhetId != enhet) {
-            throw MissingTilgangException("Saksbehandler ${oAuthTokenService.getInnloggetIdent()} does not have access to enhet $enhet")
+        val navIdent = tokenUtil.getIdent()
+        if (saksbehandlerService.getEnhetsnummerForNavIdent(navIdent = navIdent) != enhet) {
+            throw MissingTilgangException("Saksbehandler $navIdent does not have access to enhet $enhet")
         }
 
-        val esResponse = elasticsearchService.findMedunderskrivereByEnhetCriteria(
+        val userGroups = klageLookupClient.getUserGroups(navIdent).groups
+
+        val esResponse = elasticsearchService.findMedunderskriverIdentsByEnhetCriteria(
             SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria(
                 enhet = enhet,
-                kanBehandleEgenAnsatt = oAuthTokenService.kanBehandleEgenAnsatt(),
-                kanBehandleFortrolig = oAuthTokenService.kanBehandleFortrolig(),
-                kanBehandleStrengtFortrolig = oAuthTokenService.kanBehandleStrengtFortrolig(),
+                kanBehandleEgenAnsatt = userGroups.contains(AzureGroup.EGEN_ANSATT),
+                kanBehandleFortrolig = userGroups.contains(AzureGroup.FORTROLIG),
+                kanBehandleStrengtFortrolig = userGroups.contains(AzureGroup.STRENGT_FORTROLIG),
             )
         )
 
-        val saksbehandlereFromES = esResponse.map {
-            SaksbehandlerView(
-                navIdent = it.navIdent,
-                navn = it.navn
-            )
-        }
+        val medunderskrivereFromES = toSaksbehandlerViews(esResponse)
 
         val saksbehandlereFromMSGraph = saksbehandlerService.getSaksbehandlereForEnhet(enhetsnummer = enhet)
 
         return MedunderskrivereListResponse(
-            medunderskrivere = (saksbehandlereFromES + saksbehandlereFromMSGraph)
+            medunderskrivere = (medunderskrivereFromES + saksbehandlereFromMSGraph)
                 .toSortedSet(compareBy { it.navn }).toList()
         )
     }
@@ -124,20 +121,18 @@ class SaksbehandlerController(
     ): ROLListResponse {
         logger.debug("getRolList")
 
-        val esResponse = elasticsearchService.findROLListByEnhetCriteria(
+        val navIdent = tokenUtil.getIdent()
+        val userGroups = klageLookupClient.getUserGroups(navIdent).groups
+
+        val esResponse = elasticsearchService.findROLIdentsByEnhetCriteria(
             ROLListSearchCriteria(
-                kanBehandleEgenAnsatt = oAuthTokenService.kanBehandleEgenAnsatt(),
-                kanBehandleFortrolig = oAuthTokenService.kanBehandleFortrolig(),
-                kanBehandleStrengtFortrolig = oAuthTokenService.kanBehandleStrengtFortrolig(),
+                kanBehandleEgenAnsatt = userGroups.contains(AzureGroup.EGEN_ANSATT),
+                kanBehandleFortrolig = userGroups.contains(AzureGroup.FORTROLIG),
+                kanBehandleStrengtFortrolig = userGroups.contains(AzureGroup.STRENGT_FORTROLIG),
             )
         )
 
-        val rolListFromES = esResponse.map {
-            SaksbehandlerView(
-                navIdent = it.navIdent,
-                navn = it.navn
-            )
-        }
+        val rolListFromES = toSaksbehandlerViews(esResponse)
 
         val rolListFromMSGraph = saksbehandlerService.getROLList()
 
@@ -145,5 +140,17 @@ class SaksbehandlerController(
             rolList = (rolListFromES + rolListFromMSGraph)
                 .toSortedSet(compareBy { it.navn }).toList()
         )
+    }
+
+    private fun toSaksbehandlerViews(navIdents: Collection<String>): List<SaksbehandlerView> {
+        val usersInfoResults = saksbehandlerService.getNamesForIdents(navIdentList = navIdents.toList())
+        val sammensattNavnByNavIdent = usersInfoResults.hits.associate { it.navIdent to it.sammensattNavn }
+
+        return navIdents.map { currentNavIdent ->
+            SaksbehandlerView(
+                navIdent = currentNavIdent,
+                navn = sammensattNavnByNavIdent[currentNavIdent] ?: "Ukjent navn"
+            )
+        }
     }
 }
