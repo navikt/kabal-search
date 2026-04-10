@@ -64,14 +64,7 @@ class SaksbehandlerController(
             )
         )
 
-        val usersInfoResults = saksbehandlerService.getNamesForIdents(navIdentList = esResponse.toList())
-
-        val saksbehandlereFromES = esResponse.map { currentNavIdent ->
-            SaksbehandlerView(
-                navIdent = currentNavIdent,
-                navn = usersInfoResults.hits.find { currentNavIdent == it.navIdent }?.sammensattNavn ?: "Ukjent navn"
-            )
-        }
+        val saksbehandlereFromES = toSaksbehandlerViews(esResponse)
 
         val saksbehandlereFromMSGraph = saksbehandlerService.getSaksbehandlereForEnhet(enhetsnummer = enhet)
 
@@ -108,14 +101,7 @@ class SaksbehandlerController(
             )
         )
 
-        val usersInfoResults = saksbehandlerService.getNamesForIdents(navIdentList = esResponse.toList())
-
-        val medunderskrivereFromES = esResponse.map { currentNavIdent ->
-            SaksbehandlerView(
-                navIdent = currentNavIdent,
-                navn = usersInfoResults.hits.find { currentNavIdent == it.navIdent }?.sammensattNavn ?: "Ukjent navn"
-            )
-        }
+        val medunderskrivereFromES = toSaksbehandlerViews(esResponse)
 
         val saksbehandlereFromMSGraph = saksbehandlerService.getSaksbehandlereForEnhet(enhetsnummer = enhet)
 
@@ -146,14 +132,7 @@ class SaksbehandlerController(
             )
         )
 
-        val usersInfoResults = saksbehandlerService.getNamesForIdents(navIdentList = esResponse.toList())
-
-        val rolListFromES = esResponse.map { currentNavIdent ->
-            SaksbehandlerView(
-                navIdent = currentNavIdent,
-                navn = usersInfoResults.hits.find { currentNavIdent == it.navIdent }?.sammensattNavn ?: "Ukjent navn"
-            )
-        }
+        val rolListFromES = toSaksbehandlerViews(esResponse)
 
         val rolListFromMSGraph = saksbehandlerService.getROLList()
 
@@ -161,5 +140,17 @@ class SaksbehandlerController(
             rolList = (rolListFromES + rolListFromMSGraph)
                 .toSortedSet(compareBy { it.navn }).toList()
         )
+    }
+
+    private fun toSaksbehandlerViews(navIdents: Collection<String>): List<SaksbehandlerView> {
+        val usersInfoResults = saksbehandlerService.getNamesForIdents(navIdentList = navIdents.toList())
+        val sammensattNavnByNavIdent = usersInfoResults.hits.associate { it.navIdent to it.sammensattNavn }
+
+        return navIdents.map { currentNavIdent ->
+            SaksbehandlerView(
+                navIdent = currentNavIdent,
+                navn = sammensattNavnByNavIdent[currentNavIdent] ?: "Ukjent navn"
+            )
+        }
     }
 }
