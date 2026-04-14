@@ -54,15 +54,15 @@ class BehandlingSearchController(
         } else {
             behandlingListMapper.mapPersonSearchResponseToFnrSearchResponseWithoutPerson(
                 personSearchResponse = personSearchResponse,
-            )
-        }.also {
-            auditLogger.log(
-                AuditLogEvent(
-                    navIdent = tokenUtil.getIdent(),
-                    personFnr = input.query,
-                    message = "Hentet behandlingsoversikt for person."
+            ).also {
+                auditLogger.log(
+                    AuditLogEvent(
+                        navIdent = tokenUtil.getIdent(),
+                        personFnr = input.query,
+                        message = "Hentet behandlingsoversikt for person."
+                    )
                 )
-            )
+            }
         }
     }
 }
