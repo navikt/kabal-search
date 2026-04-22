@@ -2,20 +2,20 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val mockkVersion = "1.14.9"
-val tokenValidationVersion = "6.0.4"
+val tokenValidationVersion = "6.0.5"
 val logstashVersion = "9.0"
 val springRetryVersion = "2.0.12"
 val springMockkVersion = "5.0.1"
-val springDocVersion = "3.0.2"
-val testContainersVersion = "2.0.3"
+val springDocVersion = "3.0.3"
+val testContainersVersion = "2.0.4"
 val threeTenExtraVersion = "1.8.0"
 val archunitVersion = "1.4.1"
-val opensearchVersion = "3.5.0"
+val opensearchVersion = "3.6.0"
 val reactorSpringVersion = "1.0.1.RELEASE"
 val kodeverkVersion = "3.2.11"
-val ehcacheVersion = "3.11.1"
+val ehcacheVersion = "3.12.0"
 val logbackSyslog4jVersion = "1.0.0"
-val otelVersion = "1.60.1"
+val otelVersion = "1.61.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_21
 
