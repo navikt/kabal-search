@@ -7,7 +7,6 @@ import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import no.nav.klage.search.domain.elasticsearch.EsSaksdokument
-import no.nav.klage.search.domain.elasticsearch.EsStatus.IKKE_TILDELT
 import no.nav.klage.search.repositories.EsBehandlingRepository
 import no.nav.klage.search.repositories.SearchHits
 import org.apache.hc.core5.http.io.entity.EntityUtils
@@ -117,7 +116,6 @@ class ElasticsearchIndexingTest {
             sakenGjelderFnr = "12345678910",
             egenAnsatt = false,
             fortrolig = false,
-            status = IKKE_TILDELT,
             medunderskriverEnhet = null,
             medunderskriverFlowStateId = FlowState.NOT_SENT.id,
             fagsystemId = "1",
@@ -159,7 +157,6 @@ class ElasticsearchIndexingTest {
             sakenGjelderFnr = "12345678910",
             egenAnsatt = false,
             fortrolig = false,
-            status = IKKE_TILDELT,
             medunderskriverFlowStateId = FlowState.NOT_SENT.id,
             fagsystemId = "1",
             sattPaaVent = LocalDate.now(),

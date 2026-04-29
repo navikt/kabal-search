@@ -2,18 +2,13 @@ package no.nav.klage.search.service
 
 import no.nav.klage.kodeverk.FlowState
 import no.nav.klage.kodeverk.SattPaaVentReason
-import no.nav.klage.kodeverk.Type
-import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.search.domain.*
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
-import no.nav.klage.search.domain.elasticsearch.EsStatus
-import no.nav.klage.search.domain.elasticsearch.EsStatus.*
 import no.nav.klage.search.repositories.AnonymeBehandlingerSearchHits
 import no.nav.klage.search.repositories.BehandlingerSearchHits
 import no.nav.klage.search.repositories.EsBehandlingRepository
 import no.nav.klage.search.repositories.SearchHits
 import no.nav.klage.search.util.getLogger
-import no.nav.klage.search.util.getMedian
 import no.nav.klage.search.util.getTeamLogger
 import org.opensearch.common.unit.TimeValue
 import org.opensearch.index.query.BoolQueryBuilder
@@ -25,7 +20,6 @@ import org.opensearch.search.sort.SortBuilders
 import org.opensearch.search.sort.SortOrder
 import org.springframework.context.ApplicationListener
 import org.springframework.context.event.ContextRefreshedEvent
-import java.lang.System.currentTimeMillis
 import java.time.LocalDate
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -266,89 +260,6 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
             .mapNotNull {
                 it.content.rolIdent
             }.toSet()
-    }
-
-    open fun countIkkeTildelt(ytelse: Ytelse, type: Type): Long {
-        return runWithTiming(method = ::countIkkeTildelt.name) {
-            countByStatusYtelseAndType(IKKE_TILDELT, ytelse, type)
-        }
-    }
-
-    open fun countTildelt(ytelse: Ytelse, type: Type): Long {
-        return runWithTiming(method = ::countTildelt.name) {
-            countByStatusYtelseAndType(TILDELT, ytelse, type)
-        }
-    }
-
-    open fun countSendtTilMedunderskriver(ytelse: Ytelse, type: Type): Long {
-        return runWithTiming(method = ::countSendtTilMedunderskriver.name) {
-            countByStatusYtelseAndType(SENDT_TIL_MEDUNDERSKRIVER, ytelse, type)
-        }
-    }
-
-    open fun countMedunderskriverValgt(ytelse: Ytelse, type: Type): Long {
-        return runWithTiming(method = ::countMedunderskriverValgt.name) {
-            countByStatusYtelseAndType(MEDUNDERSKRIVER_VALGT, ytelse, type)
-        }
-    }
-
-    open fun countReturnertTilSaksbehandler(ytelse: Ytelse, type: Type): Long {
-        return runWithTiming(method = ::countReturnertTilSaksbehandler.name) {
-            countByStatusYtelseAndType(RETURNERT_TIL_SAKSBEHANDLER, ytelse, type)
-        }
-    }
-
-    open fun countAvsluttet(ytelse: Ytelse, type: Type): Long {
-        return runWithTiming(method = ::countAvsluttet.name) {
-            countByStatusYtelseAndType(FULLFOERT, ytelse, type)
-        }
-    }
-
-    open fun countSattPaaVent(ytelse: Ytelse, type: Type): Long {
-        return runWithTiming(method = ::countSattPaaVent.name) {
-            countByStatusYtelseAndType(SATT_PAA_VENT, ytelse, type)
-        }
-    }
-
-    private fun <T> runWithTiming(method: String, block: () -> T): T {
-        val start = currentTimeMillis()
-        try {
-            return block.invoke()
-        } finally {
-            val end = currentTimeMillis()
-            logger.debug("Time it took to call $method: ${end - start} millis")
-        }
-    }
-
-    private fun countByStatusYtelseAndType(status: EsStatus, ytelse: Ytelse, type: Type): Long {
-        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
-        baseQuery.must(QueryBuilders.termQuery(EsBehandling::status.name, status))
-        baseQuery.must(QueryBuilders.termQuery(EsBehandling::ytelseId.name, ytelse.id))
-        baseQuery.must(QueryBuilders.termQuery(EsBehandling::typeId.name, type.id))
-        return esBehandlingRepository.count(baseQuery)
-    }
-
-    open fun countAntallSaksdokumenterIAvsluttedeBehandlingerMedian(ytelse: Ytelse, type: Type): Double {
-        val start = currentTimeMillis()
-        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
-        baseQuery.must(QueryBuilders.termQuery(EsBehandling::status.name, FULLFOERT))
-        baseQuery.must(QueryBuilders.termQuery(EsBehandling::ytelseId.name, ytelse.id))
-        baseQuery.must(QueryBuilders.termQuery(EsBehandling::typeId.name, type.id))
-        val searchHits = esBehandlingRepository.search(baseQuery)
-        val saksdokumenterPerAvsluttetBehandling = searchHits.map { e -> e.content }
-            .map { e ->
-                e.saksdokumenter.size
-            }
-            .toList()
-
-        val medianStart = currentTimeMillis()
-        val median = getMedian(saksdokumenterPerAvsluttetBehandling)
-        val medianEnd = currentTimeMillis()
-        logger.debug("Time it took to calculate median for list with ${saksdokumenterPerAvsluttetBehandling.size} elements: ${medianEnd - medianStart} millis")
-
-        val end = currentTimeMillis()
-        logger.debug("Time it took to call ${::countAntallSaksdokumenterIAvsluttedeBehandlingerMedian.name}: ${end - start} millis")
-        return median
     }
 
     open fun countLedigeOppgaverMedUtgaattFristByCriteria(criteria: CountLedigeOppgaverMedUtgaattFristSearchCriteria): Int {

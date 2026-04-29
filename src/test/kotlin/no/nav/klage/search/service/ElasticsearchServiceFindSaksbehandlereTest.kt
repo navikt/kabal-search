@@ -6,7 +6,6 @@ import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
 import no.nav.klage.search.domain.SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
-import no.nav.klage.search.domain.elasticsearch.EsStatus.IKKE_TILDELT
 import no.nav.klage.search.repositories.EsBehandlingRepository
 import no.nav.klage.search.repositories.SearchHits
 import org.assertj.core.api.Assertions.assertThat
@@ -164,7 +163,6 @@ class ElasticsearchServiceFindSaksbehandlereTest {
             frist = LocalDate.of(2020, 12, 1),
             varsletFrist = LocalDate.of(2020, 12, 1),
             hjemmelIdList = listOf(),
-            status = IKKE_TILDELT,
             medunderskriverFlowStateId = FlowState.NOT_SENT.id,
             avsluttetAvSaksbehandler = avsluttetAvSaksbehandler,
             sakenGjelderFnr = "12345678910",

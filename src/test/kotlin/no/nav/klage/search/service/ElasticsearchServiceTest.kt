@@ -8,7 +8,6 @@ import no.nav.klage.search.domain.CountLedigeOppgaverMedUtgaattFristSearchCriter
 import no.nav.klage.search.domain.LedigeOppgaverSearchCriteria
 import no.nav.klage.search.domain.SortField
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
-import no.nav.klage.search.domain.elasticsearch.EsStatus.IKKE_TILDELT
 import no.nav.klage.search.repositories.EsBehandlingRepository
 import no.nav.klage.search.repositories.SearchHits
 import org.assertj.core.api.Assertions.assertThat
@@ -76,7 +75,6 @@ class ElasticsearchServiceTest {
             frist = LocalDate.of(2020, 12, 1),
             varsletFrist = LocalDate.of(2020, 12, 1),
             hjemmelIdList = listOf(),
-            status = IKKE_TILDELT,
             medunderskriverFlowStateId = FlowState.NOT_SENT.id,
             sakenGjelderFnr = "12345678910",
             fagsystemId = "1",
@@ -102,7 +100,6 @@ class ElasticsearchServiceTest {
                 frist = LocalDate.of(2019, 12, 1),
                 varsletFrist = LocalDate.of(2020, 12, 1),
                 hjemmelIdList = listOf(),
-                status = IKKE_TILDELT,
                 medunderskriverFlowStateId = FlowState.NOT_SENT.id,
                 sakenGjelderFnr = "12345678910",
                 fagsystemId = "1",
@@ -129,7 +126,6 @@ class ElasticsearchServiceTest {
                 frist = null,
                 varsletFrist = null,
                 hjemmelIdList = listOf(),
-                status = IKKE_TILDELT,
                 medunderskriverFlowStateId = FlowState.NOT_SENT.id,
                 sakenGjelderFnr = "12345678910",
                 fagsystemId = "1",
