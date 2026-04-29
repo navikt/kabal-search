@@ -32,8 +32,6 @@ class BehandlingSkjemaV2(
     val sattPaaVentReason: String?,
     val sattPaaVentReasonId: String?,
 
-    val status: StatusType,
-
     val feilregistrert: LocalDateTime?,
     val rolIdent: String?,
     val rolFlowStateId: String,
@@ -47,19 +45,6 @@ class BehandlingSkjemaV2(
     data class Vedtak(
         val utfall: Kode?,
     )
-
-    enum class StatusType {
-        IKKE_TILDELT,
-        TILDELT,
-        MEDUNDERSKRIVER_VALGT,
-        SENDT_TIL_MEDUNDERSKRIVER,
-        RETURNERT_TIL_SAKSBEHANDLER,
-        AVSLUTTET_AV_SAKSBEHANDLER,
-        FULLFOERT,
-        UKJENT,
-        SATT_PAA_VENT,
-        FEILREGISTRERT,
-    }
 
     data class Person(
         val fnr: String,
