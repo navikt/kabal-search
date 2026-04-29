@@ -1041,6 +1041,24 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                 )
             }
 
+            HelperStatus.RETURNERT_FRA_MU_MED_GODKJENNING -> {
+                innerQuery.must(
+                    QueryBuilders.termQuery(
+                        EsBehandling::medunderskriverFlowStateId.name,
+                        FlowState.RETURNED_APPROVED.id
+                    )
+                )
+            }
+
+            HelperStatus.RETURNERT_FRA_MU_UTEN_GODKJENNING -> {
+                innerQuery.must(
+                    QueryBuilders.termQuery(
+                        EsBehandling::medunderskriverFlowStateId.name,
+                        FlowState.RETURNED_NOT_APPROVED.id
+                    )
+                )
+            }
+
             HelperStatus.MU -> {
                 if (navIdent != null) {
                     innerQuery.must(
