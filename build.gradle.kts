@@ -4,7 +4,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val mockkVersion = "1.14.9"
 val tokenValidationVersion = "6.0.5"
 val logstashVersion = "9.0"
-val springRetryVersion = "2.0.12"
 val springMockkVersion = "5.0.1"
 val springDocVersion = "3.0.3"
 val testContainersVersion = "2.0.5"
@@ -63,7 +62,6 @@ dependencies {
     implementation("no.nav.klage:klage-kodeverk:$kodeverkVersion") {
         exclude(group = "jakarta.persistence")
     }
-    implementation("org.springframework.retry:spring-retry:$springRetryVersion")
     implementation("io.opentelemetry:opentelemetry-api:${otelVersion}")
 
     //Test
@@ -74,9 +72,9 @@ dependencies {
     }
     testImplementation("org.springframework.kafka:spring-kafka-test")
 
-    testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
-    testImplementation("org.testcontainers:testcontainers-junit-jupiter:$testContainersVersion")
-    testImplementation("org.testcontainers:testcontainers-elasticsearch:$testContainersVersion")
+    testImplementation("org.testcontainers:testcontainers")
+    testImplementation("org.testcontainers:testcontainers-junit-jupiter")
+    testImplementation("org.testcontainers:testcontainers-elasticsearch")
     testImplementation("com.tngtech.archunit:archunit-junit5:$archunitVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
