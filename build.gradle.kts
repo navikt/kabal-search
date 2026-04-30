@@ -21,7 +21,7 @@ java.sourceCompatibility = JavaVersion.VERSION_21
 
 plugins {
     val kotlinVersion = "2.3.21"
-    id("org.springframework.boot") version "4.0.5"
+    id("org.springframework.boot") version "4.0.6"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     idea
