@@ -7,7 +7,6 @@ import no.nav.klage.search.config.ElasticsearchServiceConfiguration
 import no.nav.klage.search.domain.LedigeOppgaverSearchCriteria
 import no.nav.klage.search.domain.SortField
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
-import no.nav.klage.search.domain.elasticsearch.EsStatus.IKKE_TILDELT
 import no.nav.klage.search.repositories.EsBehandlingRepository
 import no.nav.klage.search.repositories.SearchHits
 import org.assertj.core.api.Assertions.assertThat
@@ -87,7 +86,6 @@ class FortroligElasticsearchServiceTest {
             frist = LocalDate.of(2020, 12, 1),
             varsletFrist = LocalDate.of(2020, 12, 1),
             hjemmelIdList = listOf(),
-            status = IKKE_TILDELT,
             sakenGjelderFnr = "123",
             medunderskriverFlowStateId = FlowState.NOT_SENT.id,
             fagsystemId = "1",
@@ -113,7 +111,6 @@ class FortroligElasticsearchServiceTest {
                 frist = LocalDate.of(2019, 12, 1),
                 varsletFrist = LocalDate.of(2019, 12, 1),
                 hjemmelIdList = listOf(),
-                status = IKKE_TILDELT,
                 sakenGjelderFnr = "123",
                 fortrolig = true,
                 medunderskriverFlowStateId = FlowState.NOT_SENT.id,
@@ -139,7 +136,6 @@ class FortroligElasticsearchServiceTest {
             frist = LocalDate.of(2020, 12, 1),
             varsletFrist = LocalDate.of(2020, 12, 1),
             hjemmelIdList = listOf(),
-            status = IKKE_TILDELT,
             sakenGjelderFnr = "123",
             strengtFortrolig = true,
             medunderskriverFlowStateId = FlowState.NOT_SENT.id,
@@ -166,7 +162,6 @@ class FortroligElasticsearchServiceTest {
                 frist = LocalDate.of(2019, 12, 1),
                 varsletFrist = LocalDate.of(2019, 12, 1),
                 hjemmelIdList = listOf(),
-                status = IKKE_TILDELT,
                 sakenGjelderFnr = "123",
                 egenAnsatt = true,
                 medunderskriverFlowStateId = FlowState.NOT_SENT.id,
@@ -193,7 +188,6 @@ class FortroligElasticsearchServiceTest {
                 frist = LocalDate.of(2019, 12, 1),
                 varsletFrist = LocalDate.of(2019, 12, 1),
                 hjemmelIdList = listOf(),
-                status = IKKE_TILDELT,
                 sakenGjelderFnr = "123",
                 egenAnsatt = true,
                 fortrolig = true,
@@ -221,7 +215,6 @@ class FortroligElasticsearchServiceTest {
                 frist = LocalDate.of(2019, 12, 1),
                 varsletFrist = LocalDate.of(2019, 12, 1),
                 hjemmelIdList = listOf(),
-                status = IKKE_TILDELT,
                 sakenGjelderFnr = "123",
                 egenAnsatt = true,
                 strengtFortrolig = true,

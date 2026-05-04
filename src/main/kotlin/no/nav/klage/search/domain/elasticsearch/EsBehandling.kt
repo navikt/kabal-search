@@ -5,19 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-enum class EsStatus {
-    IKKE_TILDELT,
-    TILDELT,
-    MEDUNDERSKRIVER_VALGT,
-    SENDT_TIL_MEDUNDERSKRIVER,
-    RETURNERT_TIL_SAKSBEHANDLER,
-    AVSLUTTET_AV_SAKSBEHANDLER,
-    FULLFOERT,
-    UKJENT,
-    SATT_PAA_VENT,
-    FEILREGISTRERT,
-}
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class EsBehandling(
     override val behandlingId: String,
@@ -86,8 +73,6 @@ data class EsBehandling(
     override val rolIdent: String?,
 
     override val rolFlowStateId: String,
-
-    val status: EsStatus,
 ) : EsAnonymBehandling
 
 interface EsAnonymBehandling {

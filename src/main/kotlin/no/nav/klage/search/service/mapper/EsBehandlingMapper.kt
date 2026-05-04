@@ -4,7 +4,6 @@ package no.nav.klage.search.service.mapper
 import no.nav.klage.search.clients.klageendret.BehandlingSkjemaV2
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import no.nav.klage.search.domain.elasticsearch.EsSaksdokument
-import no.nav.klage.search.domain.elasticsearch.EsStatus
 import no.nav.klage.search.service.saksbehandler.SaksbehandlerService
 import no.nav.klage.search.util.getLogger
 import org.springframework.stereotype.Service
@@ -49,7 +48,6 @@ class EsBehandlingMapper(
             sattPaaVent = behandling.sattPaaVent,
             sattPaaVentExpires = behandling.sattPaaVentExpires,
             sattPaaVentReasonId = behandling.sattPaaVentReasonId,
-            status = EsStatus.valueOf(behandling.status.name),
             feilregistrert = behandling.feilregistrert,
             rolIdent = behandling.rolIdent,
             rolFlowStateId = behandling.rolFlowStateId,
