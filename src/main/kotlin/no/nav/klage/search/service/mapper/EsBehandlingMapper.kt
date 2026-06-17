@@ -3,7 +3,6 @@ package no.nav.klage.search.service.mapper
 
 import no.nav.klage.search.clients.klageendret.BehandlingSkjemaV2
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
-import no.nav.klage.search.domain.elasticsearch.EsSaksdokument
 import no.nav.klage.search.service.saksbehandler.SaksbehandlerService
 import no.nav.klage.search.util.getLogger
 import org.springframework.stereotype.Service
@@ -41,7 +40,6 @@ class EsBehandlingMapper(
             tildeltEnhet = behandling.gjeldendeTildeling?.enhet?.nr,
             hjemmelIdList = behandling.hjemler.map { it.id },
 
-            saksdokumenter = behandling.saksdokumenter.map { EsSaksdokument(it.journalpostId, it.dokumentInfoId) },
             egenAnsatt = behandling.erEgenAnsatt,
             fortrolig = behandling.erFortrolig,
             strengtFortrolig = behandling.erStrengtFortrolig,
