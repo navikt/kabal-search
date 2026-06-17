@@ -25,7 +25,6 @@ class BehandlingSkjemaV2(
     val medunderskriverFlowStateId: String,
     val hjemler: List<Kode>,
 
-    val saksdokumenter: List<Dokument>,
     val vedtak: Vedtak?,
     val sattPaaVent: LocalDate?,
     val sattPaaVentExpires: LocalDate?,
