@@ -604,6 +604,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
         baseQuery.must(beSentToROL())
+        baseQuery.must(beAssignedToROL())
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
 
         if (rolList.isNotEmpty()) {
