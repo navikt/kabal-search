@@ -14,14 +14,12 @@ import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 
-
 @ActiveProfiles("local")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @Testcontainers
 @SpringBootTest(classes = [ElasticsearchServiceConfiguration::class])
 @DirtiesContext
 class ElasticsearchServiceStatusTest {
-
     companion object {
         @Container
         @JvmField
@@ -46,5 +44,4 @@ class ElasticsearchServiceStatusTest {
     fun `index has been created by service`() {
         assertThat(repo.indexExists()).isTrue
     }
-
 }

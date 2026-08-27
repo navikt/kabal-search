@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class PersonSearchService(
-    private val elasticsearchService: ElasticsearchService
+    private val elasticsearchService: ElasticsearchService,
 ) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
@@ -22,7 +22,7 @@ class PersonSearchService(
             null
         } else {
             PersonSearchResponse(
-                behandlinger = searchHitsInES
+                behandlinger = searchHitsInES,
             )
         }
     }

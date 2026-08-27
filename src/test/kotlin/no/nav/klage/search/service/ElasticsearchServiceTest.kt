@@ -25,14 +25,12 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-
 @ActiveProfiles("local")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @Testcontainers
 @SpringBootTest(classes = [ElasticsearchServiceConfiguration::class])
 @DirtiesContext
 class ElasticsearchServiceTest {
-
     companion object {
         @Container
         @JvmField
@@ -61,31 +59,31 @@ class ElasticsearchServiceTest {
     @Test
     @Order(3)
     fun `lagrer to oppgaver for senere tester`() {
-
-        val klagebehandling1 = EsBehandling(
-            behandlingId = "1001L",
-            tildeltEnhet = "4219",
-            ytelseId = Ytelse.OMS_OMP.id,
-            typeId = Type.KLAGE.id,
-            tildeltSaksbehandlerident = null,
-            innsendt = LocalDate.of(2019, 10, 1),
-            sakMottattKaDato = LocalDateTime.of(2019, 12, 1, 0, 0),
-            sendtTilTrygderetten = null,
-            ageStartDate = LocalDate.of(2019, 12, 1),
-            frist = LocalDate.of(2020, 12, 1),
-            varsletFrist = LocalDate.of(2020, 12, 1),
-            hjemmelIdList = listOf(),
-            medunderskriverFlowStateId = FlowState.NOT_SENT.id,
-            sakenGjelderFnr = "12345678910",
-            fagsystemId = "1",
-            rolIdent = "ROLIDENT",
-            rolFlowStateId = "1",
-            saksnummer = "123",
-            avsluttetAvSaksbehandler = null,
-            returnertFraROL = null,
-            medunderskriverEnhet = null,
-            medunderskriverident = null,
-        )
+        val klagebehandling1 =
+            EsBehandling(
+                behandlingId = "1001L",
+                tildeltEnhet = "4219",
+                ytelseId = Ytelse.OMS_OMP.id,
+                typeId = Type.KLAGE.id,
+                tildeltSaksbehandlerident = null,
+                innsendt = LocalDate.of(2019, 10, 1),
+                sakMottattKaDato = LocalDateTime.of(2019, 12, 1, 0, 0),
+                sendtTilTrygderetten = null,
+                ageStartDate = LocalDate.of(2019, 12, 1),
+                frist = LocalDate.of(2020, 12, 1),
+                varsletFrist = LocalDate.of(2020, 12, 1),
+                hjemmelIdList = listOf(),
+                medunderskriverFlowStateId = FlowState.NOT_SENT.id,
+                sakenGjelderFnr = "12345678910",
+                fagsystemId = "1",
+                rolIdent = "ROLIDENT",
+                rolFlowStateId = "1",
+                saksnummer = "123",
+                avsluttetAvSaksbehandler = null,
+                returnertFraROL = null,
+                medunderskriverEnhet = null,
+                medunderskriverident = null,
+            )
         val klagebehandling2 =
             EsBehandling(
                 behandlingId = "1002L",
@@ -150,24 +148,26 @@ class ElasticsearchServiceTest {
     @Order(4)
     fun `Klagebehandling can be searched for by ytelse`() {
         val klagebehandlinger: List<EsBehandling> =
-            service.findLedigeOppgaverByCriteria(
-                LedigeOppgaverSearchCriteria(
-                    ytelser = listOf(Ytelse.OMS_OMP),
-                    typer = emptyList(),
-                    hjemler = emptyList(),
-                    offset = 0,
-                    limit = 10,
-                    order = no.nav.klage.search.domain.Order.ASC,
-                    sortField = SortField.FRIST,
-                    kanBehandleEgenAnsatt = false,
-                    kanBehandleFortrolig = false,
-                    kanBehandleStrengtFortrolig = false,
-                    fristFrom = LocalDate.now().minusDays(3650),
-                    fristTo = LocalDate.now().plusDays(3650),
-                    varsletFristFrom = LocalDate.now().minusDays(3650),
-                    varsletFristTo = LocalDate.now().plusDays(3650),
-                )
-            ).searchHits.map { it.content }
+            service
+                .findLedigeOppgaverByCriteria(
+                    LedigeOppgaverSearchCriteria(
+                        ytelser = listOf(Ytelse.OMS_OMP),
+                        typer = emptyList(),
+                        hjemler = emptyList(),
+                        offset = 0,
+                        limit = 10,
+                        order = no.nav.klage.search.domain.Order.ASC,
+                        sortField = SortField.FRIST,
+                        kanBehandleEgenAnsatt = false,
+                        kanBehandleFortrolig = false,
+                        kanBehandleStrengtFortrolig = false,
+                        fristFrom = LocalDate.now().minusDays(3650),
+                        fristTo = LocalDate.now().plusDays(3650),
+                        varsletFristFrom = LocalDate.now().minusDays(3650),
+                        varsletFristTo = LocalDate.now().plusDays(3650),
+                    ),
+                ).searchHits
+                .map { it.content }
         assertThat(klagebehandlinger.size).isEqualTo(1L)
         assertThat(klagebehandlinger.first().behandlingId).isEqualTo("1001L")
     }
@@ -188,7 +188,7 @@ class ElasticsearchServiceTest {
                     kanBehandleEgenAnsatt = false,
                     kanBehandleFortrolig = false,
                     kanBehandleStrengtFortrolig = false,
-                )
+                ),
             )
         assertThat(antall).isEqualTo(1L)
     }
@@ -213,9 +213,8 @@ class ElasticsearchServiceTest {
                     order = no.nav.klage.search.domain.Order.ASC,
                     offset = 0,
                     limit = 1000,
-                )
+                ),
             )
         assertThat(oppgaver).hasSize(3)
     }
-
 }

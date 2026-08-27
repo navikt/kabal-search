@@ -27,7 +27,7 @@ class OppgaverITRController(
     private val elasticsearchService: ElasticsearchService,
     private val behandlingerSearchCriteriaMapper: BehandlingerSearchCriteriaMapper,
     private val tokenUtil: TokenUtil,
-    private val klageLookupClient: KlageLookupClient
+    private val klageLookupClient: KlageLookupClient,
 ) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
@@ -36,28 +36,28 @@ class OppgaverITRController(
 
     @Operation(
         summary = "Hent alle tildelte oppgaver, default oppgaver i Trygderetten",
-        description = "Henter alle tildelte oppgaver, default oppgaver i Trygderetten."
+        description = "Henter alle tildelte oppgaver, default oppgaver i Trygderetten.",
     )
     @GetMapping(
         "/oppgaver-i-tr/tildelte",
-        produces = ["application/json"]
+        produces = ["application/json"],
     )
-    fun getTildelteOppgaver(
-        queryParams: TildelteOppgaverITRQueryParams
-    ): BehandlingerListResponse {
+    fun getTildelteOppgaver(queryParams: TildelteOppgaverITRQueryParams): BehandlingerListResponse {
         logger.debug("Params: {}", queryParams)
         validateRettigheterForOppgaverITR()
 
-        val searchCriteria = behandlingerSearchCriteriaMapper.toTildelteOppgaverSearchCriteria(
-            queryParams = queryParams
-        )
+        val searchCriteria =
+            behandlingerSearchCriteriaMapper.toTildelteOppgaverSearchCriteria(
+                queryParams = queryParams,
+            )
 
         val esResponse = elasticsearchService.findTildelteOppgaverByCriteria(searchCriteria)
         return BehandlingerListResponse(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
-                esBehandlinger = esResponse.searchHits.map { it.content },
-            ),
+            behandlinger =
+                behandlingListMapper.mapEsBehandlingerToListView(
+                    esBehandlinger = esResponse.searchHits.map { it.content },
+                ),
         )
     }
 
@@ -67,51 +67,51 @@ class OppgaverITRController(
     )
     @GetMapping(
         "/oppgaver-i-tr/ledige",
-        produces = ["application/json"]
+        produces = ["application/json"],
     )
-    fun getLedigeOppgaver(
-        queryParams: LedigeOppgaverITRQueryParams
-    ): BehandlingerListResponse {
+    fun getLedigeOppgaver(queryParams: LedigeOppgaverITRQueryParams): BehandlingerListResponse {
         logger.debug("Params: {}", queryParams)
         validateRettigheterForOppgaverITR()
 
-        val searchCriteria = behandlingerSearchCriteriaMapper.toLedigeOppgaverSearchCriteria(
-            queryParams = queryParams
-        )
+        val searchCriteria =
+            behandlingerSearchCriteriaMapper.toLedigeOppgaverSearchCriteria(
+                queryParams = queryParams,
+            )
 
         val esResponse = elasticsearchService.findLedigeOppgaverByCriteria(searchCriteria)
         return BehandlingerListResponse(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
-                esBehandlinger = esResponse.searchHits.map { it.content },
-            ),
+            behandlinger =
+                behandlingListMapper.mapEsBehandlingerToListView(
+                    esBehandlinger = esResponse.searchHits.map { it.content },
+                ),
         )
     }
 
     @Operation(
         summary = "Hent alle oppgaver på vent, default oppgaver i Trygderetten",
-        description = "Hent alle oppgaver på vent, default oppgaver i Trygderetten"
+        description = "Hent alle oppgaver på vent, default oppgaver i Trygderetten",
     )
     @GetMapping(
         "/oppgaver-i-tr/paa-vent",
-        produces = ["application/json"]
+        produces = ["application/json"],
     )
-    fun getOppgaverPaaVent(
-        queryParams: OppgaverPaaVentITRQueryParams
-    ): BehandlingerListResponse {
+    fun getOppgaverPaaVent(queryParams: OppgaverPaaVentITRQueryParams): BehandlingerListResponse {
         logger.debug("Params: {}", queryParams)
         validateRettigheterForOppgaverITR()
 
-        val searchCriteria = behandlingerSearchCriteriaMapper.toOppgaverPaaVentSearchCriteria(
-            queryParams = queryParams
-        )
+        val searchCriteria =
+            behandlingerSearchCriteriaMapper.toOppgaverPaaVentSearchCriteria(
+                queryParams = queryParams,
+            )
 
         val esResponse = elasticsearchService.findOppgaverPaaVentByCriteria(searchCriteria)
         return BehandlingerListResponse(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
-                esBehandlinger = esResponse.searchHits.map { it.content },
-            ),
+            behandlinger =
+                behandlingListMapper.mapEsBehandlingerToListView(
+                    esBehandlinger = esResponse.searchHits.map { it.content },
+                ),
         )
     }
 

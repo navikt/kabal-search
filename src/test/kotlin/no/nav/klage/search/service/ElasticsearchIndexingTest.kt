@@ -27,14 +27,12 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-
 @ActiveProfiles("local")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @Testcontainers
 @SpringBootTest(classes = [ElasticsearchServiceConfiguration::class])
 @DirtiesContext
 class ElasticsearchIndexingTest {
-
     companion object {
         @Container
         @JvmField
@@ -66,30 +64,35 @@ class ElasticsearchIndexingTest {
     @Test
     @Order(3)
     fun `klagebehandling can be saved and retrieved`() {
-
-        val klagebehandling = klagebehandlingWith(
-            id = "1001L",
-        )
+        val klagebehandling =
+            klagebehandlingWith(
+                id = "1001L",
+            )
         repo.save(klagebehandling)
 
         val query = QueryBuilders.matchAllQuery()
         val searchHits: SearchHits<EsBehandling> = repo.search(query)
         assertThat(searchHits.totalHits).isEqualTo(1L)
-        assertThat(searchHits.searchHits.first().content.behandlingId).isEqualTo("1001L")
+        assertThat(
+            searchHits.searchHits
+                .first()
+                .content.behandlingId,
+        ).isEqualTo("1001L")
     }
 
     @Test
     @Order(4)
     fun `klagebehandling can be saved twice without creating a duplicate`() {
-
-        var klagebehandling = klagebehandlingWith(
-            id = "2001L",
-        )
+        var klagebehandling =
+            klagebehandlingWith(
+                id = "2001L",
+            )
         repo.save(klagebehandling)
 
-        klagebehandling = klagebehandlingWith(
-            id = "2001L",
-        )
+        klagebehandling =
+            klagebehandlingWith(
+                id = "2001L",
+            )
         repo.save(klagebehandling)
 
         val query = QueryBuilders.idsQuery().addIds("2001L")
@@ -100,48 +103,48 @@ class ElasticsearchIndexingTest {
     @Test
     @Order(5)
     fun `print mapping`() {
-        val esBehandlingWithAllData = EsBehandling(
-            behandlingId = "id",
-            tildeltEnhet = "abc",
-            ytelseId = Ytelse.OMS_OMP.id,
-            typeId = Type.KLAGE.id,
-            tildeltSaksbehandlerident = "null",
-            innsendt = LocalDate.now(),
-            sakMottattKaDato = LocalDateTime.now(),
-            sendtTilTrygderetten = null,
-            ageStartDate = LocalDate.now(),
-            frist = LocalDate.now(),
-            varsletFrist = LocalDate.now(),
-            hjemmelIdList = listOf(Hjemmel.FTRL_8_35.id, Hjemmel.FTRL_8_34.id),
-            sakenGjelderFnr = "12345678910",
-            egenAnsatt = false,
-            fortrolig = false,
-            medunderskriverEnhet = null,
-            medunderskriverFlowStateId = FlowState.NOT_SENT.id,
-            fagsystemId = "1",
-            sattPaaVent = LocalDate.now(),
-            avsluttetAvSaksbehandler = LocalDateTime.now(),
-            returnertFraROL = null,
-            medunderskriverident = "null",
-            saksdokumenter = listOf(EsSaksdokument(journalpostId = "1", dokumentInfoId = "bc")),
-            strengtFortrolig = false,
-            sattPaaVentExpires = LocalDate.now(),
-            feilregistrert = LocalDateTime.now(),
-            rolIdent = "null",
-            rolFlowStateId = FlowState.NOT_SENT.id,
-            saksnummer = "123",
-        )
+        val esBehandlingWithAllData =
+            EsBehandling(
+                behandlingId = "id",
+                tildeltEnhet = "abc",
+                ytelseId = Ytelse.OMS_OMP.id,
+                typeId = Type.KLAGE.id,
+                tildeltSaksbehandlerident = "null",
+                innsendt = LocalDate.now(),
+                sakMottattKaDato = LocalDateTime.now(),
+                sendtTilTrygderetten = null,
+                ageStartDate = LocalDate.now(),
+                frist = LocalDate.now(),
+                varsletFrist = LocalDate.now(),
+                hjemmelIdList = listOf(Hjemmel.FTRL_8_35.id, Hjemmel.FTRL_8_34.id),
+                sakenGjelderFnr = "12345678910",
+                egenAnsatt = false,
+                fortrolig = false,
+                medunderskriverEnhet = null,
+                medunderskriverFlowStateId = FlowState.NOT_SENT.id,
+                fagsystemId = "1",
+                sattPaaVent = LocalDate.now(),
+                avsluttetAvSaksbehandler = LocalDateTime.now(),
+                returnertFraROL = null,
+                medunderskriverident = "null",
+                saksdokumenter = listOf(EsSaksdokument(journalpostId = "1", dokumentInfoId = "bc")),
+                strengtFortrolig = false,
+                sattPaaVentExpires = LocalDate.now(),
+                feilregistrert = LocalDateTime.now(),
+                rolIdent = "null",
+                rolFlowStateId = FlowState.NOT_SENT.id,
+                saksnummer = "123",
+            )
 
         repo.save(esBehandlingWithAllData)
 
         val mappingResponse = client.lowLevelClient.performRequest(Request("GET", "/_mapping"))
         val mapping = EntityUtils.toString(mappingResponse.entity)
         println("mapping: $mapping")
-
     }
 
-    private fun klagebehandlingWith(id: String): EsBehandling {
-        return EsBehandling(
+    private fun klagebehandlingWith(id: String): EsBehandling =
+        EsBehandling(
             behandlingId = id,
             tildeltEnhet = "",
             ytelseId = Ytelse.OMS_OMP.id,
@@ -168,5 +171,4 @@ class ElasticsearchIndexingTest {
             medunderskriverident = null,
             medunderskriverEnhet = null,
         )
-    }
 }

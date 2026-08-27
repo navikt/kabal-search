@@ -10,9 +10,8 @@ import java.lang.String.join
 
 @Component
 class AuditLogger(
-    @Value("\${spring.application.name}") private val applicationName: String
+    @Value("\${spring.application.name}") private val applicationName: String,
 ) {
-
     companion object {
         val auditLogger = getAuditLogger()
     }
@@ -30,7 +29,8 @@ class AuditLogger(
     }
 
     private fun compileLogMessage(logEvent: AuditLogEvent): String {
-        //Field descriptions from CEF documentation (#tech-logg_analyse_og_datainnsikt):
+        // Field descriptions from CEF documentation (#tech-logg_analyse_og_datainnsikt):
+
         /*
         Set to: 0 (zero)
          */
@@ -63,7 +63,8 @@ class AuditLogger(
         val extensions = join(" ", getExtensions(logEvent))
 
         return join(
-            "|", listOf(
+            "|",
+            listOf(
                 version,
                 deviceVendor,
                 deviceProduct,
@@ -71,8 +72,8 @@ class AuditLogger(
                 deviceEventClassId,
                 name,
                 severity,
-                extensions
-            )
+                extensions,
+            ),
         )
     }
 

@@ -15,7 +15,6 @@ class MicrosoftGraphClient(
     @Value("\${KABAL_SAKSBEHANDLING_ROLE_ID}") private val kabalSaksbehandlingRoleId: String,
     @Value("\${KABAL_ROL_ROLE_ID}") private val kabalROLRoleId: String,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -24,7 +23,8 @@ class MicrosoftGraphClient(
     @Retryable
     fun getEnhetensAnsatteWithKabalSaksbehandlerRole(enhetsnummer: String): AzureSlimUserList {
         logger.debug("getEnhetensAnsattesNavIdentsWithKabalSaksbehandlerRole from Microsoft Graph")
-        return microsoftGraphWebClient.get()
+        return microsoftGraphWebClient
+            .get()
             .uri { uriBuilder ->
                 uriBuilder
                     .path("/groups/$kabalSaksbehandlingRoleId/transitivemembers/microsoft.graph.user")
@@ -33,8 +33,7 @@ class MicrosoftGraphClient(
                     .queryParam("\$top", 500)
                     .queryParam("\$select", "userPrincipalName,onPremisesSamAccountName,displayName")
                     .build()
-            }
-            .header("Authorization", "Bearer ${tokenUtil.getAppAccessTokenWithGraphScope()}")
+            }.header("Authorization", "Bearer ${tokenUtil.getAppAccessTokenWithGraphScope()}")
             .header("ConsistencyLevel", "eventual")
             .retrieve()
             .bodyToMono<AzureSlimUserList>()
@@ -45,7 +44,8 @@ class MicrosoftGraphClient(
     @Retryable
     fun getAnsatteWithKabalROLRole(): AzureSlimUserList {
         logger.debug("getEnhetensAnsatteWithKabalROLRole from Microsoft Graph")
-        return microsoftGraphWebClient.get()
+        return microsoftGraphWebClient
+            .get()
             .uri { uriBuilder ->
                 uriBuilder
                     .path("/groups/$kabalROLRoleId/transitivemembers/microsoft.graph.user")
@@ -53,8 +53,7 @@ class MicrosoftGraphClient(
                     .queryParam("\$top", 500)
                     .queryParam("\$select", "userPrincipalName,onPremisesSamAccountName,displayName")
                     .build()
-            }
-            .header("Authorization", "Bearer ${tokenUtil.getAppAccessTokenWithGraphScope()}")
+            }.header("Authorization", "Bearer ${tokenUtil.getAppAccessTokenWithGraphScope()}")
             .header("ConsistencyLevel", "eventual")
             .retrieve()
             .bodyToMono<AzureSlimUserList>()

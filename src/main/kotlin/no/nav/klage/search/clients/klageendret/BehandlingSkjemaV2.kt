@@ -24,22 +24,18 @@ class BehandlingSkjemaV2(
     val medunderskriver: TildeltSaksbehandler?,
     val medunderskriverFlowStateId: String,
     val hjemler: List<Kode>,
-
     val vedtak: Vedtak?,
     val sattPaaVent: LocalDate?,
     val sattPaaVentExpires: LocalDate?,
     val sattPaaVentReason: String?,
     val sattPaaVentReasonId: String?,
-
     val feilregistrert: LocalDateTime?,
     val rolIdent: String?,
     val rolFlowStateId: String,
-
     val erFortrolig: Boolean,
     val erStrengtFortrolig: Boolean,
     val erEgenAnsatt: Boolean,
 ) {
-
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Vedtak(
         val utfall: Kode?,
@@ -53,7 +49,10 @@ class BehandlingSkjemaV2(
         val orgnr: String,
     )
 
-    data class PersonEllerOrganisasjon(val person: Person?, val organisasjon: Organisasjon?) {
+    data class PersonEllerOrganisasjon(
+        val person: Person?,
+        val organisasjon: Organisasjon?,
+    ) {
         constructor(person: Person) : this(person, null)
         constructor(organisasjon: Organisasjon) : this(null, organisasjon)
     }
@@ -82,5 +81,4 @@ class BehandlingSkjemaV2(
         val journalpostId: String,
         val dokumentInfoId: String,
     )
-
 }

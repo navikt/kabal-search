@@ -20,13 +20,13 @@ class KabalInnstillingerClient(
 
     fun getInnloggetSaksbehandlersInnstillinger(): InnstillingerView {
         logger.debug("Getting innstillinger for current saksbehandler in kabal-innstillinger")
-        return kabalInnstillingerWebClient.get()
+        return kabalInnstillingerWebClient
+            .get()
             .uri { it.path("/me/innstillinger").build() }
             .header(
                 HttpHeaders.AUTHORIZATION,
-                "Bearer ${tokenUtil.getUserAccessTokenWithKabalInnstillingerScope()}"
-            )
-            .retrieve()
+                "Bearer ${tokenUtil.getUserAccessTokenWithKabalInnstillingerScope()}",
+            ).retrieve()
             .bodyToMono<InnstillingerView>()
             .block() ?: throw RuntimeException("Could not get innstillinger for current saksbehandler")
     }

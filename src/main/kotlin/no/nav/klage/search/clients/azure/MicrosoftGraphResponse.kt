@@ -6,8 +6,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 data class AzureSlimUser(
     val userPrincipalName: String,
     val onPremisesSamAccountName: String,
-    val displayName: String
+    val displayName: String,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class AzureSlimUserList(val value: List<AzureSlimUser>?)
+data class AzureSlimUserList(
+    val value: List<AzureSlimUser>?,
+)

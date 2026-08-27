@@ -1,7 +1,7 @@
 package no.nav.klage.search.domain.saksbehandler
 
-import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.kodeverk.hjemmel.Hjemmel
+import no.nav.klage.kodeverk.ytelse.Ytelse
 
 data class Innstillinger(
     val hjemler: List<Hjemmel>,

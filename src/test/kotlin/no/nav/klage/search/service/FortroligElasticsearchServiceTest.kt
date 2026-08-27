@@ -24,14 +24,12 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-
 @ActiveProfiles("local")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @Testcontainers
 @SpringBootTest(classes = [ElasticsearchServiceConfiguration::class])
 @DirtiesContext
 class FortroligElasticsearchServiceTest {
-
     companion object {
         @Container
         @JvmField
@@ -72,31 +70,31 @@ class FortroligElasticsearchServiceTest {
     @Test
     @Order(3)
     fun `lagrer oppgaver for senere tester`() {
-
-        val normalPerson = EsBehandling(
-            behandlingId = idNormal,
-            tildeltEnhet = "4219",
-            ytelseId = Ytelse.OMS_OMP.id,
-            typeId = Type.KLAGE.id,
-            tildeltSaksbehandlerident = null,
-            innsendt = LocalDate.of(2019, 10, 1),
-            sakMottattKaDato = LocalDateTime.of(2019, 12, 1, 0, 0),
-            sendtTilTrygderetten = null,
-            ageStartDate = LocalDate.of(2019, 12, 1),
-            frist = LocalDate.of(2020, 12, 1),
-            varsletFrist = LocalDate.of(2020, 12, 1),
-            hjemmelIdList = listOf(),
-            sakenGjelderFnr = "123",
-            medunderskriverFlowStateId = FlowState.NOT_SENT.id,
-            fagsystemId = "1",
-            rolIdent = "ROLIDENT",
-            rolFlowStateId = "1",
-            saksnummer = "123",
-            avsluttetAvSaksbehandler = null,
-            returnertFraROL = null,
-            medunderskriverEnhet = null,
-            medunderskriverident = null,
-        )
+        val normalPerson =
+            EsBehandling(
+                behandlingId = idNormal,
+                tildeltEnhet = "4219",
+                ytelseId = Ytelse.OMS_OMP.id,
+                typeId = Type.KLAGE.id,
+                tildeltSaksbehandlerident = null,
+                innsendt = LocalDate.of(2019, 10, 1),
+                sakMottattKaDato = LocalDateTime.of(2019, 12, 1, 0, 0),
+                sendtTilTrygderetten = null,
+                ageStartDate = LocalDate.of(2019, 12, 1),
+                frist = LocalDate.of(2020, 12, 1),
+                varsletFrist = LocalDate.of(2020, 12, 1),
+                hjemmelIdList = listOf(),
+                sakenGjelderFnr = "123",
+                medunderskriverFlowStateId = FlowState.NOT_SENT.id,
+                fagsystemId = "1",
+                rolIdent = "ROLIDENT",
+                rolFlowStateId = "1",
+                saksnummer = "123",
+                avsluttetAvSaksbehandler = null,
+                returnertFraROL = null,
+                medunderskriverEnhet = null,
+                medunderskriverident = null,
+            )
         val fortroligPerson =
             EsBehandling(
                 behandlingId = idFortrolig,
@@ -123,31 +121,32 @@ class FortroligElasticsearchServiceTest {
                 medunderskriverEnhet = null,
                 medunderskriverident = null,
             )
-        val strengtFortroligPerson = EsBehandling(
-            behandlingId = idStrengtFortrolig,
-            tildeltEnhet = "4219",
-            ytelseId = Ytelse.OMS_OMP.id,
-            typeId = Type.KLAGE.id,
-            tildeltSaksbehandlerident = null,
-            innsendt = LocalDate.of(2019, 10, 1),
-            sakMottattKaDato = LocalDateTime.of(2019, 12, 1, 0, 0),
-            sendtTilTrygderetten = null,
-            ageStartDate = LocalDate.of(2019, 12, 1),
-            frist = LocalDate.of(2020, 12, 1),
-            varsletFrist = LocalDate.of(2020, 12, 1),
-            hjemmelIdList = listOf(),
-            sakenGjelderFnr = "123",
-            strengtFortrolig = true,
-            medunderskriverFlowStateId = FlowState.NOT_SENT.id,
-            fagsystemId = "1",
-            rolIdent = "ROLIDENT",
-            rolFlowStateId = "1",
-            saksnummer = "123",
-            avsluttetAvSaksbehandler = null,
-            returnertFraROL = null,
-            medunderskriverEnhet = null,
-            medunderskriverident = null,
-        )
+        val strengtFortroligPerson =
+            EsBehandling(
+                behandlingId = idStrengtFortrolig,
+                tildeltEnhet = "4219",
+                ytelseId = Ytelse.OMS_OMP.id,
+                typeId = Type.KLAGE.id,
+                tildeltSaksbehandlerident = null,
+                innsendt = LocalDate.of(2019, 10, 1),
+                sakMottattKaDato = LocalDateTime.of(2019, 12, 1, 0, 0),
+                sendtTilTrygderetten = null,
+                ageStartDate = LocalDate.of(2019, 12, 1),
+                frist = LocalDate.of(2020, 12, 1),
+                varsletFrist = LocalDate.of(2020, 12, 1),
+                hjemmelIdList = listOf(),
+                sakenGjelderFnr = "123",
+                strengtFortrolig = true,
+                medunderskriverFlowStateId = FlowState.NOT_SENT.id,
+                fagsystemId = "1",
+                rolIdent = "ROLIDENT",
+                rolFlowStateId = "1",
+                saksnummer = "123",
+                avsluttetAvSaksbehandler = null,
+                returnertFraROL = null,
+                medunderskriverEnhet = null,
+                medunderskriverident = null,
+            )
         val egenAnsattPerson =
             EsBehandling(
                 behandlingId = idEgenAnsatt,
@@ -244,220 +243,240 @@ class FortroligElasticsearchServiceTest {
     @Order(4)
     fun `Saksbehandler with no special rights will only see normal klagebehandlinger`() {
         val klagebehandlinger: List<EsBehandling> =
-            service.findLedigeOppgaverByCriteria(
-                LedigeOppgaverSearchCriteria(
-                    ytelser = listOf(Ytelse.OMS_OMP),
-                    typer = emptyList(),
-                    hjemler = emptyList(),
-                    offset = 0,
-                    limit = 10,
-                    order = no.nav.klage.search.domain.Order.ASC,
-                    sortField = SortField.FRIST,
-                    kanBehandleEgenAnsatt = false,
-                    kanBehandleFortrolig = false,
-                    kanBehandleStrengtFortrolig = false,
-                    fristFrom = LocalDate.now().minusDays(3650),
-                    fristTo = LocalDate.now().plusDays(3650),
-                    varsletFristFrom = LocalDate.now().minusDays(3650),
-                    varsletFristTo = LocalDate.now().plusDays(3650),
-                )
-            ).searchHits.map { it.content }
+            service
+                .findLedigeOppgaverByCriteria(
+                    LedigeOppgaverSearchCriteria(
+                        ytelser = listOf(Ytelse.OMS_OMP),
+                        typer = emptyList(),
+                        hjemler = emptyList(),
+                        offset = 0,
+                        limit = 10,
+                        order = no.nav.klage.search.domain.Order.ASC,
+                        sortField = SortField.FRIST,
+                        kanBehandleEgenAnsatt = false,
+                        kanBehandleFortrolig = false,
+                        kanBehandleStrengtFortrolig = false,
+                        fristFrom = LocalDate.now().minusDays(3650),
+                        fristTo = LocalDate.now().plusDays(3650),
+                        varsletFristFrom = LocalDate.now().minusDays(3650),
+                        varsletFristTo = LocalDate.now().plusDays(3650),
+                    ),
+                ).searchHits
+                .map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(idNormal)
     }
 
     @Test
     @Order(5)
-    fun `Saksbehandler with egen ansatt rights will only see normal klagebehandlinger and those for egen ansatte, but not egen ansatte that are fortrolig or strengt fortrolig`() {
+    fun `Saksbehandler with egen ansatt rights sees normale and egen ansatte, but not fortrolig or strengt fortrolig`() {
         val klagebehandlinger: List<EsBehandling> =
-            service.findLedigeOppgaverByCriteria(
-                LedigeOppgaverSearchCriteria(
-                    ytelser = listOf(Ytelse.OMS_OMP),
-                    typer = emptyList(),
-                    hjemler = emptyList(),
-                    offset = 0,
-                    limit = 10,
-                    order = no.nav.klage.search.domain.Order.ASC,
-                    sortField = SortField.FRIST,
-                    kanBehandleEgenAnsatt = true,
-                    kanBehandleFortrolig = false,
-                    kanBehandleStrengtFortrolig = false,
-                    fristFrom = LocalDate.now().minusDays(3650),
-                    fristTo = LocalDate.now().plusDays(3650),
-                    varsletFristFrom = LocalDate.now().minusDays(3650),
-                    varsletFristTo = LocalDate.now().plusDays(3650),
-                )
-            ).searchHits.map { it.content }
+            service
+                .findLedigeOppgaverByCriteria(
+                    LedigeOppgaverSearchCriteria(
+                        ytelser = listOf(Ytelse.OMS_OMP),
+                        typer = emptyList(),
+                        hjemler = emptyList(),
+                        offset = 0,
+                        limit = 10,
+                        order = no.nav.klage.search.domain.Order.ASC,
+                        sortField = SortField.FRIST,
+                        kanBehandleEgenAnsatt = true,
+                        kanBehandleFortrolig = false,
+                        kanBehandleStrengtFortrolig = false,
+                        fristFrom = LocalDate.now().minusDays(3650),
+                        fristTo = LocalDate.now().plusDays(3650),
+                        varsletFristFrom = LocalDate.now().minusDays(3650),
+                        varsletFristTo = LocalDate.now().plusDays(3650),
+                    ),
+                ).searchHits
+                .map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(idNormal, idEgenAnsatt)
     }
 
     @Test
     @Order(6)
-    fun `Saksbehandler with fortrolig rights will see normale klagebehandlinger and fortrolige klagebehandlinger, including the combo fortrolig and egen ansatt`() {
+    fun `Saksbehandler with fortrolig rights sees normale and fortrolige, including the combo fortrolig and egen ansatt`() {
         val klagebehandlinger: List<EsBehandling> =
-            service.findLedigeOppgaverByCriteria(
-                LedigeOppgaverSearchCriteria(
-                    ytelser = listOf(Ytelse.OMS_OMP),
-                    typer = emptyList(),
-                    hjemler = emptyList(),
-                    offset = 0,
-                    limit = 10,
-                    order = no.nav.klage.search.domain.Order.ASC,
-                    sortField = SortField.FRIST,
-                    kanBehandleEgenAnsatt = false,
-                    kanBehandleFortrolig = true,
-                    kanBehandleStrengtFortrolig = false,
-                    fristFrom = LocalDate.now().minusDays(3650),
-                    fristTo = LocalDate.now().plusDays(3650),
-                    varsletFristFrom = LocalDate.now().minusDays(3650),
-                    varsletFristTo = LocalDate.now().plusDays(3650),
-                )
-            ).searchHits.map { it.content }
+            service
+                .findLedigeOppgaverByCriteria(
+                    LedigeOppgaverSearchCriteria(
+                        ytelser = listOf(Ytelse.OMS_OMP),
+                        typer = emptyList(),
+                        hjemler = emptyList(),
+                        offset = 0,
+                        limit = 10,
+                        order = no.nav.klage.search.domain.Order.ASC,
+                        sortField = SortField.FRIST,
+                        kanBehandleEgenAnsatt = false,
+                        kanBehandleFortrolig = true,
+                        kanBehandleStrengtFortrolig = false,
+                        fristFrom = LocalDate.now().minusDays(3650),
+                        fristTo = LocalDate.now().plusDays(3650),
+                        varsletFristFrom = LocalDate.now().minusDays(3650),
+                        varsletFristTo = LocalDate.now().plusDays(3650),
+                    ),
+                ).searchHits
+                .map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
-            idNormal, idFortrolig,
-            idEgenAnsattOgFortrolig
+            idNormal,
+            idFortrolig,
+            idEgenAnsattOgFortrolig,
         )
     }
 
     @Test
     @Order(7)
-    fun `Saksbehandler with fortrolig rights and egen ansatt rights will see normale klagebehandling, fortrolige klagebehandlinger and egen ansatt klagebehandlinger`() {
+    fun `Saksbehandler with fortrolig and egen ansatt rights sees normale, fortrolige and egen ansatt klagebehandlinger`() {
         val klagebehandlinger: List<EsBehandling> =
-            service.findLedigeOppgaverByCriteria(
-                LedigeOppgaverSearchCriteria(
-                    ytelser = listOf(Ytelse.OMS_OMP),
-                    typer = emptyList(),
-                    hjemler = emptyList(),
-                    offset = 0,
-                    limit = 10,
-                    order = no.nav.klage.search.domain.Order.ASC,
-                    sortField = SortField.FRIST,
-                    kanBehandleEgenAnsatt = true,
-                    kanBehandleFortrolig = true,
-                    kanBehandleStrengtFortrolig = false,
-                    fristFrom = LocalDate.now().minusDays(3650),
-                    fristTo = LocalDate.now().plusDays(3650),
-                    varsletFristFrom = LocalDate.now().minusDays(3650),
-                    varsletFristTo = LocalDate.now().plusDays(3650),
-                )
-            ).searchHits.map { it.content }
+            service
+                .findLedigeOppgaverByCriteria(
+                    LedigeOppgaverSearchCriteria(
+                        ytelser = listOf(Ytelse.OMS_OMP),
+                        typer = emptyList(),
+                        hjemler = emptyList(),
+                        offset = 0,
+                        limit = 10,
+                        order = no.nav.klage.search.domain.Order.ASC,
+                        sortField = SortField.FRIST,
+                        kanBehandleEgenAnsatt = true,
+                        kanBehandleFortrolig = true,
+                        kanBehandleStrengtFortrolig = false,
+                        fristFrom = LocalDate.now().minusDays(3650),
+                        fristTo = LocalDate.now().plusDays(3650),
+                        varsletFristFrom = LocalDate.now().minusDays(3650),
+                        varsletFristTo = LocalDate.now().plusDays(3650),
+                    ),
+                ).searchHits
+                .map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
-            idNormal, idFortrolig, idEgenAnsatt,
-            idEgenAnsattOgFortrolig
+            idNormal,
+            idFortrolig,
+            idEgenAnsatt,
+            idEgenAnsattOgFortrolig,
         )
     }
 
     @Test
     @Order(8)
-    fun `Saksbehandler with strengt fortrolig rights and egen ansatt rights will see strengt fortrolige klagebehandlinger, including the combo strengt fortrolig and egen ansatt`() {
+    fun `Saksbehandler with strengt fortrolig and egen ansatt rights sees strengt fortrolige, including the combo with egen ansatt`() {
         val klagebehandlinger: List<EsBehandling> =
-            service.findLedigeOppgaverByCriteria(
-                LedigeOppgaverSearchCriteria(
-                    ytelser = listOf(Ytelse.OMS_OMP),
-                    typer = emptyList(),
-                    hjemler = emptyList(),
-                    offset = 0,
-                    limit = 10,
-                    order = no.nav.klage.search.domain.Order.ASC,
-                    sortField = SortField.FRIST,
-                    kanBehandleEgenAnsatt = true,
-                    kanBehandleFortrolig = false,
-                    kanBehandleStrengtFortrolig = true,
-                    fristFrom = LocalDate.now().minusDays(3650),
-                    fristTo = LocalDate.now().plusDays(3650),
-                    varsletFristFrom = LocalDate.now().minusDays(3650),
-                    varsletFristTo = LocalDate.now().plusDays(3650),
-                )
-            ).searchHits.map { it.content }
+            service
+                .findLedigeOppgaverByCriteria(
+                    LedigeOppgaverSearchCriteria(
+                        ytelser = listOf(Ytelse.OMS_OMP),
+                        typer = emptyList(),
+                        hjemler = emptyList(),
+                        offset = 0,
+                        limit = 10,
+                        order = no.nav.klage.search.domain.Order.ASC,
+                        sortField = SortField.FRIST,
+                        kanBehandleEgenAnsatt = true,
+                        kanBehandleFortrolig = false,
+                        kanBehandleStrengtFortrolig = true,
+                        fristFrom = LocalDate.now().minusDays(3650),
+                        fristTo = LocalDate.now().plusDays(3650),
+                        varsletFristFrom = LocalDate.now().minusDays(3650),
+                        varsletFristTo = LocalDate.now().plusDays(3650),
+                    ),
+                ).searchHits
+                .map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
-            idStrengtFortrolig, idEgenAnsattOgStrengtFortrolig
+            idStrengtFortrolig,
+            idEgenAnsattOgStrengtFortrolig,
         )
     }
 
     @Test
     @Order(9)
-    fun `Saksbehandler with strengt fortrolig rights without egen ansatt rights will only see strengt fortrolige klagebehandlinger, including the combo strengt fortrolig and egen ansatt`() {
+    fun `Saksbehandler with strengt fortrolig rights but no egen ansatt rights only sees strengt fortrolige, including the combo`() {
         val klagebehandlinger: List<EsBehandling> =
-            service.findLedigeOppgaverByCriteria(
-                LedigeOppgaverSearchCriteria(
-                    ytelser = listOf(Ytelse.OMS_OMP),
-                    typer = emptyList(),
-                    hjemler = emptyList(),
-                    offset = 0,
-                    limit = 10,
-                    order = no.nav.klage.search.domain.Order.ASC,
-                    sortField = SortField.FRIST,
-                    kanBehandleEgenAnsatt = false,
-                    kanBehandleFortrolig = false,
-                    kanBehandleStrengtFortrolig = true,
-                    fristFrom = LocalDate.now().minusDays(3650),
-                    fristTo = LocalDate.now().plusDays(3650),
-                    varsletFristFrom = LocalDate.now().minusDays(3650),
-                    varsletFristTo = LocalDate.now().plusDays(3650),
-                )
-            ).searchHits.map { it.content }
+            service
+                .findLedigeOppgaverByCriteria(
+                    LedigeOppgaverSearchCriteria(
+                        ytelser = listOf(Ytelse.OMS_OMP),
+                        typer = emptyList(),
+                        hjemler = emptyList(),
+                        offset = 0,
+                        limit = 10,
+                        order = no.nav.klage.search.domain.Order.ASC,
+                        sortField = SortField.FRIST,
+                        kanBehandleEgenAnsatt = false,
+                        kanBehandleFortrolig = false,
+                        kanBehandleStrengtFortrolig = true,
+                        fristFrom = LocalDate.now().minusDays(3650),
+                        fristTo = LocalDate.now().plusDays(3650),
+                        varsletFristFrom = LocalDate.now().minusDays(3650),
+                        varsletFristTo = LocalDate.now().plusDays(3650),
+                    ),
+                ).searchHits
+                .map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
             idStrengtFortrolig,
-            idEgenAnsattOgStrengtFortrolig
+            idEgenAnsattOgStrengtFortrolig,
         )
     }
 
     @Test
     @Order(10)
-    fun `Saksbehandler with fortrolig and strengt fortrolig rights will only see strengt fortrolige and fortrolige klagebehandlinger, including those that also are egen ansatte`() {
+    fun `Saksbehandler with fortrolig and strengt fortrolig rights only sees those, including the ones that are egen ansatte`() {
         val klagebehandlinger: List<EsBehandling> =
-            service.findLedigeOppgaverByCriteria(
-                LedigeOppgaverSearchCriteria(
-                    ytelser = listOf(Ytelse.OMS_OMP),
-                    typer = emptyList(),
-                    hjemler = emptyList(),
-                    offset = 0,
-                    limit = 10,
-                    order = no.nav.klage.search.domain.Order.ASC,
-                    sortField = SortField.FRIST,
-                    kanBehandleEgenAnsatt = false,
-                    kanBehandleFortrolig = true,
-                    kanBehandleStrengtFortrolig = true,
-                    fristFrom = LocalDate.now().minusDays(3650),
-                    fristTo = LocalDate.now().plusDays(3650),
-                    varsletFristFrom = LocalDate.now().minusDays(3650),
-                    varsletFristTo = LocalDate.now().plusDays(3650),
-                )
-            ).searchHits.map { it.content }
+            service
+                .findLedigeOppgaverByCriteria(
+                    LedigeOppgaverSearchCriteria(
+                        ytelser = listOf(Ytelse.OMS_OMP),
+                        typer = emptyList(),
+                        hjemler = emptyList(),
+                        offset = 0,
+                        limit = 10,
+                        order = no.nav.klage.search.domain.Order.ASC,
+                        sortField = SortField.FRIST,
+                        kanBehandleEgenAnsatt = false,
+                        kanBehandleFortrolig = true,
+                        kanBehandleStrengtFortrolig = true,
+                        fristFrom = LocalDate.now().minusDays(3650),
+                        fristTo = LocalDate.now().plusDays(3650),
+                        varsletFristFrom = LocalDate.now().minusDays(3650),
+                        varsletFristTo = LocalDate.now().plusDays(3650),
+                    ),
+                ).searchHits
+                .map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
             idStrengtFortrolig,
             idEgenAnsattOgStrengtFortrolig,
             idFortrolig,
-            idEgenAnsattOgFortrolig
+            idEgenAnsattOgFortrolig,
         )
     }
 
     @Test
     @Order(11)
-    fun `Saksbehandler with fortrolig and strengt fortrolig and egen ansatt rights will only see strengt fortrolige and fortrolige klagebehandlinger, including those that also are egen ansatte`() {
+    fun `Saksbehandler with fortrolig, strengt fortrolig and egen ansatt rights only sees fortrolige and strengt fortrolige`() {
         val klagebehandlinger: List<EsBehandling> =
-            service.findLedigeOppgaverByCriteria(
-                LedigeOppgaverSearchCriteria(
-                    ytelser = listOf(Ytelse.OMS_OMP),
-                    typer = emptyList(),
-                    hjemler = emptyList(),
-                    offset = 0,
-                    limit = 10,
-                    order = no.nav.klage.search.domain.Order.ASC,
-                    sortField = SortField.FRIST,
-                    kanBehandleEgenAnsatt = true,
-                    kanBehandleFortrolig = true,
-                    kanBehandleStrengtFortrolig = true,
-                    fristFrom = LocalDate.now().minusDays(3650),
-                    fristTo = LocalDate.now().plusDays(3650),
-                    varsletFristFrom = LocalDate.now().minusDays(3650),
-                    varsletFristTo = LocalDate.now().plusDays(3650),
-                )
-            ).searchHits.map { it.content }
+            service
+                .findLedigeOppgaverByCriteria(
+                    LedigeOppgaverSearchCriteria(
+                        ytelser = listOf(Ytelse.OMS_OMP),
+                        typer = emptyList(),
+                        hjemler = emptyList(),
+                        offset = 0,
+                        limit = 10,
+                        order = no.nav.klage.search.domain.Order.ASC,
+                        sortField = SortField.FRIST,
+                        kanBehandleEgenAnsatt = true,
+                        kanBehandleFortrolig = true,
+                        kanBehandleStrengtFortrolig = true,
+                        fristFrom = LocalDate.now().minusDays(3650),
+                        fristTo = LocalDate.now().plusDays(3650),
+                        varsletFristFrom = LocalDate.now().minusDays(3650),
+                        varsletFristTo = LocalDate.now().plusDays(3650),
+                    ),
+                ).searchHits
+                .map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(
             idStrengtFortrolig,
             idEgenAnsattOgStrengtFortrolig,
             idFortrolig,
-            idEgenAnsattOgFortrolig
+            idEgenAnsattOgFortrolig,
         )
     }
 }

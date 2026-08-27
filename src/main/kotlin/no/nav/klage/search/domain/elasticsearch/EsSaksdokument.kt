@@ -5,6 +5,5 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class EsSaksdokument(
     val journalpostId: String,
-    val dokumentInfoId: String
+    val dokumentInfoId: String,
 )
-

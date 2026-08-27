@@ -31,7 +31,6 @@ class EnhetensOppgaverListController(
     private val klageLookupClient: KlageLookupClient,
     private val tokenUtil: TokenUtil,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -39,91 +38,100 @@ class EnhetensOppgaverListController(
 
     @Operation(
         summary = "Hent enhetens ferdigstilte oppgaver",
-        description = "Henter alle ferdigstilte oppgaver for enheten som saksbehandler har tilgang til."
+        description = "Henter alle ferdigstilte oppgaver for enheten som saksbehandler har tilgang til.",
     )
     @GetMapping(
-        "/enhet/{enhetId}/oppgaver/tildelte/ferdigstilte", "/enheter/{enhetId}/oppgaver/tildelte/ferdigstilte",
-        produces = ["application/json"]
+        "/enhet/{enhetId}/oppgaver/tildelte/ferdigstilte",
+        "/enheter/{enhetId}/oppgaver/tildelte/ferdigstilte",
+        produces = ["application/json"],
     )
     fun getEnhetensFerdigstilteOppgaver(
         @Parameter(name = "EnhetId til enheten den ansatte jobber i")
         @PathVariable enhetId: String,
-        queryParams: EnhetensFerdigstilteOppgaverQueryParams
+        queryParams: EnhetensFerdigstilteOppgaverQueryParams,
     ): BehandlingerListResponse {
         logger.debug("Params: {}", queryParams)
         validateRettigheterForEnhetensTildelteOppgaver()
 
-        val searchCriteria = behandlingerSearchCriteriaMapper.toEnhetensFerdigstilteOppgaverSearchCriteria(
-            enhetId = enhetId,
-            queryParams = queryParams
-        )
+        val searchCriteria =
+            behandlingerSearchCriteriaMapper.toEnhetensFerdigstilteOppgaverSearchCriteria(
+                enhetId = enhetId,
+                queryParams = queryParams,
+            )
 
         val esResponse = elasticsearchService.findEnhetensFerdigstilteOppgaverByCriteria(searchCriteria)
         return BehandlingerListResponse(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
-                esBehandlinger = esResponse.searchHits.map { it.content },
-            ),
+            behandlinger =
+                behandlingListMapper.mapEsBehandlingerToListView(
+                    esBehandlinger = esResponse.searchHits.map { it.content },
+                ),
         )
     }
 
     @Operation(
         summary = "Hent enhetens oppgaver på vent",
-        description = "Henter alle oppgaver satt på vent for enheten som saksbehandler har tilgang til."
+        description = "Henter alle oppgaver satt på vent for enheten som saksbehandler har tilgang til.",
     )
     @GetMapping(
-        "/enhet/{enhetId}/oppgaver/tildelte/paavent", "/enheter/{enhetId}/oppgaver/tildelte/paavent",
-        produces = ["application/json"]
+        "/enhet/{enhetId}/oppgaver/tildelte/paavent",
+        "/enheter/{enhetId}/oppgaver/tildelte/paavent",
+        produces = ["application/json"],
     )
     fun getEnhetensOppgaverPaaVent(
         @Parameter(name = "EnhetId til enheten den ansatte jobber i")
         @PathVariable enhetId: String,
-        queryParams: EnhetensOppgaverPaaVentQueryParams
+        queryParams: EnhetensOppgaverPaaVentQueryParams,
     ): BehandlingerListResponse {
         logger.debug("Params: {}", queryParams)
         validateRettigheterForEnhetensTildelteOppgaver()
 
-        val searchCriteria = behandlingerSearchCriteriaMapper.toEnhetensOppgaverPaaVentSearchCriteria(
-            enhetId = enhetId,
-            queryParams = queryParams
-        )
+        val searchCriteria =
+            behandlingerSearchCriteriaMapper.toEnhetensOppgaverPaaVentSearchCriteria(
+                enhetId = enhetId,
+                queryParams = queryParams,
+            )
 
         val esResponse = elasticsearchService.findEnhetensOppgaverPaaVentByCriteria(searchCriteria)
         return BehandlingerListResponse(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
-                esBehandlinger = esResponse.searchHits.map { it.content },
-            ),
+            behandlinger =
+                behandlingListMapper.mapEsBehandlingerToListView(
+                    esBehandlinger = esResponse.searchHits.map { it.content },
+                ),
         )
     }
 
     @Operation(
         summary = "Hent uferdige oppgaver for en enhet",
-        description = "Henter alle uferdige oppgaver i enheten som saksbehandler har tilgang til."
+        description = "Henter alle uferdige oppgaver i enheten som saksbehandler har tilgang til.",
     )
     @GetMapping(
-        "/enhet/{enhetId}/oppgaver/tildelte/uferdige", "/enheter/{enhetId}/oppgaver/tildelte/uferdige",
-        produces = ["application/json"]
+        "/enhet/{enhetId}/oppgaver/tildelte/uferdige",
+        "/enheter/{enhetId}/oppgaver/tildelte/uferdige",
+        produces = ["application/json"],
     )
     fun getEnhetensUferdigeOppgaver(
         @Parameter(name = "EnhetId til enheten den ansatte jobber i")
         @PathVariable enhetId: String,
-        queryParams: EnhetensUferdigeOppgaverQueryParams
+        queryParams: EnhetensUferdigeOppgaverQueryParams,
     ): BehandlingerListResponse {
         logger.debug("Params: {}", queryParams)
         validateRettigheterForEnhetensTildelteOppgaver()
 
-        val searchCriteria = behandlingerSearchCriteriaMapper.toEnhetensUferdigeOppgaverSearchCriteria(
-            enhetId = enhetId,
-            queryParams = queryParams
-        )
+        val searchCriteria =
+            behandlingerSearchCriteriaMapper.toEnhetensUferdigeOppgaverSearchCriteria(
+                enhetId = enhetId,
+                queryParams = queryParams,
+            )
 
         val esResponse = elasticsearchService.findEnhetensUferdigeOppgaverByCriteria(searchCriteria)
         return BehandlingerListResponse(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
-                esBehandlinger = esResponse.searchHits.map { it.content },
-            ),
+            behandlinger =
+                behandlingListMapper.mapEsBehandlingerToListView(
+                    esBehandlinger = esResponse.searchHits.map { it.content },
+                ),
         )
     }
 

@@ -12,7 +12,6 @@ class TokenUtil(
     private val oAuth2AccessTokenService: OAuth2AccessTokenService,
     private val tokenValidationContextHolder: TokenValidationContextHolder,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -43,29 +42,40 @@ class TokenUtil(
     }
 
     fun getIdent(): String =
-        tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
-            ?.jwtTokenClaims?.get("NAVident")?.toString()
+        tokenValidationContextHolder
+            .getTokenValidationContext()
+            .getJwtToken(SecurityConfiguration.ISSUER_AAD)
+            ?.jwtTokenClaims
+            ?.get("NAVident")
+            ?.toString()
             ?: throw RuntimeException("Ident not found in token")
 
     fun getCurrentTokenType(): TokenType {
         val validationContext = runCatching { tokenValidationContextHolder.getTokenValidationContext() }.getOrNull()
-        val tokenType = if (validationContext == null) {
-            TokenType.UNAUTHENTICATED
-        } else {
-            val idtype =
-                runCatching { validationContext.getJwtToken(SecurityConfiguration.ISSUER_AAD)?.jwtTokenClaims?.get("idtyp") }.getOrNull()
-            val navIdent =
-                runCatching {
-                    validationContext.getJwtToken(SecurityConfiguration.ISSUER_AAD)?.jwtTokenClaims?.get("NAVident")
-                }.getOrNull()
-            if (idtype != null && idtype == "app") {
-                TokenType.CC
-            } else if (navIdent != null) {
-                TokenType.OBO
-            } else {
+        val tokenType =
+            if (validationContext == null) {
                 TokenType.UNAUTHENTICATED
+            } else {
+                val idtype =
+                    runCatching {
+                        validationContext
+                            .getJwtToken(
+                                SecurityConfiguration.ISSUER_AAD,
+                            )?.jwtTokenClaims
+                            ?.get("idtyp")
+                    }.getOrNull()
+                val navIdent =
+                    runCatching {
+                        validationContext.getJwtToken(SecurityConfiguration.ISSUER_AAD)?.jwtTokenClaims?.get("NAVident")
+                    }.getOrNull()
+                if (idtype != null && idtype == "app") {
+                    TokenType.CC
+                } else if (navIdent != null) {
+                    TokenType.OBO
+                } else {
+                    TokenType.UNAUTHENTICATED
+                }
             }
-        }
         return tokenType
     }
 

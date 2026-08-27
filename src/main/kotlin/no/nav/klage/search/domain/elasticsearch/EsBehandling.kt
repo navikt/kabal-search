@@ -11,72 +11,46 @@ data class EsBehandling(
     val sakenGjelderFnr: String,
     override val ytelseId: String,
     override val typeId: String,
-
     val fagsystemId: String,
     val saksnummer: String,
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     val innsendt: LocalDate? = null,
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     override val sakMottattKaDato: LocalDateTime,
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     override val sendtTilTrygderetten: LocalDateTime?,
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     override val ageStartDate: LocalDate?,
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     override val avsluttetAvSaksbehandler: LocalDateTime?,
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     override val returnertFraROL: LocalDateTime?,
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     override val frist: LocalDate?,
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     override val varsletFrist: LocalDate?,
-
     override val tildeltSaksbehandlerident: String?,
-
     override val medunderskriverident: String?,
-
     override val medunderskriverFlowStateId: String,
-
     override val medunderskriverEnhet: String?,
-
     val tildeltEnhet: String?,
-
     override val hjemmelIdList: List<String> = emptyList(),
-
     val saksdokumenter: List<EsSaksdokument> = emptyList(),
-
     override val egenAnsatt: Boolean = false,
-
     override val fortrolig: Boolean = false,
-
     override val strengtFortrolig: Boolean = false,
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     override val sattPaaVent: LocalDate? = null,
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     override val sattPaaVentExpires: LocalDate? = null,
-
     override val sattPaaVentReasonId: String? = null,
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     override val feilregistrert: LocalDateTime? = null,
-
     override val rolIdent: String?,
-
     override val rolFlowStateId: String,
 ) : EsAnonymBehandling
 
 interface EsAnonymBehandling {
-
     val strengtFortrolig: Boolean
     val fortrolig: Boolean
     val egenAnsatt: Boolean

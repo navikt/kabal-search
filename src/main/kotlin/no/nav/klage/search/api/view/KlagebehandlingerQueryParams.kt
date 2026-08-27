@@ -38,7 +38,8 @@ data class MineFerdigstilteOppgaverQueryParams(
     override val fristTo: LocalDate?,
     override val varsletFristFrom: LocalDate?,
     override val varsletFristTo: LocalDate?,
-) : CommonOppgaverQueryParams, FerdigstilteOppgaverQueryParams
+) : CommonOppgaverQueryParams,
+    FerdigstilteOppgaverQueryParams
 
 data class MineReturnerteROLOppgaverQueryParams(
     override var typer: List<String> = emptyList(),
@@ -52,7 +53,8 @@ data class MineReturnerteROLOppgaverQueryParams(
     override val fristTo: LocalDate?,
     override val varsletFristFrom: LocalDate?,
     override val varsletFristTo: LocalDate?,
-) : CommonOppgaverQueryParams, ReturnerteROLOppgaverQueryParams
+) : CommonOppgaverQueryParams,
+    ReturnerteROLOppgaverQueryParams
 
 data class MineUferdigeOppgaverQueryParams(
     override var typer: List<String> = emptyList(),
@@ -111,7 +113,8 @@ data class EnhetensFerdigstilteOppgaverQueryParams(
     override val varsletFristFrom: LocalDate?,
     override val varsletFristTo: LocalDate?,
     var tildelteSaksbehandlere: List<String> = emptyList(),
-) : CommonOppgaverQueryParams, FerdigstilteOppgaverQueryParams
+) : CommonOppgaverQueryParams,
+    FerdigstilteOppgaverQueryParams
 
 data class EnhetensOppgaverPaaVentQueryParams(
     override var typer: List<String> = emptyList(),
@@ -144,10 +147,11 @@ data class EnhetensUferdigeOppgaverQueryParams(
 ) : CommonOppgaverQueryParams
 
 data class TildelteOppgaverITRQueryParams(
-    override var typer: List<String> = listOf(
-        Type.ANKE_I_TRYGDERETTEN.id,
-        Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN.id
-    ),
+    override var typer: List<String> =
+        listOf(
+            Type.ANKE_I_TRYGDERETTEN.id,
+            Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN.id,
+        ),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
@@ -162,10 +166,11 @@ data class TildelteOppgaverITRQueryParams(
 ) : CommonOppgaverQueryParams
 
 data class OppgaverPaaVentITRQueryParams(
-    override var typer: List<String> = listOf(
-        Type.ANKE_I_TRYGDERETTEN.id,
-        Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN.id
-    ),
+    override var typer: List<String> =
+        listOf(
+            Type.ANKE_I_TRYGDERETTEN.id,
+            Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN.id,
+        ),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
@@ -180,10 +185,11 @@ data class OppgaverPaaVentITRQueryParams(
 ) : CommonOppgaverQueryParams
 
 data class LedigeOppgaverITRQueryParams(
-    override var typer: List<String> = listOf(
-        Type.ANKE_I_TRYGDERETTEN.id,
-        Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN.id
-    ),
+    override var typer: List<String> =
+        listOf(
+            Type.ANKE_I_TRYGDERETTEN.id,
+            Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN.id,
+        ),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
@@ -219,13 +225,22 @@ data class KrolsReturnerteOppgaverQueryParams(
     override val fristTo: LocalDate?,
     override val varsletFristFrom: LocalDate?,
     override val varsletFristTo: LocalDate?,
-) : CommonOppgaverQueryParams, ReturnerteROLOppgaverQueryParams
+) : CommonOppgaverQueryParams,
+    ReturnerteROLOppgaverQueryParams
 
 enum class Rekkefoelge {
-    STIGENDE, SYNKENDE
+    STIGENDE,
+    SYNKENDE,
 }
 
 enum class Sortering {
-    FRIST, MOTTATT, ALDER, PAA_VENT_FROM, PAA_VENT_TO, AVSLUTTET_AV_SAKSBEHANDLER, RETURNERT_FRA_ROL, VARSLET_FRIST, SENDT_TIL_TRYGDERETTEN
+    FRIST,
+    MOTTATT,
+    ALDER,
+    PAA_VENT_FROM,
+    PAA_VENT_TO,
+    AVSLUTTET_AV_SAKSBEHANDLER,
+    RETURNERT_FRA_ROL,
+    VARSLET_FRIST,
+    SENDT_TIL_TRYGDERETTEN,
 }
-

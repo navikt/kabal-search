@@ -29,7 +29,6 @@ class BehandlingSearchController(
     private val auditLogger: AuditLogger,
     private val tokenUtil: TokenUtil,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -37,10 +36,12 @@ class BehandlingSearchController(
 
     @Operation(
         summary = "Søk oppgaver som gjelder en gitt person",
-        description = "Finner alle oppgaver som saksbehandler har tilgang til som omhandler en gitt person."
+        description = "Finner alle oppgaver som saksbehandler har tilgang til som omhandler en gitt person.",
     )
     @PostMapping("/oppgaver", produces = ["application/json"])
-    fun findOppgaver(@RequestBody input: SearchPersonByFnrInput): FnrSearchResponseWithoutPerson {
+    fun findOppgaver(
+        @RequestBody input: SearchPersonByFnrInput,
+    ): FnrSearchResponseWithoutPerson {
         val personSearchResponse =
             personSearchService.fnrSearch(behandlingerSearchCriteriaMapper.toOppgaverOmPersonSearchCriteria(input))
 
@@ -60,10 +61,9 @@ class BehandlingSearchController(
                 AuditLogEvent(
                     navIdent = tokenUtil.getIdent(),
                     personFnr = input.query,
-                    message = "Hentet behandlingsoversikt for person."
-                )
+                    message = "Hentet behandlingsoversikt for person.",
+                ),
             )
         }
     }
 }
-
