@@ -15,15 +15,12 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.event.ContextStoppedEvent
 
-
 @Configuration
 class ElasticsearchServiceConfiguration(
-    @Value("\${OPEN_SEARCH_USERNAME}") private val username: String,
-    @Value("\${OPEN_SEARCH_PASSWORD}") private val password: String,
-    @Value("\${OPEN_SEARCH_URI}") private val uri: String,
-) :
-    ApplicationListener<ContextStoppedEvent> {
-
+    @Value($$"${OPEN_SEARCH_USERNAME}") private val username: String,
+    @Value($$"${OPEN_SEARCH_PASSWORD}") private val password: String,
+    @Value($$"${OPEN_SEARCH_URI}") private val uri: String,
+) : ApplicationListener<ContextStoppedEvent> {
     override fun onApplicationEvent(event: ContextStoppedEvent) {
         restHighLevelClient().close()
     }
@@ -35,28 +32,23 @@ class ElasticsearchServiceConfiguration(
         val credentialsProvider = BasicCredentialsProvider()
         credentialsProvider.setCredentials(
             AuthScope(httpHost, null, null),
-            UsernamePasswordCredentials(username, password.toCharArray())
+            UsernamePasswordCredentials(username, password.toCharArray()),
         )
 
         return RestHighLevelClient(
-            RestClient.builder(httpHost)
+            RestClient
+                .builder(httpHost)
                 .setRequestConfigCallback {
-                    it.setConnectionRequestTimeout(Timeout.ofMilliseconds(5000))
+                    it
+                        .setConnectionRequestTimeout(Timeout.ofMilliseconds(5000))
                         .setConnectTimeout(Timeout.ofMilliseconds(10000))
-                }
-                .setHttpClientConfigCallback { it.setDefaultCredentialsProvider(credentialsProvider) }
+                }.setHttpClientConfigCallback { it.setDefaultCredentialsProvider(credentialsProvider) },
         )
     }
 
     @Bean
-    fun esKlagebehandlingRepository(): EsBehandlingRepository {
-        return EsBehandlingRepository(restHighLevelClient())
-    }
+    fun esKlagebehandlingRepository(): EsBehandlingRepository = EsBehandlingRepository(restHighLevelClient())
 
     @Bean
-    fun elasticsearchService(): ElasticsearchService {
-        return ElasticsearchService(esKlagebehandlingRepository())
-    }
-
-
+    fun elasticsearchService(): ElasticsearchService = ElasticsearchService(esKlagebehandlingRepository())
 }

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service
 class DefaultAzureGateway(
     private val microsoftGraphClient: MicrosoftGraphClient,
 ) : AzureGateway {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)

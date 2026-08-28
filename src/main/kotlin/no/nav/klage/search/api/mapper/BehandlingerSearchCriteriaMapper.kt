@@ -5,9 +5,40 @@ import no.nav.klage.kodeverk.SattPaaVentReason
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.hjemmel.Hjemmel
 import no.nav.klage.kodeverk.ytelse.Ytelse
-import no.nav.klage.search.api.view.*
+import no.nav.klage.search.api.view.EnhetensFerdigstilteOppgaverQueryParams
+import no.nav.klage.search.api.view.EnhetensOppgaverPaaVentQueryParams
+import no.nav.klage.search.api.view.EnhetensUferdigeOppgaverQueryParams
+import no.nav.klage.search.api.view.KrolsReturnerteOppgaverQueryParams
+import no.nav.klage.search.api.view.KrolsUferdigeOppgaverQueryParams
+import no.nav.klage.search.api.view.LedigeOppgaverITRQueryParams
+import no.nav.klage.search.api.view.MineFerdigstilteOppgaverQueryParams
+import no.nav.klage.search.api.view.MineLedigeOppgaverCountQueryParams
+import no.nav.klage.search.api.view.MineLedigeOppgaverQueryParams
+import no.nav.klage.search.api.view.MineOppgaverPaaVentQueryParams
+import no.nav.klage.search.api.view.MineReturnerteROLOppgaverQueryParams
+import no.nav.klage.search.api.view.MineUferdigeOppgaverQueryParams
+import no.nav.klage.search.api.view.OppgaverPaaVentITRQueryParams
+import no.nav.klage.search.api.view.Rekkefoelge
+import no.nav.klage.search.api.view.SearchPersonByFnrInput
+import no.nav.klage.search.api.view.Sortering
+import no.nav.klage.search.api.view.TildelteOppgaverITRQueryParams
 import no.nav.klage.search.clients.klagelookup.KlageLookupClient
-import no.nav.klage.search.domain.*
+import no.nav.klage.search.domain.CountLedigeOppgaverMedUtgaattFristSearchCriteria
+import no.nav.klage.search.domain.EnhetensFerdigstilteOppgaverSearchCriteria
+import no.nav.klage.search.domain.EnhetensOppgaverPaaVentSearchCriteria
+import no.nav.klage.search.domain.EnhetensUferdigeOppgaverSearchCriteria
+import no.nav.klage.search.domain.FerdigstilteOppgaverForAssignedSaksbehandlerSearchCriteria
+import no.nav.klage.search.domain.KrolsReturnerteOppgaverSearchCriteria
+import no.nav.klage.search.domain.KrolsUferdigeOppgaverSearchCriteria
+import no.nav.klage.search.domain.LedigeOppgaverSearchCriteria
+import no.nav.klage.search.domain.OppgaverOmPersonSearchCriteria
+import no.nav.klage.search.domain.OppgaverPaaVentForSaksbehandlerOrMedunderskriverSearchCriteria
+import no.nav.klage.search.domain.OppgaverPaaVentSearchCriteria
+import no.nav.klage.search.domain.Order
+import no.nav.klage.search.domain.ReturnerteROLOppgaverForAssignedRolSearchCriteria
+import no.nav.klage.search.domain.SortField
+import no.nav.klage.search.domain.TildelteOppgaverSearchCriteria
+import no.nav.klage.search.domain.UferdigeOppgaverForSaksbehandlerOrMedunderskriverOrRolSearchCriteria
 import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import org.springframework.stereotype.Service
@@ -18,7 +49,6 @@ class BehandlingerSearchCriteriaMapper(
     private val klageLookupClient: KlageLookupClient,
     private val tokenUtil: TokenUtil,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -53,7 +83,7 @@ class BehandlingerSearchCriteriaMapper(
         )
     }
 
-    //-- saksbehandlers oppgaver:
+    // -- saksbehandlers oppgaver:
 
     fun toFerdigstilteOppgaverSearchCriteria(
         navIdent: String,
@@ -68,7 +98,7 @@ class BehandlingerSearchCriteriaMapper(
             ferdigstiltFom = mapFrom(queryParams.ferdigstiltFrom),
             ferdigstiltTom = queryParams.ferdigstiltTo ?: LocalDate.now(),
             sortField = mapSortField(queryParams.sortering),
-            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            order = mapOrder(rekkefoelge = queryParams.rekkefoelge, sortering = queryParams.sortering),
             offset = 0,
             limit = 9_999,
             kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
@@ -94,7 +124,7 @@ class BehandlingerSearchCriteriaMapper(
             returnertFom = mapFrom(queryParams.returnertFrom),
             returnertTom = queryParams.returnertTo ?: LocalDate.now(),
             sortField = mapSortField(queryParams.sortering),
-            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            order = mapOrder(rekkefoelge = queryParams.rekkefoelge, sortering = queryParams.sortering),
             offset = 0,
             limit = 9_999,
             kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
@@ -118,7 +148,7 @@ class BehandlingerSearchCriteriaMapper(
             hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
             navIdent = navIdent,
             sortField = mapSortField(queryParams.sortering),
-            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            order = mapOrder(rekkefoelge = queryParams.rekkefoelge, sortering = queryParams.sortering),
             offset = 0,
             limit = 9_999,
             kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
@@ -144,7 +174,7 @@ class BehandlingerSearchCriteriaMapper(
             navIdent = navIdent,
             sattPaaVentReasons = queryParams.sattPaaVentReasonIds.map { SattPaaVentReason.of(it) },
             sortField = mapSortField(queryParams.sortering),
-            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            order = mapOrder(rekkefoelge = queryParams.rekkefoelge, sortering = queryParams.sortering),
             offset = 0,
             limit = 9_999,
             kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
@@ -157,7 +187,7 @@ class BehandlingerSearchCriteriaMapper(
         )
     }
 
-    //-- enhetens oppgaver:
+    // -- enhetens oppgaver:
 
     fun toEnhetensFerdigstilteOppgaverSearchCriteria(
         enhetId: String,
@@ -173,7 +203,7 @@ class BehandlingerSearchCriteriaMapper(
             ferdigstiltFom = mapFrom(queryParams.ferdigstiltFrom),
             ferdigstiltTom = queryParams.ferdigstiltTo ?: LocalDate.now(),
             sortField = mapSortField(queryParams.sortering),
-            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            order = mapOrder(rekkefoelge = queryParams.rekkefoelge, sortering = queryParams.sortering),
             offset = 0,
             limit = 9_999,
             kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
@@ -200,7 +230,7 @@ class BehandlingerSearchCriteriaMapper(
             medunderskrivere = queryParams.medunderskrivere,
             sattPaaVentReasons = queryParams.sattPaaVentReasonIds.map { SattPaaVentReason.of(it) },
             sortField = mapSortField(queryParams.sortering),
-            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            order = mapOrder(rekkefoelge = queryParams.rekkefoelge, sortering = queryParams.sortering),
             offset = 0,
             limit = 9_999,
             kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
@@ -226,7 +256,7 @@ class BehandlingerSearchCriteriaMapper(
             saksbehandlere = queryParams.tildelteSaksbehandlere,
             medunderskrivere = queryParams.medunderskrivere,
             sortField = mapSortField(queryParams.sortering),
-            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            order = mapOrder(rekkefoelge = queryParams.rekkefoelge, sortering = queryParams.sortering),
             offset = 0,
             limit = 9_999,
             kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
@@ -240,9 +270,7 @@ class BehandlingerSearchCriteriaMapper(
         )
     }
 
-    fun toKrolsUferdigeOppgaverSearchCriteria(
-        queryParams: KrolsUferdigeOppgaverQueryParams,
-    ): KrolsUferdigeOppgaverSearchCriteria {
+    fun toKrolsUferdigeOppgaverSearchCriteria(queryParams: KrolsUferdigeOppgaverQueryParams): KrolsUferdigeOppgaverSearchCriteria {
         val permissions = resolvePermissions()
         return KrolsUferdigeOppgaverSearchCriteria(
             typer = queryParams.typer.map { Type.of(it) },
@@ -250,7 +278,7 @@ class BehandlingerSearchCriteriaMapper(
             hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
             rolList = queryParams.tildelteRol,
             sortField = mapSortField(queryParams.sortering),
-            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            order = mapOrder(rekkefoelge = queryParams.rekkefoelge, sortering = queryParams.sortering),
             offset = 0,
             limit = 9_999,
             kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
@@ -263,9 +291,7 @@ class BehandlingerSearchCriteriaMapper(
         )
     }
 
-    fun toKrolsReturnerteOppgaverSearchCriteria(
-        queryParams: KrolsReturnerteOppgaverQueryParams,
-    ): KrolsReturnerteOppgaverSearchCriteria {
+    fun toKrolsReturnerteOppgaverSearchCriteria(queryParams: KrolsReturnerteOppgaverQueryParams): KrolsReturnerteOppgaverSearchCriteria {
         val permissions = resolvePermissions()
         return KrolsReturnerteOppgaverSearchCriteria(
             typer = queryParams.typer.map { Type.of(it) },
@@ -274,7 +300,7 @@ class BehandlingerSearchCriteriaMapper(
             returnertFom = mapFrom(queryParams.returnertFrom),
             returnertTom = queryParams.returnertTo ?: LocalDate.now(),
             sortField = mapSortField(queryParams.sortering),
-            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            order = mapOrder(rekkefoelge = queryParams.rekkefoelge, sortering = queryParams.sortering),
             offset = 0,
             limit = 9_999,
             kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
@@ -287,7 +313,7 @@ class BehandlingerSearchCriteriaMapper(
         )
     }
 
-    //-- ledige oppgaver:
+    // -- ledige oppgaver:
 
     fun toLedigeOppgaverSearchCriteria(queryParams: MineLedigeOppgaverQueryParams): LedigeOppgaverSearchCriteria {
         val permissions = resolvePermissions()
@@ -296,7 +322,7 @@ class BehandlingerSearchCriteriaMapper(
             ytelser = queryParams.ytelser.map { Ytelse.of(it) },
             hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
             sortField = mapSortField(queryParams.sortering),
-            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            order = mapOrder(rekkefoelge = queryParams.rekkefoelge, sortering = queryParams.sortering),
             offset = 0,
             limit = 9_999,
             kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
@@ -309,7 +335,9 @@ class BehandlingerSearchCriteriaMapper(
         )
     }
 
-    fun toSearchCriteriaForLedigeMedUtgaattFrist(queryParams: MineLedigeOppgaverCountQueryParams): CountLedigeOppgaverMedUtgaattFristSearchCriteria {
+    fun toSearchCriteriaForLedigeMedUtgaattFrist(
+        queryParams: MineLedigeOppgaverCountQueryParams,
+    ): CountLedigeOppgaverMedUtgaattFristSearchCriteria {
         val permissions = resolvePermissions()
         return CountLedigeOppgaverMedUtgaattFristSearchCriteria(
             typer = queryParams.typer.map { Type.of(it) },
@@ -325,11 +353,9 @@ class BehandlingerSearchCriteriaMapper(
         )
     }
 
-    //-- oppgaver:
+    // -- oppgaver:
 
-    fun toTildelteOppgaverSearchCriteria(
-        queryParams: TildelteOppgaverITRQueryParams,
-    ): TildelteOppgaverSearchCriteria {
+    fun toTildelteOppgaverSearchCriteria(queryParams: TildelteOppgaverITRQueryParams): TildelteOppgaverSearchCriteria {
         val permissions = resolvePermissions()
         return TildelteOppgaverSearchCriteria(
             typer = queryParams.typer.map { Type.of(it) },
@@ -338,7 +364,7 @@ class BehandlingerSearchCriteriaMapper(
             saksbehandlere = queryParams.tildelteSaksbehandlere,
             medunderskrivere = queryParams.medunderskrivere,
             sortField = mapSortField(queryParams.sortering),
-            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            order = mapOrder(rekkefoelge = queryParams.rekkefoelge, sortering = queryParams.sortering),
             offset = 0,
             limit = 9_999,
             kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
@@ -352,9 +378,7 @@ class BehandlingerSearchCriteriaMapper(
         )
     }
 
-    fun toOppgaverPaaVentSearchCriteria(
-        queryParams: OppgaverPaaVentITRQueryParams,
-    ): OppgaverPaaVentSearchCriteria {
+    fun toOppgaverPaaVentSearchCriteria(queryParams: OppgaverPaaVentITRQueryParams): OppgaverPaaVentSearchCriteria {
         val permissions = resolvePermissions()
         return OppgaverPaaVentSearchCriteria(
             typer = queryParams.typer.map { Type.of(it) },
@@ -364,7 +388,7 @@ class BehandlingerSearchCriteriaMapper(
             medunderskrivere = queryParams.medunderskrivere,
             sattPaaVentReasons = queryParams.sattPaaVentReasonIds.map { SattPaaVentReason.of(it) },
             sortField = mapSortField(queryParams.sortering),
-            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            order = mapOrder(rekkefoelge = queryParams.rekkefoelge, sortering = queryParams.sortering),
             offset = 0,
             limit = 9_999,
             kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
@@ -377,16 +401,14 @@ class BehandlingerSearchCriteriaMapper(
         )
     }
 
-    fun toLedigeOppgaverSearchCriteria(
-        queryParams: LedigeOppgaverITRQueryParams,
-    ): LedigeOppgaverSearchCriteria {
+    fun toLedigeOppgaverSearchCriteria(queryParams: LedigeOppgaverITRQueryParams): LedigeOppgaverSearchCriteria {
         val permissions = resolvePermissions()
         return LedigeOppgaverSearchCriteria(
             typer = queryParams.typer.map { Type.of(it) },
             ytelser = queryParams.ytelser.map { Ytelse.of(it) },
             hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
             sortField = mapSortField(queryParams.sortering),
-            order = mapOrder(queryParams.rekkefoelge, queryParams.sortering),
+            order = mapOrder(rekkefoelge = queryParams.rekkefoelge, sortering = queryParams.sortering),
             offset = 0,
             limit = 9_999,
             kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
@@ -413,7 +435,10 @@ class BehandlingerSearchCriteriaMapper(
             else -> SortField.FRIST
         }
 
-    private fun mapOrder(rekkefoelge: Rekkefoelge?, sortering: Sortering?): Order =
+    private fun mapOrder(
+        rekkefoelge: Rekkefoelge?,
+        sortering: Sortering?,
+    ): Order =
         if (rekkefoelge == Rekkefoelge.SYNKENDE) {
             if (sortering == Sortering.ALDER) {
                 Order.ASC
@@ -428,11 +453,7 @@ class BehandlingerSearchCriteriaMapper(
             }
         }
 
-    private fun mapFrom(from: LocalDate?): LocalDate {
-        return from ?: LocalDate.now().minusDays(36500)
-    }
+    private fun mapFrom(from: LocalDate?): LocalDate = from ?: LocalDate.now().minusDays(36500)
 
-    private fun mapFristTo(fristTo: LocalDate?): LocalDate {
-        return fristTo ?: LocalDate.now().plusDays(36500)
-    }
+    private fun mapFristTo(fristTo: LocalDate?): LocalDate = fristTo ?: LocalDate.now().plusDays(36500)
 }

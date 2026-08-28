@@ -1,8 +1,8 @@
 package no.nav.klage.search.service
 
 import no.nav.klage.kodeverk.Type
-import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.kodeverk.hjemmel.Hjemmel
+import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.search.api.mapper.BehandlingListMapper
 import no.nav.klage.search.api.mapper.BehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.AntallUtgaatteFristerResponse
@@ -19,113 +19,117 @@ class OppgaverService(
     private val elasticsearchService: ElasticsearchService,
     private val behandlingListMapper: BehandlingListMapper,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    fun getLedigeOppgaverForInnloggetSaksbehandler(
-        queryParams: MineLedigeOppgaverQueryParams,
-    ): BehandlingerListResponse {
+    fun getLedigeOppgaverForInnloggetSaksbehandler(queryParams: MineLedigeOppgaverQueryParams): BehandlingerListResponse {
         val saksbehandlerInnstillinger = kabalInnstillingerService.getInnstillingerForCurrentSaksbehandler()
 
-        val ytelser = getYtelserQueryListForSaksbehandler(
-            queryYtelser = queryParams.ytelser,
-            innstillingerYtelser = saksbehandlerInnstillinger.ytelser
-        )
+        val ytelser =
+            getYtelserQueryListForSaksbehandler(
+                queryYtelser = queryParams.ytelser,
+                innstillingerYtelser = saksbehandlerInnstillinger.ytelser,
+            )
 
-        val hjemler = getHjemlerQueryListForSaksbehandler(
-            queryHjemler = queryParams.hjemler,
-            innstillingerHjemler = saksbehandlerInnstillinger.hjemler
-        )
+        val hjemler =
+            getHjemlerQueryListForSaksbehandler(
+                queryHjemler = queryParams.hjemler,
+                innstillingerHjemler = saksbehandlerInnstillinger.hjemler,
+            )
 
-        val typer = queryParams.typer.ifEmpty {
-            getDefaultSearchTypes()
-        }
+        val typer =
+            queryParams.typer.ifEmpty {
+                getDefaultSearchTypes()
+            }
 
-        val searchCriteria = behandlingerSearchCriteriaMapper.toLedigeOppgaverSearchCriteria(
-            queryParams = queryParams.copy(
-                ytelser = ytelser,
-                hjemler = hjemler,
-                typer = typer,
-            ),
-        )
+        val searchCriteria =
+            behandlingerSearchCriteriaMapper.toLedigeOppgaverSearchCriteria(
+                queryParams =
+                    queryParams.copy(
+                        ytelser = ytelser,
+                        hjemler = hjemler,
+                        typer = typer,
+                    ),
+            )
 
         val esResponse = elasticsearchService.findLedigeOppgaverByCriteria(criteria = searchCriteria)
         return BehandlingerListResponse(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
-                esBehandlinger = esResponse.searchHits.map { it.content },
-            )
+            behandlinger =
+                behandlingListMapper.mapEsBehandlingerToListView(
+                    esBehandlinger = esResponse.searchHits.map { it.content },
+                ),
         )
     }
 
-    fun getUtgaatteFristerAvailableToSaksbehandlerCount(
-        queryParams: MineLedigeOppgaverCountQueryParams
-    ): AntallUtgaatteFristerResponse {
+    fun getUtgaatteFristerAvailableToSaksbehandlerCount(queryParams: MineLedigeOppgaverCountQueryParams): AntallUtgaatteFristerResponse {
         val saksbehandlerInnstillinger = kabalInnstillingerService.getInnstillingerForCurrentSaksbehandler()
 
-        val ytelser = getYtelserQueryListForSaksbehandler(
-            queryYtelser = queryParams.ytelser,
-            innstillingerYtelser = saksbehandlerInnstillinger.ytelser
-        )
+        val ytelser =
+            getYtelserQueryListForSaksbehandler(
+                queryYtelser = queryParams.ytelser,
+                innstillingerYtelser = saksbehandlerInnstillinger.ytelser,
+            )
 
-        val hjemler = getHjemlerQueryListForSaksbehandler(
-            queryHjemler = queryParams.hjemler,
-            innstillingerHjemler = saksbehandlerInnstillinger.hjemler
-        )
+        val hjemler =
+            getHjemlerQueryListForSaksbehandler(
+                queryHjemler = queryParams.hjemler,
+                innstillingerHjemler = saksbehandlerInnstillinger.hjemler,
+            )
 
-        val typer = queryParams.typer.ifEmpty {
-            getDefaultSearchTypes()
-        }
+        val typer =
+            queryParams.typer.ifEmpty {
+                getDefaultSearchTypes()
+            }
 
-        val searchCriteria = behandlingerSearchCriteriaMapper.toSearchCriteriaForLedigeMedUtgaattFrist(
-            queryParams = queryParams.copy(
-                ytelser = ytelser,
-                hjemler = hjemler,
-                typer = typer,
-            ),
-        )
+        val searchCriteria =
+            behandlingerSearchCriteriaMapper.toSearchCriteriaForLedigeMedUtgaattFrist(
+                queryParams =
+                    queryParams.copy(
+                        ytelser = ytelser,
+                        hjemler = hjemler,
+                        typer = typer,
+                    ),
+            )
 
-        val esResponse = elasticsearchService.countLedigeOppgaverMedUtgaattFristByCriteria(
-            criteria = searchCriteria
-        )
+        val esResponse =
+            elasticsearchService.countLedigeOppgaverMedUtgaattFristByCriteria(
+                criteria = searchCriteria,
+            )
 
         return AntallUtgaatteFristerResponse(
-            antall = esResponse
+            antall = esResponse,
         )
     }
 
-    private fun getDefaultSearchTypes(): List<String> {
-        return listOf(
+    private fun getDefaultSearchTypes(): List<String> =
+        listOf(
             Type.KLAGE.id,
             Type.ANKE.id,
             Type.BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET.id,
             Type.OMGJOERINGSKRAV.id,
             Type.BEGJAERING_OM_GJENOPPTAK.id,
         )
-    }
 
     private fun getYtelserQueryListForSaksbehandler(
         queryYtelser: List<String>,
-        innstillingerYtelser: List<Ytelse>
-    ): List<String> {
-        return if (queryYtelser.isEmpty()) {
+        innstillingerYtelser: List<Ytelse>,
+    ): List<String> =
+        if (queryYtelser.isEmpty()) {
             innstillingerYtelser.map { it.id }
         } else {
             innstillingerYtelser.map { it.id }.intersect(queryYtelser.toSet())
         }.toList()
-    }
 
     private fun getHjemlerQueryListForSaksbehandler(
         queryHjemler: List<String>,
-        innstillingerHjemler: List<Hjemmel>
-    ): List<String> {
-        return if (queryHjemler.isEmpty()) {
+        innstillingerHjemler: List<Hjemmel>,
+    ): List<String> =
+        if (queryHjemler.isEmpty()) {
             innstillingerHjemler.map { it.id }
         } else {
             innstillingerHjemler.map { it.id }.intersect(queryHjemler.toSet())
         }.toList()
-    }
 }

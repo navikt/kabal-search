@@ -1,6 +1,5 @@
 package no.nav.klage.search.config
 
-
 import no.nav.klage.search.util.getLogger
 import org.springframework.boot.cache.autoconfigure.JCacheManagerCustomizer
 import org.springframework.cache.annotation.EnableCaching
@@ -12,13 +11,12 @@ import javax.cache.configuration.MutableConfiguration
 import javax.cache.expiry.CreatedExpiryPolicy
 import javax.cache.expiry.Duration
 
-
 @EnableCaching
 @Configuration
-class CacheWithJCacheConfiguration(private val environment: Environment) : JCacheManagerCustomizer {
-
+class CacheWithJCacheConfiguration(
+    private val environment: Environment,
+) : JCacheManagerCustomizer {
     companion object {
-
         const val AZUREUSER_CACHE = "azureuser"
         const val METRICS_CACHE = "metrics"
 
@@ -43,5 +41,4 @@ class CacheWithJCacheConfiguration(private val environment: Environment) : JCach
         } else {
             10L
         }
-
 }

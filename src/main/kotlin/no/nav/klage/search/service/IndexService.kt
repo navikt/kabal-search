@@ -6,14 +6,13 @@ import no.nav.klage.search.util.getLogger
 import no.nav.klage.search.util.getTeamLogger
 import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Service
-import java.util.*
+import java.util.UUID
 
 @Service
 class IndexService(
     private val elasticsearchService: ElasticsearchService,
-    private val esBehandlingMapper: EsBehandlingMapper
+    private val esBehandlingMapper: EsBehandlingMapper,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -28,7 +27,7 @@ class IndexService(
     fun indexBehandling(behandling: BehandlingSkjemaV2) {
         try {
             elasticsearchService.save(
-                esBehandlingMapper.mapBehandlingToEsBehandling(behandling)
+                esBehandlingMapper.mapBehandlingToEsBehandling(behandling),
             )
         } catch (e: Exception) {
             if (e.message?.contains("version_conflict_engine_exception") == true) {
@@ -44,5 +43,4 @@ class IndexService(
     fun deleteBehandling(behandlingId: UUID) {
         elasticsearchService.deleteBehandling(behandlingId)
     }
-
 }

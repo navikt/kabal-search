@@ -12,10 +12,9 @@ import org.springframework.web.reactive.function.client.bodyToMono
 class MicrosoftGraphClient(
     private val microsoftGraphWebClient: WebClient,
     private val tokenUtil: TokenUtil,
-    @Value("\${KABAL_SAKSBEHANDLING_ROLE_ID}") private val kabalSaksbehandlingRoleId: String,
-    @Value("\${KABAL_ROL_ROLE_ID}") private val kabalROLRoleId: String,
+    @Value($$"${KABAL_SAKSBEHANDLING_ROLE_ID}") private val kabalSaksbehandlingRoleId: String,
+    @Value($$"${KABAL_ROL_ROLE_ID}") private val kabalROLRoleId: String,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -24,17 +23,17 @@ class MicrosoftGraphClient(
     @Retryable
     fun getEnhetensAnsatteWithKabalSaksbehandlerRole(enhetsnummer: String): AzureSlimUserList {
         logger.debug("getEnhetensAnsattesNavIdentsWithKabalSaksbehandlerRole from Microsoft Graph")
-        return microsoftGraphWebClient.get()
+        return microsoftGraphWebClient
+            .get()
             .uri { uriBuilder ->
                 uriBuilder
                     .path("/groups/$kabalSaksbehandlingRoleId/transitivemembers/microsoft.graph.user")
-                    .queryParam("\$filter", "streetAddress eq '$enhetsnummer'")
-                    .queryParam("\$count", true)
-                    .queryParam("\$top", 500)
-                    .queryParam("\$select", "userPrincipalName,onPremisesSamAccountName,displayName")
+                    .queryParam($$"$filter", "streetAddress eq '$enhetsnummer'")
+                    .queryParam($$"$count", true)
+                    .queryParam($$"$top", 500)
+                    .queryParam($$"$select", "userPrincipalName,onPremisesSamAccountName,displayName")
                     .build()
-            }
-            .header("Authorization", "Bearer ${tokenUtil.getAppAccessTokenWithGraphScope()}")
+            }.header("Authorization", "Bearer ${tokenUtil.getAppAccessTokenWithGraphScope()}")
             .header("ConsistencyLevel", "eventual")
             .retrieve()
             .bodyToMono<AzureSlimUserList>()
@@ -45,16 +44,16 @@ class MicrosoftGraphClient(
     @Retryable
     fun getAnsatteWithKabalROLRole(): AzureSlimUserList {
         logger.debug("getEnhetensAnsatteWithKabalROLRole from Microsoft Graph")
-        return microsoftGraphWebClient.get()
+        return microsoftGraphWebClient
+            .get()
             .uri { uriBuilder ->
                 uriBuilder
                     .path("/groups/$kabalROLRoleId/transitivemembers/microsoft.graph.user")
-                    .queryParam("\$count", true)
-                    .queryParam("\$top", 500)
-                    .queryParam("\$select", "userPrincipalName,onPremisesSamAccountName,displayName")
+                    .queryParam($$"$count", true)
+                    .queryParam($$"$top", 500)
+                    .queryParam($$"$select", "userPrincipalName,onPremisesSamAccountName,displayName")
                     .build()
-            }
-            .header("Authorization", "Bearer ${tokenUtil.getAppAccessTokenWithGraphScope()}")
+            }.header("Authorization", "Bearer ${tokenUtil.getAppAccessTokenWithGraphScope()}")
             .header("ConsistencyLevel", "eventual")
             .retrieve()
             .bodyToMono<AzureSlimUserList>()

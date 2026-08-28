@@ -13,43 +13,46 @@ import org.springframework.kafka.listener.AbstractConsumerSeekAware
 import org.springframework.kafka.support.KafkaHeaders
 import org.springframework.messaging.handler.annotation.Header
 import org.springframework.stereotype.Component
-import java.util.*
-
+import java.util.UUID
 
 @Component
 class BehandlingEndretKafkaConsumer(
     private val indexService: IndexService,
 ) : AbstractConsumerSeekAware() {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
         private val teamLogger = getTeamLogger()
-        private val mapper = ObjectMapper().registerModule(
-            KotlinModule.Builder()
-                .withReflectionCacheSize(512)
-                .configure(KotlinFeature.NullToEmptyCollection, false)
-                .configure(KotlinFeature.NullToEmptyMap, false)
-                .configure(KotlinFeature.NullIsSameAsDefault, false)
-                .configure(KotlinFeature.SingletonSupport, false)
-                .configure(KotlinFeature.StrictNullChecks, false)
-                .build()
-        ).registerModule(JavaTimeModule())
+        private val mapper =
+            ObjectMapper()
+                .registerModule(
+                    KotlinModule
+                        .Builder()
+                        .withReflectionCacheSize(512)
+                        .configure(feature = KotlinFeature.NullToEmptyCollection, enabled = false)
+                        .configure(feature = KotlinFeature.NullToEmptyMap, enabled = false)
+                        .configure(feature = KotlinFeature.NullIsSameAsDefault, enabled = false)
+                        .configure(feature = KotlinFeature.SingletonSupport, enabled = false)
+                        .configure(feature = KotlinFeature.StrictNullChecks, enabled = false)
+                        .build(),
+                ).registerModule(JavaTimeModule())
     }
 
     @KafkaListener(
         id = "behandlingEndretListener",
         idIsGroup = false,
-        topics = ["\${BEHANDLING_ENDRET_KAFKA_TOPIC_V2}"],
-        containerFactory = "behandlingEndretKafkaListenerContainerFactory"
+        topics = [$$"${BEHANDLING_ENDRET_KAFKA_TOPIC_V2}"],
+        containerFactory = "behandlingEndretKafkaListenerContainerFactory",
     )
     fun listenToBehandlingEndret(
         record: ConsumerRecord<String, String>,
-        //ack: Acknowledgment,
-        @Header(KafkaHeaders.GROUP_ID) groupId: String
+        // ack: Acknowledgment,
+        @Header(KafkaHeaders.GROUP_ID) groupId: String,
     ) {
         runCatching {
-            logger.debug("Reading offset ${record.offset()} from partition ${record.partition()} on kafka topic ${record.topic()} using groupId $groupId")
+            logger.debug(
+                "Reading offset ${record.offset()} from partition ${record.partition()} on kafka topic ${record.topic()} using groupId $groupId",
+            )
             val behandlingId = record.key()
             logger.debug("Read behandling with id $behandlingId")
 
@@ -60,8 +63,8 @@ class BehandlingEndretKafkaConsumer(
                 val behandling = record.value().toBehandling()
                 indexService.indexBehandling(behandling)
                 logger.debug("Successfully indexed behandling with id $behandlingId")
-                //logger.debug("Successfully indexed klagebehandling with id $klagebehandlingId, now acking record")
-                //ack.acknowledge()
+                // logger.debug("Successfully indexed klagebehandling with id $klagebehandlingId, now acking record")
+                // ack.acknowledge()
             }
         }.onFailure {
             teamLogger.error("Failed to process endret behandling record", it)

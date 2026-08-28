@@ -2,7 +2,29 @@ package no.nav.klage.search.service
 
 import no.nav.klage.kodeverk.FlowState
 import no.nav.klage.kodeverk.SattPaaVentReason
-import no.nav.klage.search.domain.*
+import no.nav.klage.search.domain.BasicSearchCriteria
+import no.nav.klage.search.domain.CountLedigeOppgaverMedUtgaattFristSearchCriteria
+import no.nav.klage.search.domain.EnhetensFerdigstilteOppgaverSearchCriteria
+import no.nav.klage.search.domain.EnhetensOppgaverPaaVentSearchCriteria
+import no.nav.klage.search.domain.EnhetensUferdigeOppgaverSearchCriteria
+import no.nav.klage.search.domain.FerdigstilteOppgaverForAssignedSaksbehandlerSearchCriteria
+import no.nav.klage.search.domain.HelperStatus
+import no.nav.klage.search.domain.KrolsReturnerteOppgaverSearchCriteria
+import no.nav.klage.search.domain.KrolsUferdigeOppgaverSearchCriteria
+import no.nav.klage.search.domain.LedigeOppgaverSearchCriteria
+import no.nav.klage.search.domain.OppgaverOmPersonSearchCriteria
+import no.nav.klage.search.domain.OppgaverPaaVentForSaksbehandlerOrMedunderskriverSearchCriteria
+import no.nav.klage.search.domain.OppgaverPaaVentSearchCriteria
+import no.nav.klage.search.domain.Order
+import no.nav.klage.search.domain.PageableSearchCriteria
+import no.nav.klage.search.domain.ROLListSearchCriteria
+import no.nav.klage.search.domain.ReturnerteROLOppgaverForAssignedRolSearchCriteria
+import no.nav.klage.search.domain.SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria
+import no.nav.klage.search.domain.SecuritySearchCriteria
+import no.nav.klage.search.domain.SortField
+import no.nav.klage.search.domain.SortableSearchCriteria
+import no.nav.klage.search.domain.TildelteOppgaverSearchCriteria
+import no.nav.klage.search.domain.UferdigeOppgaverForSaksbehandlerOrMedunderskriverOrRolSearchCriteria
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import no.nav.klage.search.repositories.AnonymeBehandlingerSearchHits
 import no.nav.klage.search.repositories.BehandlingerSearchHits
@@ -21,13 +43,12 @@ import org.opensearch.search.sort.SortOrder
 import org.springframework.context.ApplicationListener
 import org.springframework.context.event.ContextRefreshedEvent
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-
-open class ElasticsearchService(private val esBehandlingRepository: EsBehandlingRepository) :
-    ApplicationListener<ContextRefreshedEvent> {
-
+open class ElasticsearchService(
+    private val esBehandlingRepository: EsBehandlingRepository,
+) : ApplicationListener<ContextRefreshedEvent> {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -90,7 +111,9 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits
     }
 
-    open fun findSaksbehandlersFerdigstilteOppgaverByCriteria(criteria: FerdigstilteOppgaverForAssignedSaksbehandlerSearchCriteria): BehandlingerSearchHits {
+    open fun findSaksbehandlersFerdigstilteOppgaverByCriteria(
+        criteria: FerdigstilteOppgaverForAssignedSaksbehandlerSearchCriteria,
+    ): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
@@ -114,7 +137,9 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits
     }
 
-    open fun findSaksbehandlersUferdigeOppgaverByCriteria(criteria: UferdigeOppgaverForSaksbehandlerOrMedunderskriverOrRolSearchCriteria): BehandlingerSearchHits {
+    open fun findSaksbehandlersUferdigeOppgaverByCriteria(
+        criteria: UferdigeOppgaverForSaksbehandlerOrMedunderskriverOrRolSearchCriteria,
+    ): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
@@ -126,7 +151,9 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits
     }
 
-    open fun findROLsUferdigeOppgaverByCriteria(criteria: UferdigeOppgaverForSaksbehandlerOrMedunderskriverOrRolSearchCriteria): BehandlingerSearchHits {
+    open fun findROLsUferdigeOppgaverByCriteria(
+        criteria: UferdigeOppgaverForSaksbehandlerOrMedunderskriverOrRolSearchCriteria,
+    ): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toROLEsQuery())
         searchSourceBuilder.addPaging(criteria)
@@ -138,7 +165,9 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits
     }
 
-    open fun findSaksbehandlersOppgaverPaaVentByCriteria(criteria: OppgaverPaaVentForSaksbehandlerOrMedunderskriverSearchCriteria): BehandlingerSearchHits {
+    open fun findSaksbehandlersOppgaverPaaVentByCriteria(
+        criteria: OppgaverPaaVentForSaksbehandlerOrMedunderskriverSearchCriteria,
+    ): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
@@ -150,7 +179,9 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return searchHits
     }
 
-    open fun findEnhetensFerdigstilteOppgaverByCriteria(criteria: EnhetensFerdigstilteOppgaverSearchCriteria): AnonymeBehandlingerSearchHits {
+    open fun findEnhetensFerdigstilteOppgaverByCriteria(
+        criteria: EnhetensFerdigstilteOppgaverSearchCriteria,
+    ): AnonymeBehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
@@ -262,9 +293,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
             }.toSet()
     }
 
-    open fun countLedigeOppgaverMedUtgaattFristByCriteria(criteria: CountLedigeOppgaverMedUtgaattFristSearchCriteria): Int {
-        return esBehandlingRepository.count(criteria.toEsQuery()).toInt()
-    }
+    open fun countLedigeOppgaverMedUtgaattFristByCriteria(criteria: CountLedigeOppgaverMedUtgaattFristSearchCriteria): Int =
+        esBehandlingRepository.count(criteria.toEsQuery()).toInt()
 
     private fun SearchSourceBuilder.addSorting(criteria: SortableSearchCriteria) {
         fun sortField(criteria: SortableSearchCriteria): String =
@@ -306,14 +336,13 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                 }
             }
 
-        fun mapOrder(criteria: SortableSearchCriteria): SortOrder {
-            return criteria.order.let {
+        fun mapOrder(criteria: SortableSearchCriteria): SortOrder =
+            criteria.order.let {
                 when (it) {
                     Order.ASC -> SortOrder.ASC
                     Order.DESC -> SortOrder.DESC
                 }
             }
-        }
 
         this.sort(SortBuilders.fieldSort(sortField(criteria)).order(mapOrder(criteria)))
     }
@@ -376,8 +405,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
         baseQuery.mustNot(beTildeltSaksbehandler())
         baseQuery.mustNot(beFeilregistrert())
-        baseQuery.must(haveFristBetween(fristFrom, fristTo))
-        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
+        baseQuery.must(haveFristBetween(fristFom = fristFrom, fristTom = fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFom = varsletFristFrom, varsletFristTom = varsletFristTo))
         teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
@@ -392,8 +421,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(beSentToROL())
         baseQuery.mustNot(beAssignedToROL())
-        baseQuery.must(haveFristBetween(fristFrom, fristTo))
-        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
+        baseQuery.must(haveFristBetween(fristFom = fristFrom, fristTom = fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFom = varsletFristFrom, varsletFristTom = varsletFristTo))
         teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
@@ -406,8 +435,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
         baseQuery.mustNot(beTildeltSaksbehandler())
         baseQuery.mustNot(beFeilregistrert())
-        baseQuery.must(haveFristBetween(fristFrom, fristTo))
-        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
+        baseQuery.must(haveFristBetween(fristFom = fristFrom, fristTom = fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFom = varsletFristFrom, varsletFristTom = varsletFristTo))
         teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
     }
@@ -417,13 +446,13 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
-        //baseQuery.must(beAvsluttetAvSaksbehandler())
+        // baseQuery.must(beAvsluttetAvSaksbehandler())
         baseQuery.must(beAvsluttetAvSaksbehandlerEtter(ferdigstiltFom))
         baseQuery.must(beAvsluttetAvSaksbehandlerFoer(ferdigstiltTom))
         baseQuery.must(beTildeltSaksbehandler(navIdent))
         baseQuery.mustNot(beFeilregistrert())
-        baseQuery.must(haveFristBetween(fristFrom, fristTo))
-        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
+        baseQuery.must(haveFristBetween(fristFom = fristFrom, fristTom = fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFom = varsletFristFrom, varsletFristTom = varsletFristTo))
 
         teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -439,8 +468,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beReturnertFraROLFoer(returnertTom))
         baseQuery.must(beAssignedToROL(navIdent = navIdent))
         baseQuery.mustNot(beFeilregistrert())
-        baseQuery.must(haveFristBetween(fristFrom, fristTo))
-        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
+        baseQuery.must(haveFristBetween(fristFom = fristFrom, fristTom = fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFom = varsletFristFrom, varsletFristTom = varsletFristTo))
 
         teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -455,8 +484,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.mustNot(beSattPaaVent())
         baseQuery.must(beTildeltSaksbehandlerOrMedunderskriver(navIdent))
         baseQuery.mustNot(beFeilregistrert())
-        baseQuery.must(haveFristBetween(fristFrom, fristTo))
-        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
+        baseQuery.must(haveFristBetween(fristFom = fristFrom, fristTom = fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFom = varsletFristFrom, varsletFristTom = varsletFristTo))
 
         if (helperStatusList.isNotEmpty()) {
             val innerQuery = QueryBuilders.boolQuery()
@@ -477,8 +506,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(beSentToROL())
         baseQuery.must(beAssignedToROL(navIdent = navIdent))
-        baseQuery.must(haveFristBetween(fristFrom, fristTo))
-        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
+        baseQuery.must(haveFristBetween(fristFom = fristFrom, fristTom = fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFom = varsletFristFrom, varsletFristTom = varsletFristTo))
 
         teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -493,8 +522,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beSattPaaVent())
         baseQuery.must(beTildeltSaksbehandlerOrMedunderskriver(navIdent))
         baseQuery.mustNot(beFeilregistrert())
-        baseQuery.must(haveFristBetween(fristFrom, fristTo))
-        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
+        baseQuery.must(haveFristBetween(fristFom = fristFrom, fristTom = fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFom = varsletFristFrom, varsletFristTom = varsletFristTo))
 
         if (sattPaaVentReasons.isNotEmpty()) {
             baseQuery.must(beSattPaaVentReasons(sattPaaVentReasons))
@@ -509,7 +538,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
         baseQuery.addBasicFilters(this)
-        //baseQuery.must(beAvsluttetAvSaksbehandler())
+        // baseQuery.must(beAvsluttetAvSaksbehandler())
         baseQuery.must(beAvsluttetAvSaksbehandlerEtter(ferdigstiltFom))
         baseQuery.must(beAvsluttetAvSaksbehandlerFoer(ferdigstiltTom))
         baseQuery.must(beTildeltEnhet(enhetId))
@@ -517,8 +546,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
             baseQuery.must(beTildeltSaksbehandlere(saksbehandlere))
         }
         baseQuery.mustNot(beFeilregistrert())
-        baseQuery.must(haveFristBetween(fristFrom, fristTo))
-        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
+        baseQuery.must(haveFristBetween(fristFom = fristFrom, fristTom = fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFom = varsletFristFrom, varsletFristTom = varsletFristTo))
 
         teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -554,8 +583,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
 
         baseQuery.must(innerQuery)
         baseQuery.mustNot(beFeilregistrert())
-        baseQuery.must(haveFristBetween(fristFrom, fristTo))
-        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
+        baseQuery.must(haveFristBetween(fristFom = fristFrom, fristTom = fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFom = varsletFristFrom, varsletFristTom = varsletFristTo))
 
         teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -586,13 +615,13 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         }
 
         if (helperStatusList.isNotEmpty()) {
-            innerQuery.must(createQueryForHelperStatusList(helperStatusList, null))
+            innerQuery.must(createQueryForHelperStatusList(helperStatusList = helperStatusList, navIdent = null))
         }
 
         baseQuery.must(innerQuery)
         baseQuery.mustNot(beFeilregistrert())
-        baseQuery.must(haveFristBetween(fristFrom, fristTo))
-        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
+        baseQuery.must(haveFristBetween(fristFom = fristFrom, fristTom = fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFom = varsletFristFrom, varsletFristTom = varsletFristTo))
 
         teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -612,8 +641,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         }
 
         baseQuery.mustNot(beFeilregistrert())
-        baseQuery.must(haveFristBetween(fristFrom, fristTo))
-        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
+        baseQuery.must(haveFristBetween(fristFom = fristFrom, fristTom = fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFom = varsletFristFrom, varsletFristTom = varsletFristTo))
 
         teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -629,8 +658,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.must(beReturnertFraROLFoer(returnertTom))
         baseQuery.must(beAssignedToROL())
         baseQuery.mustNot(beFeilregistrert())
-        baseQuery.must(haveFristBetween(fristFrom, fristTo))
-        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
+        baseQuery.must(haveFristBetween(fristFom = fristFrom, fristTom = fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFom = varsletFristFrom, varsletFristTom = varsletFristTo))
 
         teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -651,8 +680,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.mustNot(beSattPaaVent())
         baseQuery.must(beTildeltSaksbehandler())
-        baseQuery.must(haveFristBetween(fristFrom, fristTo))
-        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
+        baseQuery.must(haveFristBetween(fristFom = fristFrom, fristTom = fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFom = varsletFristFrom, varsletFristTom = varsletFristTo))
 
         if (helperStatusList.isNotEmpty()) {
             val innerQuery = QueryBuilders.boolQuery()
@@ -689,8 +718,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
 
         baseQuery.must(innerQuery)
         baseQuery.mustNot(beFeilregistrert())
-        baseQuery.must(haveFristBetween(fristFrom, fristTo))
-        baseQuery.must(haveVarsletFristBetween(varsletFristFrom, varsletFristTo))
+        baseQuery.must(haveFristBetween(fristFom = fristFrom, fristTom = fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFom = varsletFristFrom, varsletFristTom = varsletFristTo))
 
         teamLogger.debug("Making search request with query {}", baseQuery.toString())
         return baseQuery
@@ -731,49 +760,49 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         val kanBehandleStrengtFortrolig = securitySearchCriteria.kanBehandleStrengtFortrolig
         when {
             kanBehandleEgenAnsatt && kanBehandleFortrolig && kanBehandleStrengtFortrolig -> {
-                //Case 1
-                //Skipper de normale, altså de som ikke har noe.
-                //fortrolig og strengt fortrolig trumfer egen ansatt
-                //tolker dette som kun egen ansatt som også er strengt fortrolig eller fortrolig
+                // Case 1
+                // Skipper de normale, altså de som ikke har noe.
+                // fortrolig og strengt fortrolig trumfer egen ansatt
+                // tolker dette som kun egen ansatt som også er strengt fortrolig eller fortrolig
                 filterQuery.should(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
                 filterQuery.should(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
             }
 
             !kanBehandleEgenAnsatt && kanBehandleFortrolig && kanBehandleStrengtFortrolig -> {
-                //Case 2
-                //Er i praksis det samme som case 1
+                // Case 2
+                // Er i praksis det samme som case 1
                 filterQuery.should(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
                 filterQuery.should(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
             }
 
             kanBehandleEgenAnsatt && !kanBehandleFortrolig && kanBehandleStrengtFortrolig -> {
-                //Case 3
-                //tolker dette som kun egen ansatt som også er strengt fortrolig
-                //Skipper de normale, altså de som ikke har noe.
+                // Case 3
+                // tolker dette som kun egen ansatt som også er strengt fortrolig
+                // Skipper de normale, altså de som ikke har noe.
                 filterQuery.must(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
                 filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
             }
 
             kanBehandleEgenAnsatt && kanBehandleFortrolig && !kanBehandleStrengtFortrolig -> {
-                //Case 4
-                //Skal inkludere de normale
-                //Skal inkludere egen ansatt
-                //Skal inkludere fortrolig
+                // Case 4
+                // Skal inkludere de normale
+                // Skal inkludere egen ansatt
+                // Skal inkludere fortrolig
                 filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
             }
 
             !kanBehandleEgenAnsatt && !kanBehandleFortrolig && kanBehandleStrengtFortrolig -> {
-                //Case 5.
-                //Er i praksis det samme som case 3. Inkluderer egen ansatte som også har strengt fortrolig, strengt fortrolig trumfer egen ansatt
+                // Case 5.
+                // Er i praksis det samme som case 3. Inkluderer egen ansatte som også har strengt fortrolig, strengt fortrolig trumfer egen ansatt
                 filterQuery.must(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
                 filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
             }
 
             !kanBehandleEgenAnsatt && kanBehandleFortrolig && !kanBehandleStrengtFortrolig -> {
-                //Case 6
-                //Skal inkludere de normale
-                //Skal inkludere fortrolig
-                //Skal inkludere fortrolige som også er egen ansatt, men ikke egen ansatte som ikke er fortrolige
+                // Case 6
+                // Skal inkludere de normale
+                // Skal inkludere fortrolig
+                // Skal inkludere fortrolige som også er egen ansatt, men ikke egen ansatte som ikke er fortrolige
                 val egenAnsattAndNotFortrolig = QueryBuilders.boolQuery()
                 egenAnsattAndNotFortrolig.must(QueryBuilders.termQuery(EsBehandling::egenAnsatt.name, true))
                 egenAnsattAndNotFortrolig.mustNot(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
@@ -783,15 +812,15 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
             }
 
             kanBehandleEgenAnsatt && !kanBehandleFortrolig && !kanBehandleStrengtFortrolig -> {
-                //Case 7
-                //Skal inkludere de normale
-                //Skal inkludere egen ansatt
+                // Case 7
+                // Skal inkludere de normale
+                // Skal inkludere egen ansatt
                 filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
                 filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
             }
 
             !kanBehandleEgenAnsatt && !kanBehandleFortrolig && !kanBehandleStrengtFortrolig -> {
-                //Case 8
+                // Case 8
                 filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::strengtFortrolig.name, true))
                 filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::fortrolig.name, true))
                 filterQuery.mustNot(QueryBuilders.termQuery(EsBehandling::egenAnsatt.name, true))
@@ -804,8 +833,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         queryBeSentToROL.must(
             QueryBuilders.termQuery(
                 EsBehandling::rolFlowStateId.name,
-                FlowState.SENT.id
-            )
+                FlowState.SENT.id,
+            ),
         )
         return queryBeSentToROL
     }
@@ -815,8 +844,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         queryBeReturnedFromROL.must(
             QueryBuilders.termQuery(
                 EsBehandling::rolFlowStateId.name,
-                FlowState.RETURNED.id
-            )
+                FlowState.RETURNED.id,
+            ),
         )
         return queryBeReturnedFromROL
     }
@@ -834,43 +863,68 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
     private fun beTildeltSaksbehandler() = QueryBuilders.existsQuery(EsBehandling::tildeltSaksbehandlerident.name)
 
     private fun beAvsluttetAvSaksbehandlerEtter(ferdigstiltFom: LocalDate) =
-        QueryBuilders.rangeQuery(EsBehandling::avsluttetAvSaksbehandler.name).gte(ferdigstiltFom).format(ISO8601)
+        QueryBuilders
+            .rangeQuery(EsBehandling::avsluttetAvSaksbehandler.name)
+            .gte(ferdigstiltFom)
+            .format(ISO8601)
             .timeZone(ZONEID_UTC)
 
     private fun beAvsluttetAvSaksbehandlerFoer(ferdigstiltTom: LocalDate) =
-        QueryBuilders.rangeQuery(EsBehandling::avsluttetAvSaksbehandler.name).lte(ferdigstiltTom).format(ISO8601)
+        QueryBuilders
+            .rangeQuery(EsBehandling::avsluttetAvSaksbehandler.name)
+            .lte(ferdigstiltTom)
+            .format(ISO8601)
             .timeZone(ZONEID_UTC)
 
     private fun beReturnertFraROLEtter(returnertFom: LocalDate) =
-        QueryBuilders.rangeQuery(EsBehandling::returnertFraROL.name).gte(returnertFom).format(ISO8601)
+        QueryBuilders
+            .rangeQuery(EsBehandling::returnertFraROL.name)
+            .gte(returnertFom)
+            .format(ISO8601)
             .timeZone(ZONEID_UTC)
 
     private fun beReturnertFraROLFoer(returnertTom: LocalDate) =
-        QueryBuilders.rangeQuery(EsBehandling::returnertFraROL.name).lte(returnertTom).format(ISO8601)
+        QueryBuilders
+            .rangeQuery(EsBehandling::returnertFraROL.name)
+            .lte(returnertTom)
+            .format(ISO8601)
             .timeZone(ZONEID_UTC)
 
-    private fun haveFristBetween(fristFom: LocalDate, fristTom: LocalDate): BoolQueryBuilder {
+    private fun haveFristBetween(
+        fristFom: LocalDate,
+        fristTom: LocalDate,
+    ): BoolQueryBuilder {
         val innerQuery = QueryBuilders.boolQuery()
 
         innerQuery.should(
-            QueryBuilders.rangeQuery(EsBehandling::frist.name).gte(fristFom).lte(fristTom).format(ISO8601)
-                .timeZone(ZONEID_UTC)
+            QueryBuilders
+                .rangeQuery(EsBehandling::frist.name)
+                .gte(fristFom)
+                .lte(fristTom)
+                .format(ISO8601)
+                .timeZone(ZONEID_UTC),
         )
         innerQuery.should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery(EsBehandling::frist.name)))
 
         return innerQuery
     }
 
-    private fun haveVarsletFristBetween(varsletFristFom: LocalDate, varsletFristTom: LocalDate): BoolQueryBuilder {
+    private fun haveVarsletFristBetween(
+        varsletFristFom: LocalDate,
+        varsletFristTom: LocalDate,
+    ): BoolQueryBuilder {
         val innerQuery = QueryBuilders.boolQuery()
 
         innerQuery.should(
-            QueryBuilders.rangeQuery(EsBehandling::varsletFrist.name).gte(varsletFristFom).lte(varsletFristTom)
+            QueryBuilders
+                .rangeQuery(EsBehandling::varsletFrist.name)
+                .gte(varsletFristFom)
+                .lte(varsletFristTom)
                 .format(ISO8601)
-                .timeZone(ZONEID_UTC)
+                .timeZone(ZONEID_UTC),
         )
         innerQuery.should(
-            QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery(EsBehandling::varsletFrist.name))
+            QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery(EsBehandling::varsletFrist.name)),
         )
 
         return innerQuery
@@ -900,56 +954,61 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return innerQueryMedunderskriver
     }
 
-    private fun beSattPaaVentReasons(sattPaaVentReasons: List<SattPaaVentReason>): BoolQueryBuilder? {
-        return if (sattPaaVentReasons.isNotEmpty()) {
+    private fun beSattPaaVentReasons(sattPaaVentReasons: List<SattPaaVentReason>): BoolQueryBuilder? =
+        if (sattPaaVentReasons.isNotEmpty()) {
             val innerQueryMedunderskriver = QueryBuilders.boolQuery()
             sattPaaVentReasons.forEach {
                 innerQueryMedunderskriver.should(QueryBuilders.termQuery(EsBehandling::sattPaaVentReasonId.name, it.id))
             }
             innerQueryMedunderskriver
-        } else null
-    }
+        } else {
+            null
+        }
 
     private fun createQueryForHelperStatusList(
         helperStatusList: List<HelperStatus>,
-        navIdent: String?
-    ): BoolQueryBuilder? {
-        return if (helperStatusList.isNotEmpty()) {
+        navIdent: String?,
+    ): BoolQueryBuilder? =
+        if (helperStatusList.isNotEmpty()) {
             val innerQuery = QueryBuilders.boolQuery()
             helperStatusList.forEach { helperStatus ->
                 innerQuery.should(createQueryForHelperStatus(helperStatus, navIdent))
             }
             innerQuery
-        } else null
-    }
+        } else {
+            null
+        }
 
-    private fun createQueryForHelperStatus(helperStatus: HelperStatus, navIdent: String?): BoolQueryBuilder? {
+    private fun createQueryForHelperStatus(
+        helperStatus: HelperStatus,
+        navIdent: String?,
+    ): BoolQueryBuilder? {
         val innerQuery = QueryBuilders.boolQuery()
         when (helperStatus) {
             HelperStatus.SENDT_TIL_MU -> {
                 innerQuery.must(
                     QueryBuilders.termQuery(
                         EsBehandling::medunderskriverFlowStateId.name,
-                        FlowState.SENT.id
-                    )
+                        FlowState.SENT.id,
+                    ),
                 )
                 navIdent?.let {
                     innerQuery.mustNot(
                         QueryBuilders.termQuery(
                             EsBehandling::medunderskriverident.name,
-                            navIdent
-                        )
+                            navIdent,
+                        ),
                     )
                 }
-                //Spesifiserer ikke at medunderskriverident.name må være null, siden det skal være et umulig tilfelle.
+                // Spesifiserer ikke at medunderskriverident.name må være null, siden det skal være et umulig tilfelle.
             }
 
             HelperStatus.RETURNERT_FRA_MU -> {
                 innerQuery.must(
                     QueryBuilders.termQuery(
                         EsBehandling::medunderskriverFlowStateId.name,
-                        FlowState.RETURNED.id
-                    )
+                        FlowState.RETURNED.id,
+                    ),
                 )
             }
 
@@ -957,8 +1016,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                 innerQuery.must(
                     QueryBuilders.termQuery(
                         EsBehandling::medunderskriverFlowStateId.name,
-                        FlowState.RETURNED_APPROVED.id
-                    )
+                        FlowState.RETURNED_APPROVED.id,
+                    ),
                 )
             }
 
@@ -966,8 +1025,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                 innerQuery.must(
                     QueryBuilders.termQuery(
                         EsBehandling::medunderskriverFlowStateId.name,
-                        FlowState.RETURNED_NOT_APPROVED.id
-                    )
+                        FlowState.RETURNED_NOT_APPROVED.id,
+                    ),
                 )
             }
 
@@ -976,8 +1035,8 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
                     innerQuery.must(
                         QueryBuilders.termQuery(
                             EsBehandling::medunderskriverFlowStateId.name,
-                            FlowState.SENT.id
-                        )
+                            FlowState.SENT.id,
+                        ),
                     )
                     innerQuery.must(QueryBuilders.termQuery(EsBehandling::medunderskriverident.name, navIdent))
                 }
@@ -1008,9 +1067,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return innerQuery
     }
 
-    private fun beTildeltSaksbehandler(navIdent: String) =
-        QueryBuilders.termQuery(EsBehandling::tildeltSaksbehandlerident.name, navIdent)
-
+    private fun beTildeltSaksbehandler(navIdent: String) = QueryBuilders.termQuery(EsBehandling::tildeltSaksbehandlerident.name, navIdent)
 
     private fun beTildeltMedunderskriver(navIdent: String): BoolQueryBuilder {
         val innerQueryMedunderskriver = QueryBuilders.boolQuery()
@@ -1027,13 +1084,12 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return innerQuery
     }
 
-    private fun beTildeltEnhet(enhetId: String): TermQueryBuilder =
-        QueryBuilders.termQuery(EsBehandling::tildeltEnhet.name, enhetId)
+    private fun beTildeltEnhet(enhetId: String): TermQueryBuilder = QueryBuilders.termQuery(EsBehandling::tildeltEnhet.name, enhetId)
 
     private fun beSentToMedunderskriver(): TermQueryBuilder =
         QueryBuilders.termQuery(
             EsBehandling::medunderskriverFlowStateId.name,
-            FlowState.SENT.id
+            FlowState.SENT.id,
         )
 
     private fun beSendtTilMedunderskriverIEnhet(enhetsnummer: String): BoolQueryBuilder {
@@ -1043,8 +1099,7 @@ open class ElasticsearchService(private val esBehandlingRepository: EsBehandling
         return innerQueryMedunderskriver
     }
 
-    private fun haveSakenGjelder(fnr: String): TermQueryBuilder =
-        QueryBuilders.termQuery(EsBehandling::sakenGjelderFnr.name, fnr)
+    private fun haveSakenGjelder(fnr: String): TermQueryBuilder = QueryBuilders.termQuery(EsBehandling::sakenGjelderFnr.name, fnr)
 
     fun deleteBehandling(behandlingId: UUID) {
         esBehandlingRepository.deleteBehandling(behandlingId)

@@ -28,7 +28,6 @@ class KrolOppgaverListController(
     private val klageLookupClient: KlageLookupClient,
     private val tokenUtil: TokenUtil,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -36,55 +35,55 @@ class KrolOppgaverListController(
 
     @Operation(
         summary = "Hent enhetens ferdigstilte oppgaver",
-        description = "Henter alle ferdigstilte oppgaver for enheten som saksbehandler har tilgang til."
+        description = "Henter alle ferdigstilte oppgaver for enheten som saksbehandler har tilgang til.",
     )
     @GetMapping(
         "/kroloppgaver/tildelte/returnerte",
-        produces = ["application/json"]
+        produces = ["application/json"],
     )
-    fun getKrolsReturnerteOppgaver(
-        queryParams: KrolsReturnerteOppgaverQueryParams
-    ): BehandlingerListResponse {
+    fun getKrolsReturnerteOppgaver(queryParams: KrolsReturnerteOppgaverQueryParams): BehandlingerListResponse {
         logger.debug("Params: {}", queryParams)
         validateRettigheterForKrolOppgaver()
 
-        val searchCriteria = behandlingerSearchCriteriaMapper.toKrolsReturnerteOppgaverSearchCriteria(
-            queryParams = queryParams
-        )
+        val searchCriteria =
+            behandlingerSearchCriteriaMapper.toKrolsReturnerteOppgaverSearchCriteria(
+                queryParams = queryParams,
+            )
 
         val esResponse = elasticsearchService.findKrolsReturnerteOppgaverByCriteria(searchCriteria)
         return BehandlingerListResponse(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
-                esBehandlinger = esResponse.searchHits.map { it.content },
-            ),
+            behandlinger =
+                behandlingListMapper.mapEsBehandlingerToListView(
+                    esBehandlinger = esResponse.searchHits.map { it.content },
+                ),
         )
     }
 
     @Operation(
         summary = "Hent uferdige oppgaver for en enhet",
-        description = "Henter alle uferdige oppgaver i enheten som saksbehandler har tilgang til."
+        description = "Henter alle uferdige oppgaver i enheten som saksbehandler har tilgang til.",
     )
     @GetMapping(
         "/kroloppgaver/tildelte/uferdige",
-        produces = ["application/json"]
+        produces = ["application/json"],
     )
-    fun getKrolsUferdigeOppgaver(
-        queryParams: KrolsUferdigeOppgaverQueryParams
-    ): BehandlingerListResponse {
+    fun getKrolsUferdigeOppgaver(queryParams: KrolsUferdigeOppgaverQueryParams): BehandlingerListResponse {
         logger.debug("Params: {}", queryParams)
         validateRettigheterForKrolOppgaver()
 
-        val searchCriteria = behandlingerSearchCriteriaMapper.toKrolsUferdigeOppgaverSearchCriteria(
-            queryParams = queryParams
-        )
+        val searchCriteria =
+            behandlingerSearchCriteriaMapper.toKrolsUferdigeOppgaverSearchCriteria(
+                queryParams = queryParams,
+            )
 
         val esResponse = elasticsearchService.findKrolsUferdigeOppgaverByCriteria(searchCriteria)
         return BehandlingerListResponse(
             antallTreffTotalt = esResponse.totalHits.toInt(),
-            behandlinger = behandlingListMapper.mapEsBehandlingerToListView(
-                esBehandlinger = esResponse.searchHits.map { it.content },
-            ),
+            behandlinger =
+                behandlingListMapper.mapEsBehandlingerToListView(
+                    esBehandlinger = esResponse.searchHits.map { it.content },
+                ),
         )
     }
 

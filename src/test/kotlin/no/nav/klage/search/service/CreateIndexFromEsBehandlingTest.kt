@@ -1,6 +1,5 @@
 package no.nav.klage.search.service
 
-
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
 import org.apache.hc.core5.http.io.entity.EntityUtils
 import org.assertj.core.api.Assertions.assertThat
@@ -17,14 +16,12 @@ import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 
-
 @ActiveProfiles("local")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @Testcontainers
 @SpringBootTest(classes = [ElasticsearchServiceConfiguration::class])
 @DirtiesContext
 class CreateIndexFromEsBehandlingTest {
-
     companion object {
         @Container
         @JvmField
@@ -58,5 +55,4 @@ class CreateIndexFromEsBehandlingTest {
         val mappingResponse = client.lowLevelClient.performRequest(Request("GET", "/_all/_mapping"))
         EntityUtils.toString(mappingResponse.entity)
     }
-
 }

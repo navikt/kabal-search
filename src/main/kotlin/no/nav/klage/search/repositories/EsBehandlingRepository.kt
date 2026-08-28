@@ -1,6 +1,5 @@
 package no.nav.klage.search.repositories
 
-
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinFeature
@@ -38,27 +37,28 @@ import org.opensearch.index.reindex.DeleteByQueryRequest
 import org.opensearch.search.aggregations.AggregationBuilder
 import org.opensearch.search.aggregations.Aggregations
 import org.opensearch.search.builder.SearchSourceBuilder
-import java.util.*
+import java.util.UUID
 
-
-class EsBehandlingRepository(val client: RestHighLevelClient) {
-
+class EsBehandlingRepository(
+    val client: RestHighLevelClient,
+) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
 
         private val mapper =
-            ObjectMapper().registerModule(
-                KotlinModule.Builder()
-                    .withReflectionCacheSize(512)
-                    .configure(KotlinFeature.NullToEmptyCollection, false)
-                    .configure(KotlinFeature.NullToEmptyMap, false)
-                    .configure(KotlinFeature.NullIsSameAsDefault, false)
-                    .configure(KotlinFeature.SingletonSupport, false)
-                    .configure(KotlinFeature.StrictNullChecks, false)
-                    .
-                    build()
-            ).registerModule(JavaTimeModule())
+            ObjectMapper()
+                .registerModule(
+                    KotlinModule
+                        .Builder()
+                        .withReflectionCacheSize(512)
+                        .configure(feature = KotlinFeature.NullToEmptyCollection, enabled = false)
+                        .configure(feature = KotlinFeature.NullToEmptyMap, enabled = false)
+                        .configure(feature = KotlinFeature.NullIsSameAsDefault, enabled = false)
+                        .configure(feature = KotlinFeature.SingletonSupport, enabled = false)
+                        .configure(feature = KotlinFeature.StrictNullChecks, enabled = false)
+                        .build(),
+                ).registerModule(JavaTimeModule())
         const val SETTINGS_CONFIG = "/elasticsearch/settings.json"
         const val MAPPING_CONFIG = "/elasticsearch/mapping.json"
         const val BEHANDLING_INDEX = "klagebehandling"
@@ -110,16 +110,16 @@ class EsBehandlingRepository(val client: RestHighLevelClient) {
     }
 
     fun save(behandlinger: List<EsBehandling>) {
-        //TODO Kunne kanskje med fordel vært håndtert med en BulkRequest, ref https://github.com/navikt/pam-kandidatsok-es/blob/master/src/main/java/no/nav/arbeid/kandidatsok/es/client/EsIndexerHttpService.java
+        // TODO Kunne kanskje med fordel vært håndtert med en BulkRequest, ref https://github.com/navikt/pam-kandidatsok-es/blob/master/src/main/java/no/nav/arbeid/kandidatsok/es/client/EsIndexerHttpService.java
         behandlinger.forEach {
-            save(it, WriteRequest.RefreshPolicy.NONE)
+            save(behandling = it, refreshPolicy = WriteRequest.RefreshPolicy.NONE)
         }
         refreshIndex()
     }
 
     fun save(
         behandling: EsBehandling,
-        refreshPolicy: WriteRequest.RefreshPolicy = WriteRequest.RefreshPolicy.IMMEDIATE
+        refreshPolicy: WriteRequest.RefreshPolicy = WriteRequest.RefreshPolicy.IMMEDIATE,
     ) {
         try {
             val request = IndexRequest(BEHANDLING_INDEX)
@@ -128,11 +128,10 @@ class EsBehandlingRepository(val client: RestHighLevelClient) {
             request.source(jsonString, XContentType.JSON)
             request.refreshPolicy = refreshPolicy
             request.versionType(VersionType.INTERNAL)
-            //request.version(klagebehandling.modified.toEpochSecond(ZoneOffset.UTC))
-            //request.opType(DocWriteRequest.OpType.INDEX)
+            // request.version(klagebehandling.modified.toEpochSecond(ZoneOffset.UTC))
+            // request.opType(DocWriteRequest.OpType.INDEX)
             val indexResponse: IndexResponse = client.index(request, RequestOptions.DEFAULT)
             logIndexResponse(indexResponse)
-
         } catch (e: OpenSearchException) {
             if (e.status() == RestStatus.CONFLICT) {
                 logger.info("Conflict when saving to ES, ignoring and moving on..")
@@ -174,21 +173,22 @@ class EsBehandlingRepository(val client: RestHighLevelClient) {
         return BehandlingerSearchHits(
             totalHits = searchResponse.hits.totalHits!!.value,
             totalHitsRelation = searchResponse.hits.totalHits!!.relation,
-            searchHits = searchResponse.hits.map {
-                EsBehandlingSearchHit(
-                    mapper.readValue(
-                        it.sourceAsString,
-                        EsBehandling::class.java
+            searchHits =
+                searchResponse.hits.map {
+                    EsBehandlingSearchHit(
+                        mapper.readValue(
+                            it.sourceAsString,
+                            EsBehandling::class.java,
+                        ),
                     )
-                )
-            },
-            aggregations = searchResponse.aggregations
+                },
+            aggregations = searchResponse.aggregations,
         )
     }
 
     fun search(
         queryBuilder: QueryBuilder,
-        aggregationBuilders: List<AggregationBuilder> = emptyList()
+        aggregationBuilders: List<AggregationBuilder> = emptyList(),
     ): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(queryBuilder)
@@ -204,18 +204,22 @@ class EsBehandlingRepository(val client: RestHighLevelClient) {
     }
 
     private fun settings(): Map<String, Any> {
-        val parser = XContentType.JSON.xContent().createParser(
-            NamedXContentRegistry.EMPTY, null,
-            EsBehandlingRepository::class.java.getResourceAsStream(SETTINGS_CONFIG)
-        )
+        val parser =
+            XContentType.JSON.xContent().createParser(
+                NamedXContentRegistry.EMPTY,
+                null,
+                EsBehandlingRepository::class.java.getResourceAsStream(SETTINGS_CONFIG),
+            )
         return parser.map()
     }
 
     private fun mapping(): Map<String, Any> {
-        val parser = XContentType.JSON.xContent().createParser(
-            NamedXContentRegistry.EMPTY, null,
-            EsBehandlingRepository::class.java.getResourceAsStream(MAPPING_CONFIG)
-        )
+        val parser =
+            XContentType.JSON.xContent().createParser(
+                NamedXContentRegistry.EMPTY,
+                null,
+                EsBehandlingRepository::class.java.getResourceAsStream(MAPPING_CONFIG),
+            )
         return parser.map()
     }
 
@@ -298,7 +302,6 @@ class EsBehandlingRepository(val client: RestHighLevelClient) {
 }
 
 interface SearchHits<T> : Iterable<SearchHit<T>> {
-
     val aggregations: Aggregations?
 
     val searchHits: List<SearchHit<T>>
@@ -307,39 +310,40 @@ interface SearchHits<T> : Iterable<SearchHit<T>> {
 
     val totalHitsRelation: TotalHits.Relation
 
-    override fun iterator(): Iterator<SearchHit<T>> {
-        return searchHits.iterator()
-    }
+    override fun iterator(): Iterator<SearchHit<T>> = searchHits.iterator()
 }
 
-open class SearchHit<T>(val id: String, val content: T)
+open class SearchHit<T>(
+    val id: String,
+    val content: T,
+)
 
-class EsBehandlingSearchHit(content: EsBehandling) :
-    SearchHit<EsBehandling>(content.behandlingId, content)
+class EsBehandlingSearchHit(
+    content: EsBehandling,
+) : SearchHit<EsBehandling>(content.behandlingId, content)
 
-class EsAnonymBehandlingSearchHit(content: EsBehandling) :
-    SearchHit<EsAnonymBehandling>(content.behandlingId, content)
-
+class EsAnonymBehandlingSearchHit(
+    content: EsBehandling,
+) : SearchHit<EsAnonymBehandling>(content.behandlingId, content)
 
 class BehandlingerSearchHits(
     override val totalHits: Long,
     override val totalHitsRelation: TotalHits.Relation,
     override val searchHits: List<SearchHit<EsBehandling>>,
-    override val aggregations: Aggregations?
+    override val aggregations: Aggregations?,
 ) : SearchHits<EsBehandling> {
-    fun anonymize(): AnonymeBehandlingerSearchHits {
-        return AnonymeBehandlingerSearchHits(
+    fun anonymize(): AnonymeBehandlingerSearchHits =
+        AnonymeBehandlingerSearchHits(
             totalHits = totalHits,
             totalHitsRelation = totalHitsRelation,
             searchHits = searchHits.map { EsAnonymBehandlingSearchHit(it.content) },
             aggregations = aggregations,
         )
-    }
 }
 
 class AnonymeBehandlingerSearchHits(
     override val totalHits: Long,
     override val totalHitsRelation: TotalHits.Relation,
     override val searchHits: List<SearchHit<EsAnonymBehandling>>,
-    override val aggregations: Aggregations?
+    override val aggregations: Aggregations?,
 ) : SearchHits<EsAnonymBehandling>

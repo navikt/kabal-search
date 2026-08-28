@@ -18,9 +18,8 @@ class SaksbehandlerService(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    fun getNamesForIdents(navIdentList: List<String>): ExtendedUsersResponse {
-        return klageLookupClient.getUserInfoBatched(navIdentList = navIdentList)
-    }
+    fun getNamesForIdents(navIdentList: List<String>): ExtendedUsersResponse =
+        klageLookupClient.getUserInfoBatched(navIdentList = navIdentList)
 
     fun getSaksbehandlereForEnhet(enhetsnummer: String): List<SaksbehandlerView> {
         val azureOutput =
@@ -43,12 +42,11 @@ class SaksbehandlerService(
         } ?: emptyList()
     }
 
-    fun getEnhetsnummerForNavIdent(navIdent: String): String? {
-        return try {
+    fun getEnhetsnummerForNavIdent(navIdent: String): String? =
+        try {
             klageLookupClient.getUserInfo(navIdent = navIdent).enhet.enhetNr
         } catch (_: UserNotFoundException) {
             logger.warn("User $navIdent not found in klageLookup. Returning default value.")
             null
         }
-    }
 }

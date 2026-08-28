@@ -31,7 +31,6 @@ class SaksbehandlerController(
     private val klageLookupClient: KlageLookupClient,
     private val tokenUtil: TokenUtil,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -39,12 +38,12 @@ class SaksbehandlerController(
 
     @Operation(
         summary = "Hent saksbehandlere i gitt enhet",
-        description = "Henter alle saksbehandlere fra aktive saker i gitt enhet."
+        description = "Henter alle saksbehandlere fra aktive saker i gitt enhet.",
     )
     @GetMapping("/enheter/{enhet}/saksbehandlere", produces = ["application/json"])
     fun getSaksbehandlereForEnhet(
         @Parameter(name = "Enhet")
-        @PathVariable enhet: String
+        @PathVariable enhet: String,
     ): SaksbehandlereListResponse {
         logger.debug("getSaksbehandlereForEnhet")
 
@@ -55,33 +54,36 @@ class SaksbehandlerController(
 
         val userGroups = klageLookupClient.getUserGroups(navIdent).groups
 
-        val esResponse = elasticsearchService.findSaksbehandlerIdentsByEnhetCriteria(
-            SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria(
-                enhet = enhet,
-                kanBehandleEgenAnsatt = userGroups.contains(AzureGroup.EGEN_ANSATT),
-                kanBehandleFortrolig = userGroups.contains(AzureGroup.FORTROLIG),
-                kanBehandleStrengtFortrolig = userGroups.contains(AzureGroup.STRENGT_FORTROLIG),
+        val esResponse =
+            elasticsearchService.findSaksbehandlerIdentsByEnhetCriteria(
+                SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria(
+                    enhet = enhet,
+                    kanBehandleEgenAnsatt = userGroups.contains(AzureGroup.EGEN_ANSATT),
+                    kanBehandleFortrolig = userGroups.contains(AzureGroup.FORTROLIG),
+                    kanBehandleStrengtFortrolig = userGroups.contains(AzureGroup.STRENGT_FORTROLIG),
+                ),
             )
-        )
 
         val saksbehandlereFromES = toSaksbehandlerViews(esResponse)
 
         val saksbehandlereFromMSGraph = saksbehandlerService.getSaksbehandlereForEnhet(enhetsnummer = enhet)
 
         return SaksbehandlereListResponse(
-            saksbehandlere = (saksbehandlereFromES + saksbehandlereFromMSGraph)
-                .toSortedSet(compareBy { it.navn }).toList()
+            saksbehandlere =
+                (saksbehandlereFromES + saksbehandlereFromMSGraph)
+                    .toSortedSet(compareBy { it.navn })
+                    .toList(),
         )
     }
 
     @Operation(
         summary = "Hent medunderskrivere i gitt enhet",
-        description = "Henter alle medunderskrivere fra aktive saker i gitt enhet."
+        description = "Henter alle medunderskrivere fra aktive saker i gitt enhet.",
     )
     @GetMapping("/enheter/{enhet}/medunderskrivere", produces = ["application/json"])
     fun getMedunderskrivereForEnhet(
         @Parameter(name = "Enhet")
-        @PathVariable enhet: String
+        @PathVariable enhet: String,
     ): MedunderskrivereListResponse {
         logger.debug("getMedunderskrivereForEnhet")
 
@@ -92,53 +94,58 @@ class SaksbehandlerController(
 
         val userGroups = klageLookupClient.getUserGroups(navIdent).groups
 
-        val esResponse = elasticsearchService.findMedunderskriverIdentsByEnhetCriteria(
-            SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria(
-                enhet = enhet,
-                kanBehandleEgenAnsatt = userGroups.contains(AzureGroup.EGEN_ANSATT),
-                kanBehandleFortrolig = userGroups.contains(AzureGroup.FORTROLIG),
-                kanBehandleStrengtFortrolig = userGroups.contains(AzureGroup.STRENGT_FORTROLIG),
+        val esResponse =
+            elasticsearchService.findMedunderskriverIdentsByEnhetCriteria(
+                SaksbehandlereAndMedunderskrivereByEnhetSearchCriteria(
+                    enhet = enhet,
+                    kanBehandleEgenAnsatt = userGroups.contains(AzureGroup.EGEN_ANSATT),
+                    kanBehandleFortrolig = userGroups.contains(AzureGroup.FORTROLIG),
+                    kanBehandleStrengtFortrolig = userGroups.contains(AzureGroup.STRENGT_FORTROLIG),
+                ),
             )
-        )
 
         val medunderskrivereFromES = toSaksbehandlerViews(esResponse)
 
         val saksbehandlereFromMSGraph = saksbehandlerService.getSaksbehandlereForEnhet(enhetsnummer = enhet)
 
         return MedunderskrivereListResponse(
-            medunderskrivere = (medunderskrivereFromES + saksbehandlereFromMSGraph)
-                .toSortedSet(compareBy { it.navn }).toList()
+            medunderskrivere =
+                (medunderskrivereFromES + saksbehandlereFromMSGraph)
+                    .toSortedSet(compareBy { it.navn })
+                    .toList(),
         )
     }
 
     @Operation(
         summary = "Hent ROL i gitt enhet",
-        description = "Henter alle ROL fra aktive saker i gitt enhet."
+        description = "Henter alle ROL fra aktive saker i gitt enhet.",
     )
-    //TODO: Remove old version when FE are ready.
+    // TODO: Remove old version when FE are ready.
     @GetMapping("/rol-list", "/enheter/{enhet}/rol-list", produces = ["application/json"])
-    fun getRolList(
-    ): ROLListResponse {
+    fun getRolList(): ROLListResponse {
         logger.debug("getRolList")
 
         val navIdent = tokenUtil.getIdent()
         val userGroups = klageLookupClient.getUserGroups(navIdent).groups
 
-        val esResponse = elasticsearchService.findROLIdentsByEnhetCriteria(
-            ROLListSearchCriteria(
-                kanBehandleEgenAnsatt = userGroups.contains(AzureGroup.EGEN_ANSATT),
-                kanBehandleFortrolig = userGroups.contains(AzureGroup.FORTROLIG),
-                kanBehandleStrengtFortrolig = userGroups.contains(AzureGroup.STRENGT_FORTROLIG),
+        val esResponse =
+            elasticsearchService.findROLIdentsByEnhetCriteria(
+                ROLListSearchCriteria(
+                    kanBehandleEgenAnsatt = userGroups.contains(AzureGroup.EGEN_ANSATT),
+                    kanBehandleFortrolig = userGroups.contains(AzureGroup.FORTROLIG),
+                    kanBehandleStrengtFortrolig = userGroups.contains(AzureGroup.STRENGT_FORTROLIG),
+                ),
             )
-        )
 
         val rolListFromES = toSaksbehandlerViews(esResponse)
 
         val rolListFromMSGraph = saksbehandlerService.getROLList()
 
         return ROLListResponse(
-            rolList = (rolListFromES + rolListFromMSGraph)
-                .toSortedSet(compareBy { it.navn }).toList()
+            rolList =
+                (rolListFromES + rolListFromMSGraph)
+                    .toSortedSet(compareBy { it.navn })
+                    .toList(),
         )
     }
 
@@ -149,7 +156,7 @@ class SaksbehandlerController(
         return navIdents.map { currentNavIdent ->
             SaksbehandlerView(
                 navIdent = currentNavIdent,
-                navn = sammensattNavnByNavIdent[currentNavIdent] ?: "Ukjent navn"
+                navn = sammensattNavnByNavIdent[currentNavIdent] ?: "Ukjent navn",
             )
         }
     }

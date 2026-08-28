@@ -23,14 +23,12 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-
 @ActiveProfiles("local")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @Testcontainers
 @SpringBootTest(classes = [ElasticsearchServiceConfiguration::class])
 @DirtiesContext
 class ElasticsearchServiceFindSaksbehandlereTest {
-
     companion object {
         @Container
         @JvmField
@@ -65,8 +63,8 @@ class ElasticsearchServiceFindSaksbehandlereTest {
                 enhet = "4219",
                 saksbehandlerIdent = "Z223",
                 saksbehandlerNavn = "Kalle Bnka",
-                avsluttetAvSaksbehandler = null
-            )
+                avsluttetAvSaksbehandler = null,
+            ),
         )
         repo.save(
             createEsKlagebehandling(
@@ -74,8 +72,8 @@ class ElasticsearchServiceFindSaksbehandlereTest {
                 enhet = "4219",
                 saksbehandlerIdent = "Z223",
                 saksbehandlerNavn = "Kalle Bnka",
-                avsluttetAvSaksbehandler = null
-            )
+                avsluttetAvSaksbehandler = null,
+            ),
         )
         repo.save(
             createEsKlagebehandling(
@@ -83,8 +81,8 @@ class ElasticsearchServiceFindSaksbehandlereTest {
                 enhet = "4219",
                 saksbehandlerIdent = "Z123",
                 saksbehandlerNavn = "Kalle Anka",
-                avsluttetAvSaksbehandler = null
-            )
+                avsluttetAvSaksbehandler = null,
+            ),
         )
         repo.save(
             createEsKlagebehandling(
@@ -92,8 +90,8 @@ class ElasticsearchServiceFindSaksbehandlereTest {
                 enhet = "4219",
                 saksbehandlerIdent = "Z423",
                 saksbehandlerNavn = "Kalle Dnka",
-                avsluttetAvSaksbehandler = null
-            )
+                avsluttetAvSaksbehandler = null,
+            ),
         )
         repo.save(
             createEsKlagebehandling(
@@ -101,8 +99,8 @@ class ElasticsearchServiceFindSaksbehandlereTest {
                 enhet = "4219",
                 saksbehandlerIdent = "Z323",
                 saksbehandlerNavn = "Kalle Cnka",
-                avsluttetAvSaksbehandler = null
-            )
+                avsluttetAvSaksbehandler = null,
+            ),
         )
         repo.save(
             createEsKlagebehandling(
@@ -110,8 +108,8 @@ class ElasticsearchServiceFindSaksbehandlereTest {
                 enhet = "4219",
                 saksbehandlerIdent = "Z523",
                 saksbehandlerNavn = "Kalle Enka",
-                avsluttetAvSaksbehandler = LocalDateTime.now()
-            )
+                avsluttetAvSaksbehandler = LocalDateTime.now(),
+            ),
         )
         repo.save(
             createEsKlagebehandling(
@@ -119,8 +117,8 @@ class ElasticsearchServiceFindSaksbehandlereTest {
                 enhet = "4220",
                 saksbehandlerIdent = "Z623",
                 saksbehandlerNavn = "Kalle Fnka",
-                avsluttetAvSaksbehandler = null
-            )
+                avsluttetAvSaksbehandler = null,
+            ),
         )
 
         val query = QueryBuilders.matchAllQuery()
@@ -138,7 +136,7 @@ class ElasticsearchServiceFindSaksbehandlereTest {
                     kanBehandleEgenAnsatt = false,
                     kanBehandleFortrolig = false,
                     kanBehandleStrengtFortrolig = false,
-                )
+                ),
             )
         assertThat(saksbehandlere.size).isEqualTo(4L)
     }
@@ -148,9 +146,9 @@ class ElasticsearchServiceFindSaksbehandlereTest {
         enhet: String,
         saksbehandlerIdent: String,
         saksbehandlerNavn: String,
-        avsluttetAvSaksbehandler: LocalDateTime?
-    ): EsBehandling {
-        return EsBehandling(
+        avsluttetAvSaksbehandler: LocalDateTime?,
+    ): EsBehandling =
+        EsBehandling(
             behandlingId = id,
             tildeltEnhet = enhet,
             ytelseId = Ytelse.OMS_OMP.id,
@@ -174,6 +172,4 @@ class ElasticsearchServiceFindSaksbehandlereTest {
             medunderskriverEnhet = null,
             medunderskriverident = null,
         )
-    }
-
 }

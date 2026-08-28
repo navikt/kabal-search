@@ -1,6 +1,5 @@
 package no.nav.klage.search.service.mapper
 
-
 import no.nav.klage.search.clients.klageendret.BehandlingSkjemaV2
 import no.nav.klage.search.domain.elasticsearch.EsBehandling
 import no.nav.klage.search.service.saksbehandler.SaksbehandlerService
@@ -11,14 +10,13 @@ import org.springframework.stereotype.Service
 class EsBehandlingMapper(
     private val saksbehandlerService: SaksbehandlerService,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    fun mapBehandlingToEsBehandling(behandling: BehandlingSkjemaV2): EsBehandling {
-        return EsBehandling(
+    fun mapBehandlingToEsBehandling(behandling: BehandlingSkjemaV2): EsBehandling =
+        EsBehandling(
             behandlingId = behandling.id,
             sakenGjelderFnr = behandling.sakenGjelder.person!!.fnr,
             ytelseId = behandling.ytelse.id,
@@ -39,7 +37,6 @@ class EsBehandlingMapper(
             medunderskriverEnhet = behandling.medunderskriver?.enhet?.nr,
             tildeltEnhet = behandling.gjeldendeTildeling?.enhet?.nr,
             hjemmelIdList = behandling.hjemler.map { it.id },
-
             egenAnsatt = behandling.erEgenAnsatt,
             fortrolig = behandling.erFortrolig,
             strengtFortrolig = behandling.erStrengtFortrolig,
@@ -50,6 +47,4 @@ class EsBehandlingMapper(
             rolIdent = behandling.rolIdent,
             rolFlowStateId = behandling.rolFlowStateId,
         )
-    }
 }
-

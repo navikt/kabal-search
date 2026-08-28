@@ -14,33 +14,29 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
 import reactor.core.publisher.Mono
 
-
 @Component
 class KlageLookupClient(
     private val klageLookupWebClient: WebClient,
     private val tokenUtil: TokenUtil,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
     @Retryable(
-        excludes = [UserNotFoundException::class]
+        excludes = [UserNotFoundException::class],
     )
-    fun getUserInfo(
-        navIdent: String,
-    ): ExtendedUserResponse {
-        return runWithTimingAndLogging {
+    fun getUserInfo(navIdent: String): ExtendedUserResponse =
+        runWithTimingAndLogging {
             val token = getCorrectBearerToken()
-            klageLookupWebClient.get()
+            klageLookupWebClient
+                .get()
                 .uri("/users/$navIdent")
                 .header(
                     HttpHeaders.AUTHORIZATION,
                     token,
-                )
-                .exchangeToMono { response ->
+                ).exchangeToMono { response ->
                     if (response.statusCode().value() == 404) {
                         logger.debug("User $navIdent not found")
                         Mono.error(UserNotFoundException("User $navIdent not found"))
@@ -54,30 +50,25 @@ class KlageLookupClient(
                     } else {
                         response.bodyToMono<ExtendedUserResponse>()
                     }
-                }
-                .block() ?: throw RuntimeException("Could not get user info for $navIdent")
+                }.block() ?: throw RuntimeException("Could not get user info for $navIdent")
         }
-    }
 
     @Retryable
-    fun getUserInfoBatched(
-        navIdentList: List<String>,
-    ): ExtendedUsersResponse {
-        return runWithTimingAndLogging {
+    fun getUserInfoBatched(navIdentList: List<String>): ExtendedUsersResponse =
+        runWithTimingAndLogging {
             val token = getCorrectBearerToken()
-            klageLookupWebClient.post()
+            klageLookupWebClient
+                .post()
                 .uri("/users")
                 .header(
                     HttpHeaders.AUTHORIZATION,
                     token,
-                )
-                .contentType(MediaType.APPLICATION_JSON)
+                ).contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(
                     BatchedUserRequest(
-                        navIdentList = navIdentList
-                    )
-                )
-                .exchangeToMono { response ->
+                        navIdentList = navIdentList,
+                    ),
+                ).exchangeToMono { response ->
                     if (response.statusCode().isError) {
                         logErrorResponse(
                             response = response,
@@ -88,26 +79,22 @@ class KlageLookupClient(
                     } else {
                         response.bodyToMono<ExtendedUsersResponse>()
                     }
-                }
-                .block() ?: throw RuntimeException("Could not get user info for input ${navIdentList.toString()}")
+                }.block() ?: throw RuntimeException("Could not get user info for input $navIdentList")
         }
-    }
 
     @Retryable(
-        excludes = [UserNotFoundException::class]
+        excludes = [UserNotFoundException::class],
     )
-    fun getUserGroups(
-        navIdent: String,
-    ): SaksbehandlerGroups {
-        return runWithTimingAndLogging {
+    fun getUserGroups(navIdent: String): SaksbehandlerGroups =
+        runWithTimingAndLogging {
             val token = getCorrectBearerToken()
-            klageLookupWebClient.get()
+            klageLookupWebClient
+                .get()
                 .uri("/users/$navIdent/groups")
                 .header(
                     HttpHeaders.AUTHORIZATION,
                     token,
-                )
-                .exchangeToMono { response ->
+                ).exchangeToMono { response ->
                     if (response.statusCode().value() == 404) {
                         logger.debug("User $navIdent not found")
                         Mono.error(UserNotFoundException("User $navIdent not found"))
@@ -121,30 +108,25 @@ class KlageLookupClient(
                     } else {
                         response.bodyToMono<GroupsResponse>()
                     }
-                }
-                .block() ?: throw RuntimeException("Could not get user groups for navIdent $navIdent")
+                }.block() ?: throw RuntimeException("Could not get user groups for navIdent $navIdent")
         }.toSaksbehandlerGroups()
-    }
 
     @Retryable(
-        excludes = [GroupNotFoundException::class]
+        excludes = [GroupNotFoundException::class],
     )
-    fun getUsersInGroup(
-        azureGroup: AzureGroup,
-    ): UsersResponse {
-        return runWithTimingAndLogging {
+    fun getUsersInGroup(azureGroup: AzureGroup): UsersResponse =
+        runWithTimingAndLogging {
             val token = getCorrectBearerToken()
-            klageLookupWebClient.get()
+            klageLookupWebClient
+                .get()
                 .uri("/groups/${azureGroup.id}/users")
                 .header(
                     HttpHeaders.AUTHORIZATION,
                     token,
-                )
-                .exchangeToMono { response ->
+                ).exchangeToMono { response ->
                     if (response.statusCode().value() == 404) {
                         logger.debug("Group $azureGroup not found")
                         Mono.error(GroupNotFoundException("Group $azureGroup not found"))
-
                     } else if (response.statusCode().isError) {
                         logErrorResponse(
                             response = response,
@@ -155,10 +137,8 @@ class KlageLookupClient(
                     } else {
                         response.bodyToMono<UsersResponse>()
                     }
-                }
-                .block() ?: throw RuntimeException("Could not get users information for azureGroup $azureGroup")
+                }.block() ?: throw RuntimeException("Could not get users information for azureGroup $azureGroup")
         }
-    }
 
     fun <T> runWithTimingAndLogging(block: () -> T): T {
         val start = System.currentTimeMillis()
@@ -170,16 +150,14 @@ class KlageLookupClient(
         }
     }
 
-    private fun getCorrectBearerToken(): String {
-        return when (tokenUtil.getCurrentTokenType()) {
+    private fun getCorrectBearerToken(): String =
+        when (tokenUtil.getCurrentTokenType()) {
             TokenUtil.TokenType.OBO -> "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithKlageLookupScope()}"
             TokenUtil.TokenType.CC, TokenUtil.TokenType.UNAUTHENTICATED -> "Bearer ${tokenUtil.getAppAccessTokenWithKlageLookupScope()}"
         }
-    }
 
-    fun GroupsResponse.toSaksbehandlerGroups(): SaksbehandlerGroups {
-        return SaksbehandlerGroups(
-            groups = this.groupIds.map { AzureGroup.of(it) }
+    fun GroupsResponse.toSaksbehandlerGroups(): SaksbehandlerGroups =
+        SaksbehandlerGroups(
+            groups = this.groupIds.map { AzureGroup.of(it) },
         )
-    }
 }

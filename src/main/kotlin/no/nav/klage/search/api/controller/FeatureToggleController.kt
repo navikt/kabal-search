@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @Hidden
 class FeatureToggleController {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -20,9 +19,13 @@ class FeatureToggleController {
 
     @ProtectedWithClaims(issuer = SecurityConfiguration.ISSUER_AAD)
     @GetMapping("/featuretoggle/{toggleName}")
-    fun getToggle(@PathVariable("toggleName") toggleName: String): Boolean = false
+    fun getToggle(
+        @PathVariable("toggleName") toggleName: String,
+    ): Boolean = false
 
     @Unprotected
     @GetMapping("/aapenfeaturetoggle/{toggleName}")
-    fun getUnprotectedToggle(@PathVariable("toggleName") toggleName: String): Boolean = false
+    fun getUnprotectedToggle(
+        @PathVariable("toggleName") toggleName: String,
+    ): Boolean = false
 }
