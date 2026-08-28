@@ -41,7 +41,7 @@ class BehandlingEndretKafkaConsumer(
     @KafkaListener(
         id = "behandlingEndretListener",
         idIsGroup = false,
-        topics = ["\${BEHANDLING_ENDRET_KAFKA_TOPIC_V2}"],
+        topics = [$$"${BEHANDLING_ENDRET_KAFKA_TOPIC_V2}"],
         containerFactory = "behandlingEndretKafkaListenerContainerFactory",
     )
     fun listenToBehandlingEndret(

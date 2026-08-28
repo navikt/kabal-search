@@ -12,8 +12,8 @@ import org.springframework.web.reactive.function.client.bodyToMono
 class MicrosoftGraphClient(
     private val microsoftGraphWebClient: WebClient,
     private val tokenUtil: TokenUtil,
-    @Value("\${KABAL_SAKSBEHANDLING_ROLE_ID}") private val kabalSaksbehandlingRoleId: String,
-    @Value("\${KABAL_ROL_ROLE_ID}") private val kabalROLRoleId: String,
+    @Value($$"${KABAL_SAKSBEHANDLING_ROLE_ID}") private val kabalSaksbehandlingRoleId: String,
+    @Value($$"${KABAL_ROL_ROLE_ID}") private val kabalROLRoleId: String,
 ) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
@@ -28,10 +28,10 @@ class MicrosoftGraphClient(
             .uri { uriBuilder ->
                 uriBuilder
                     .path("/groups/$kabalSaksbehandlingRoleId/transitivemembers/microsoft.graph.user")
-                    .queryParam("\$filter", "streetAddress eq '$enhetsnummer'")
-                    .queryParam("\$count", true)
-                    .queryParam("\$top", 500)
-                    .queryParam("\$select", "userPrincipalName,onPremisesSamAccountName,displayName")
+                    .queryParam($$"$filter", "streetAddress eq '$enhetsnummer'")
+                    .queryParam($$"$count", true)
+                    .queryParam($$"$top", 500)
+                    .queryParam($$"$select", "userPrincipalName,onPremisesSamAccountName,displayName")
                     .build()
             }.header("Authorization", "Bearer ${tokenUtil.getAppAccessTokenWithGraphScope()}")
             .header("ConsistencyLevel", "eventual")
@@ -49,9 +49,9 @@ class MicrosoftGraphClient(
             .uri { uriBuilder ->
                 uriBuilder
                     .path("/groups/$kabalROLRoleId/transitivemembers/microsoft.graph.user")
-                    .queryParam("\$count", true)
-                    .queryParam("\$top", 500)
-                    .queryParam("\$select", "userPrincipalName,onPremisesSamAccountName,displayName")
+                    .queryParam($$"$count", true)
+                    .queryParam($$"$top", 500)
+                    .queryParam($$"$select", "userPrincipalName,onPremisesSamAccountName,displayName")
                     .build()
             }.header("Authorization", "Bearer ${tokenUtil.getAppAccessTokenWithGraphScope()}")
             .header("ConsistencyLevel", "eventual")

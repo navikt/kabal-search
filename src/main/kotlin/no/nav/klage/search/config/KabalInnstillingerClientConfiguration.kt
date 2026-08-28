@@ -15,7 +15,7 @@ class KabalInnstillingerClientConfiguration(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    @Value("\${KABAL_INNSTILLINGER_BASE_URL}")
+    @Value($$"${KABAL_INNSTILLINGER_BASE_URL}")
     private lateinit var kabalInnstillingerURL: String
 
     @Bean

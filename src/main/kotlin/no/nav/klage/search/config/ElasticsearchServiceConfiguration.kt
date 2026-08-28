@@ -17,9 +17,9 @@ import org.springframework.context.event.ContextStoppedEvent
 
 @Configuration
 class ElasticsearchServiceConfiguration(
-    @Value("\${OPEN_SEARCH_USERNAME}") private val username: String,
-    @Value("\${OPEN_SEARCH_PASSWORD}") private val password: String,
-    @Value("\${OPEN_SEARCH_URI}") private val uri: String,
+    @Value($$"${OPEN_SEARCH_USERNAME}") private val username: String,
+    @Value($$"${OPEN_SEARCH_PASSWORD}") private val password: String,
+    @Value($$"${OPEN_SEARCH_URI}") private val uri: String,
 ) : ApplicationListener<ContextStoppedEvent> {
     override fun onApplicationEvent(event: ContextStoppedEvent) {
         restHighLevelClient().close()

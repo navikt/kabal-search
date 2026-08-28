@@ -10,7 +10,7 @@ import java.lang.String.join
 
 @Component
 class AuditLogger(
-    @Value("\${spring.application.name}") private val applicationName: String,
+    @Value($$"${spring.application.name}") private val applicationName: String,
 ) {
     companion object {
         val auditLogger = getAuditLogger()

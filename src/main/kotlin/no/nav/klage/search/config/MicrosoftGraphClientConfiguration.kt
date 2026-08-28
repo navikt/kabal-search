@@ -17,7 +17,7 @@ class MicrosoftGraphClientConfiguration(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    @Value("\${MICROSOFT_GRAPH_URL}")
+    @Value($$"${MICROSOFT_GRAPH_URL}")
     private lateinit var microsoftGraphServiceURL: String
 
     @Bean

@@ -23,13 +23,13 @@ import java.time.Duration
 @EnableKafka
 @Configuration
 class AivenKafkaConfiguration(
-    @Value("\${KAFKA_BROKERS}")
+    @Value($$"${KAFKA_BROKERS}")
     private val kafkaBrokers: String,
-    @Value("\${KAFKA_TRUSTSTORE_PATH}")
+    @Value($$"${KAFKA_TRUSTSTORE_PATH}")
     private val kafkaTruststorePath: String,
-    @Value("\${KAFKA_CREDSTORE_PASSWORD}")
+    @Value($$"${KAFKA_CREDSTORE_PASSWORD}")
     private val kafkaCredstorePassword: String,
-    @Value("\${KAFKA_KEYSTORE_PATH}")
+    @Value($$"${KAFKA_KEYSTORE_PATH}")
     private val kafkaKeystorePath: String,
 ) {
     companion object {
