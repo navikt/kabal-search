@@ -115,7 +115,7 @@ class ElasticsearchServiceTest {
                 behandlingId = "1003L",
                 tildeltEnhet = "4219",
                 ytelseId = Ytelse.SYK_SYK.id,
-                typeId = Type.ANKE_I_TRYGDERETTEN.id,
+                typeId = Type.ANKE_I_TRYGDERETTEN_FOER_2027.id,
                 tildeltSaksbehandlerident = null,
                 innsendt = LocalDate.of(2018, 10, 1),
                 sakMottattKaDato = LocalDateTime.of(2018, 12, 1, 0, 0),
@@ -178,7 +178,7 @@ class ElasticsearchServiceTest {
         val antall =
             service.countLedigeOppgaverMedUtgaattFristByCriteria(
                 CountLedigeOppgaverMedUtgaattFristSearchCriteria(
-                    typer = listOf(Type.KLAGE, Type.ANKE),
+                    typer = listOf(Type.KLAGE, Type.ANKE_FOER_2027),
                     ytelser = emptyList(),
                     hjemler = emptyList(),
                     fristFrom = LocalDate.of(2020, 12, 1),

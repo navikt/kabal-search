@@ -149,7 +149,7 @@ data class EnhetensUferdigeOppgaverQueryParams(
 data class TildelteOppgaverITRQueryParams(
     override var typer: List<String> =
         listOf(
-            Type.ANKE_I_TRYGDERETTEN.id,
+            Type.ANKE_I_TRYGDERETTEN_FOER_2027.id,
             Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN.id,
         ),
     override var ytelser: List<String> = emptyList(),
@@ -168,7 +168,7 @@ data class TildelteOppgaverITRQueryParams(
 data class OppgaverPaaVentITRQueryParams(
     override var typer: List<String> =
         listOf(
-            Type.ANKE_I_TRYGDERETTEN.id,
+            Type.ANKE_I_TRYGDERETTEN_FOER_2027.id,
             Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN.id,
         ),
     override var ytelser: List<String> = emptyList(),
@@ -187,7 +187,7 @@ data class OppgaverPaaVentITRQueryParams(
 data class LedigeOppgaverITRQueryParams(
     override var typer: List<String> =
         listOf(
-            Type.ANKE_I_TRYGDERETTEN.id,
+            Type.ANKE_I_TRYGDERETTEN_FOER_2027.id,
             Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN.id,
         ),
     override var ytelser: List<String> = emptyList(),
