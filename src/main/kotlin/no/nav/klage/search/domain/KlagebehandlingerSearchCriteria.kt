@@ -393,6 +393,33 @@ data class TildelteOppgaverSearchCriteria(
     MedunderskrivereSearchCriteria,
     HelperStatusSearchCriteria
 
+data class FerdigstilteOppgaverSearchCriteria(
+    override val typer: List<Type>,
+    override val ytelser: List<Ytelse>,
+    override val hjemler: List<Hjemmel>,
+    override val saksbehandlere: List<String>,
+    override val medunderskrivere: List<String>,
+    override val ferdigstiltFom: LocalDate,
+    override val ferdigstiltTom: LocalDate,
+    override val sortField: SortField,
+    override val order: Order,
+    override val offset: Int,
+    override val limit: Int,
+    override val fristFrom: LocalDate,
+    override val fristTo: LocalDate,
+    override val varsletFristFrom: LocalDate,
+    override val varsletFristTo: LocalDate,
+    override val kanBehandleEgenAnsatt: Boolean,
+    override val kanBehandleFortrolig: Boolean,
+    override val kanBehandleStrengtFortrolig: Boolean,
+) : BasicSearchCriteria,
+    PageableSearchCriteria,
+    SortableSearchCriteria,
+    SecuritySearchCriteria,
+    SaksbehandlereSearchCriteria,
+    MedunderskrivereSearchCriteria,
+    FerdigstiltSearchCriteria
+
 data class OppgaverPaaVentSearchCriteria(
     override val typer: List<Type>,
     override val ytelser: List<Ytelse>,

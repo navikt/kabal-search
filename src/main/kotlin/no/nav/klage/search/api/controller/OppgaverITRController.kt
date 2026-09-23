@@ -6,6 +6,7 @@ import no.nav.klage.kodeverk.AzureGroup
 import no.nav.klage.search.api.mapper.BehandlingListMapper
 import no.nav.klage.search.api.mapper.BehandlingerSearchCriteriaMapper
 import no.nav.klage.search.api.view.BehandlingerListResponse
+import no.nav.klage.search.api.view.FerdigstilteOppgaverITRQueryParams
 import no.nav.klage.search.api.view.LedigeOppgaverITRQueryParams
 import no.nav.klage.search.api.view.OppgaverPaaVentITRQueryParams
 import no.nav.klage.search.api.view.TildelteOppgaverITRQueryParams
@@ -106,6 +107,33 @@ class OppgaverITRController(
             )
 
         val esResponse = elasticsearchService.findOppgaverPaaVentByCriteria(searchCriteria)
+        return BehandlingerListResponse(
+            antallTreffTotalt = esResponse.totalHits.toInt(),
+            behandlinger =
+                behandlingListMapper.mapEsBehandlingerToListView(
+                    esBehandlinger = esResponse.searchHits.map { it.content },
+                ),
+        )
+    }
+
+    @Operation(
+        summary = "Hent alle ferdigstilte oppgaver, default oppgaver i Trygderetten",
+        description = "Hent alle ferdigstilte oppgaver, default oppgaver i Trygderetten",
+    )
+    @GetMapping(
+        "/oppgaver-i-tr/ferdigstilte",
+        produces = ["application/json"],
+    )
+    fun getFerdigstilteOppgaver(queryParams: FerdigstilteOppgaverITRQueryParams): BehandlingerListResponse {
+        logger.debug("Params: {}", queryParams)
+        validateRettigheterForOppgaverITR()
+
+        val searchCriteria =
+            behandlingerSearchCriteriaMapper.toFerdigstilteOppgaverSearchCriteria(
+                queryParams = queryParams,
+            )
+
+        val esResponse = elasticsearchService.findFerdigstilteOppgaverByCriteria(searchCriteria)
         return BehandlingerListResponse(
             antallTreffTotalt = esResponse.totalHits.toInt(),
             behandlinger =

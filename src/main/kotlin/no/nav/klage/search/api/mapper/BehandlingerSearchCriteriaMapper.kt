@@ -8,6 +8,7 @@ import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.search.api.view.EnhetensFerdigstilteOppgaverQueryParams
 import no.nav.klage.search.api.view.EnhetensOppgaverPaaVentQueryParams
 import no.nav.klage.search.api.view.EnhetensUferdigeOppgaverQueryParams
+import no.nav.klage.search.api.view.FerdigstilteOppgaverITRQueryParams
 import no.nav.klage.search.api.view.KrolsReturnerteOppgaverQueryParams
 import no.nav.klage.search.api.view.KrolsUferdigeOppgaverQueryParams
 import no.nav.klage.search.api.view.LedigeOppgaverITRQueryParams
@@ -28,6 +29,7 @@ import no.nav.klage.search.domain.EnhetensFerdigstilteOppgaverSearchCriteria
 import no.nav.klage.search.domain.EnhetensOppgaverPaaVentSearchCriteria
 import no.nav.klage.search.domain.EnhetensUferdigeOppgaverSearchCriteria
 import no.nav.klage.search.domain.FerdigstilteOppgaverForAssignedSaksbehandlerSearchCriteria
+import no.nav.klage.search.domain.FerdigstilteOppgaverSearchCriteria
 import no.nav.klage.search.domain.KrolsReturnerteOppgaverSearchCriteria
 import no.nav.klage.search.domain.KrolsUferdigeOppgaverSearchCriteria
 import no.nav.klage.search.domain.LedigeOppgaverSearchCriteria
@@ -387,6 +389,30 @@ class BehandlingerSearchCriteriaMapper(
             saksbehandlere = queryParams.tildelteSaksbehandlere,
             medunderskrivere = queryParams.medunderskrivere,
             sattPaaVentReasons = queryParams.sattPaaVentReasonIds.map { SattPaaVentReason.of(it) },
+            sortField = mapSortField(queryParams.sortering),
+            order = mapOrder(rekkefoelge = queryParams.rekkefoelge, sortering = queryParams.sortering),
+            offset = 0,
+            limit = 9_999,
+            kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
+            kanBehandleFortrolig = permissions.kanBehandleFortrolig,
+            kanBehandleStrengtFortrolig = permissions.kanBehandleStrengtFortrolig,
+            fristFrom = mapFrom(queryParams.fristFrom),
+            fristTo = mapFristTo(queryParams.fristTo),
+            varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+            varsletFristTo = mapFristTo(queryParams.varsletFristTo),
+        )
+    }
+
+    fun toFerdigstilteOppgaverSearchCriteria(queryParams: FerdigstilteOppgaverITRQueryParams): FerdigstilteOppgaverSearchCriteria {
+        val permissions = resolvePermissions()
+        return FerdigstilteOppgaverSearchCriteria(
+            typer = queryParams.typer.map { Type.of(it) },
+            ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+            hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+            saksbehandlere = queryParams.tildelteSaksbehandlere,
+            medunderskrivere = queryParams.medunderskrivere,
+            ferdigstiltFom = mapFrom(queryParams.ferdigstiltFrom),
+            ferdigstiltTom = queryParams.ferdigstiltTo ?: LocalDate.now(),
             sortField = mapSortField(queryParams.sortering),
             order = mapOrder(rekkefoelge = queryParams.rekkefoelge, sortering = queryParams.sortering),
             offset = 0,

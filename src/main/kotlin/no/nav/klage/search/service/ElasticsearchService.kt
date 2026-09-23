@@ -8,6 +8,7 @@ import no.nav.klage.search.domain.EnhetensFerdigstilteOppgaverSearchCriteria
 import no.nav.klage.search.domain.EnhetensOppgaverPaaVentSearchCriteria
 import no.nav.klage.search.domain.EnhetensUferdigeOppgaverSearchCriteria
 import no.nav.klage.search.domain.FerdigstilteOppgaverForAssignedSaksbehandlerSearchCriteria
+import no.nav.klage.search.domain.FerdigstilteOppgaverSearchCriteria
 import no.nav.klage.search.domain.HelperStatus
 import no.nav.klage.search.domain.KrolsReturnerteOppgaverSearchCriteria
 import no.nav.klage.search.domain.KrolsUferdigeOppgaverSearchCriteria
@@ -254,6 +255,18 @@ open class ElasticsearchService(
     }
 
     open fun findOppgaverPaaVentByCriteria(criteria: OppgaverPaaVentSearchCriteria): AnonymeBehandlingerSearchHits {
+        val searchSourceBuilder = SearchSourceBuilder()
+        searchSourceBuilder.query(criteria.toEsQuery())
+        searchSourceBuilder.addPaging(criteria)
+        searchSourceBuilder.addSorting(criteria)
+        searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
+
+        val searchHits = esBehandlingRepository.search(searchSourceBuilder)
+        logger.debug("ANTALL TREFF: ${searchHits.totalHits}")
+        return searchHits.anonymize()
+    }
+
+    open fun findFerdigstilteOppgaverByCriteria(criteria: FerdigstilteOppgaverSearchCriteria): AnonymeBehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(criteria.toEsQuery())
         searchSourceBuilder.addPaging(criteria)
@@ -717,6 +730,30 @@ open class ElasticsearchService(
         }
 
         baseQuery.must(innerQuery)
+        baseQuery.mustNot(beFeilregistrert())
+        baseQuery.must(haveFristBetween(fristFom = fristFrom, fristTom = fristTo))
+        baseQuery.must(haveVarsletFristBetween(varsletFristFom = varsletFristFrom, varsletFristTom = varsletFristTo))
+
+        teamLogger.debug("Making search request with query {}", baseQuery.toString())
+        return baseQuery
+    }
+
+    private fun FerdigstilteOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
+        teamLogger.debug("Search criteria: {}", this)
+        val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
+        baseQuery.addSecurityFilters(this)
+        baseQuery.addBasicFilters(this)
+        baseQuery.must(beAvsluttetAvSaksbehandlerEtter(ferdigstiltFom))
+        baseQuery.must(beAvsluttetAvSaksbehandlerFoer(ferdigstiltTom))
+
+        if (saksbehandlere.isNotEmpty()) {
+            baseQuery.must(beTildeltSaksbehandlere(saksbehandlere))
+        }
+
+        if (medunderskrivere.isNotEmpty()) {
+            baseQuery.must(beTildeltMedunderskrivere(medunderskrivere))
+        }
+
         baseQuery.mustNot(beFeilregistrert())
         baseQuery.must(haveFristBetween(fristFom = fristFrom, fristTom = fristTo))
         baseQuery.must(haveVarsletFristBetween(varsletFristFom = varsletFristFrom, varsletFristTom = varsletFristTo))
