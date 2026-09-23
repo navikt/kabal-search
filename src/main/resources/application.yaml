@@ -13,6 +13,7 @@ spring:
 
 server:
   port: 7081
+  max-http-request-header-size: 32KB
   error:
     whitelabel:
       enabled: false
