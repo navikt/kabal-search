@@ -146,11 +146,71 @@ data class EnhetensUferdigeOppgaverQueryParams(
     var helperStatusList: List<HelperStatus> = emptyList(),
 ) : CommonOppgaverQueryParams
 
+data class AnketeamFerdigstilteOppgaverQueryParams(
+    override var typer: List<String> = listOf(Type.ANKE_ETTER_2027.id),
+    override var ytelser: List<String> = emptyList(),
+    override var hjemler: List<String> = emptyList(),
+    override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
+    override val sortering: Sortering? = Sortering.AVSLUTTET_AV_SAKSBEHANDLER,
+    override val ferdigstiltFrom: LocalDate?,
+    override val ferdigstiltTo: LocalDate?,
+    override val fristFrom: LocalDate?,
+    override val fristTo: LocalDate?,
+    override val varsletFristFrom: LocalDate?,
+    override val varsletFristTo: LocalDate?,
+    var tildelteSaksbehandlere: List<String> = emptyList(),
+    var medunderskrivere: List<String> = emptyList(),
+) : CommonOppgaverQueryParams,
+    FerdigstilteOppgaverQueryParams
+
+data class AnketeamOppgaverPaaVentQueryParams(
+    override var typer: List<String> = listOf(Type.ANKE_ETTER_2027.id),
+    override var ytelser: List<String> = emptyList(),
+    override var hjemler: List<String> = emptyList(),
+    override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
+    override val sortering: Sortering? = Sortering.PAA_VENT_TO,
+    override val fristFrom: LocalDate?,
+    override val fristTo: LocalDate?,
+    override val varsletFristFrom: LocalDate?,
+    override val varsletFristTo: LocalDate?,
+    var tildelteSaksbehandlere: List<String> = emptyList(),
+    var medunderskrivere: List<String> = emptyList(),
+    var sattPaaVentReasonIds: List<String> = emptyList(),
+) : CommonOppgaverQueryParams
+
+data class AnketeamUferdigeOppgaverQueryParams(
+    override var typer: List<String> = listOf(Type.ANKE_ETTER_2027.id),
+    override var ytelser: List<String> = emptyList(),
+    override var hjemler: List<String> = emptyList(),
+    override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
+    override val sortering: Sortering? = Sortering.FRIST,
+    override val fristFrom: LocalDate?,
+    override val fristTo: LocalDate?,
+    override val varsletFristFrom: LocalDate?,
+    override val varsletFristTo: LocalDate?,
+    var tildelteSaksbehandlere: List<String> = emptyList(),
+    var medunderskrivere: List<String> = emptyList(),
+    var helperStatusList: List<HelperStatus> = emptyList(),
+) : CommonOppgaverQueryParams
+
+data class AnketeamLedigeOppgaverQueryParams(
+    override var typer: List<String> = listOf(Type.ANKE_ETTER_2027.id),
+    override var ytelser: List<String> = emptyList(),
+    override var hjemler: List<String> = emptyList(),
+    override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
+    override val sortering: Sortering? = Sortering.FRIST,
+    override val fristFrom: LocalDate?,
+    override val fristTo: LocalDate?,
+    override val varsletFristFrom: LocalDate?,
+    override val varsletFristTo: LocalDate?,
+) : CommonOppgaverQueryParams
+
 data class TildelteOppgaverITRQueryParams(
     override var typer: List<String> =
         listOf(
             Type.ANKE_I_TRYGDERETTEN_FOER_2027.id,
             Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN.id,
+            Type.ANKE_I_TRYGDERETTEN_ETTER_2027.id,
         ),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
@@ -170,6 +230,7 @@ data class OppgaverPaaVentITRQueryParams(
         listOf(
             Type.ANKE_I_TRYGDERETTEN_FOER_2027.id,
             Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN.id,
+            Type.ANKE_I_TRYGDERETTEN_ETTER_2027.id,
         ),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
@@ -189,6 +250,7 @@ data class LedigeOppgaverITRQueryParams(
         listOf(
             Type.ANKE_I_TRYGDERETTEN_FOER_2027.id,
             Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN.id,
+            Type.ANKE_I_TRYGDERETTEN_ETTER_2027.id,
         ),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
@@ -199,6 +261,28 @@ data class LedigeOppgaverITRQueryParams(
     override val varsletFristFrom: LocalDate?,
     override val varsletFristTo: LocalDate?,
 ) : CommonOppgaverQueryParams
+
+data class FerdigstilteOppgaverITRQueryParams(
+    override var typer: List<String> =
+        listOf(
+            Type.ANKE_I_TRYGDERETTEN_FOER_2027.id,
+            Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN.id,
+            Type.ANKE_I_TRYGDERETTEN_ETTER_2027.id,
+        ),
+    override var ytelser: List<String> = emptyList(),
+    override var hjemler: List<String> = emptyList(),
+    override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
+    override val sortering: Sortering? = Sortering.AVSLUTTET_AV_SAKSBEHANDLER,
+    override val ferdigstiltFrom: LocalDate?,
+    override val ferdigstiltTo: LocalDate?,
+    override val fristFrom: LocalDate?,
+    override val fristTo: LocalDate?,
+    override val varsletFristFrom: LocalDate?,
+    override val varsletFristTo: LocalDate?,
+    var tildelteSaksbehandlere: List<String> = emptyList(),
+    var medunderskrivere: List<String> = emptyList(),
+) : CommonOppgaverQueryParams,
+    FerdigstilteOppgaverQueryParams
 
 data class KrolsUferdigeOppgaverQueryParams(
     override var typer: List<String> = emptyList(),
