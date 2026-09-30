@@ -59,8 +59,16 @@ class BehandlingerSearchCriteriaMapper(
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
 
-        // Anketeamets oppgaver er alltid begrenset til denne typen, uavhengig av hva klienten sender inn.
-        private val ANKETEAM_TYPER = listOf(Type.ANKE_ETTER_2027)
+        private val ANKETEAM_LEDIGE_TYPER = listOf(Type.ANKE_ETTER_2027)
+
+        private val ANKETEAM_TILLATTE_TYPER = listOf(Type.ANKE_ETTER_2027, Type.ANKE_I_TRYGDERETTEN_ETTER_2027)
+
+        // Ukjente eller ikke-tillatte typer ignoreres. Står ingen tillatte typer igjen, brukes alle tillatte,
+        // slik at en tom liste aldri når Elasticsearch (tom liste betyr "ingen typefilter").
+        private fun resolveAnketeamTyper(requestedTypeIds: List<String>): List<Type> =
+            ANKETEAM_TILLATTE_TYPER
+                .filter { it.id in requestedTypeIds }
+                .ifEmpty { ANKETEAM_TILLATTE_TYPER }
     }
 
     private data class BehandlingPermissions(
@@ -286,7 +294,7 @@ class BehandlingerSearchCriteriaMapper(
     ): FerdigstilteOppgaverSearchCriteria {
         val permissions = resolvePermissions()
         return FerdigstilteOppgaverSearchCriteria(
-            typer = ANKETEAM_TYPER,
+            typer = resolveAnketeamTyper(queryParams.typer),
             ytelser = queryParams.ytelser.map { Ytelse.of(it) },
             hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
             saksbehandlere = queryParams.tildelteSaksbehandlere,
@@ -310,7 +318,7 @@ class BehandlingerSearchCriteriaMapper(
     fun toAnketeamOppgaverPaaVentSearchCriteria(queryParams: AnketeamOppgaverPaaVentQueryParams): OppgaverPaaVentSearchCriteria {
         val permissions = resolvePermissions()
         return OppgaverPaaVentSearchCriteria(
-            typer = ANKETEAM_TYPER,
+            typer = resolveAnketeamTyper(queryParams.typer),
             ytelser = queryParams.ytelser.map { Ytelse.of(it) },
             hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
             saksbehandlere = queryParams.tildelteSaksbehandlere,
@@ -333,7 +341,7 @@ class BehandlingerSearchCriteriaMapper(
     fun toAnketeamUferdigeOppgaverSearchCriteria(queryParams: AnketeamUferdigeOppgaverQueryParams): TildelteOppgaverSearchCriteria {
         val permissions = resolvePermissions()
         return TildelteOppgaverSearchCriteria(
-            typer = ANKETEAM_TYPER,
+            typer = resolveAnketeamTyper(queryParams.typer),
             ytelser = queryParams.ytelser.map { Ytelse.of(it) },
             hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
             saksbehandlere = queryParams.tildelteSaksbehandlere,
@@ -356,7 +364,7 @@ class BehandlingerSearchCriteriaMapper(
     fun toAnketeamLedigeOppgaverSearchCriteria(queryParams: AnketeamLedigeOppgaverQueryParams): LedigeOppgaverSearchCriteria {
         val permissions = resolvePermissions()
         return LedigeOppgaverSearchCriteria(
-            typer = ANKETEAM_TYPER,
+            typer = ANKETEAM_LEDIGE_TYPER,
             ytelser = queryParams.ytelser.map { Ytelse.of(it) },
             hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
             sortField = mapSortField(queryParams.sortering),

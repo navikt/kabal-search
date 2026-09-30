@@ -147,7 +147,7 @@ data class EnhetensUferdigeOppgaverQueryParams(
 ) : CommonOppgaverQueryParams
 
 data class AnketeamFerdigstilteOppgaverQueryParams(
-    override var typer: List<String> = listOf(Type.ANKE_ETTER_2027.id),
+    override var typer: List<String> = listOf(Type.ANKE_ETTER_2027.id, Type.ANKE_I_TRYGDERETTEN_ETTER_2027.id),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
@@ -164,7 +164,7 @@ data class AnketeamFerdigstilteOppgaverQueryParams(
     FerdigstilteOppgaverQueryParams
 
 data class AnketeamOppgaverPaaVentQueryParams(
-    override var typer: List<String> = listOf(Type.ANKE_ETTER_2027.id),
+    override var typer: List<String> = listOf(Type.ANKE_ETTER_2027.id, Type.ANKE_I_TRYGDERETTEN_ETTER_2027.id),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
@@ -179,7 +179,7 @@ data class AnketeamOppgaverPaaVentQueryParams(
 ) : CommonOppgaverQueryParams
 
 data class AnketeamUferdigeOppgaverQueryParams(
-    override var typer: List<String> = listOf(Type.ANKE_ETTER_2027.id),
+    override var typer: List<String> = listOf(Type.ANKE_ETTER_2027.id, Type.ANKE_I_TRYGDERETTEN_ETTER_2027.id),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
