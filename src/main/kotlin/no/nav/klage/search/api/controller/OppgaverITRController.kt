@@ -13,6 +13,7 @@ import no.nav.klage.search.clients.klagelookup.KlageLookupClient
 import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.exceptions.MissingTilgangException
 import no.nav.klage.search.service.ElasticsearchService
+import no.nav.klage.search.service.KabalInnstillingerService
 import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
@@ -28,6 +29,7 @@ class OppgaverITRController(
     private val behandlingerSearchCriteriaMapper: BehandlingerSearchCriteriaMapper,
     private val tokenUtil: TokenUtil,
     private val klageLookupClient: KlageLookupClient,
+    private val kabalInnstillingerService: KabalInnstillingerService,
 ) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
@@ -45,6 +47,12 @@ class OppgaverITRController(
     fun getTildelteOppgaver(queryParams: TildelteOppgaverITRQueryParams): BehandlingerListResponse {
         logger.debug("Params: {}", queryParams)
         validateRettigheterForOppgaverITR()
+
+        val tilgjengeligeYtelser = getFilteredYtelser(queryParams.ytelser)
+        if (tilgjengeligeYtelser.isEmpty()) {
+            return tomtResultat()
+        }
+        queryParams.ytelser = tilgjengeligeYtelser
 
         val searchCriteria =
             behandlingerSearchCriteriaMapper.toTildelteOppgaverSearchCriteria(
@@ -73,6 +81,12 @@ class OppgaverITRController(
         logger.debug("Params: {}", queryParams)
         validateRettigheterForOppgaverITR()
 
+        val filteredYtelser = getFilteredYtelser(queryParams.ytelser)
+        if (filteredYtelser.isEmpty()) {
+            return tomtResultat()
+        }
+        queryParams.ytelser = filteredYtelser
+
         val searchCriteria =
             behandlingerSearchCriteriaMapper.toLedigeOppgaverSearchCriteria(
                 queryParams = queryParams,
@@ -100,6 +114,12 @@ class OppgaverITRController(
         logger.debug("Params: {}", queryParams)
         validateRettigheterForOppgaverITR()
 
+        val tilgjengeligeYtelser = getFilteredYtelser(queryParams.ytelser)
+        if (tilgjengeligeYtelser.isEmpty()) {
+            return tomtResultat()
+        }
+        queryParams.ytelser = tilgjengeligeYtelser
+
         val searchCriteria =
             behandlingerSearchCriteriaMapper.toOppgaverPaaVentSearchCriteria(
                 queryParams = queryParams,
@@ -114,6 +134,26 @@ class OppgaverITRController(
                 ),
         )
     }
+
+    private fun getFilteredYtelser(queryYtelser: List<String>): List<String> {
+        val ytelserForSaksbehandler =
+            kabalInnstillingerService
+                .getSaksbehandlersAccess(navIdent = tokenUtil.getIdent())
+                .ytelser
+                .map { it.id }
+
+        return if (queryYtelser.isEmpty()) {
+            ytelserForSaksbehandler
+        } else {
+            ytelserForSaksbehandler.intersect(queryYtelser.toSet()).toList()
+        }
+    }
+
+    private fun tomtResultat(): BehandlingerListResponse =
+        BehandlingerListResponse(
+            antallTreffTotalt = 0,
+            behandlinger = emptyList(),
+        )
 
     private fun validateRettigheterForOppgaverITR() {
         val navIdent = tokenUtil.getIdent()
