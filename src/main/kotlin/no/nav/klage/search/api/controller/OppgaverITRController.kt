@@ -148,11 +148,11 @@ class OppgaverITRController(
         logger.debug("Params: {}", queryParams)
         validateRettigheterForOppgaverITR()
 
-        val tilgjengeligeYtelser = getTilgjengeligeYtelser(queryParams.ytelser)
-        if (tilgjengeligeYtelser.isEmpty()) {
-            return tomtResultat()
+        val filteredYtelser = getFilteredYtelser(queryParams.ytelser)
+        if (filteredYtelser.isEmpty()) {
+            return emptyResult()
         }
-        queryParams.ytelser = tilgjengeligeYtelser
+        queryParams.ytelser = filteredYtelser
 
         val searchCriteria =
             behandlingerSearchCriteriaMapper.toFerdigstilteOppgaverSearchCriteria(
