@@ -5,9 +5,14 @@ import no.nav.klage.kodeverk.SattPaaVentReason
 import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.hjemmel.Hjemmel
 import no.nav.klage.kodeverk.ytelse.Ytelse
+import no.nav.klage.search.api.view.AnketeamFerdigstilteOppgaverQueryParams
+import no.nav.klage.search.api.view.AnketeamLedigeOppgaverQueryParams
+import no.nav.klage.search.api.view.AnketeamOppgaverPaaVentQueryParams
+import no.nav.klage.search.api.view.AnketeamUferdigeOppgaverQueryParams
 import no.nav.klage.search.api.view.EnhetensFerdigstilteOppgaverQueryParams
 import no.nav.klage.search.api.view.EnhetensOppgaverPaaVentQueryParams
 import no.nav.klage.search.api.view.EnhetensUferdigeOppgaverQueryParams
+import no.nav.klage.search.api.view.FerdigstilteOppgaverITRQueryParams
 import no.nav.klage.search.api.view.KrolsReturnerteOppgaverQueryParams
 import no.nav.klage.search.api.view.KrolsUferdigeOppgaverQueryParams
 import no.nav.klage.search.api.view.LedigeOppgaverITRQueryParams
@@ -28,6 +33,7 @@ import no.nav.klage.search.domain.EnhetensFerdigstilteOppgaverSearchCriteria
 import no.nav.klage.search.domain.EnhetensOppgaverPaaVentSearchCriteria
 import no.nav.klage.search.domain.EnhetensUferdigeOppgaverSearchCriteria
 import no.nav.klage.search.domain.FerdigstilteOppgaverForAssignedSaksbehandlerSearchCriteria
+import no.nav.klage.search.domain.FerdigstilteOppgaverSearchCriteria
 import no.nav.klage.search.domain.KrolsReturnerteOppgaverSearchCriteria
 import no.nav.klage.search.domain.KrolsUferdigeOppgaverSearchCriteria
 import no.nav.klage.search.domain.LedigeOppgaverSearchCriteria
@@ -52,6 +58,17 @@ class BehandlingerSearchCriteriaMapper(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
+
+        private val ANKETEAM_LEDIGE_TYPER = listOf(Type.ANKE_ETTER_2027)
+
+        private val ANKETEAM_TILLATTE_TYPER = listOf(Type.ANKE_ETTER_2027, Type.ANKE_I_TRYGDERETTEN_ETTER_2027)
+
+        // Ukjente eller ikke-tillatte typer ignoreres. Står ingen tillatte typer igjen, brukes alle tillatte,
+        // slik at en tom liste aldri når Elasticsearch (tom liste betyr "ingen typefilter").
+        private fun resolveAnketeamTyper(requestedTypeIds: List<String>): List<Type> =
+            ANKETEAM_TILLATTE_TYPER
+                .filter { it.id in requestedTypeIds }
+                .ifEmpty { ANKETEAM_TILLATTE_TYPER }
     }
 
     private data class BehandlingPermissions(
@@ -270,6 +287,100 @@ class BehandlingerSearchCriteriaMapper(
         )
     }
 
+    // -- anketeamets oppgaver:
+
+    fun toAnketeamFerdigstilteOppgaverSearchCriteria(
+        queryParams: AnketeamFerdigstilteOppgaverQueryParams,
+    ): FerdigstilteOppgaverSearchCriteria {
+        val permissions = resolvePermissions()
+        return FerdigstilteOppgaverSearchCriteria(
+            typer = resolveAnketeamTyper(queryParams.typer),
+            ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+            hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+            saksbehandlere = queryParams.tildelteSaksbehandlere,
+            medunderskrivere = queryParams.medunderskrivere,
+            ferdigstiltFom = mapFrom(queryParams.ferdigstiltFrom),
+            ferdigstiltTom = queryParams.ferdigstiltTo ?: LocalDate.now(),
+            sortField = mapSortField(queryParams.sortering),
+            order = mapOrder(rekkefoelge = queryParams.rekkefoelge, sortering = queryParams.sortering),
+            offset = 0,
+            limit = 9_999,
+            kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
+            kanBehandleFortrolig = permissions.kanBehandleFortrolig,
+            kanBehandleStrengtFortrolig = permissions.kanBehandleStrengtFortrolig,
+            fristFrom = mapFrom(queryParams.fristFrom),
+            fristTo = mapFristTo(queryParams.fristTo),
+            varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+            varsletFristTo = mapFristTo(queryParams.varsletFristTo),
+        )
+    }
+
+    fun toAnketeamOppgaverPaaVentSearchCriteria(queryParams: AnketeamOppgaverPaaVentQueryParams): OppgaverPaaVentSearchCriteria {
+        val permissions = resolvePermissions()
+        return OppgaverPaaVentSearchCriteria(
+            typer = resolveAnketeamTyper(queryParams.typer),
+            ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+            hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+            saksbehandlere = queryParams.tildelteSaksbehandlere,
+            medunderskrivere = queryParams.medunderskrivere,
+            sattPaaVentReasons = queryParams.sattPaaVentReasonIds.map { SattPaaVentReason.of(it) },
+            sortField = mapSortField(queryParams.sortering),
+            order = mapOrder(rekkefoelge = queryParams.rekkefoelge, sortering = queryParams.sortering),
+            offset = 0,
+            limit = 9_999,
+            kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
+            kanBehandleFortrolig = permissions.kanBehandleFortrolig,
+            kanBehandleStrengtFortrolig = permissions.kanBehandleStrengtFortrolig,
+            fristFrom = mapFrom(queryParams.fristFrom),
+            fristTo = mapFristTo(queryParams.fristTo),
+            varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+            varsletFristTo = mapFristTo(queryParams.varsletFristTo),
+        )
+    }
+
+    fun toAnketeamUferdigeOppgaverSearchCriteria(queryParams: AnketeamUferdigeOppgaverQueryParams): TildelteOppgaverSearchCriteria {
+        val permissions = resolvePermissions()
+        return TildelteOppgaverSearchCriteria(
+            typer = resolveAnketeamTyper(queryParams.typer),
+            ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+            hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+            saksbehandlere = queryParams.tildelteSaksbehandlere,
+            medunderskrivere = queryParams.medunderskrivere,
+            sortField = mapSortField(queryParams.sortering),
+            order = mapOrder(rekkefoelge = queryParams.rekkefoelge, sortering = queryParams.sortering),
+            offset = 0,
+            limit = 9_999,
+            kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
+            kanBehandleFortrolig = permissions.kanBehandleFortrolig,
+            kanBehandleStrengtFortrolig = permissions.kanBehandleStrengtFortrolig,
+            fristFrom = mapFrom(queryParams.fristFrom),
+            fristTo = mapFristTo(queryParams.fristTo),
+            varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+            varsletFristTo = mapFristTo(queryParams.varsletFristTo),
+            helperStatusList = queryParams.helperStatusList,
+        )
+    }
+
+    fun toAnketeamLedigeOppgaverSearchCriteria(queryParams: AnketeamLedigeOppgaverQueryParams): LedigeOppgaverSearchCriteria {
+        val permissions = resolvePermissions()
+        return LedigeOppgaverSearchCriteria(
+            typer = ANKETEAM_LEDIGE_TYPER,
+            ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+            hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+            sortField = mapSortField(queryParams.sortering),
+            order = mapOrder(rekkefoelge = queryParams.rekkefoelge, sortering = queryParams.sortering),
+            offset = 0,
+            limit = 9_999,
+            kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
+            kanBehandleFortrolig = permissions.kanBehandleFortrolig,
+            kanBehandleStrengtFortrolig = permissions.kanBehandleStrengtFortrolig,
+            fristFrom = mapFrom(queryParams.fristFrom),
+            fristTo = mapFristTo(queryParams.fristTo),
+            varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+            varsletFristTo = mapFristTo(queryParams.varsletFristTo),
+        )
+    }
+
     fun toKrolsUferdigeOppgaverSearchCriteria(queryParams: KrolsUferdigeOppgaverQueryParams): KrolsUferdigeOppgaverSearchCriteria {
         val permissions = resolvePermissions()
         return KrolsUferdigeOppgaverSearchCriteria(
@@ -387,6 +498,30 @@ class BehandlingerSearchCriteriaMapper(
             saksbehandlere = queryParams.tildelteSaksbehandlere,
             medunderskrivere = queryParams.medunderskrivere,
             sattPaaVentReasons = queryParams.sattPaaVentReasonIds.map { SattPaaVentReason.of(it) },
+            sortField = mapSortField(queryParams.sortering),
+            order = mapOrder(rekkefoelge = queryParams.rekkefoelge, sortering = queryParams.sortering),
+            offset = 0,
+            limit = 9_999,
+            kanBehandleEgenAnsatt = permissions.kanBehandleEgenAnsatt,
+            kanBehandleFortrolig = permissions.kanBehandleFortrolig,
+            kanBehandleStrengtFortrolig = permissions.kanBehandleStrengtFortrolig,
+            fristFrom = mapFrom(queryParams.fristFrom),
+            fristTo = mapFristTo(queryParams.fristTo),
+            varsletFristFrom = mapFrom(queryParams.varsletFristFrom),
+            varsletFristTo = mapFristTo(queryParams.varsletFristTo),
+        )
+    }
+
+    fun toFerdigstilteOppgaverSearchCriteria(queryParams: FerdigstilteOppgaverITRQueryParams): FerdigstilteOppgaverSearchCriteria {
+        val permissions = resolvePermissions()
+        return FerdigstilteOppgaverSearchCriteria(
+            typer = queryParams.typer.map { Type.of(it) },
+            ytelser = queryParams.ytelser.map { Ytelse.of(it) },
+            hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
+            saksbehandlere = queryParams.tildelteSaksbehandlere,
+            medunderskrivere = queryParams.medunderskrivere,
+            ferdigstiltFom = mapFrom(queryParams.ferdigstiltFrom),
+            ferdigstiltTom = queryParams.ferdigstiltTo ?: LocalDate.now(),
             sortField = mapSortField(queryParams.sortering),
             order = mapOrder(rekkefoelge = queryParams.rekkefoelge, sortering = queryParams.sortering),
             offset = 0,
