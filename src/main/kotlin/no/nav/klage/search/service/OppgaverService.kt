@@ -107,7 +107,7 @@ class OppgaverService(
     private fun getDefaultSearchTypes(): List<String> =
         listOf(
             Type.KLAGE.id,
-            Type.ANKE.id,
+            Type.ANKE_FOER_2027.id,
             Type.BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET.id,
             Type.OMGJOERINGSKRAV.id,
             Type.BEGJAERING_OM_GJENOPPTAK.id,
