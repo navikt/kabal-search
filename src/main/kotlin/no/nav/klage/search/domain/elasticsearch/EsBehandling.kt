@@ -12,7 +12,7 @@ data class EsBehandling(
     override val ytelseId: String,
     override val typeId: String,
     val fagsystemId: String,
-    val saksnummer: String,
+    val saksnummer: String?,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     val innsendt: LocalDate? = null,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
