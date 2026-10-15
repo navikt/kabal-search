@@ -2,6 +2,7 @@ package no.nav.klage.search.service
 
 import no.nav.klage.kodeverk.FlowState
 import no.nav.klage.kodeverk.SattPaaVentReason
+import no.nav.klage.kodeverk.hjemmel.Hjemmel
 import no.nav.klage.search.domain.BasicSearchCriteria
 import no.nav.klage.search.domain.CountLedigeOppgaverMedUtgaattFristSearchCriteria
 import no.nav.klage.search.domain.EnhetensFerdigstilteOppgaverSearchCriteria
@@ -48,6 +49,10 @@ import org.springframework.context.event.ContextRefreshedEvent
 import java.time.LocalDate
 import java.util.UUID
 import java.util.concurrent.TimeUnit
+
+data class InnstillingerHjemmelFilter(
+    val allowedHjemler: List<Hjemmel>,
+)
 
 open class ElasticsearchService(
     private val esBehandlingRepository: EsBehandlingRepository,
@@ -102,9 +107,12 @@ open class ElasticsearchService(
         return searchHits
     }
 
-    open fun findLedigeOppgaverByCriteria(criteria: LedigeOppgaverSearchCriteria): BehandlingerSearchHits {
+    open fun findLedigeOppgaverByCriteria(
+        criteria: LedigeOppgaverSearchCriteria,
+        innstillingerHjemmelFilter: InnstillingerHjemmelFilter? = null,
+    ): BehandlingerSearchHits {
         val searchSourceBuilder = SearchSourceBuilder()
-        searchSourceBuilder.query(criteria.toEsQuery())
+        searchSourceBuilder.query(criteria.toEsQuery(innstillingerHjemmelFilter))
         searchSourceBuilder.addPaging(criteria)
         searchSourceBuilder.addSorting(criteria)
         searchSourceBuilder.timeout(TimeValue(60, TimeUnit.SECONDS))
@@ -320,8 +328,10 @@ open class ElasticsearchService(
             }.toSet()
     }
 
-    open fun countLedigeOppgaverMedUtgaattFristByCriteria(criteria: CountLedigeOppgaverMedUtgaattFristSearchCriteria): Int =
-        esBehandlingRepository.count(criteria.toEsQuery()).toInt()
+    open fun countLedigeOppgaverMedUtgaattFristByCriteria(
+        criteria: CountLedigeOppgaverMedUtgaattFristSearchCriteria,
+        innstillingerHjemmelFilter: InnstillingerHjemmelFilter? = null,
+    ): Int = esBehandlingRepository.count(criteria.toEsQuery(innstillingerHjemmelFilter)).toInt()
 
     private fun SearchSourceBuilder.addSorting(criteria: SortableSearchCriteria) {
         fun sortField(criteria: SortableSearchCriteria): String =
@@ -424,11 +434,11 @@ open class ElasticsearchService(
         return baseQuery
     }
 
-    private fun LedigeOppgaverSearchCriteria.toEsQuery(): QueryBuilder {
+    private fun LedigeOppgaverSearchCriteria.toEsQuery(innstillingerHjemmelFilter: InnstillingerHjemmelFilter?): QueryBuilder {
         teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
-        baseQuery.addBasicFilters(this)
+        baseQuery.addBasicFilters(this, innstillingerHjemmelFilter)
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
         baseQuery.mustNot(beTildeltSaksbehandler())
         baseQuery.mustNot(beFeilregistrert())
@@ -454,11 +464,13 @@ open class ElasticsearchService(
         return baseQuery
     }
 
-    private fun CountLedigeOppgaverMedUtgaattFristSearchCriteria.toEsQuery(): QueryBuilder {
+    private fun CountLedigeOppgaverMedUtgaattFristSearchCriteria.toEsQuery(
+        innstillingerHjemmelFilter: InnstillingerHjemmelFilter?,
+    ): QueryBuilder {
         teamLogger.debug("Search criteria: {}", this)
         val baseQuery: BoolQueryBuilder = QueryBuilders.boolQuery()
         baseQuery.addSecurityFilters(this)
-        baseQuery.addBasicFilters(this)
+        baseQuery.addBasicFilters(this, innstillingerHjemmelFilter)
         baseQuery.mustNot(beAvsluttetAvSaksbehandler())
         baseQuery.mustNot(beTildeltSaksbehandler())
         baseQuery.mustNot(beFeilregistrert())
@@ -776,7 +788,10 @@ open class ElasticsearchService(
         return baseQuery
     }
 
-    private fun BoolQueryBuilder.addBasicFilters(basicSearchCriteria: BasicSearchCriteria) {
+    private fun BoolQueryBuilder.addBasicFilters(
+        basicSearchCriteria: BasicSearchCriteria,
+        innstillingerHjemmelFilter: InnstillingerHjemmelFilter? = null,
+    ) {
         if (basicSearchCriteria.typer.isNotEmpty()) {
             val innerQueryType = QueryBuilders.boolQuery()
             this.must(innerQueryType)
@@ -793,23 +808,28 @@ open class ElasticsearchService(
             }
         }
 
-        if (basicSearchCriteria.hjemler.isNotEmpty()) {
-            val allowedHjemler = basicSearchCriteria.hjemler.map { it.id }.distinct()
+        val selectedHjemler = basicSearchCriteria.hjemler.map { it.id }.distinct()
+        if (innstillingerHjemmelFilter != null && selectedHjemler.isEmpty()) {
+            this.mustNot(QueryBuilders.matchAllQuery())
+        } else if (selectedHjemler.isNotEmpty()) {
             val innerQueryHjemler = QueryBuilders.boolQuery()
             this.must(innerQueryHjemler)
-            allowedHjemler.forEach {
+            selectedHjemler.forEach {
                 innerQueryHjemler.should(QueryBuilders.termQuery(EsBehandling::hjemmelIdList.name, it))
             }
-            this.filter(
-                QueryBuilders.scriptQuery(
-                    Script(
-                        ScriptType.INLINE,
-                        Script.DEFAULT_SCRIPT_LANG,
-                        HJEMMEL_SUBSET_SCRIPT,
-                        mapOf("allowedHjemler" to allowedHjemler),
+            if (innstillingerHjemmelFilter != null) {
+                val allowedHjemler = innstillingerHjemmelFilter.allowedHjemler.map { it.id }.distinct()
+                this.filter(
+                    QueryBuilders.scriptQuery(
+                        Script(
+                            ScriptType.INLINE,
+                            Script.DEFAULT_SCRIPT_LANG,
+                            HJEMMEL_SUBSET_SCRIPT,
+                            mapOf("allowedHjemler" to allowedHjemler),
+                        ),
                     ),
-                ),
-            )
+                )
+            }
         }
     }
 

@@ -248,7 +248,8 @@ class FortroligElasticsearchServiceTest {
         val klagebehandlinger: List<EsBehandling> =
             service
                 .findLedigeOppgaverByCriteria(
-                    LedigeOppgaverSearchCriteria(
+                    criteria =
+                        LedigeOppgaverSearchCriteria(
                         ytelser = listOf(Ytelse.OMS_OMP),
                         typer = emptyList(),
                         hjemler = listOf(testHjemmel),
@@ -264,6 +265,7 @@ class FortroligElasticsearchServiceTest {
                         varsletFristFrom = LocalDate.now().minusDays(3650),
                         varsletFristTo = LocalDate.now().plusDays(3650),
                     ),
+                    innstillingerHjemmelFilter = InnstillingerHjemmelFilter(listOf(testHjemmel)),
                 ).searchHits
                 .map { it.content }
         assertThat(klagebehandlinger.map { it.behandlingId }).containsExactlyInAnyOrder(idNormal)
