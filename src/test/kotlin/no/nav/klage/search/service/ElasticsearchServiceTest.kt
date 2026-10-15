@@ -211,7 +211,7 @@ class ElasticsearchServiceTest {
                 allowedHjemler = allowedHjemler,
             ),
         ).containsExactlyInAnyOrder("1001L", "1002L")
-        assertThat(findLedigeOppgaverByHjemlerFromInnstillinger(allowedHjemler, allowedHjemler))
+        assertThat(findLedigeOppgaverByHjemlerFromInnstillinger(selectedHjemler = allowedHjemler, allowedHjemler = allowedHjemler))
             .containsExactlyInAnyOrder("1001L", "1002L", "1003L")
         assertThat(
             findLedigeOppgaverByHjemlerFromInnstillinger(
