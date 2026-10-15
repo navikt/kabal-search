@@ -2,6 +2,7 @@ package no.nav.klage.search.service
 
 import no.nav.klage.kodeverk.FlowState
 import no.nav.klage.kodeverk.Type
+import no.nav.klage.kodeverk.hjemmel.Hjemmel
 import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
 import no.nav.klage.search.domain.CountLedigeOppgaverMedUtgaattFristSearchCriteria
@@ -58,7 +59,7 @@ class ElasticsearchServiceTest {
 
     @Test
     @Order(3)
-    fun `lagrer to oppgaver for senere tester`() {
+    fun `lagrer oppgaver for senere tester`() {
         val klagebehandling1 =
             EsBehandling(
                 behandlingId = "1001L",
@@ -72,7 +73,7 @@ class ElasticsearchServiceTest {
                 ageStartDate = LocalDate.of(2019, 12, 1),
                 frist = LocalDate.of(2020, 12, 1),
                 varsletFrist = LocalDate.of(2020, 12, 1),
-                hjemmelIdList = listOf(),
+                hjemmelIdList = listOf(Hjemmel.FTRL_8_35.id, Hjemmel.FTRL_8_34.id),
                 medunderskriverFlowStateId = FlowState.NOT_SENT.id,
                 sakenGjelderFnr = "12345678910",
                 fagsystemId = "1",
@@ -97,7 +98,7 @@ class ElasticsearchServiceTest {
                 ageStartDate = LocalDate.of(2019, 12, 1),
                 frist = LocalDate.of(2019, 12, 1),
                 varsletFrist = LocalDate.of(2020, 12, 1),
-                hjemmelIdList = listOf(),
+                hjemmelIdList = listOf(Hjemmel.FTRL_8_34.id),
                 medunderskriverFlowStateId = FlowState.NOT_SENT.id,
                 sakenGjelderFnr = "12345678910",
                 fagsystemId = "1",
@@ -123,7 +124,7 @@ class ElasticsearchServiceTest {
                 ageStartDate = LocalDate.of(2019, 12, 1),
                 frist = null,
                 varsletFrist = null,
-                hjemmelIdList = listOf(),
+                hjemmelIdList = listOf(Hjemmel.FTRL_8_35.id),
                 medunderskriverFlowStateId = FlowState.NOT_SENT.id,
                 sakenGjelderFnr = "12345678910",
                 fagsystemId = "1",
@@ -135,13 +136,15 @@ class ElasticsearchServiceTest {
                 medunderskriverEnhet = null,
                 medunderskriverident = null,
             )
+        val klagebehandling4 = klagebehandling3.copy(behandlingId = "1004L", hjemmelIdList = emptyList())
         repo.save(klagebehandling1)
         repo.save(klagebehandling2)
         repo.save(klagebehandling3)
+        repo.save(klagebehandling4)
 
         val query = QueryBuilders.matchAllQuery()
         val searchHits: SearchHits<EsBehandling> = repo.search(query)
-        assertThat(searchHits.totalHits).isEqualTo(3L)
+        assertThat(searchHits.totalHits).isEqualTo(4L)
     }
 
     @Test
@@ -174,6 +177,19 @@ class ElasticsearchServiceTest {
 
     @Test
     @Order(5)
+    fun `only non-empty subsets of requested hjemler are returned`() {
+        assertThat(findLedigeOppgaverByHjemler(listOf(Hjemmel.FTRL_8_35)))
+            .containsExactly("1003L")
+        assertThat(findLedigeOppgaverByHjemler(listOf(Hjemmel.FTRL_8_34)))
+            .containsExactly("1002L")
+        assertThat(findLedigeOppgaverByHjemler(listOf(Hjemmel.FTRL_8_35, Hjemmel.FTRL_8_34)))
+            .containsExactlyInAnyOrder("1001L", "1002L", "1003L")
+        assertThat(findLedigeOppgaverByHjemler(listOf(Hjemmel.FTRL_8_34, Hjemmel.FTRL_8_35)))
+            .containsExactlyInAnyOrder("1001L", "1002L", "1003L")
+    }
+
+    @Test
+    @Order(6)
     fun `Klagebehandling can be searched for by frist`() {
         val antall =
             service.countLedigeOppgaverMedUtgaattFristByCriteria(
@@ -194,7 +210,7 @@ class ElasticsearchServiceTest {
     }
 
     @Test
-    @Order(6)
+    @Order(7)
     fun `include frist with null`() {
         val oppgaver =
             service.findLedigeOppgaverByCriteria(
@@ -215,6 +231,28 @@ class ElasticsearchServiceTest {
                     limit = 1000,
                 ),
             )
-        assertThat(oppgaver).hasSize(3)
+        assertThat(oppgaver).hasSize(4)
     }
+
+    private fun findLedigeOppgaverByHjemler(hjemler: List<Hjemmel>): List<String> =
+        service
+            .findLedigeOppgaverByCriteria(
+                LedigeOppgaverSearchCriteria(
+                    ytelser = emptyList(),
+                    typer = emptyList(),
+                    hjemler = hjemler,
+                    offset = 0,
+                    limit = 10,
+                    order = no.nav.klage.search.domain.Order.ASC,
+                    sortField = SortField.FRIST,
+                    kanBehandleEgenAnsatt = false,
+                    kanBehandleFortrolig = false,
+                    kanBehandleStrengtFortrolig = false,
+                    fristFrom = LocalDate.now().minusDays(3650),
+                    fristTo = LocalDate.now().plusDays(3650),
+                    varsletFristFrom = LocalDate.now().minusDays(3650),
+                    varsletFristTo = LocalDate.now().plusDays(3650),
+                ),
+            ).searchHits
+            .map { it.content.behandlingId }
 }

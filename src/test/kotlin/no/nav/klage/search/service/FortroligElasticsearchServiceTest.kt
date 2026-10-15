@@ -2,6 +2,7 @@ package no.nav.klage.search.service
 
 import no.nav.klage.kodeverk.FlowState
 import no.nav.klage.kodeverk.Type
+import no.nav.klage.kodeverk.hjemmel.Hjemmel
 import no.nav.klage.kodeverk.ytelse.Ytelse
 import no.nav.klage.search.config.ElasticsearchServiceConfiguration
 import no.nav.klage.search.domain.LedigeOppgaverSearchCriteria
@@ -67,6 +68,8 @@ class FortroligElasticsearchServiceTest {
 
     private val idEgenAnsattOgStrengtFortrolig = "1006L"
 
+    private val testHjemmel = Hjemmel.FTRL_8_35
+
     @Test
     @Order(3)
     fun `lagrer oppgaver for senere tester`() {
@@ -83,7 +86,7 @@ class FortroligElasticsearchServiceTest {
                 ageStartDate = LocalDate.of(2019, 12, 1),
                 frist = LocalDate.of(2020, 12, 1),
                 varsletFrist = LocalDate.of(2020, 12, 1),
-                hjemmelIdList = listOf(),
+                hjemmelIdList = listOf(testHjemmel.id),
                 sakenGjelderFnr = "123",
                 medunderskriverFlowStateId = FlowState.NOT_SENT.id,
                 fagsystemId = "1",
@@ -108,7 +111,7 @@ class FortroligElasticsearchServiceTest {
                 ageStartDate = LocalDate.of(2018, 12, 1),
                 frist = LocalDate.of(2019, 12, 1),
                 varsletFrist = LocalDate.of(2019, 12, 1),
-                hjemmelIdList = listOf(),
+                hjemmelIdList = listOf(testHjemmel.id),
                 sakenGjelderFnr = "123",
                 fortrolig = true,
                 medunderskriverFlowStateId = FlowState.NOT_SENT.id,
@@ -134,7 +137,7 @@ class FortroligElasticsearchServiceTest {
                 ageStartDate = LocalDate.of(2019, 12, 1),
                 frist = LocalDate.of(2020, 12, 1),
                 varsletFrist = LocalDate.of(2020, 12, 1),
-                hjemmelIdList = listOf(),
+                hjemmelIdList = listOf(testHjemmel.id),
                 sakenGjelderFnr = "123",
                 strengtFortrolig = true,
                 medunderskriverFlowStateId = FlowState.NOT_SENT.id,
@@ -160,7 +163,7 @@ class FortroligElasticsearchServiceTest {
                 ageStartDate = LocalDate.of(2018, 12, 1),
                 frist = LocalDate.of(2019, 12, 1),
                 varsletFrist = LocalDate.of(2019, 12, 1),
-                hjemmelIdList = listOf(),
+                hjemmelIdList = listOf(testHjemmel.id),
                 sakenGjelderFnr = "123",
                 egenAnsatt = true,
                 medunderskriverFlowStateId = FlowState.NOT_SENT.id,
@@ -186,7 +189,7 @@ class FortroligElasticsearchServiceTest {
                 ageStartDate = LocalDate.of(2018, 12, 1),
                 frist = LocalDate.of(2019, 12, 1),
                 varsletFrist = LocalDate.of(2019, 12, 1),
-                hjemmelIdList = listOf(),
+                hjemmelIdList = listOf(testHjemmel.id),
                 sakenGjelderFnr = "123",
                 egenAnsatt = true,
                 fortrolig = true,
@@ -213,7 +216,7 @@ class FortroligElasticsearchServiceTest {
                 ageStartDate = LocalDate.of(2018, 12, 1),
                 frist = LocalDate.of(2019, 12, 1),
                 varsletFrist = LocalDate.of(2019, 12, 1),
-                hjemmelIdList = listOf(),
+                hjemmelIdList = listOf(testHjemmel.id),
                 sakenGjelderFnr = "123",
                 egenAnsatt = true,
                 strengtFortrolig = true,
@@ -248,7 +251,7 @@ class FortroligElasticsearchServiceTest {
                     LedigeOppgaverSearchCriteria(
                         ytelser = listOf(Ytelse.OMS_OMP),
                         typer = emptyList(),
-                        hjemler = emptyList(),
+                        hjemler = listOf(testHjemmel),
                         offset = 0,
                         limit = 10,
                         order = no.nav.klage.search.domain.Order.ASC,

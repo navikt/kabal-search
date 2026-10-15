@@ -38,6 +38,8 @@ import org.opensearch.index.query.BoolQueryBuilder
 import org.opensearch.index.query.QueryBuilder
 import org.opensearch.index.query.QueryBuilders
 import org.opensearch.index.query.TermQueryBuilder
+import org.opensearch.script.Script
+import org.opensearch.script.ScriptType
 import org.opensearch.search.builder.SearchSourceBuilder
 import org.opensearch.search.sort.SortBuilders
 import org.opensearch.search.sort.SortOrder
@@ -57,6 +59,18 @@ open class ElasticsearchService(
 
         private const val ISO8601 = "yyyy-MM-dd"
         private const val ZONEID_UTC = "Z"
+        private const val HJEMMEL_SUBSET_SCRIPT =
+            """
+            if (doc['hjemmelIdList'].size() == 0) {
+                return false;
+            }
+            for (def hjemmel : doc['hjemmelIdList']) {
+                if (!params.allowedHjemler.contains(hjemmel)) {
+                    return false;
+                }
+            }
+            return true;
+            """
     }
 
     fun recreateIndex() {
@@ -780,11 +794,22 @@ open class ElasticsearchService(
         }
 
         if (basicSearchCriteria.hjemler.isNotEmpty()) {
+            val allowedHjemler = basicSearchCriteria.hjemler.map { it.id }.distinct()
             val innerQueryHjemler = QueryBuilders.boolQuery()
             this.must(innerQueryHjemler)
-            basicSearchCriteria.hjemler.forEach {
-                innerQueryHjemler.should(QueryBuilders.termQuery(EsBehandling::hjemmelIdList.name, it.id))
+            allowedHjemler.forEach {
+                innerQueryHjemler.should(QueryBuilders.termQuery(EsBehandling::hjemmelIdList.name, it))
             }
+            this.filter(
+                QueryBuilders.scriptQuery(
+                    Script(
+                        ScriptType.INLINE,
+                        Script.DEFAULT_SCRIPT_LANG,
+                        HJEMMEL_SUBSET_SCRIPT,
+                        mapOf("allowedHjemler" to allowedHjemler),
+                    ),
+                ),
+            )
         }
     }
 
