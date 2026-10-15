@@ -54,7 +54,14 @@ class OppgaverService(
                     ),
             )
 
-        val esResponse = elasticsearchService.findLedigeOppgaverByCriteria(criteria = searchCriteria)
+        val esResponse =
+            elasticsearchService.findLedigeOppgaverByCriteria(
+                criteria = searchCriteria,
+                innstillingerHjemmelFilter =
+                    InnstillingerHjemmelFilter(
+                        allowedHjemler = saksbehandlerInnstillinger.hjemler,
+                    ),
+            )
         return BehandlingerListResponse(
             antallTreffTotalt = esResponse.totalHits.toInt(),
             behandlinger =
@@ -97,6 +104,10 @@ class OppgaverService(
         val esResponse =
             elasticsearchService.countLedigeOppgaverMedUtgaattFristByCriteria(
                 criteria = searchCriteria,
+                innstillingerHjemmelFilter =
+                    InnstillingerHjemmelFilter(
+                        allowedHjemler = saksbehandlerInnstillinger.hjemler,
+                    ),
             )
 
         return AntallUtgaatteFristerResponse(
