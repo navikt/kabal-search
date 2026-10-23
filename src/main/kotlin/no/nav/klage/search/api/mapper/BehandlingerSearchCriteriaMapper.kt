@@ -70,8 +70,8 @@ class BehandlingerSearchCriteriaMapper(
                 Type.ANKE_I_TRYGDERETTEN_FOER_2027,
                 Type.BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET,
                 Type.OMGJOERINGSKRAV,
-                Type.BEGJAERING_OM_GJENOPPTAK,
-                Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN,
+                Type.BEGJAERING_OM_GJENOPPTAK_FOER_2027,
+                Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_FOER_2027,
             )
 
         // Ukjente eller ikke-tillatte typer ignoreres. Står ingen tillatte typer igjen, brukes alle tillatte,
