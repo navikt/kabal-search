@@ -121,7 +121,7 @@ class OppgaverService(
             Type.ANKE_FOER_2027.id,
             Type.BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET.id,
             Type.OMGJOERINGSKRAV.id,
-            Type.BEGJAERING_OM_GJENOPPTAK.id,
+            Type.BEGJAERING_OM_GJENOPPTAK_FOER_2027.id,
         )
 
     private fun getYtelserQueryListForSaksbehandler(
