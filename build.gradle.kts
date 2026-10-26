@@ -23,17 +23,13 @@ java.sourceCompatibility = JavaVersion.VERSION_21
 
 plugins {
     val kotlinVersion = "2.4.20"
-    id("org.springframework.boot") version "4.1.1"
+    id("org.springframework.boot") version "4.1.2"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     id("dev.detekt") version "2.0.0-alpha.6"
     idea
 }
-
-// Temporary override: tomcat-embed-core 11.0.24 from the Spring Boot BOM has CVE-2026-65905.
-// Remove when Spring Boot ships 11.0.25 or newer.
-extra["tomcat.version"] = "11.0.25"
 
 apply(plugin = "io.spring.dependency-management")
 
