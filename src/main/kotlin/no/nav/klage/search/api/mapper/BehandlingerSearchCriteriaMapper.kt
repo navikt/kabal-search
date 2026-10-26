@@ -59,10 +59,27 @@ class BehandlingerSearchCriteriaMapper(
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
 
-        private val ANKETEAM_LEDIGE_TYPER = listOf(Type.ANKE_ETTER_2027)
+        private val ANKETEAM_LEDIGE_TYPER =
+            listOf(
+                Type.ANKE_FOER_2027,
+                Type.ANKE_ETTER_2027,
+                Type.BEGJAERING_OM_GJENOPPTAK_FOER_2027,
+                Type.BEGJAERING_OM_GJENOPPTAK_ETTER_2027,
+            )
 
-        private val ANKETEAM_TILLATTE_TYPER = listOf(Type.ANKE_ETTER_2027, Type.ANKE_I_TRYGDERETTEN_ETTER_2027)
+        private val ANKETEAM_TILLATTE_TYPER =
+            listOf(
+                Type.ANKE_FOER_2027,
+                Type.ANKE_I_TRYGDERETTEN_FOER_2027,
+                Type.ANKE_ETTER_2027,
+                Type.ANKE_I_TRYGDERETTEN_ETTER_2027,
+                Type.BEGJAERING_OM_GJENOPPTAK_FOER_2027,
+                Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_FOER_2027,
+                Type.BEGJAERING_OM_GJENOPPTAK_ETTER_2027,
+                Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_ETTER_2027,
+            )
 
+        // Anke and gjenopptak types will eventually be zero for enhet outside of anketeam.
         private val ENHETENS_OPPGAVER_TILLATTE_TYPER =
             listOf(
                 Type.KLAGE,

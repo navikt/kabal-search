@@ -11,6 +11,7 @@ import no.nav.klage.search.api.view.MineLedigeOppgaverCountQueryParams
 import no.nav.klage.search.api.view.MineLedigeOppgaverQueryParams
 import no.nav.klage.search.util.getLogger
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 
 @Service
 class OppgaverService(
@@ -22,6 +23,7 @@ class OppgaverService(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
+        private val LAST_DATE_FOR_OLD_DEFAULT_TYPES = LocalDate.of(2026, 12, 31)
     }
 
     fun getLedigeOppgaverForInnloggetSaksbehandler(queryParams: MineLedigeOppgaverQueryParams): BehandlingerListResponse {
@@ -115,14 +117,24 @@ class OppgaverService(
         )
     }
 
+    fun shouldUseNewDefaultTypes(): Boolean = LocalDate.now().isAfter(LAST_DATE_FOR_OLD_DEFAULT_TYPES)
+
     private fun getDefaultSearchTypes(): List<String> =
-        listOf(
-            Type.KLAGE.id,
-            Type.ANKE_FOER_2027.id,
-            Type.BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET.id,
-            Type.OMGJOERINGSKRAV.id,
-            Type.BEGJAERING_OM_GJENOPPTAK_FOER_2027.id,
-        )
+        if (shouldUseNewDefaultTypes()) {
+            listOf(
+                Type.KLAGE.id,
+                Type.BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET.id,
+                Type.OMGJOERINGSKRAV.id,
+            )
+        } else {
+            listOf(
+                Type.KLAGE.id,
+                Type.ANKE_FOER_2027.id,
+                Type.BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET.id,
+                Type.OMGJOERINGSKRAV.id,
+                Type.BEGJAERING_OM_GJENOPPTAK_FOER_2027.id,
+            )
+        }
 
     private fun getYtelserQueryListForSaksbehandler(
         queryYtelser: List<String>,
