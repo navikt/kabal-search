@@ -59,10 +59,27 @@ class BehandlingerSearchCriteriaMapper(
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
 
-        private val ANKETEAM_LEDIGE_TYPER = listOf(Type.ANKE_ETTER_2027)
+        private val ANKETEAM_LEDIGE_TYPER =
+            listOf(
+                Type.ANKE_FOER_2027,
+                Type.ANKE_ETTER_2027,
+                Type.BEGJAERING_OM_GJENOPPTAK_FOER_2027,
+                Type.BEGJAERING_OM_GJENOPPTAK_ETTER_2027,
+            )
 
-        private val ANKETEAM_TILLATTE_TYPER = listOf(Type.ANKE_ETTER_2027, Type.ANKE_I_TRYGDERETTEN_ETTER_2027)
+        private val ANKETEAM_TILLATTE_TYPER =
+            listOf(
+                Type.ANKE_FOER_2027,
+                Type.ANKE_I_TRYGDERETTEN_FOER_2027,
+                Type.ANKE_ETTER_2027,
+                Type.ANKE_I_TRYGDERETTEN_ETTER_2027,
+                Type.BEGJAERING_OM_GJENOPPTAK_FOER_2027,
+                Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_FOER_2027,
+                Type.BEGJAERING_OM_GJENOPPTAK_ETTER_2027,
+                Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_ETTER_2027,
+            )
 
+        // Anke and gjenopptak types will eventually be zero for enhet outside of anketeam.
         private val ENHETENS_OPPGAVER_TILLATTE_TYPER =
             listOf(
                 Type.KLAGE,
@@ -80,6 +97,13 @@ class BehandlingerSearchCriteriaMapper(
             ANKETEAM_TILLATTE_TYPER
                 .filter { it.id in requestedTypeIds }
                 .ifEmpty { ANKETEAM_TILLATTE_TYPER }
+
+        // Ukjente eller ikke-tillatte typer ignoreres. Står ingen tillatte typer igjen, brukes alle tillatte,
+        // slik at en tom liste aldri når Elasticsearch (tom liste betyr "ingen typefilter").
+        private fun resolveAnketeamTyperForLedigeOppgaver(requestedTypeIds: List<String>): List<Type> =
+            ANKETEAM_LEDIGE_TYPER
+                .filter { it.id in requestedTypeIds }
+                .ifEmpty { ANKETEAM_LEDIGE_TYPER }
 
         private fun resolveEnhetensOppgaverTyper(requestedTypeIds: List<String>): List<Type> =
             ENHETENS_OPPGAVER_TILLATTE_TYPER
@@ -380,7 +404,7 @@ class BehandlingerSearchCriteriaMapper(
     fun toAnketeamLedigeOppgaverSearchCriteria(queryParams: AnketeamLedigeOppgaverQueryParams): LedigeOppgaverSearchCriteria {
         val permissions = resolvePermissions()
         return LedigeOppgaverSearchCriteria(
-            typer = ANKETEAM_LEDIGE_TYPER,
+            typer = resolveAnketeamTyperForLedigeOppgaver(queryParams.typer),
             ytelser = queryParams.ytelser.map { Ytelse.of(it) },
             hjemler = queryParams.hjemler.map { Hjemmel.of(it) },
             sortField = mapSortField(queryParams.sortering),
