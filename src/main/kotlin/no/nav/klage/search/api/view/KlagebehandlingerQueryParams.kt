@@ -153,6 +153,10 @@ data class AnketeamFerdigstilteOppgaverQueryParams(
             Type.ANKE_I_TRYGDERETTEN_FOER_2027.id,
             Type.ANKE_ETTER_2027.id,
             Type.ANKE_I_TRYGDERETTEN_ETTER_2027.id,
+            Type.BEGJAERING_OM_GJENOPPTAK_FOER_2027.id,
+            Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_FOER_2027.id,
+            Type.BEGJAERING_OM_GJENOPPTAK_ETTER_2027.id,
+            Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_ETTER_2027.id,
         ),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
@@ -176,6 +180,10 @@ data class AnketeamOppgaverPaaVentQueryParams(
             Type.ANKE_I_TRYGDERETTEN_FOER_2027.id,
             Type.ANKE_ETTER_2027.id,
             Type.ANKE_I_TRYGDERETTEN_ETTER_2027.id,
+            Type.BEGJAERING_OM_GJENOPPTAK_FOER_2027.id,
+            Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_FOER_2027.id,
+            Type.BEGJAERING_OM_GJENOPPTAK_ETTER_2027.id,
+            Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_ETTER_2027.id,
         ),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
@@ -197,6 +205,10 @@ data class AnketeamUferdigeOppgaverQueryParams(
             Type.ANKE_I_TRYGDERETTEN_FOER_2027.id,
             Type.ANKE_ETTER_2027.id,
             Type.ANKE_I_TRYGDERETTEN_ETTER_2027.id,
+            Type.BEGJAERING_OM_GJENOPPTAK_FOER_2027.id,
+            Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_FOER_2027.id,
+            Type.BEGJAERING_OM_GJENOPPTAK_ETTER_2027.id,
+            Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_ETTER_2027.id,
         ),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
@@ -212,7 +224,13 @@ data class AnketeamUferdigeOppgaverQueryParams(
 ) : CommonOppgaverQueryParams
 
 data class AnketeamLedigeOppgaverQueryParams(
-    override var typer: List<String> = listOf(Type.ANKE_FOER_2027.id, Type.ANKE_ETTER_2027.id),
+    override var typer: List<String> =
+        listOf(
+            Type.ANKE_FOER_2027.id,
+            Type.ANKE_ETTER_2027.id,
+            Type.BEGJAERING_OM_GJENOPPTAK_FOER_2027.id,
+            Type.BEGJAERING_OM_GJENOPPTAK_ETTER_2027.id,
+        ),
     override var ytelser: List<String> = emptyList(),
     override var hjemler: List<String> = emptyList(),
     override val rekkefoelge: Rekkefoelge? = Rekkefoelge.STIGENDE,
