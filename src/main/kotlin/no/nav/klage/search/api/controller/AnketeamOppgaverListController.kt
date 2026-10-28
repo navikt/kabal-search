@@ -145,9 +145,7 @@ class AnketeamOppgaverListController(
 
     private fun validateRettigheterForAnketeametsOppgaver() {
         val navIdent = tokenUtil.getIdent()
-        // TODO: Bytt til AzureGroup.KABAL_OPPGAVESTYRING_ANKETEAM når rollen finnes i klage-kodeverk og er opprettet i Azure.
-        //  Fram til da brukes KABAL_INNSYN_EGEN_ENHET som stand-in.
-        if (!klageLookupClient.getUserGroups(navIdent = navIdent).groups.contains(AzureGroup.KABAL_INNSYN_EGEN_ENHET)) {
+        if (!klageLookupClient.getUserGroups(navIdent = navIdent).groups.contains(AzureGroup.KABAL_OPPGAVESTYRING_ANKETEAM)) {
             val message = "$navIdent har ikke tilgang til å se anketeamets oppgaver."
             logger.warn(message)
             throw MissingTilgangException(message)
