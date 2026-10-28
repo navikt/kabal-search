@@ -10,19 +10,19 @@ val logstashVersion = "9.0"
 val springMockkVersion = "5.0.1"
 val springDocVersion = "3.1.1"
 val testContainersVersion = "2.0.5"
-val threeTenExtraVersion = "1.10.0"
+val threeTenExtraVersion = "1.11.0"
 val archunitVersion = "1.5.1"
 val opensearchVersion = "3.9.0"
 val reactorSpringVersion = "1.0.1.RELEASE"
 val kodeverkVersion = "3.4.6"
 val ehcacheVersion = "3.12.0"
 val logbackSyslog4jVersion = "1.0.0"
-val otelVersion = "1.66.0"
+val otelVersion = "1.67.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_21
 
 plugins {
-    val kotlinVersion = "2.4.20"
+    val kotlinVersion = "2.4.21"
     id("org.springframework.boot") version "4.1.2"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
