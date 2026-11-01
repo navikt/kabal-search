@@ -1,87 +1,30 @@
 package no.nav.klage.search.util
 
-import no.nav.klage.search.config.SecurityConfiguration
-import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
-import no.nav.security.token.support.client.spring.ClientConfigurationProperties
-import no.nav.security.token.support.core.context.TokenValidationContextHolder
+import no.nav.klage.auth.TexasClient
+import no.nav.klage.auth.currentAzureToken
+import no.nav.klage.auth.navIdent
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Service
 class TokenUtil(
-    private val clientConfigurationProperties: ClientConfigurationProperties,
-    private val oAuth2AccessTokenService: OAuth2AccessTokenService,
-    private val tokenValidationContextHolder: TokenValidationContextHolder,
+    private val texasClient: TexasClient,
+    @Value($$"api://${NAIS_CLUSTER_NAME}.${NAIS_NAMESPACE}.${KABAL_INNSTILLINGER_APP_NAME}/.default")
+    private val kabalInnstillingerScope: String,
+    @Value($$"api://${NAIS_CLUSTER_NAME}.${NAIS_NAMESPACE}.${KLAGE_LOOKUP_APP_NAME}/.default")
+    private val klageLookupScope: String,
 ) {
     companion object {
-        @Suppress("JAVA_CLASS_ON_COMPANION")
-        private val logger = getLogger(javaClass.enclosingClass)
+        const val GRAPH_SCOPE = "https://graph.microsoft.com/.default"
     }
 
-    fun getUserAccessTokenWithKabalInnstillingerScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["kabal-innstillinger-onbehalfof"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getUserAccessTokenWithKabalInnstillingerScope(): String = texasClient.onBehalfOfCurrentUser(kabalInnstillingerScope)
 
-    fun getAppAccessTokenWithGraphScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["app"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getAppAccessTokenWithGraphScope(): String = texasClient.machineToMachineToken(GRAPH_SCOPE)
 
-    fun getSaksbehandlerAccessTokenWithKlageLookupScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["klage-lookup-onbehalfof"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getSaksbehandlerAccessTokenWithKlageLookupScope(): String = texasClient.onBehalfOfCurrentUser(klageLookupScope)
 
-    fun getAppAccessTokenWithKlageLookupScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["klage-lookup-maskintilmaskin"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getAppAccessTokenWithKlageLookupScope(): String = texasClient.machineToMachineToken(klageLookupScope)
 
-    fun getIdent(): String =
-        tokenValidationContextHolder
-            .getTokenValidationContext()
-            .getJwtToken(SecurityConfiguration.ISSUER_AAD)
-            ?.jwtTokenClaims
-            ?.get("NAVident")
-            ?.toString()
-            ?: throw RuntimeException("Ident not found in token")
-
-    fun getCurrentTokenType(): TokenType {
-        val validationContext = runCatching { tokenValidationContextHolder.getTokenValidationContext() }.getOrNull()
-        val tokenType =
-            if (validationContext == null) {
-                TokenType.UNAUTHENTICATED
-            } else {
-                val idtype =
-                    runCatching {
-                        validationContext
-                            .getJwtToken(
-                                SecurityConfiguration.ISSUER_AAD,
-                            )?.jwtTokenClaims
-                            ?.get("idtyp")
-                    }.getOrNull()
-                val navIdent =
-                    runCatching {
-                        validationContext.getJwtToken(SecurityConfiguration.ISSUER_AAD)?.jwtTokenClaims?.get("NAVident")
-                    }.getOrNull()
-                if (idtype != null && idtype == "app") {
-                    TokenType.CC
-                } else if (navIdent != null) {
-                    TokenType.OBO
-                } else {
-                    TokenType.UNAUTHENTICATED
-                }
-            }
-        return tokenType
-    }
-
-    enum class TokenType {
-        CC,
-        OBO,
-        UNAUTHENTICATED,
-    }
+    fun getIdent(): String = currentAzureToken()?.navIdent ?: throw RuntimeException("Ident not found in token")
 }
