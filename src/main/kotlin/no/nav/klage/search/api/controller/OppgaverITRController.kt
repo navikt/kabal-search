@@ -11,19 +11,16 @@ import no.nav.klage.search.api.view.LedigeOppgaverITRQueryParams
 import no.nav.klage.search.api.view.OppgaverPaaVentITRQueryParams
 import no.nav.klage.search.api.view.TildelteOppgaverITRQueryParams
 import no.nav.klage.search.clients.klagelookup.KlageLookupClient
-import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.exceptions.MissingTilgangException
 import no.nav.klage.search.service.ElasticsearchService
 import no.nav.klage.search.service.KabalInnstillingerService
 import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
-import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @Tag(name = "kabal-search")
-@ProtectedWithClaims(issuer = ISSUER_AAD)
 class OppgaverITRController(
     private val behandlingListMapper: BehandlingListMapper,
     private val elasticsearchService: ElasticsearchService,

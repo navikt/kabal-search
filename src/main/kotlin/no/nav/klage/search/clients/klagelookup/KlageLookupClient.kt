@@ -1,5 +1,7 @@
 package no.nav.klage.search.clients.klagelookup
 
+import no.nav.klage.auth.AzureTokenType
+import no.nav.klage.auth.currentAzureTokenType
 import no.nav.klage.kodeverk.AzureGroup
 import no.nav.klage.search.exceptions.GroupNotFoundException
 import no.nav.klage.search.exceptions.UserNotFoundException
@@ -151,9 +153,9 @@ class KlageLookupClient(
     }
 
     private fun getCorrectBearerToken(): String =
-        when (tokenUtil.getCurrentTokenType()) {
-            TokenUtil.TokenType.OBO -> "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithKlageLookupScope()}"
-            TokenUtil.TokenType.CC, TokenUtil.TokenType.UNAUTHENTICATED -> "Bearer ${tokenUtil.getAppAccessTokenWithKlageLookupScope()}"
+        when (currentAzureTokenType()) {
+            AzureTokenType.OBO -> "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithKlageLookupScope()}"
+            AzureTokenType.CC, AzureTokenType.UNAUTHENTICATED -> "Bearer ${tokenUtil.getAppAccessTokenWithKlageLookupScope()}"
         }
 
     fun GroupsResponse.toSaksbehandlerGroups(): SaksbehandlerGroups =

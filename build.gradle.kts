@@ -5,7 +5,7 @@ import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
 val ktlintVersion = "1.8.0"
 val mockkVersion = "1.14.11"
-val tokenValidationVersion = "6.0.12"
+val klageAuthVersion = "0.4.0"
 val logstashVersion = "9.0"
 val springMockkVersion = "5.0.1"
 val springDocVersion = "3.1.1"
@@ -49,10 +49,12 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
     implementation("org.springframework.kafka:spring-kafka")
     implementation("javax.cache:cache-api")
     implementation("ch.qos.logback:logback-classic")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("tools.jackson.module:jackson-module-kotlin")
 
     // Not managed by Spring:
     implementation("io.micrometer:micrometer-registry-prometheus")
@@ -62,8 +64,7 @@ dependencies {
     implementation("org.threeten:threeten-extra:$threeTenExtraVersion")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
-    implementation("no.nav.security:token-validation-spring:$tokenValidationVersion")
-    implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
+    implementation("no.nav.klage:klage-auth:$klageAuthVersion")
     implementation("no.nav.klage:klage-kodeverk:$kodeverkVersion") {
         exclude(group = "jakarta.persistence")
     }
@@ -75,7 +76,9 @@ dependencies {
         exclude(group = "org.junit.vintage")
         exclude(group = "org.mockito")
     }
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("org.springframework.kafka:spring-kafka-test")
+    testImplementation("no.nav.klage:klage-auth-test:$klageAuthVersion")
 
     testImplementation("org.testcontainers:testcontainers")
     testImplementation("org.testcontainers:testcontainers-junit-jupiter")

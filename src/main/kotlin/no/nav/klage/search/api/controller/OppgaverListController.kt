@@ -11,18 +11,15 @@ import no.nav.klage.search.api.view.MineLedigeOppgaverCountQueryParams
 import no.nav.klage.search.api.view.MineLedigeOppgaverQueryParams
 import no.nav.klage.search.api.view.MineOppgaverPaaVentQueryParams
 import no.nav.klage.search.api.view.MineUferdigeOppgaverQueryParams
-import no.nav.klage.search.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.search.service.ElasticsearchService
 import no.nav.klage.search.service.OppgaverService
 import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
-import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @Tag(name = "kabal-search")
-@ProtectedWithClaims(issuer = ISSUER_AAD)
 class OppgaverListController(
     private val behandlingListMapper: BehandlingListMapper,
     private val elasticsearchService: ElasticsearchService,

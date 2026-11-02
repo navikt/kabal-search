@@ -2,12 +2,10 @@ package no.nav.klage.search.api.controller
 
 import no.nav.klage.kodeverk.AzureGroup
 import no.nav.klage.search.clients.klagelookup.KlageLookupClient
-import no.nav.klage.search.config.SecurityConfiguration
 import no.nav.klage.search.exceptions.MissingTilgangException
 import no.nav.klage.search.service.AdminService
 import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
-import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@ProtectedWithClaims(issuer = SecurityConfiguration.ISSUER_AAD)
 class AdminController(
     private val adminService: AdminService,
     private val klageLookupClient: KlageLookupClient,
