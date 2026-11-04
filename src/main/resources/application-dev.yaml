@@ -1,3 +1,5 @@
+LAST_DATE_FOR_OLD_DEFAULT_TYPES: 2026-11-01
+
 springdoc:
   swagger-ui:
     enabled: true

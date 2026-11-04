@@ -47,6 +47,7 @@ import no.nav.klage.search.domain.TildelteOppgaverSearchCriteria
 import no.nav.klage.search.domain.UferdigeOppgaverForSaksbehandlerOrMedunderskriverOrRolSearchCriteria
 import no.nav.klage.search.util.TokenUtil
 import no.nav.klage.search.util.getLogger
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
@@ -54,6 +55,8 @@ import java.time.LocalDate
 class BehandlingerSearchCriteriaMapper(
     private val klageLookupClient: KlageLookupClient,
     private val tokenUtil: TokenUtil,
+    @Value($$"#{T(java.time.LocalDate).parse('${LAST_DATE_FOR_OLD_DEFAULT_TYPES}')}")
+    private val lastDateForOldDefaultTypes: LocalDate,
 ) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
@@ -80,7 +83,7 @@ class BehandlingerSearchCriteriaMapper(
             )
 
         // Anke and gjenopptak types will eventually be zero for enhet outside of anketeam.
-        private val ENHETENS_OPPGAVER_TILLATTE_TYPER =
+        private val ENHETENS_OPPGAVER_TILLATTE_TYPER_OLD =
             listOf(
                 Type.KLAGE,
                 Type.ANKE_FOER_2027,
@@ -91,25 +94,38 @@ class BehandlingerSearchCriteriaMapper(
                 Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_FOER_2027,
             )
 
-        // Ukjente eller ikke-tillatte typer ignoreres. Står ingen tillatte typer igjen, brukes alle tillatte,
-        // slik at en tom liste aldri når Elasticsearch (tom liste betyr "ingen typefilter").
-        private fun resolveAnketeamTyper(requestedTypeIds: List<String>): List<Type> =
-            ANKETEAM_TILLATTE_TYPER
-                .filter { it.id in requestedTypeIds }
-                .ifEmpty { ANKETEAM_TILLATTE_TYPER }
-
-        // Ukjente eller ikke-tillatte typer ignoreres. Står ingen tillatte typer igjen, brukes alle tillatte,
-        // slik at en tom liste aldri når Elasticsearch (tom liste betyr "ingen typefilter").
-        private fun resolveAnketeamTyperForLedigeOppgaver(requestedTypeIds: List<String>): List<Type> =
-            ANKETEAM_LEDIGE_TYPER
-                .filter { it.id in requestedTypeIds }
-                .ifEmpty { ANKETEAM_LEDIGE_TYPER }
-
-        private fun resolveEnhetensOppgaverTyper(requestedTypeIds: List<String>): List<Type> =
-            ENHETENS_OPPGAVER_TILLATTE_TYPER
-                .filter { it.id in requestedTypeIds }
-                .ifEmpty { ENHETENS_OPPGAVER_TILLATTE_TYPER }
+        private val ENHETENS_OPPGAVER_TILLATTE_TYPER_NEW =
+            listOf(
+                Type.KLAGE,
+                Type.BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET,
+                Type.OMGJOERINGSKRAV,
+            )
     }
+
+    // Ukjente eller ikke-tillatte typer ignoreres. Står ingen tillatte typer igjen, brukes alle tillatte,
+    // slik at en tom liste aldri når Elasticsearch (tom liste betyr "ingen typefilter").
+    private fun resolveAnketeamTyper(requestedTypeIds: List<String>): List<Type> =
+        ANKETEAM_TILLATTE_TYPER
+            .filter { it.id in requestedTypeIds }
+            .ifEmpty { ANKETEAM_TILLATTE_TYPER }
+
+    // Ukjente eller ikke-tillatte typer ignoreres. Står ingen tillatte typer igjen, brukes alle tillatte,
+    // slik at en tom liste aldri når Elasticsearch (tom liste betyr "ingen typefilter").
+    private fun resolveAnketeamTyperForLedigeOppgaver(requestedTypeIds: List<String>): List<Type> =
+        ANKETEAM_LEDIGE_TYPER
+            .filter { it.id in requestedTypeIds }
+            .ifEmpty { ANKETEAM_LEDIGE_TYPER }
+
+    private fun resolveEnhetensOppgaverTyper(requestedTypeIds: List<String>): List<Type> =
+        if (shouldUseNewDefaultTypes()) {
+            ENHETENS_OPPGAVER_TILLATTE_TYPER_NEW
+                .filter { it.id in requestedTypeIds }
+                .ifEmpty { ENHETENS_OPPGAVER_TILLATTE_TYPER_NEW }
+        } else {
+            ENHETENS_OPPGAVER_TILLATTE_TYPER_OLD
+                .filter { it.id in requestedTypeIds }
+                .ifEmpty { ENHETENS_OPPGAVER_TILLATTE_TYPER_OLD }
+        }
 
     private data class BehandlingPermissions(
         val kanBehandleEgenAnsatt: Boolean,
@@ -631,4 +647,6 @@ class BehandlingerSearchCriteriaMapper(
     private fun mapFrom(from: LocalDate?): LocalDate = from ?: LocalDate.now().minusDays(36500)
 
     private fun mapFristTo(fristTo: LocalDate?): LocalDate = fristTo ?: LocalDate.now().plusDays(36500)
+
+    fun shouldUseNewDefaultTypes(): Boolean = LocalDate.now().isAfter(lastDateForOldDefaultTypes)
 }
