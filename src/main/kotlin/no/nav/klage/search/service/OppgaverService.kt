@@ -10,6 +10,7 @@ import no.nav.klage.search.api.view.BehandlingerListResponse
 import no.nav.klage.search.api.view.MineLedigeOppgaverCountQueryParams
 import no.nav.klage.search.api.view.MineLedigeOppgaverQueryParams
 import no.nav.klage.search.util.getLogger
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
@@ -19,11 +20,12 @@ class OppgaverService(
     private val behandlingerSearchCriteriaMapper: BehandlingerSearchCriteriaMapper,
     private val elasticsearchService: ElasticsearchService,
     private val behandlingListMapper: BehandlingListMapper,
+    @Value($$"#{T(java.time.LocalDate).parse('${LAST_DATE_FOR_OLD_DEFAULT_TYPES}')}")
+    private val lastDateForOldDefaultTypes: LocalDate,
 ) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        private val LAST_DATE_FOR_OLD_DEFAULT_TYPES = LocalDate.of(2026, 12, 31)
     }
 
     fun getLedigeOppgaverForInnloggetSaksbehandler(queryParams: MineLedigeOppgaverQueryParams): BehandlingerListResponse {
@@ -117,7 +119,7 @@ class OppgaverService(
         )
     }
 
-    fun shouldUseNewDefaultTypes(): Boolean = LocalDate.now().isAfter(LAST_DATE_FOR_OLD_DEFAULT_TYPES)
+    fun shouldUseNewDefaultTypes(): Boolean = LocalDate.now().isAfter(lastDateForOldDefaultTypes)
 
     private fun getDefaultSearchTypes(): List<String> =
         if (shouldUseNewDefaultTypes()) {
