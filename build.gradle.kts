@@ -19,7 +19,11 @@ val ehcacheVersion = "3.12.0"
 val logbackSyslog4jVersion = "1.0.0"
 val otelVersion = "1.66.0"
 
-java.sourceCompatibility = JavaVersion.VERSION_21
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(25))
+    }
+}
 
 plugins {
     val kotlinVersion = "2.4.20"
@@ -142,7 +146,7 @@ tasks.named("detekt") {
 }
 
 tasks.withType<dev.detekt.gradle.Detekt>().configureEach {
-    jvmTarget.set(JvmTarget.JVM_21.target)
+    jvmTarget.set(JvmTarget.JVM_25.target)
     reports {
         html.required.set(true)
         checkstyle.required.set(true)
@@ -157,7 +161,6 @@ tasks.named("check") {
 
 tasks.withType<KotlinCompile> {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_21)
         freeCompilerArgs = listOf("-Xjsr305=strict")
     }
 }

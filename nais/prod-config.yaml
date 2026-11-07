@@ -38,5 +38,5 @@ adRoles:
     value: a478bf9a-fb73-4dee-bd84-411ca4749cb9
 
 envs:
-  - name: JAVA_OPTS
-    value: "-Xms512m -Xmx4096m"
+  - name: JAVA_TOOL_OPTIONS
+    value: "-Xms512m -Xmx4096m --enable-native-access=ALL-UNNAMED"
