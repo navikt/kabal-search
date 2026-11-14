@@ -8,16 +8,16 @@ val mockkVersion = "1.14.11"
 val klageAuthVersion = "0.4.0"
 val logstashVersion = "9.0"
 val springMockkVersion = "5.0.1"
-val springDocVersion = "3.1.1"
+val springDocVersion = "3.2.0"
 val testContainersVersion = "2.0.5"
-val threeTenExtraVersion = "1.10.0"
+val threeTenExtraVersion = "1.11.0"
 val archunitVersion = "1.5.1"
 val opensearchVersion = "3.9.0"
 val reactorSpringVersion = "1.0.1.RELEASE"
 val kodeverkVersion = "3.4.7"
 val ehcacheVersion = "3.12.0"
 val logbackSyslog4jVersion = "1.0.0"
-val otelVersion = "1.66.0"
+val otelVersion = "1.68.0"
 
 java {
     toolchain {
@@ -26,7 +26,7 @@ java {
 }
 
 plugins {
-    val kotlinVersion = "2.4.20"
+    val kotlinVersion = "2.4.21"
     id("org.springframework.boot") version "4.1.2"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
